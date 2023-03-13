@@ -7,7 +7,31 @@ on:
       - main
 
 jobs:
-  build:
+
+  #----------------------------------- code-quality -----------------------------------#
+
+  code-quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install poetry
+        run: pipx install poetry==1.4.0
+      - name: Set up Python 3
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+      - name: Install dependencies
+        run: poetry install --with lint
+      - name: Run lint
+        run: |
+          poetry run ruff . --verbose
+          poetry run mypy ./src --verbose
+
+  #-------------------------------------- tests ---------------------------------------#
+
+  tests:
+    needs: code-quality
+
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -25,3 +49,23 @@ jobs:
         run: poetry install --with test
       - name: Run tests
         run: poetry run pytest
+
+    #---------------------------------- code-coverage ---------------------------------#
+
+  code-coverage:
+    needs: tests
+
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install poetry
+        run: pipx install poetry==1.4.0
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+      - name: Install dependencies
+        run: poetry install --with test
+      - name: Run tests with code coverage
+        run: |
+          poetry run pytest --cov
