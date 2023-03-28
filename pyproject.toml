@@ -9,7 +9,8 @@ repository = "https://github.com/TJStienstra/brim"
 
 [tool.poetry.dependencies]
 python = "^3.8"
-sympy = {git = "https://github.com/sympy/sympy.git", rev = "physics-mechanics-devel"}
+sympy = {git = "https://github.com/TJStienstra/sympy.git", rev = "sympy-for-brim"}
+symmeplot = {git = "https://github.com/TJStienstra/symmeplot.git", optional = true}
 
 [tool.poetry.group.lint.dependencies]
 ruff = "^0.0.254"
@@ -19,6 +20,7 @@ mypy = "^1.1.1"
 pytest = "^7.2.2"
 coverage = {extras = ["toml"], version = "^7.2.1"}
 pytest-cov = "^4.0.0"
+numpy = "^1.24.2"
 
 [build-system]
 requires = ["poetry-core"]
@@ -56,3 +58,11 @@ source = ["brim"]
 [tool.coverage.report]
 show_missing = true
 fail_under = 100
+exclude_lines = [
+    "pragma: no cover",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+]
+omit = [
+    "src/brim/utilities/plotting.py",
+]
