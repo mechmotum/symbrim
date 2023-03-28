@@ -31,9 +31,9 @@ class TestKnifeEdgeWheel:
 
     def test_contact_point(self) -> None:
         q1, q2, q3 = dynamicsymbols("q1:4")
-        wheel: KnifeEdgeWheel = KnifeEdgeWheel("wheel")
-        ground: FlatGround = FlatGround("ground")
-        int_frame: ReferenceFrame = ReferenceFrame("int_frame")
+        wheel = KnifeEdgeWheel("wheel")
+        ground = FlatGround("ground")
+        int_frame = ReferenceFrame("int_frame")
         int_frame.orient_body_fixed(ground.frame, (q1, q2, 0), "zxy")
         wheel.frame.orient_axis(int_frame, q3, int_frame.y)
         wheel.compute_contact_point(ground)

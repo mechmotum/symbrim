@@ -24,14 +24,14 @@ class WheelBase(NewtonianBodyMixin, ModelBase):
     requirements: tuple[Requirement, ...] = (
         Requirement("tyre_model", TyreModelBase, "Tyre model of the wheel."),
     )
-    tyre_model: TyreModelBase | None
+    tyre_model: TyreModelBase
 
     def define_objects(self) -> None:
         """Define the objects of the wheel."""
         super().define_objects()
         self.body.central_inertia = inertia(self.body.frame,
                                             *symbols(self.add_prefix("ixx iyy ixx")))
-        self._contact_point: Point = Point(self.add_prefix("contact_point"))
+        self._contact_point = Point(self.add_prefix("contact_point"))
 
     @property
     @abstractmethod

@@ -19,7 +19,7 @@ __all__ = ["WhippleBicycle", "WhippleBicycleMoore"]
 class WhippleBicycle(BicycleBase):
     """Base class for the Whipple bicycle model."""
 
-    requirements = (
+    requirements: tuple[Requirement, ...] = (
         Requirement("ground", GroundBase, "Submodel of the ground.", True),
         Requirement("rear_frame", RearFrameBase, "Submodel of the rear frame.", True),
         Requirement("front_frame", FrontFrameBase, "Submodel of the front frame.",
@@ -27,11 +27,11 @@ class WhippleBicycle(BicycleBase):
         Requirement("rear_wheel", WheelBase, "Submodel of the rear wheel.", True),
         Requirement("front_wheel", WheelBase, "Submodel of the front wheel.", True),
     )
-    ground: GroundBase | None
-    rear_frame: RearFrameBase | None
-    front_frame: FrontFrameBase | None
-    rear_wheel: WheelBase | None
-    front_wheel: WheelBase | None
+    ground: GroundBase
+    rear_frame: RearFrameBase
+    front_frame: FrontFrameBase
+    rear_wheel: WheelBase
+    front_wheel: WheelBase
 
     def __new__(cls, name: str, *args, formulation: str = "moore", **kwargs
                 ) -> WhippleBicycle:
@@ -59,7 +59,7 @@ class WhippleBicycleMoore(WhippleBicycle):
     @property
     def descriptions(self) -> dict[Any, str]:
         """Dictionary of descriptions of the Whipple bicycle's attributes."""
-        desc: dict[Any, str] = {
+        desc = {
             **super().descriptions,
             self.rear_yaw_frame: "Auliary frame of the rear yaw.",
             self.rear_roll_frame: "Auliary frame of the rear roll.",
@@ -80,14 +80,14 @@ class WhippleBicycleMoore(WhippleBicycle):
 
     def define_objects(self) -> None:
         """Define the objects of the Whipple bicycle."""
-        self.q: Matrix = Matrix(dynamicsymbols(self.add_prefix("q1:9")))
-        self.u: Matrix = Matrix(dynamicsymbols(self.add_prefix("u1:9")))
+        self.q = Matrix(dynamicsymbols(self.add_prefix("q1:9")))
+        self.u = Matrix(dynamicsymbols(self.add_prefix("u1:9")))
         self.rear_yaw_frame = ReferenceFrame("rear_yaw_frame")
         self.rear_roll_frame = ReferenceFrame("rear_roll_frame")
 
     def define_kinematics(self) -> None:
         """Define the kinematics of the Whipple bicycle."""
-        self._system: System = System.from_newtonian(self.ground.body)
+        self._system = System.from_newtonian(self.ground.body)
         # Define the location of the rear wheel contact point in the ground frame.
         self.rear_wheel.contact_point.set_pos(
             self.ground.origin,

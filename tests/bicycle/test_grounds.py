@@ -7,7 +7,7 @@ from brim.bicycle.grounds import FlatGround
 from sympy.physics.mechanics.system import System
 
 if TYPE_CHECKING:
-    from sympy.physics.mechanics import Vector
+    pass
 
 
 class TestFlatGround:
@@ -33,8 +33,8 @@ class TestFlatGround:
         ("z", 2, 0, 1),
     ])
     def test_normal(self, normal: str, n_idx: int, pl_idx1: int, pl_idx2: int) -> None:
-        ground: FlatGround = FlatGround("ground", normal)
-        vectors: tuple[Vector, ...] = (ground.frame.x, ground.frame.y, ground.frame.z)
-        times: int = -1 if normal[0] == "-" else 1
+        ground = FlatGround("ground", normal)
+        vectors = (ground.frame.x, ground.frame.y, ground.frame.z)
+        times = -1 if normal[0] == "-" else 1
         assert ground.normal == times * vectors[n_idx]
         assert ground.planar_vectors == (vectors[pl_idx1], vectors[pl_idx2])

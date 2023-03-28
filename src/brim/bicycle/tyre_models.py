@@ -9,7 +9,6 @@ from sympy.physics.mechanics import System, cross
 from brim.core import ModelBase
 
 if TYPE_CHECKING:
-    from sympy.physics.mechanics import Vector
 
     from brim.bicycle.grounds import GroundBase
     from brim.bicycle.wheels import WheelBase
@@ -27,7 +26,7 @@ class TyreModelBase(ModelBase):
 
     def define_objects(self) -> None:
         """Define the objects of the tyre model."""
-        self._system: System = System()
+        self._system = System()
 
     def define_kinematics(self) -> None:
         """Define the kinematics of the tyre model."""
@@ -69,7 +68,7 @@ class NonHolonomicTyreModel(TyreModelBase):
             Boolean whether the wheel is already defined as touching the ground.
 
         """
-        v0: Vector = wheel.center.vel(ground.frame) + cross(
+        v0 = wheel.center.vel(ground.frame) + cross(
             wheel.frame.ang_vel_in(ground.frame),
             wheel.contact_point.pos_from(wheel.center)
         )

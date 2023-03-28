@@ -13,8 +13,8 @@ class NewtonianBodyMixin:
 
     def define_objects(self) -> None:
         """Define the objects of the model."""
-        body: RigidBody = RigidBody(self.name)
-        self._system: System = System.from_newtonian(body)
+        body = RigidBody(self.name)
+        self._system = System.from_newtonian(body)
         super().define_objects()
 
     @property

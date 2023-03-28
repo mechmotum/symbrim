@@ -33,16 +33,13 @@ the base classes.
 from __future__ import annotations
 
 from abc import abstractmethod
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 from sympy import Matrix
 from sympy.physics.mechanics import dynamicsymbols
 from sympy.physics.mechanics.system import System
 
 from brim.core import ModelBase, NewtonianBodyMixin, Requirement
-
-if TYPE_CHECKING:
-    pass
 
 __all__ = ["MySubModelBase", "MySubModel", "MyModel"]
 

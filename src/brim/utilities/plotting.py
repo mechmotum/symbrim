@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from symmeplot import SymMePlotter  # type: ignore
+from symmeplot import SymMePlotter
 
 from brim.bicycle.front_frames import RigidFrontFrameMoore
 from brim.bicycle.grounds import GroundBase
@@ -19,7 +19,7 @@ from brim.bicycle.wheels import KnifeEdgeWheel
 from brim.core import ModelBase, NewtonianBodyMixin
 
 if TYPE_CHECKING:
-    from symmeplot import PlotBody
+    from mpl_toolkits.mplot3d.axes3d import Axes3D
 
 __all__ = ["Plotter"]
 
@@ -27,7 +27,7 @@ __all__ = ["Plotter"]
 class Plotter(SymMePlotter):
     """Plotter for models created by BRiM using symmeplot."""
 
-    def __init__(self, ax, model: ModelBase, **inertial_frame_properties):
+    def __init__(self, ax: Axes3D, model: ModelBase, **inertial_frame_properties):
         """Initialize the plotter.
 
         Parameters
@@ -60,7 +60,7 @@ class Plotter(SymMePlotter):
 
         """
         if isinstance(model, NewtonianBodyMixin):
-            body: PlotBody = self.add_body(model.body)
+            body = self.add_body(model.body)
         if isinstance(model, RigidRearFrameMoore):
             self.add_line([model.wheel_attachment, model.steer_attachment],
                           "rear frame")

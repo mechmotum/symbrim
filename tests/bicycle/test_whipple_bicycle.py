@@ -18,7 +18,6 @@ from sympy.physics.mechanics import KanesMethod, dynamicsymbols
 
 if TYPE_CHECKING:
     from sympy import Basic
-    from sympy.physics.mechanics import System
 
 
 class TestWhippleBicycle:
@@ -94,7 +93,7 @@ class TestWhippleBicycleMoore:
         bike.front_wheel.tyre_model = NonHolonomicTyreModel("front_tyre")
         bike.define_kinematics()
         bike.define_loads()
-        system: System = to_system(bike)
+        system = to_system(bike)
         system.apply_gravity(-Symbol("g") * bike.ground.normal)
         system.q_ind = [*bike.q[:4], *bike.q[5:]]
         system.q_dep = [bike.q[4]]

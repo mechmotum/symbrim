@@ -22,9 +22,9 @@ class GroundBase(ModelBase):
 
     def define_objects(self) -> None:
         """Define the objects of the ground."""
-        self._body: RigidBody = RigidBody(self.name)
+        self._body = RigidBody(self.name)
         self._body.masscenter = Point(self.add_prefix("origin"))
-        self._system: System = System.from_newtonian(self.body)
+        self._system = System.from_newtonian(self.body)
 
     def define_kinematics(self) -> None:
         """Define the kinematics of the ground."""
@@ -83,9 +83,9 @@ class FlatGround(GroundBase):
         super().__init__(name)
         if normal[0] == "-":
             normal = normal[1:]
-            times: int = -1
+            times = -1
         else:
-            times: int = 1
+            times = 1
             if normal[0] == "+":
                 normal = normal[1:]
         self._normal = times * self.frame[normal]

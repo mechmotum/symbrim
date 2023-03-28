@@ -8,7 +8,6 @@ from typing import TYPE_CHECKING, Any
 from sympy import symbols
 
 if TYPE_CHECKING:
-    from sympy import Symbol
     from sympy.physics.mechanics import System
 
     from brim.core.requirement import Requirement
@@ -44,7 +43,7 @@ class ModelMeta(ABCMeta):
             return property(getter, setter, None, requirement.description)
 
         # Create properties for each of the requirements
-        requirements: list[Requirement] = []
+        requirements = []
         for base_cls in bases:
             base_reqs = getattr(base_cls, "requirements", None)
             if base_reqs is not None:
@@ -95,7 +94,7 @@ class ModelBase(metaclass=ModelMeta):
             raise ValueError("The name of an object may not contain: ' ', ',' or ':'.")
         if not name:
             raise ValueError("The name of an object may not be empty.")
-        self._name: str = str(name)
+        self._name = str(name)
         for req in self.requirements:
             setattr(self, f"_{req.attribute_name}", None)
         self.define_objects()
@@ -116,7 +115,7 @@ class ModelBase(metaclass=ModelMeta):
         ...
 
         """
-        syms: tuple[Symbol, ...] | Symbol = symbols(names)
+        syms= symbols(names)
         if isinstance(syms, tuple):
             return ", ".join(f"{self.name}_{sym.name}" for sym in syms)
         return f"{self.name}_{syms.name}"

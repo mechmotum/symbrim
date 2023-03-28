@@ -37,20 +37,20 @@ class Requirement:
         if not attribute_name.isidentifier():
             raise ValueError(f"'{attribute_name}' is not a valid attribute name, "
                              f"because it cannot be used as a variable name.")
-        self._attribute_name: str = attribute_name
+        self._attribute_name = attribute_name
         if not isinstance(submodel_types, Iterable):
             submodel_types = (submodel_types,)
-        self._types: tuple[type, ...] = tuple(submodel_types)
+        self._types = tuple(submodel_types)
         if description is None:
             description = self.types[0].__doc__.split("\n", 1)[0]
-        self._description: str = str(description)
-        self._hard: bool = bool(hard_requirement)
+        self._description = str(description)
+        self._hard = bool(hard_requirement)
         if full_name is None:
             full_name = self.attribute_name.replace("_", " ").capitalize()
-        self._full_name: str = str(full_name)
+        self._full_name = str(full_name)
         if type_name is None:
             type_name = " or ".join(tp.__name__ for tp in self.types)
-        self._type_name: str = str(type_name)
+        self._type_name = str(type_name)
 
     @property
     def attribute_name(self) -> str:

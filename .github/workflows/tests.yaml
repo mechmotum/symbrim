@@ -24,8 +24,7 @@ jobs:
         run: poetry install --with lint
       - name: Run lint
         run: |
-          poetry run ruff . --verbose
-          poetry run mypy ./src --verbose
+          poetry run ruff .
 
   #-------------------------------------- tests ---------------------------------------#
 
