@@ -22,21 +22,19 @@ class GroundBase(ModelBase):
 
     def define_objects(self) -> None:
         """Define the objects of the ground."""
+        super().define_objects()
         self._body = RigidBody(self.name)
         self._body.masscenter = Point(self.add_prefix("origin"))
         self._system = System.from_newtonian(self.body)
 
     def define_kinematics(self) -> None:
         """Define the kinematics of the ground."""
+        super().define_kinematics()
         self.origin.set_vel(self.frame, 0)
 
     def define_loads(self) -> None:
         """Define the loads acting upon the ground."""
-
-    @property
-    def system(self) -> System:
-        """System of the ground."""
-        return self._system
+        super().define_loads()
 
     @property
     def body(self) -> RigidBody:

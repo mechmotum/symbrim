@@ -5,7 +5,7 @@ from abc import abstractmethod
 from typing import Any
 
 from sympy import Symbol, symbols
-from sympy.physics.mechanics import Point, RigidBody, System, Vector, inertia
+from sympy.physics.mechanics import Point, Vector, inertia
 
 from brim.core import ModelBase, NewtonianBodyMixin
 
@@ -14,10 +14,6 @@ __all__ = ["RearFrameBase", "RigidRearFrame", "RigidRearFrameMoore"]
 
 class RearFrameBase(NewtonianBodyMixin, ModelBase):
     """Base class for the rear frame of a bicycle."""
-
-    def define_objects(self):
-        """Define the objects of the rear frame."""
-        super().define_objects()
 
     @property
     @abstractmethod
@@ -61,20 +57,12 @@ class RigidRearFrame(RearFrameBase):
 
     def define_kinematics(self):
         """Define the kinematics of the rear frame."""
+        super().define_kinematics()
         self.wheel_attachment.set_vel(self.frame, 0)
 
     def define_loads(self):
         """Define the loads acting upon the rear frame."""
-
-    @property
-    def system(self) -> System:
-        """System instance corresponding to the rear frame."""
-        return self._system
-
-    @property
-    def body(self) -> RigidBody:
-        """Body representing the rear frame."""
-        return self.system.bodies[0]
+        super().define_loads()
 
     @property
     @abstractmethod

@@ -18,11 +18,6 @@ class NewtonianBodyMixin:
         super().define_objects()
 
     @property
-    def system(self) -> System:
-        """System of the model."""
-        return self._system
-
-    @property
     def body(self) -> RigidBody:
         """The body representing the model."""
         return self.system.bodies[0]

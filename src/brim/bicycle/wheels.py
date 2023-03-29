@@ -80,9 +80,11 @@ class KnifeEdgeWheel(WheelBase):
 
     def define_kinematics(self) -> None:
         """Define the kinematics of the wheel."""
+        super().define_kinematics()
 
     def define_loads(self) -> None:
         """Define the loads acting upon the wheel."""
+        super().define_loads()
 
     @property
     def center(self) -> Point:

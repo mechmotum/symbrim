@@ -26,13 +26,16 @@ class TyreModelBase(ModelBase):
 
     def define_objects(self) -> None:
         """Define the objects of the tyre model."""
+        super().define_objects()
         self._system = System()
 
     def define_kinematics(self) -> None:
         """Define the kinematics of the tyre model."""
+        super().define_kinematics()
 
     def define_loads(self) -> None:
         """Define the loads of the tyre model."""
+        super().define_loads()
 
     @abstractmethod
     def compute(self, ground: GroundBase, wheel: WheelBase, on_ground: bool

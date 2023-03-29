@@ -78,11 +78,13 @@ class WhippleBicycleMoore(WhippleBicycle):
 
     def define_objects(self) -> None:
         """Define the objects of the Whipple bicycle."""
+        super().define_objects()
         self.q = Matrix(dynamicsymbols(self.add_prefix("q1:9")))
         self.u = Matrix(dynamicsymbols(self.add_prefix("u1:9")))
 
     def define_kinematics(self) -> None:
         """Define the kinematics of the Whipple bicycle."""
+        super().define_kinematics()
         self._system = System.from_newtonian(self.ground.body)
         # Define the location of the rear wheel contact point in the ground frame.
         self.rear_wheel.contact_point.set_pos(
@@ -126,10 +128,6 @@ class WhippleBicycleMoore(WhippleBicycle):
 
     def define_loads(self) -> None:
         """Define the loads of the Whipple bicycle."""
+        super().define_loads()
         self.rear_wheel.compute_tyre_model(self.ground, True)
         self.front_wheel.compute_tyre_model(self.ground, False)
-
-    @property
-    def system(self) -> System:
-        """System of the Whipple bicycle."""
-        return self._system

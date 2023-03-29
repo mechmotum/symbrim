@@ -50,11 +50,13 @@ class RollingDisc(ModelBase):
 
     def define_objects(self) -> None:
         """Define the objects of the rolling disc."""
+        super().define_objects()
         self.q = Matrix([dynamicsymbols(self.add_prefix("q1:6"))])
         self.u = Matrix([dynamicsymbols(self.add_prefix("u1:6"))])
 
     def define_kinematics(self) -> None:
         """Define the kinematics of the rolling disc."""
+        super().define_kinematics()
         self._system = System.from_newtonian(self.ground.body)
         self.disc.frame.orient_body_fixed(self.ground.frame, self.q[2:], "zxy")
         self.disc.frame.set_ang_vel(
@@ -80,11 +82,7 @@ class RollingDisc(ModelBase):
 
     def define_loads(self) -> None:
         """Define the loads of the rolling disc."""
-
-    @property
-    def system(self) -> System:
-        """System of the rolling disc."""
-        return self._system
+        super().define_loads()
 
 
 def rolling_disc_manual() -> System:

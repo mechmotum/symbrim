@@ -97,6 +97,7 @@ class ModelBase(metaclass=ModelMeta):
         self._name = str(name)
         for req in self.requirements:
             setattr(self, f"_{req.attribute_name}", None)
+        self._system = None
         self.define_objects()
 
     def __str__(self) -> str:
@@ -143,9 +144,9 @@ class ModelBase(metaclass=ModelMeta):
         return {}
 
     @property
-    @abstractmethod
     def system(self) -> System:
         """System object representing the model."""
+        return self._system
 
     @abstractmethod
     def define_objects(self) -> None:
