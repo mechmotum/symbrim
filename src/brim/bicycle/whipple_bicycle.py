@@ -4,7 +4,7 @@ from __future__ import annotations
 from typing import Any
 
 from sympy import Matrix
-from sympy.physics.mechanics import PinJoint, ReferenceFrame, System, dynamicsymbols
+from sympy.physics.mechanics import PinJoint, System, dynamicsymbols
 
 from brim.bicycle.bicycle_base import BicycleBase
 from brim.bicycle.front_frames import FrontFrameBase
@@ -61,8 +61,6 @@ class WhippleBicycleMoore(WhippleBicycle):
         """Dictionary of descriptions of the Whipple bicycle's attributes."""
         desc = {
             **super().descriptions,
-            self.rear_yaw_frame: "Auliary frame of the rear yaw.",
-            self.rear_roll_frame: "Auliary frame of the rear roll.",
             self.q[0]: "Perpendicular distance along ground.x to the rear contact point"
                        " in the ground plane.",
             self.q[1]: "Perpendicular distance along ground.y to the rear contact point"
@@ -82,8 +80,6 @@ class WhippleBicycleMoore(WhippleBicycle):
         """Define the objects of the Whipple bicycle."""
         self.q = Matrix(dynamicsymbols(self.add_prefix("q1:9")))
         self.u = Matrix(dynamicsymbols(self.add_prefix("u1:9")))
-        self.rear_yaw_frame = ReferenceFrame("rear_yaw_frame")
-        self.rear_roll_frame = ReferenceFrame("rear_roll_frame")
 
     def define_kinematics(self) -> None:
         """Define the kinematics of the Whipple bicycle."""
@@ -98,18 +94,11 @@ class WhippleBicycleMoore(WhippleBicycle):
             self.u[0] * self.ground.planar_vectors[0] +
             self.u[1] * self.ground.planar_vectors[1])
         # Define the orientation of the rear frame.
-        self.rear_yaw_frame.orient_axis(self.ground.frame, -self.ground.normal,
-                                        self.q[2])
-        self.rear_yaw_frame.set_ang_vel(self.ground.frame,
-                                        -self.u[2] * self.ground.normal)
-        self.rear_roll_frame.orient_axis(self.rear_yaw_frame, self.rear_yaw_frame.x,
-                                         self.q[3])
-        self.rear_roll_frame.set_ang_vel(self.rear_yaw_frame,
-                                         self.u[3] * self.rear_yaw_frame.x)
-        self.rear_frame.frame.orient_axis(self.rear_roll_frame, self.rear_roll_frame.y,
-                                          self.q[4])
-        self.rear_frame.frame.set_ang_vel(self.rear_roll_frame,
-                                          self.u[4] * self.rear_roll_frame.y)
+        self.rear_frame.frame.orient_body_fixed(self.ground.frame, self.q[2:5], "zxy")
+        self.rear_frame.frame.set_ang_vel(
+            self.ground.frame,
+            self.rear_frame.frame.ang_vel_in(self.ground.frame).xreplace(
+                {qi.diff(dynamicsymbols._t): ui for qi, ui in zip(self.q, self.u)}))
         # Define the joints
         self.system.add_joints(
             PinJoint(self.add_prefix("rear_wheel_joint"), self.rear_frame.body,
