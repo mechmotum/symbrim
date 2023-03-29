@@ -1,4 +1,17 @@
-__all__ = ["ModelBase", "BicycleBase"]
+"""BRiM.
 
-from brim.bicycle_base import BicycleBase
-from brim.model_base import ModelBase
+A Modular and Extensible Open-Source Framework for Creating Bicycle-Rider Models.
+"""
+__all__ = [
+    "WhippleBicycle", "FlatGround", "RigidRearFrame", "RigidFrontFrame",
+    "KnifeEdgeWheel", "NonHolonomicTyreModel",
+]
+
+from brim.bicycle import (
+    FlatGround,
+    KnifeEdgeWheel,
+    NonHolonomicTyreModel,
+    RigidFrontFrame,
+    RigidRearFrame,
+    WhippleBicycle,
+)
