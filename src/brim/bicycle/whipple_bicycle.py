@@ -61,16 +61,16 @@ class WhippleBicycleMoore(WhippleBicycle):
         """Dictionary of descriptions of the Whipple bicycle's attributes."""
         desc = {
             **super().descriptions,
-            self.q[0]: "Perpendicular distance along ground.x to the rear contact point"
-                       " in the ground plane.",
-            self.q[1]: "Perpendicular distance along ground.y to the rear contact point"
-                       " in the ground plane.",
-            self.q[2]: "Yaw angle of the rear frame.",
-            self.q[3]: "Roll angle of the rear frame.",
-            self.q[4]: "Pitch angle of the rear frame.",
-            self.q[5]: "Front wheel rotation angle.",
-            self.q[6]: "Steering rotation angle.",
-            self.q[7]: "Rear wheel rotation angle.",
+            self.q[0]: f"Perpendicular distance along ground.x to the rear contact "
+                       f"point in the ground plane of {self.name}.",
+            self.q[1]: f"Perpendicular distance along ground.y to the rear contact "
+                       f"point in the ground plane of {self.name}.",
+            self.q[2]: f"Yaw angle of the rear frame of {self.name}.",
+            self.q[3]: f"Roll angle of the rear frame of {self.name}.",
+            self.q[4]: f"Pitch angle of the rear frame of {self.name}.",
+            self.q[5]: f"Front wheel rotation angle of {self.name}.",
+            self.q[6]: f"Steering rotation angle of {self.name}.",
+            self.q[7]: f"Rear wheel rotation angle of {self.name}.",
         }
         desc.update({ui: f"Generalized speed of the {desc[qi].lower()}"
                      for qi, ui in zip(self.q, self.u)})
