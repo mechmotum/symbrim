@@ -57,9 +57,9 @@ sphinx-autobuild docs docs/_build/html
 ```
 
 A lot of the above settings are inspired by [Hypermodern Python][1] by Claudio Jolowicz
-and [Setting up Python Projects][2] by Johannes Schmidt. For setting up the autoapi for
-the documentation, the great tutorial by Antoine Beyeler was used: [Generating beautiful Python API documentation with Sphinx AutoAPI][3].
+and [Setting up Python Projects][2] by Johannes Schmidt. A tutorial by Aahil Mehta was
+followed to set up the documenation: [Sphinx Tutorial][3].
 
 [1]: https://cjolowicz.github.io/posts/hypermodern-python-01-setup/
 [2]: https://johschmidt42.medium.com/setting-up-python-projects-part-i-408603868c08
-[3]: https://bylr.info/articles/2022/05/10/api-doc-with-sphinx-autoapi/
+[3]: https://www.aahilm.com/blog/documenting-large-projects-with-sphinx
