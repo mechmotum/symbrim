@@ -49,6 +49,32 @@ jobs:
       - name: Run tests
         run: poetry run pytest
 
+  #------------------------------------ doc-tests -------------------------------------#
+
+  test_docs_job:
+    needs: code-quality
+
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.8', '3.9', '3.10', '3.11']
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install poetry
+        run: pipx install poetry==1.4.0
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: poetry install --with docs
+      - name: make the sphinx docs
+        run: |
+          poetry run make -C docs clean
+          poetry run make -C docs html
+
     #---------------------------------- code-coverage ---------------------------------#
 
   code-coverage:

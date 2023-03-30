@@ -30,8 +30,8 @@ class WheelBase(NewtonianBodyMixin, ModelBase):
         """Define the objects of the wheel."""
         super().define_objects()
         self.body.central_inertia = inertia(self.body.frame,
-                                            *symbols(self.add_prefix("ixx iyy ixx")))
-        self._contact_point = Point(self.add_prefix("contact_point"))
+                                            *symbols(self._add_prefix("ixx iyy ixx")))
+        self._contact_point = Point(self._add_prefix("contact_point"))
 
     @property
     @abstractmethod
@@ -76,7 +76,7 @@ class KnifeEdgeWheel(WheelBase):
     def define_objects(self) -> None:
         """Define the objects of the wheel."""
         super().define_objects()
-        self.radius: Symbol = Symbol(self.add_prefix("radius"))
+        self.radius: Symbol = Symbol(self._add_prefix("radius"))
 
     def define_kinematics(self) -> None:
         """Define the kinematics of the wheel."""

@@ -24,7 +24,7 @@ class GroundBase(ModelBase):
         """Define the objects of the ground."""
         super().define_objects()
         self._body = RigidBody(self.name)
-        self._body.masscenter = Point(self.add_prefix("origin"))
+        self._body.masscenter = Point(self._add_prefix("origin"))
         self._system = System.from_newtonian(self.body)
 
     def define_kinematics(self) -> None:

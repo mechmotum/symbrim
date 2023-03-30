@@ -79,8 +79,8 @@ class WhippleBicycleMoore(WhippleBicycle):
     def define_objects(self) -> None:
         """Define the objects of the Whipple bicycle."""
         super().define_objects()
-        self.q = Matrix(dynamicsymbols(self.add_prefix("q1:9")))
-        self.u = Matrix(dynamicsymbols(self.add_prefix("u1:9")))
+        self.q = Matrix(dynamicsymbols(self._add_prefix("q1:9")))
+        self.u = Matrix(dynamicsymbols(self._add_prefix("u1:9")))
 
     def define_kinematics(self) -> None:
         """Define the kinematics of the Whipple bicycle."""
@@ -103,16 +103,16 @@ class WhippleBicycleMoore(WhippleBicycle):
                 {qi.diff(dynamicsymbols._t): ui for qi, ui in zip(self.q, self.u)}))
         # Define the joints
         self.system.add_joints(
-            PinJoint(self.add_prefix("rear_wheel_joint"), self.rear_frame.body,
+            PinJoint(self._add_prefix("rear_wheel_joint"), self.rear_frame.body,
                      self.rear_wheel.body, self.q[5], self.u[5],
                      self.rear_frame.wheel_attachment, self.rear_wheel.center,
                      self.rear_frame.wheel_axis, self.rear_wheel.rotation_axis),
-            PinJoint(self.add_prefix("steer_joint"), self.rear_frame.body,
+            PinJoint(self._add_prefix("steer_joint"), self.rear_frame.body,
                      self.front_frame.body, self.q[6], self.u[6],
                      self.rear_frame.steer_attachment,
                      self.front_frame.steer_attachment, self.rear_frame.steer_axis,
                      self.front_frame.steer_axis),
-            PinJoint(self.add_prefix("front_wheel_joint"), self.front_frame.body,
+            PinJoint(self._add_prefix("front_wheel_joint"), self.front_frame.body,
                      self.front_wheel.body, self.q[7], self.u[7],
                      self.front_frame.wheel_attachment, self.front_wheel.center,
                      self.front_frame.wheel_axis, self.front_wheel.rotation_axis),

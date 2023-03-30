@@ -1,5 +1,5 @@
 """Utilities for brim."""
 
-__all__ = ["merge_systems"]
+__all__ = ["to_system"]
 
-from brim.utilities.utilities import merge_systems
+from brim.utilities.utilities import to_system

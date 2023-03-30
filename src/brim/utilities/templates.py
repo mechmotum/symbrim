@@ -2,22 +2,23 @@
 
 Explanation
 -----------
-In brim a concept is being used that a model consists out of other models, between which
-there are certain interactions. A bicycle consists out of a rear wheel, a front wheel,
-a rear frame, a front frame and a ground. Each of these components, called submodels,
-are a system on its own. The bicycle takes these different submodels and connects them.
-The rear frame is connected to the rear wheel, the front frame to the front wheel, etc.
+BRiM uses the concept that a model consists out of other models, between which there are
+certain interactions. A bicycle consists out of a rear wheel, a front wheel, a rear
+frame, a front frame and a ground. Each of these components, called submodels, are a
+system on its own. The bicycle takes these different submodels and connects them. The
+rear frame is connected to the rear wheel, the front frame to the front wheel, etc.
 
 To make sure that every relation is defined on time, i.e. before it is used, a model
 breaks up the definition of its system in multiple parts:
-- define_objects: define the objects of the model, like the points, the frames, the
+
+- ``define_objects``: define the objects of the model, like the points, the frames, the
   bodies, etc. The system is often also initiated in this phase. This method is called
   when a model is initiated.
-- define_kinematics: define the kinematics of the model, like the position of the
+- ``define_kinematics``: define the kinematics of the model, like the position of the
   points, the velocity of the bodies, etc.
-- define_loads: define the loads on the model, like the forces and torques acting within
-  the system. It has been decided to currently also define the constraints in this
-  phase. This may however change in the future.
+- ``define_loads``: define the loads on the model, like the forces and torques acting
+  within the system. It has been decided to currently also define the constraints in
+  this phase. This may however change in the future.
 
 When calling one of those methods, the model will automatically first call the same
 method for all the submodels, before actually defining the system of the current model.
@@ -117,9 +118,9 @@ class MySubModel(MySubModelBase):
     def define_objects(self) -> None:
         """Define the objects of the model."""
         super().define_objects()
-        # add_prefix adds the name of the model to the variable, such that it is unique
+        # _add_prefix adds the name of the model to the variable, such that it is unique
         # in the system.
-        self.my_symbol = dynamicsymbols(self.add_prefix("my_symbol"))
+        self.my_symbol = dynamicsymbols(self._add_prefix("my_symbol"))
 
     def define_kinematics(self) -> None:
         """Define the kinematics of the model."""

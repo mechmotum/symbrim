@@ -52,8 +52,8 @@ class RigidFrontFrame(FrontFrameBase):
         """Define the objects of the front frame."""
         super().define_objects()
         self.body.central_inertia = inertia(self.body.frame,
-                                            *symbols(self.add_prefix("ixx iyy izz")),
-                                            izx=Symbol(self.add_prefix("izx")))
+                                            *symbols(self._add_prefix("ixx iyy izz")),
+                                            izx=Symbol(self._add_prefix("izx")))
         self._wheel_attachment = Point("wheel_attachment")
 
     def define_kinematics(self):
@@ -96,7 +96,7 @@ class RigidFrontFrameMoore(RigidFrontFrame):
     def define_objects(self):
         """Define the objects of the front frame."""
         super().define_objects()
-        self.lengths = list(symbols(self.add_prefix("d2 d3 l3 l4")))
+        self.lengths = list(symbols(self._add_prefix("d2 d3 l3 l4")))
         self._steer_attachment = Point("steer_attachment")
 
     def define_kinematics(self):
