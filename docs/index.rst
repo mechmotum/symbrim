@@ -1,25 +1,13 @@
-.. brim documentation master file, created by
-   sphinx-quickstart on Wed Mar 29 11:57:38 2023.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
-Welcome to BRiM's documentation!
-================================
+==================
+BRiM Documentation
+==================
+BRiM: a Modular and Extensible Open-Source Framework for Creating Bicycle-Rider
+Models.
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+    :maxdepth: 2
+    :titlesonly:
 
-
-API Reference
-=============
-
-.. autosummary::
-   :toctree: _autosummary
-   :recursive:
-
-   brim.bicycle
-   brim.rider
-   brim.core
-   brim.other
-   brim.utilities
+    user_guide/index
+    contributing/index
+    api_reference
