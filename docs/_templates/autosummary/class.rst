@@ -9,6 +9,7 @@
     :members:
     :show-inheritance:
     :inherited-members:
+    :special-members:
 
     {% block methods %}
         {% if methods %}
