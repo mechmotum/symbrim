@@ -51,8 +51,6 @@ class ModelMeta(ABCMeta):
             if base_reqs is not None:
                 requirements.extend(base_reqs)
         if "requirements" in namespace:
-            if namespace["requirements"].__doc__ is None:
-                namespace["requirements"].__doc__ = "Requirements of the model."
             requirements.extend(namespace["requirements"])
         for req in requirements:
             namespace[req.attribute_name] = create_submodel_property(req)
