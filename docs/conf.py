@@ -23,9 +23,14 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
-    # "autoapi.extension",
-    # "autodocsumm",
+    "sphinxcontrib.bibtex",
 ]
+
+templates_path = ["_templates"]
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
+
+napoleon_numpy_docstring = True
+napoleon_custom_sections = [("Explanation", "notes_style")]
 
 intersphinx_mapping = {
     "sympy": ("https://docs.sympy.org/dev/", None),
@@ -33,11 +38,7 @@ intersphinx_mapping = {
     "symmeplot": ("https://tjstienstra.github.io/symmeplot/", None),
 }
 
-napoleon_numpy_docstring = True
-napoleon_custom_sections = [("Explanation", "notes_style")]
-
-templates_path = ["_templates"]
-exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
+bibtex_bibfiles = ["references.bib"]
 
 
 # -- Options for HTML output -------------------------------------------------
