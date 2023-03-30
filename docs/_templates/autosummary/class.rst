@@ -12,6 +12,14 @@
 
     {% block methods %}
         {% if methods %}
+            .. rubric:: {{ _('Attributes') }}
+
+            .. autosummary::
+                {% for item in attributes %}
+                    ~{{ name }}.{{ item }}
+                {%- endfor %}
+        {% endif %}
+        {% if methods %}
             .. rubric:: {{ _('Methods') }}
 
             .. autosummary::
