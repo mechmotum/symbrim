@@ -11,10 +11,15 @@ Welcome to BRiM's documentation!
    :caption: Contents:
 
 
+API Reference
+=============
 
-Indices and tables
-==================
+.. autosummary::
+   :toctree: _autosummary
+   :recursive:
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+   brim.bicycle
+   brim.rider
+   brim.core
+   brim.other
+   brim.utilities

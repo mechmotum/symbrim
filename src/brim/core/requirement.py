@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
+from typing import Union
 
 
 class Requirement:
@@ -81,6 +82,11 @@ class Requirement:
     def type_name(self) -> str:
         """Names of the supported types of the submodel."""
         return self._type_name
+
+    @property
+    def type_hint(self) -> type:
+        """Type hint for the submodel."""
+        return Union[self.types]
 
     def __str__(self):
         return self.attribute_name

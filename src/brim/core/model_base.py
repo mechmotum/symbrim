@@ -40,6 +40,8 @@ class ModelMeta(ABCMeta):
                         f"{type(model)}.")
                 setattr(self, f"_{requirement.attribute_name}", model)
 
+            getter.__annotations__ = {"return": requirement.type_hint}
+            setter.__annotations__ = {"model": requirement.type_hint, "return": None}
             return property(getter, setter, None, requirement.description)
 
         # Create properties for each of the requirements
@@ -49,6 +51,8 @@ class ModelMeta(ABCMeta):
             if base_reqs is not None:
                 requirements.extend(base_reqs)
         if "requirements" in namespace:
+            if namespace["requirements"].__doc__ is None:
+                namespace["requirements"].__doc__ = "Requirements of the model."
             requirements.extend(namespace["requirements"])
         for req in requirements:
             namespace[req.attribute_name] = create_submodel_property(req)
@@ -108,12 +112,13 @@ class ModelBase(metaclass=ModelMeta):
         """Name of the part of the model."""
         return self._name
 
-    def add_prefix(self, names: str) -> str:
-        """Add the name of the model as a prefix to a set of names..
+    def _add_prefix(self, names: str) -> str:
+        """Add the name of the model as a prefix to a set of names.
 
-        Examples
-        --------
-        ...
+        Explanation
+        -----------
+        Helper function to add the name of the model as a prefix to a set of names. This
+        is used to create unique names for the objects in the model.
 
         """
         syms= symbols(names)

@@ -24,6 +24,7 @@ numpy = "^1.24.2"
 
 [tool.poetry.group.docs.dependencies]
 sphinx = "^6.1.3"
+furo = "^2023.3.27"
 
 [build-system]
 requires = ["poetry-core"]
