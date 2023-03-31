@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
     from brim.bicycle.grounds import GroundBase
 
-__all__ = ["WheelBase", "KnifeEdgeWheel"]
+__all__ = ["WheelBase", "KnifeEdgeWheel", "ToroidalWheel"]
 
 
 class WheelBase(NewtonianBodyMixin, ModelBase):
@@ -113,3 +113,33 @@ class KnifeEdgeWheel(WheelBase):
 
 class ToroidalWheel(KnifeEdgeWheel):
     """Toroidal shaped wheel."""
+
+    @property
+    def descriptions(self) -> dict[Any, str]:
+        """Descriptions of the attributes of the wheel."""
+        return {
+            **super().descriptions,
+            self.transverse_radius: self.transverse_radius.__doc__
+        }
+
+    @property
+    def transverse_radius(self) -> Symbol:
+        """Transverse radius of the wheel."""
+        return self.symbols["tr"]
+
+    def define_objects(self) -> None:
+        """Define the objects of the wheel."""
+        super().define_objects()
+        self.symbols["tr"] = Symbol(self._add_prefix("tr"))
+
+    def compute_contact_point(self, ground: GroundBase) -> None:
+        """Set the position of the contact point.
+
+        Explanation
+        -----------
+        This method should be part of the parent model to set the position of the wheel
+        contact point with the ground.
+        """
+        self.center.set_pos(self.contact_point, self.radius * cross(
+            self.body.y, cross(ground.normal, self.body.y)).normalize() +
+                            self.transverse_radius * ground.normal)
