@@ -61,3 +61,13 @@ class TestModelBase:
         self.model.define_kinematics()
         self.model.define_loads()
         assert isinstance(self.model.system, System)
+
+    def test_add_mixin(self, _create_model):
+        class MyMixin:
+            @property
+            def my_method(self):
+                return 5
+
+        self.model.add_mixin(MyMixin)
+        assert isinstance(self.model, MyMixin)
+        assert self.model.my_method == 5

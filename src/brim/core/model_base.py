@@ -142,6 +142,12 @@ class ModelBase(metaclass=ModelMeta):
             if desc is not None:
                 return desc
 
+    def add_mixin(self, mixin: type) -> None:
+        """Extend model with a mixin class."""
+        if not issubclass(mixin, object):
+            raise TypeError
+        self.__class__ = type(self.__class__.__name__, (mixin, self.__class__), {})
+
     @property
     def descriptions(self) -> dict[Any, str]:
         """Descriptions of the attributes of the model."""
