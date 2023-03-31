@@ -99,8 +99,8 @@ class RigidRearFrameMoore(RigidRearFrame):
     def define_objects(self):
         """Define the objects of the rear frame."""
         super().define_objects()
-        self.symbols = {
-            name: Symbol(self._add_prefix(name)) for name in ("d1", "l1", "l2")}
+        self.symbols.update({
+            name: Symbol(self._add_prefix(name)) for name in ("d1", "l1", "l2")})
         self._steer_attachment = Point("steer_attachment")
 
     def define_kinematics(self):

@@ -98,8 +98,8 @@ class RigidFrontFrameMoore(RigidFrontFrame):
     def define_objects(self):
         """Define the objects of the front frame."""
         super().define_objects()
-        self.symbols: dict[str, Symbol] = {
-            name: Symbol(self._add_prefix(name)) for name in ("d2", "d3", "l3", "l4")}
+        self.symbols.update({
+            name: Symbol(self._add_prefix(name)) for name in ("d2", "d3", "l3", "l4")})
         self._steer_attachment = Point("steer_attachment")
 
     def define_kinematics(self):

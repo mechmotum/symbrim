@@ -100,6 +100,7 @@ class ModelBase(metaclass=ModelMeta):
         for req in self.requirements:
             setattr(self, f"_{req.attribute_name}", None)
         self._system = None
+        self.symbols: dict[str, Any] = {}
         self.define_objects()
 
     def __str__(self) -> str:

@@ -67,7 +67,10 @@ class KnifeEdgeWheel(WheelBase):
     @property
     def descriptions(self) -> dict[Any, str]:
         """Descriptions of the attributes of the wheel."""
-        return {self.radius: self.radius.__doc__}
+        return {
+            **super().descriptions,
+            self.radius: self.radius.__doc__,
+        }
 
     @property
     def radius(self) -> Symbol:
@@ -79,7 +82,7 @@ class KnifeEdgeWheel(WheelBase):
         super().define_objects()
         self.body.central_inertia = inertia(self.body.frame,
                                             *symbols(self._add_prefix("ixx iyy ixx")))
-        self.symbols = {"r": Symbol(self._add_prefix("r"))}
+        self.symbols["r"] = Symbol(self._add_prefix("r"))
 
     def define_kinematics(self) -> None:
         """Define the kinematics of the wheel."""
