@@ -71,3 +71,5 @@ class TestModelBase:
         self.model.add_mixin(MyMixin)
         assert isinstance(self.model, MyMixin)
         assert self.model.my_method == 5
+        assert isinstance(self.model, MyModel)
+        assert isinstance(self.model.submodel1, MySubModel)
