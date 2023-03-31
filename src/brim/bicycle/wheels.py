@@ -29,8 +29,6 @@ class WheelBase(NewtonianBodyMixin, ModelBase):
     def define_objects(self) -> None:
         """Define the objects of the wheel."""
         super().define_objects()
-        self.body.central_inertia = inertia(self.body.frame,
-                                            *symbols(self._add_prefix("ixx iyy ixx")))
         self._contact_point = Point(self._add_prefix("contact_point"))
 
     @property
@@ -69,14 +67,19 @@ class KnifeEdgeWheel(WheelBase):
     @property
     def descriptions(self) -> dict[Any, str]:
         """Descriptions of the attributes of the wheel."""
-        return {
-            self.radius: "Radius of the wheel",
-        }
+        return {self.radius: self.radius.__doc__}
+
+    @property
+    def radius(self) -> Symbol:
+        """Radius of the wheel."""
+        return self.symbols["r"]
 
     def define_objects(self) -> None:
         """Define the objects of the wheel."""
         super().define_objects()
-        self.radius: Symbol = Symbol(self._add_prefix("radius"))
+        self.body.central_inertia = inertia(self.body.frame,
+                                            *symbols(self._add_prefix("ixx iyy ixx")))
+        self.symbols = {"r": Symbol(self._add_prefix("r"))}
 
     def define_kinematics(self) -> None:
         """Define the kinematics of the wheel."""
@@ -104,7 +107,7 @@ class KnifeEdgeWheel(WheelBase):
         This method should be part of the parent model to set the position of the wheel
         contact point with the ground.
         """
-        self.center.set_pos(self.contact_point, self.radius * cross(
+        self.center.set_pos(self.contact_point, self.symbols["r"] * cross(
             self.body.y, cross(ground.normal, self.body.y)).normalize())
 
 

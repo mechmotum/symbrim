@@ -84,30 +84,32 @@ class RigidFrontFrameMoore(RigidFrontFrame):
         """Descriptions of the attributes of the front frame."""
         return {
             **super().descriptions,
-            self.lengths[0]: "Distance between wheels along the steer axis.",
-            self.lengths[1]: "Perpendicular distance from the steer axis to the center "
-                             "of the front wheel (fork offset).",
-            self.lengths[2]: "Distance in the front frame x drection from the front "
-                             "wheel center to the center of mass of the front frame.",
-            self.lengths[3]: "Distance in the front frame z drection from the front "
-                             "wheel center to the center of mass of the front frame.",
+            self.symbols["d2"]: "Distance between wheels along the steer axis.",
+            self.symbols["d3"]: "Perpendicular distance from the steer axis to the "
+                                 "center of the front wheel (fork offset).",
+            self.symbols["l3"]: "Distance in the front frame x drection from the front "
+                                 "wheel center to the center of mass of the front "
+                                 "frame.",
+            self.symbols["l4"]: "Distance in the front frame z drection from the front "
+                                 "wheel center to the center of mass of the front "
+                                 "frame.",
         }
 
     def define_objects(self):
         """Define the objects of the front frame."""
         super().define_objects()
-        self.lengths = list(symbols(self._add_prefix("d2 d3 l3 l4")))
+        self.symbols: dict[str, Symbol] = {
+            name: Symbol(self._add_prefix(name)) for name in ("d2", "d3", "l3", "l4")}
         self._steer_attachment = Point("steer_attachment")
 
     def define_kinematics(self):
         """Define the kinematics of the front frame."""
         super().define_kinematics()
-        self.wheel_attachment.set_pos(
-            self.steer_attachment,
-            self.lengths[1] * self.body.x + self.lengths[0] * self.body.z)
+        d2, d3, l3, l4 = (self.symbols[name] for name in ("d2", "d3", "l3", "l4"))
+        self.wheel_attachment.set_pos(self.steer_attachment,
+                                      d3 * self.body.x + d2 * self.body.z)
         self.body.masscenter.set_pos(self.wheel_attachment,
-                                     self.lengths[2] * self.body.x + self.lengths[
-                                         3] * self.body.z)
+                                     l3 * self.body.x + l4 * self.body.z)
         self.body.masscenter.set_vel(self.frame, 0)
         self.steer_attachment.set_vel(self.frame, 0)
         self.wheel_attachment.set_vel(self.frame, 0)
