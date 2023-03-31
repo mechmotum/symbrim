@@ -42,5 +42,5 @@ class TestRigidRearFrameMoore:
 
     def test_descriptions(self):
         rear = RigidRearFrameMoore("rear")
-        for length in rear.lengths:
+        for length in rear.symbols.values():
             assert rear.descriptions[length] is not None

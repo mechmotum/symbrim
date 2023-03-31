@@ -79,8 +79,8 @@ class WhippleBicycleMoore(WhippleBicycle):
     def define_objects(self) -> None:
         """Define the objects of the Whipple bicycle."""
         super().define_objects()
-        self.q = Matrix(dynamicsymbols(self._add_prefix("q1:9")))
-        self.u = Matrix(dynamicsymbols(self._add_prefix("u1:9")))
+        self.q: Matrix = Matrix(dynamicsymbols(self._add_prefix("q1:9")))
+        self.u: Matrix = Matrix(dynamicsymbols(self._add_prefix("u1:9")))
 
     def define_kinematics(self) -> None:
         """Define the kinematics of the Whipple bicycle."""

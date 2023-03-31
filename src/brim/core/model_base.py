@@ -119,7 +119,7 @@ class ModelBase(metaclass=ModelMeta):
         is used to create unique names for the objects in the model.
 
         """
-        syms= symbols(names)
+        syms = symbols(names)
         if isinstance(syms, tuple):
             return ", ".join(f"{self.name}_{sym.name}" for sym in syms)
         return f"{self.name}_{syms.name}"

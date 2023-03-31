@@ -38,5 +38,5 @@ class TestKnifeEdgeWheel:
         wheel.frame.orient_axis(int_frame, q3, int_frame.y)
         wheel.compute_contact_point(ground)
         assert (wheel.contact_point.pos_from(wheel.center) -
-                wheel.radius * int_frame.z).express(wheel.frame).simplify().xreplace(
-            {q2: 0.123, q3: 1.234}) == 0  # sqrt(cos(q2)**2) is not simplified
+                wheel.symbols["r"] * int_frame.z).express(wheel.frame).simplify(
+        ).xreplace({q2: 0.123, q3: 1.234}) == 0  # sqrt(cos(q2)**2) is not simplified

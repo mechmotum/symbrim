@@ -88,28 +88,28 @@ class RigidRearFrameMoore(RigidRearFrame):
         """Descriptions of the attributes of the rear frame."""
         return {
             **super().descriptions,
-            self.lengths[0]: "Perpendicular distance from the steer axis to the center "
-                             "of the rear wheel (rear offset).",
-            self.lengths[1]: "Distance in the rear frame x drection from the rear "
-                             "wheel center to the center of mass of the rear frame.",
-            self.lengths[2]: "Distance in the rear frame z drection from the rear "
-                             "wheel center to the center of mass of the rear frame.",
+            self.symbols["d1"]: "Perpendicular distance from the steer axis to the "
+                                "center of the rear wheel (rear offset).",
+            self.symbols["l1"]: "Distance in the rear frame x drection from the rear "
+                                "wheel center to the center of mass of the rear frame.",
+            self.symbols["l2"]: "Distance in the rear frame z drection from the rear "
+                                "wheel center to the center of mass of the rear frame.",
         }
 
     def define_objects(self):
         """Define the objects of the rear frame."""
         super().define_objects()
-        self.lengths = list(symbols(self._add_prefix("d1 l1 l2")))
+        self.symbols = {
+            name: Symbol(self._add_prefix(name)) for name in ("d1", "l1", "l2")}
         self._steer_attachment = Point("steer_attachment")
 
     def define_kinematics(self):
         """Define the kinematics of the rear frame."""
         super().define_kinematics()
-        self.steer_attachment.set_pos(self.wheel_attachment,
-                                      self.lengths[0] * self.body.x)
+        d1, l1, l2 = (self.symbols[name] for name in ("d1", "l1", "l2"))
+        self.steer_attachment.set_pos(self.wheel_attachment, d1 * self.body.x)
         self.body.masscenter.set_pos(self.wheel_attachment,
-                                     self.lengths[1] * self.body.x + self.lengths[
-                                         2] * self.body.z)
+                                     l1 * self.body.x + l2 * self.body.z)
         self.body.masscenter.set_vel(self.frame, 0)
         self.steer_attachment.set_vel(self.frame, 0)
         self.wheel_attachment.set_vel(self.frame, 0)

@@ -42,5 +42,5 @@ class TestRigidFrontFrameMoore:
 
     def test_descriptions(self) -> None:
         front = RigidFrontFrameMoore("front")
-        for length in front.lengths:
+        for length in front.symbols.values():
             assert front.descriptions[length] is not None
