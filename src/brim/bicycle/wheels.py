@@ -127,7 +127,7 @@ class ToroidalWheel(KnifeEdgeWheel):
 
     @property
     def transverse_radius(self) -> Symbol:
-        """Transverse radius of the wheel."""
+        """Transverse radius of curvature of the crown of the wheel."""
         return self.symbols["tr"]
 
     def define_objects(self) -> None:
