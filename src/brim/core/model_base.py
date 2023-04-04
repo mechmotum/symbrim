@@ -144,11 +144,12 @@ class ModelBase(metaclass=ModelMeta):
 
     def add_mixin(self, mixin: type) -> None:
         """Extend model with a mixin class."""
-        if not issubclass(mixin, object):
+        if not isinstance(mixin, type):
             raise TypeError("Mixin should be a class.")
         self.__class__ = type(self.__class__.__name__, (mixin, self.__class__), {})
-        for req in mixin.requirements:
-            setattr(self, f"_{req.attribute_name}", None)
+        if hasattr(mixin, "requirements"):
+            for req in mixin.requirements:
+                setattr(self, f"_{req.attribute_name}", None)
         if hasattr(mixin, "define_objects"):
             mixin.define_objects(self)
 
