@@ -44,7 +44,7 @@ class RiderLean(NewtonianBodyMixin, ModelBase):
     @property
     def lean_axis(self):
         """Lean axis expressed in the leaning rider's frame."""
-        return self.x
+        return self._lean_axis
 
     @lean_axis.setter
     def lean_axis(self, lean_axis: Vector) -> None:
@@ -64,6 +64,7 @@ class RiderLean(NewtonianBodyMixin, ModelBase):
     def define_objects(self) -> None:
         """Define the objects of the rider lean."""
         super().define_objects()
+        self._lean_axis = self.x
         self._lean_point = Point(self._add_prefix("lean_point"))
         self.symbols["d_lp"] = Symbol(self._add_prefix("d_lp"))
 
@@ -88,7 +89,7 @@ class RiderLeanMixin:
     @property
     def lean_axis(self) -> Vector:
         """Lean axis expressed in the rear frame."""
-        return self.x
+        return self._lean_axis
 
     @lean_axis.setter
     def lean_axis(self, lean_axis: Vector) -> None:
@@ -119,6 +120,7 @@ class RiderLeanMixin:
     def define_objects(self):
         """Define the objects of the rider lean mixin for the rear frame."""
         super().define_objects()
+        self._lean_axis = self.x
         self._lean_point = Point(self._add_prefix("lean_point"))
         self.symbols["d_lp_x"] = Symbol(self._add_prefix("d_lp_x"))
         self.symbols["d_lp_z"] = Symbol(self._add_prefix("d_lp_z"))
