@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import pytest
+from brim.core import ModelBase, Requirement
 from brim.utilities.templates import MyModel, MySubModel
 from sympy.physics.mechanics.system import System
 
@@ -22,6 +23,7 @@ class TestModelBase:
 
     def test_init(self) -> None:
         bike = MyModel("model")
+        assert isinstance(bike, ModelBase)
         assert bike.name == "model"
         assert bike.submodel1 is None
         assert bike.submodel2 is None
@@ -64,12 +66,21 @@ class TestModelBase:
 
     def test_add_mixin(self, _create_model):
         class MyMixin:
+            requirements = (
+                Requirement("submodel3", MySubModel, "desc"),
+            )
+
             @property
             def my_method(self):
                 return 5
+
+            def define_objects(self):
+                self.new_symbol = 5
 
         self.model.add_mixin(MyMixin)
         assert isinstance(self.model, MyMixin)
         assert self.model.my_method == 5
         assert isinstance(self.model, MyModel)
         assert isinstance(self.model.submodel1, MySubModel)
+        assert self.model.submodel3 is None
+        assert self.model.new_symbol == 5
