@@ -21,7 +21,7 @@ def to_system(model: ModelBase) -> System:  # pragma: no cover
         return ([model.system] +
                 [s for submodel in model.submodels for s in get_systems(submodel)])
 
-    return merge_systems(model.ground.system, *get_systems(model))
+    return merge_systems(model.system, *get_systems(model))
 
 
 def merge_systems(*systems: System) -> System:  # pragma: no cover
