@@ -59,12 +59,24 @@ class TestModelBase:
     def test_get_description_of_not_existing_symbol(self, _create_model) -> None:
         assert self.model.get_description("not existing symbol") is None
 
-    def test_call_system(self, _create_model):
+    def test_call_system(self, _create_model) -> None:
         self.model.define_kinematics()
         self.model.define_loads()
         assert isinstance(self.model.system, System)
 
-    def test_add_mixin(self, _create_model):
+    def test_add_mixin_simple(self, _create_model) -> None:
+        class MyMixin:
+            @property
+            def my_method(self):
+                return 5
+
+        self.model.add_mixin(MyMixin)
+        assert isinstance(self.model, MyMixin)
+        assert self.model.my_method == 5
+        assert isinstance(self.model, MyModel)
+        assert isinstance(self.model.submodel1, MySubModel)
+
+    def test_add_mixin_complex(self, _create_model) -> None:
         class MyMixin:
             requirements = (
                 Requirement("submodel3", MySubModel, "desc"),
@@ -84,3 +96,7 @@ class TestModelBase:
         assert isinstance(self.model.submodel1, MySubModel)
         assert self.model.submodel3 is None
         assert self.model.new_symbol == 5
+
+    def test_add_invalid_mixin(self, _create_model) -> None:
+        with pytest.raises(TypeError):
+            self.model.add_mixin(MyModel("invalid"))
