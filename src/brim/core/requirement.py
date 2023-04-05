@@ -11,7 +11,6 @@ class Requirement:
     def __init__(self, attribute_name: str,
                  submodel_types: type | tuple[type, ...],
                  description: str | None = None,
-                 hard_requirement: bool = False,
                  full_name: str | None = None,
                  type_name: str | None = None) -> None:
         """Initialize a new instance of the requirement.
@@ -24,15 +23,12 @@ class Requirement:
             Supported types of the submodel.
         description : str, optional
             Description of the submodel, by default None.
-        hard_requirement : bool, optional
-            Whether the submodel is a hard requirement, by default False.
         full_name : str, optional
             Full name of the submodel, by default capitalized version of the attribute
             name, where the underscores are replaced by spaces.
         type_name : str, optional
             Names of the supported types of the submodel. The names of the type classes
             are used by default.
-
         """
         attribute_name = str(attribute_name)
         if not attribute_name.isidentifier():
@@ -45,7 +41,6 @@ class Requirement:
         if description is None:
             description = self.types[0].__doc__.split("\n", 1)[0]
         self._description = str(description)
-        self._hard = bool(hard_requirement)
         if full_name is None:
             full_name = self.attribute_name.replace("_", " ").capitalize()
         self._full_name = str(full_name)
@@ -67,11 +62,6 @@ class Requirement:
     def description(self) -> str:
         """Description of the submodel."""
         return self._description
-
-    @property
-    def hard(self) -> bool:
-        """Whether the submodel is a hard requirement."""
-        return self._hard
 
     @property
     def full_name(self) -> str:

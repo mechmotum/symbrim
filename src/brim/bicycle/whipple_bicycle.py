@@ -20,12 +20,11 @@ class WhippleBicycle(BicycleBase):
     """Base class for the Whipple bicycle model."""
 
     requirements: tuple[Requirement, ...] = (
-        Requirement("ground", GroundBase, "Submodel of the ground.", True),
-        Requirement("rear_frame", RearFrameBase, "Submodel of the rear frame.", True),
-        Requirement("front_frame", FrontFrameBase, "Submodel of the front frame.",
-                    True),
-        Requirement("rear_wheel", WheelBase, "Submodel of the rear wheel.", True),
-        Requirement("front_wheel", WheelBase, "Submodel of the front wheel.", True),
+        Requirement("ground", GroundBase, "Submodel of the ground."),
+        Requirement("rear_frame", RearFrameBase, "Submodel of the rear frame."),
+        Requirement("front_frame", FrontFrameBase, "Submodel of the front frame."),
+        Requirement("rear_wheel", WheelBase, "Submodel of the rear wheel."),
+        Requirement("front_wheel", WheelBase, "Submodel of the front wheel."),
     )
     ground: GroundBase
     rear_frame: RearFrameBase
