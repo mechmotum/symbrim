@@ -134,7 +134,8 @@ class ModelBase(metaclass=ModelMeta):
         """Submodels out of which this model exists."""
         submodels = []
         for req in self.requirements:
-            submodels.append(getattr(self, req.attribute_name))
+            if req.is_submodel:
+                submodels.append(getattr(self, req.attribute_name))
         return frozenset(submodel for submodel in submodels if submodel is not None)
 
     def get_description(self, obj: Any) -> str:
