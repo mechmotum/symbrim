@@ -79,6 +79,7 @@ class TestModelBase:
     def test_add_mixin_complex(self, _create_model) -> None:
         class MyMixin:
             requirements = (
+                Requirement("submodel2", MySubModel, "overwritten"),
                 Requirement("submodel3", MySubModel, "desc"),
             )
 
@@ -96,6 +97,11 @@ class TestModelBase:
         assert isinstance(self.model.submodel1, MySubModel)
         assert self.model.submodel3 is None
         assert self.model.new_symbol == 5
+        assert [req.attribute_name for req in self.model.requirements] == [
+            "submodel2", "submodel3", "submodel1"]
+        # A mixin is not able to overwrite a requirement of the base class, as inherited
+        # requirements are overwritten.
+        assert self.model.requirements[0].description != "overwritten"
 
     def test_add_invalid_mixin(self, _create_model) -> None:
         with pytest.raises(TypeError):

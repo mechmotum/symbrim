@@ -45,15 +45,19 @@ class ModelMeta(ABCMeta):
             return property(getter, setter, None, requirement.description)
 
         # Create properties for each of the requirements
-        requirements = []
+        requirements = {}
         for base_cls in bases:
             base_reqs = getattr(base_cls, "requirements", None)
             if base_reqs is not None:
-                requirements.extend(base_reqs)
+                for req in base_reqs:
+                    requirements[req.attribute_name] = req
         if "requirements" in namespace:
-            requirements.extend(namespace["requirements"])
+            for req in namespace["requirements"]:
+                requirements[req.attribute_name] = req
+        requirements = list(requirements.values())
         for req in requirements:
             namespace[req.attribute_name] = create_submodel_property(req)
+        namespace["requirements"] = tuple(requirements)  # update the requirements
         # Overwrite the define methods such that it is first called in the submodels
         for method in ("define_objects", "define_kinematics", "define_loads",
                        "define_constraints"):
