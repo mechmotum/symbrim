@@ -85,6 +85,11 @@ class Requirement:
     def __str__(self):
         return self.attribute_name
 
+    def __repr__(self):
+        return (f"{self.__class__.__name__}(attribute_name={self.attribute_name!r}, "
+                f"types={self.types!r}, description={self.description!r}, "
+                f"full_name={self.full_name!r}, type_name={self.type_name!r})")
+
 
 class Connection(Requirement):
     """Simple class containing the connection properties.

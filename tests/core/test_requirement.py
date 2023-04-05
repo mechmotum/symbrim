@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import re
+
 import pytest
 from brim.core import Connection, ModelBase, Requirement
 
@@ -27,6 +29,7 @@ class TestRequirement:
         assert req.full_name == "My sub model attr"
         assert req.type_name == "MyModel"
         assert str(req) == "my_sub_model_attr"
+        assert re.match(rf"^{req_class.__name__}\(.+\)$", repr(req))
 
     def test_is_submodel(self):
         assert Requirement("my_sub", MyModel).is_submodel
