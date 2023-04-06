@@ -33,10 +33,11 @@ class TestKnifeEdgeWheel:
         q1, q2, q3 = dynamicsymbols("q1:4")
         wheel = KnifeEdgeWheel("wheel")
         ground = FlatGround("ground")
+        wheel.ground = ground
         int_frame = ReferenceFrame("int_frame")
         int_frame.orient_body_fixed(ground.frame, (q1, q2, 0), "zxy")
         wheel.frame.orient_axis(int_frame, q3, int_frame.y)
-        wheel.compute_contact_point(ground)
+        wheel.define_kinematics()
         assert (wheel.contact_point.pos_from(wheel.center) -
                 wheel.symbols["r"] * int_frame.z).express(wheel.frame).simplify(
         ).xreplace({q2: 0.123, q3: 1.234}) == 0  # sqrt(cos(q2)**2) is not simplified
@@ -52,10 +53,11 @@ class TestToroidalWheel:
         q1, q2, q3 = dynamicsymbols("q1:4")
         wheel = ToroidalWheel("wheel")
         ground = FlatGround("ground")
+        wheel.ground = ground
         int_frame = ReferenceFrame("int_frame")
         int_frame.orient_body_fixed(ground.frame, (q1, q2, 0), "zxy")
         wheel.frame.orient_axis(int_frame, q3, int_frame.y)
-        wheel.compute_contact_point(ground)
+        wheel.define_kinematics()
         assert (wheel.contact_point.pos_from(wheel.center) -
                 wheel.symbols["r"] * int_frame.z + wheel.symbols["tr"] * ground.normal
                 ).express(wheel.frame).simplify().xreplace(

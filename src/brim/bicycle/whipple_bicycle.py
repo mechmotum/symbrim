@@ -81,6 +81,12 @@ class WhippleBicycleMoore(WhippleBicycle):
         self.q: Matrix = Matrix(dynamicsymbols(self._add_prefix("q1:9")))
         self.u: Matrix = Matrix(dynamicsymbols(self._add_prefix("u1:9")))
 
+    def define_connections(self) -> None:
+        """Define the connections of the submodels."""
+        super().define_connections()
+        self.rear_wheel.ground = self.ground
+        self.front_wheel.ground = self.ground
+
     def define_kinematics(self) -> None:
         """Define the kinematics of the Whipple bicycle."""
         super().define_kinematics()
@@ -116,9 +122,6 @@ class WhippleBicycleMoore(WhippleBicycle):
                      self.front_frame.wheel_attachment, self.front_wheel.center,
                      self.front_frame.wheel_axis, self.front_wheel.rotation_axis),
         )
-        # Define contact points.
-        self.rear_wheel.compute_contact_point(self.ground)
-        self.front_wheel.compute_contact_point(self.ground)
         # Add the coordinates and speeds to the system.
         self.system.add_coordinates(*self.q[:5])
         self.system.add_speeds(*self.u[:5])
@@ -128,5 +131,3 @@ class WhippleBicycleMoore(WhippleBicycle):
     def define_loads(self) -> None:
         """Define the loads of the Whipple bicycle."""
         super().define_loads()
-        self.rear_wheel.compute_tyre_model(self.ground, True)
-        self.front_wheel.compute_tyre_model(self.ground, False)
