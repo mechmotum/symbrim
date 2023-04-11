@@ -96,8 +96,8 @@ class ModelBase(metaclass=ModelMeta):
             Name of the model.
 
         """
-        if any(char in name for char in (" ", ",", ":")):
-            raise ValueError("The name of an object may not contain: ' ', ',' or ':'.")
+        if not name.isidentifier():
+            raise ValueError("The name of an object should be a valid identifier.")
         if not name:
             raise ValueError("The name of an object may not be empty.")
         self._name = str(name)
