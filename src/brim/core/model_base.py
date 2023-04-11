@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from abc import ABCMeta, abstractmethod
 from functools import wraps
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Any
 
 from sympy import symbols
 
@@ -12,14 +12,21 @@ if TYPE_CHECKING:
 
     from brim.core.requirement import Requirement
 
-__all__ = ["ModelMeta", "ModelBase", "traverse_submodels"]
-
 
 class ModelMeta(ABCMeta):
     """Metaclass for the :class:`brim.core.model_base.ModelBase`."""
 
     def __new__(mcs, name, bases, namespace, **kwargs):  # noqa: N804
         """Create a new class."""
+
+        def traverse_submodels(func):
+            @wraps(func)
+            def wrapper(self, *args, **kwargs):
+                for submodel in self.submodels:
+                    getattr(submodel, func.__name__)(*args, **kwargs)
+                func(self, *args, **kwargs)
+
+            return wrapper
 
         def create_submodel_property(requirement: Requirement) -> property:
             def getter(self):
@@ -51,6 +58,11 @@ class ModelMeta(ABCMeta):
         for req in requirements:
             namespace[req.attribute_name] = create_submodel_property(req)
         namespace["requirements"] = tuple(requirements)  # update the requirements
+        # Overwrite the define methods such that it is first called in the submodels
+        for method in ("define_objects", "define_kinematics", "define_loads",
+                       "define_constraints"):
+            if method in namespace:
+                namespace[method] = traverse_submodels(namespace[method])
         return super().__new__(mcs, name, bases, namespace, **kwargs)
 
     def __call__(cls, *args, **kwargs):
@@ -122,8 +134,7 @@ class ModelBase(metaclass=ModelMeta):
         """Submodels out of which this model exists."""
         submodels = []
         for req in self.requirements:
-            if req.is_submodel:
-                submodels.append(getattr(self, req.attribute_name))
+            submodels.append(getattr(self, req.attribute_name))
         return frozenset(submodel for submodel in submodels if submodel is not None)
 
     def get_description(self, obj: Any) -> str:
@@ -156,9 +167,6 @@ class ModelBase(metaclass=ModelMeta):
         """System object representing the model."""
         return self._system
 
-    def define_connections(self) -> None:
-        """Establish the connections between the objects belonging to the model."""
-
     @abstractmethod
     def define_objects(self) -> None:
         """Initialize the objects belonging to the model."""
@@ -170,45 +178,3 @@ class ModelBase(metaclass=ModelMeta):
     @abstractmethod
     def define_loads(self) -> None:
         """Define the loads that are part of the model."""
-
-
-def traverse_submodels(order: int = -1):
-    """Decorator for the traversal of the submodels."""
-
-    def get_sub_functions(self: ModelBase,
-                          func_name: str,
-                          functions: dict[int, Callable] | None = None
-                          ) -> dict[int, Callable]:
-        """Get the functions of the submodels."""
-        if functions is None:
-            functions = {}
-        for submodel in self.submodels:
-            func = getattr(submodel, func_name)
-            order = func.order
-            functions[order] = [*functions.get(order, []), func]
-            get_sub_functions(submodel, func_name, functions)
-        return functions
-
-    def decorator(func):
-        @wraps(func)
-        def wrapper(self, *args, __traverse=True, **kwargs):
-            if not __traverse:
-                return func(self, *args, **kwargs)
-            functions = get_sub_functions(self, func.__name__)
-            orders = sorted(functions.keys())
-            for order in orders:
-                if order >= 0:
-                    break
-                for sub_func in functions[order]:
-                    sub_func(*args, __traverse=False, **kwargs)
-            func(self, *args, **kwargs)
-            for order in sorted(functions.keys()):
-                if order < 0:
-                    continue
-                for sub_func in functions[order]:
-                    sub_func(*args, __traverse=False, **kwargs)
-
-        return wrapper
-
-    decorator.order = order
-    return decorator

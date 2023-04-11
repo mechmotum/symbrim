@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import pytest
-from brim.core import Connection, ModelBase, Requirement
+from brim.core import ModelBase, Requirement
 from brim.utilities.templates import MyModel, MySubModel
 from sympy.physics.mechanics.system import System
 
@@ -106,15 +106,3 @@ class TestModelBase:
     def test_add_invalid_mixin(self, _create_model) -> None:
         with pytest.raises(TypeError):
             self.model.add_mixin(MyModel("invalid"))
-
-    def test_mixin_with_connection(self, _create_model) -> None:
-        class MyMixin:
-            requirements = (
-                Connection("submodel2", MySubModel),
-            )
-
-        self.model.submodel1.add_mixin(MyMixin)
-        assert self.model.submodel1.submodel2 is None
-        self.model.submodel1.submodel2 = self.model.submodel2
-        assert self.model.submodel1.submodel2 is self.model.submodel2
-        assert self.model.submodel1.submodels == set()

@@ -4,13 +4,11 @@ from __future__ import annotations
 from collections.abc import Iterable
 from typing import Union
 
-__all__ = ["Requirement", "Connection"]
+__all__ = ["Requirement"]
 
 
 class Requirement:
     """Simple class containing the requirement properties."""
-
-    is_submodel: bool = True
 
     def __init__(self, attribute_name: str,
                  submodel_types: type | tuple[type, ...],
@@ -89,14 +87,3 @@ class Requirement:
         return (f"{self.__class__.__name__}(attribute_name={self.attribute_name!r}, "
                 f"types={self.types!r}, description={self.description!r}, "
                 f"full_name={self.full_name!r}, type_name={self.type_name!r})")
-
-
-class Connection(Requirement):
-    """Simple class containing the connection properties.
-
-    While a requirement automatically specifies a model to be a submodel of the parent,
-    a connection does not. Instead, it specifies a model to be connected. This means
-    that there is interaction between the model and the connected model.
-    """
-
-    is_submodel: bool = False

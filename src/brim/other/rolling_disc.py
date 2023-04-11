@@ -48,11 +48,6 @@ class RollingDisc(ModelBase):
                      for qi, ui in zip(self.q, self.u)})
         return desc
 
-    def define_connections(self) -> None:
-        """Define the connections of the submodels of the rolling disc."""
-        super().define_connections()
-        self.disc.ground = self.ground
-
     def define_objects(self) -> None:
         """Define the objects of the rolling disc."""
         super().define_objects()
@@ -78,6 +73,8 @@ class RollingDisc(ModelBase):
             self.u[0] * self.ground.planar_vectors[0] +
             self.u[1] * self.ground.planar_vectors[1]
         )
+        self.disc.compute_contact_point(self.ground)
+        self.disc.compute_tyre_model(self.ground, True)
         self.system.q_ind = self.q
         self.system.u_ind = self.u
         self.system.kdes = [

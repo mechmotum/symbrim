@@ -22,15 +22,12 @@ class TestNonHolonomicTyreModel:
         ground = FlatGround("ground")
         wheel = KnifeEdgeWheel("wheel")
         wheel.tyre_model = NonHolonomicTyreModel("tyre_model")
-        wheel.ground = ground
-        wheel.define_connections()
-        wheel.tyre_model.on_ground = on_ground
         wheel.frame.orient_body_fixed(ground.frame, (q1, q2, 0), "zyx")
         wheel.contact_point.set_pos(
             ground.origin, (x * ground.planar_vectors[0] + y * ground.planar_vectors[1]
                             + int(not on_ground) * z * ground.normal))
-        wheel.define_kinematics()
-        wheel.define_loads()
+        wheel.compute_contact_point(ground)
+        wheel.compute_tyre_model(ground, on_ground)
         fnh = [
             wheel.radius * cos(q1) * q2.diff(t) + x.diff(t),
             wheel.radius * sin(q1) * q2.diff(t) + y.diff(t),
