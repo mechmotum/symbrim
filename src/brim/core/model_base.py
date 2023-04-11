@@ -83,8 +83,6 @@ class ModelBase(metaclass=ModelMeta):
         """
         if not name.isidentifier():
             raise ValueError("The name of an object should be a valid identifier.")
-        if not name:
-            raise ValueError("The name of an object may not be empty.")
         self._name = str(name)
         for req in self.requirements:
             setattr(self, f"_{req.attribute_name}", None)
@@ -156,7 +154,7 @@ class ModelBase(metaclass=ModelMeta):
     def define_objects(self) -> None:
         """Initialize the objects belonging to the model."""
         for submodel in self.submodels:
-            submodel.define_objects()
+            submodel.define_objects()  # pragma: no cover
 
     @abstractmethod
     def define_kinematics(self) -> None:
