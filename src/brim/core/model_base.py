@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 from abc import ABCMeta, abstractmethod
-from functools import wraps
 from typing import TYPE_CHECKING, Any
 
 from sympy import symbols
@@ -18,15 +17,6 @@ class ModelMeta(ABCMeta):
 
     def __new__(mcs, name, bases, namespace, **kwargs):  # noqa: N804
         """Create a new class."""
-
-        def traverse_submodels(func):
-            @wraps(func)
-            def wrapper(self, *args, **kwargs):
-                for submodel in self.submodels:
-                    getattr(submodel, func.__name__)(*args, **kwargs)
-                func(self, *args, **kwargs)
-
-            return wrapper
 
         def create_submodel_property(requirement: Requirement) -> property:
             def getter(self):
@@ -58,11 +48,6 @@ class ModelMeta(ABCMeta):
         for req in requirements:
             namespace[req.attribute_name] = create_submodel_property(req)
         namespace["requirements"] = tuple(requirements)  # update the requirements
-        # Overwrite the define methods such that it is first called in the submodels
-        for method in ("define_objects", "define_kinematics", "define_loads",
-                       "define_constraints"):
-            if method in namespace:
-                namespace[method] = traverse_submodels(namespace[method])
         return super().__new__(mcs, name, bases, namespace, **kwargs)
 
     def __call__(cls, *args, **kwargs):
@@ -170,11 +155,17 @@ class ModelBase(metaclass=ModelMeta):
     @abstractmethod
     def define_objects(self) -> None:
         """Initialize the objects belonging to the model."""
+        for submodel in self.submodels:
+            submodel.define_objects()
 
     @abstractmethod
     def define_kinematics(self) -> None:
         """Establish the kinematics of the objects belonging to the model."""
+        for submodel in self.submodels:
+            submodel.define_kinematics()
 
     @abstractmethod
     def define_loads(self) -> None:
         """Define the loads that are part of the model."""
+        for submodel in self.submodels:
+            submodel.define_loads()

@@ -124,9 +124,11 @@ class MySubModel(MySubModelBase):
 
     def define_kinematics(self) -> None:
         """Define the kinematics of the model."""
+        super().define_kinematics()
 
     def define_loads(self) -> None:
         """Define the loads of the model."""
+        super().define_loads()
 
     def my_submodel_method(self, variable: ModelBase) -> None:
         """Implementat the prescribed abstract method."""
@@ -192,14 +194,17 @@ class MyModel(ModelBase):
 
     def define_objects(self) -> None:
         """Initialize the objects belonging to the model."""
+        super().define_objects()
         self.q = Matrix(dynamicsymbols("q1:4"))
         self._system = None
 
     def define_kinematics(self) -> None:
         """Establish the kinematics of the objects belonging to the model."""
+        super().define_kinematics()
         self._system = System(self.submodel1.body.masscenter, self.submodel1.frame)
         self.submodel2.frame.orient_body_fixed(self.submodel1.frame, self.q[:], "zxy")
 
     def define_loads(self) -> None:
         """Define the loads that are part of the model."""
+        super().define_loads()
         # One can for example use self.submodel1.my_submodel_method here

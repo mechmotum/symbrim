@@ -48,6 +48,7 @@ class TestModelBase:
             setattr(m, meth, register_call(getattr(m, meth)))
         getattr(self.model, meth)()
         assert set(call_order) == {"model", "submodel1", "submodel2"}
+        assert len(set(call_order)) == len(call_order)
 
     def test_get_description_own_description(self, _create_model) -> None:
         assert (self.model.get_description(self.model.q[0]) ==
