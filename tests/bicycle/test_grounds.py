@@ -8,6 +8,7 @@ from sympy.physics.mechanics.system import System
 class TestFlatGround:
     def test_default(self) -> None:
         ground = FlatGround("ground")
+        ground.define_objects()
         assert ground.name == "ground"
         assert ground.frame == ground.body.frame
         assert ground.normal == -ground.frame.z
@@ -29,6 +30,7 @@ class TestFlatGround:
     ])
     def test_normal(self, normal: str, n_idx: int, pl_idx1: int, pl_idx2: int) -> None:
         ground = FlatGround("ground", normal)
+        ground.define_objects()
         vectors = (ground.frame.x, ground.frame.y, ground.frame.z)
         times = -1 if normal[0] == "-" else 1
         assert ground.normal == times * vectors[n_idx]

@@ -91,6 +91,7 @@ class TestWhippleBicycleMoore:
         bike.front_wheel = KnifeEdgeWheel("front_wheel")
         bike.rear_wheel.tyre_model = NonHolonomicTyreModel("rear_tyre")
         bike.front_wheel.tyre_model = NonHolonomicTyreModel("front_tyre")
+        bike.define_objects()
         bike.define_kinematics()
         bike.define_loads()
         system = to_system(bike)
@@ -132,6 +133,7 @@ class TestWhippleBicycleMoore:
 
     def test_descriptions(self) -> None:
         bike = WhippleBicycleMoore("bike")
+        bike.define_objects()
         for qi in bike.q:
             assert bike.descriptions[qi]
         for ui in bike.u:

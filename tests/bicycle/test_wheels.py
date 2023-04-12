@@ -10,6 +10,7 @@ from sympy.physics.mechanics import ReferenceFrame, dynamicsymbols
 class TestWheelsGeneral:
     @pytest.mark.parametrize("wheel", [KnifeEdgeWheel("wheel"), ToroidalWheel("wheel")])
     def test_default(self, wheel) -> None:
+        wheel.define_objects()
         assert wheel.name == "wheel"
         assert wheel.frame == wheel.body.frame
         assert wheel.center == wheel.body.masscenter
@@ -19,6 +20,7 @@ class TestWheelsGeneral:
     @pytest.mark.parametrize("wheel", [KnifeEdgeWheel("wheel"), ToroidalWheel("wheel")])
     def test_tyre_model(self, wheel) -> None:
         wheel.tyre_model = NonHolonomicTyreModel("tyre_model")
+        wheel.define_objects()
         assert wheel.tyre_model is not None
         with pytest.raises(TypeError):
             wheel.tyre_model = KnifeEdgeWheel("not_a_tyre_model")
@@ -27,12 +29,15 @@ class TestWheelsGeneral:
 class TestKnifeEdgeWheel:
     def test_descriptions(self) -> None:
         wheel = KnifeEdgeWheel("wheel")
+        wheel.define_objects()
         assert wheel.descriptions[wheel.radius] is not None
 
     def test_contact_point(self) -> None:
         q1, q2, q3 = dynamicsymbols("q1:4")
         wheel = KnifeEdgeWheel("wheel")
         ground = FlatGround("ground")
+        wheel.define_objects()
+        ground.define_objects()
         int_frame = ReferenceFrame("int_frame")
         int_frame.orient_body_fixed(ground.frame, (q1, q2, 0), "zxy")
         wheel.frame.orient_axis(int_frame, q3, int_frame.y)
@@ -45,6 +50,7 @@ class TestKnifeEdgeWheel:
 class TestToroidalWheel:
     def test_descriptions(self) -> None:
         wheel = ToroidalWheel("wheel")
+        wheel.define_objects()
         assert wheel.descriptions[wheel.radius] is not None
         assert wheel.descriptions[wheel.transverse_radius] is not None
 
@@ -52,6 +58,8 @@ class TestToroidalWheel:
         q1, q2, q3 = dynamicsymbols("q1:4")
         wheel = ToroidalWheel("wheel")
         ground = FlatGround("ground")
+        wheel.define_objects()
+        ground.define_objects()
         int_frame = ReferenceFrame("int_frame")
         int_frame.orient_body_fixed(ground.frame, (q1, q2, 0), "zxy")
         wheel.frame.orient_axis(int_frame, q3, int_frame.y)

@@ -12,6 +12,7 @@ class TestRiderLean:
         self.rear = RigidRearFrame("rear")
         self.rear.add_mixin(RiderLeanMixin)
         self.rear.rider = RiderLean("rider")
+        self.rear.define_objects()
 
     def test_default(self) -> None:
         assert self.rear.rider.name == "rider"

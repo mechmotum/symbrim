@@ -88,7 +88,6 @@ class ModelBase(metaclass=ModelMeta):
             setattr(self, f"_{req.attribute_name}", None)
         self._system = None
         self.symbols: dict[str, Any] = {}
-        self.define_objects()
 
     def __str__(self) -> str:
         return self.name

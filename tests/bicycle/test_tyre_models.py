@@ -12,6 +12,7 @@ from sympy.physics.mechanics.system import System
 class TestNonHolonomicTyreModel:
     def test_default(self) -> None:
         tyre_model = NonHolonomicTyreModel("tyre_model")
+        tyre_model.define_objects()
         assert tyre_model.name == "tyre_model"
         assert isinstance(tyre_model.system, System)
 
@@ -20,8 +21,10 @@ class TestNonHolonomicTyreModel:
         t = dynamicsymbols._t
         q1, q2, x, y, z = dynamicsymbols("q1 q2 x y z")
         ground = FlatGround("ground")
+        ground.define_objects()
         wheel = KnifeEdgeWheel("wheel")
         wheel.tyre_model = NonHolonomicTyreModel("tyre_model")
+        wheel.define_objects()
         wheel.frame.orient_body_fixed(ground.frame, (q1, q2, 0), "zyx")
         wheel.contact_point.set_pos(
             ground.origin, (x * ground.planar_vectors[0] + y * ground.planar_vectors[1]

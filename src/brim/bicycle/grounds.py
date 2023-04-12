@@ -79,14 +79,19 @@ class FlatGround(GroundBase):
 
         """
         super().__init__(name)
-        if normal[0] == "-":
-            normal = normal[1:]
+        self._normal = normal
+
+    def define_objects(self) -> None:
+        """Define the objects of the ground."""
+        super().define_objects()
+        if self._normal[0] == "-":
+            self._normal = self._normal[1:]
             times = -1
         else:
             times = 1
-            if normal[0] == "+":
-                normal = normal[1:]
-        self._normal = times * self.frame[normal]
+            if self._normal[0] == "+":
+                self._normal = self._normal[1:]
+        self._normal = times * self.frame[self._normal]
         if cross(self._normal, self.frame.x) == 0:
             self._planar_vectors = (self.frame.y, self.frame.z)
         elif cross(self._normal, self.frame.y) == 0:

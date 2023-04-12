@@ -20,6 +20,7 @@ class TestModelBase:
         self.model = MyModel("model")
         self.model.submodel1 = MySubModel("submodel1")
         self.model.submodel2 = MySubModel("submodel2")
+        self.model.define_objects()
 
     def test_init(self) -> None:
         bike = MyModel("model")

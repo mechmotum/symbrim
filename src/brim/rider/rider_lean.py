@@ -15,18 +15,6 @@ __all__ = ["RiderLeanMixin", "RiderLean"]
 class RiderLean(NewtonianBodyMixin, ModelBase):
     """Rider lean model."""
 
-    def __init__(self, name):
-        """Initialize leaning rider model.
-
-        Parameters
-        ----------
-        name : str
-            Name of the leaning rider.
-
-        """
-        super().__init__(name)
-        self._actuator = None
-
     @property
     def actuator(self):  # pragma: no cover
         """Actuator between the rear frame and the rider."""
@@ -64,6 +52,7 @@ class RiderLean(NewtonianBodyMixin, ModelBase):
     def define_objects(self) -> None:
         """Define the objects of the rider lean."""
         super().define_objects()
+        self._actuator = None
         self._lean_axis = self.x
         self._lean_point = Point(self._add_prefix("lean_point"))
         self.symbols["d_lp"] = Symbol(self._add_prefix("d_lp"))
