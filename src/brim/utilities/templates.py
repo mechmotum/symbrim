@@ -40,7 +40,11 @@ from sympy import Matrix
 from sympy.physics.mechanics import dynamicsymbols
 from sympy.physics.mechanics.system import System
 
-from brim.core import ModelBase, NewtonianBodyMixin, Requirement
+from brim.core import (
+    ModelBase,
+    ModelRequirement,
+    NewtonianBodyMixin,
+)
 
 __all__ = ["MySubModelBase", "MySubModel", "MyModel"]
 
@@ -103,7 +107,7 @@ class MySubModel(MySubModelBase):
     -----------
     As this sub model inherits from :class:`brim.templates.MySubModelBase`, it has to
     implement the abstract methods ``my_submodel_method`` and ``define_kinematics``,
-    ``define_loads``. The latter two are defined as abstract classes in
+    ``define_loads``. The latter two are defined as abstract methods in
     :class:`brim.core.model_base.ModelBase`. Of course we can also add additional
     methods and properties. In this case we add a symbolic variable ``my_symbol``,
     including a description of what it is in the the ``descriptions`` property.
@@ -156,23 +160,23 @@ class MyModel(ModelBase):
       between the submodels.
 
     Additional methods that can be useful to specify are:
-    - ``requirements`` which is a property, which mentions the required submodels. This
-      property is parsed on initialization, such that the class automatically gets a
-      property for each of these requirements.
+    - ``required_models`` which is a property, which mentions the required submodels.
+      This property is parsed on initialization, such that the class automatically gets
+      a property for each of these required_models.
     - ``descriptions`` is a dictionary with descriptions of all the model associated
       objects, which don't have a docstring. This is mainly useful for explaining the
       meaning of symbols.
 
-    In this implementation we create two hard requirements, namely ``submodel1`` and
+    In this implementation we create two hard required_models, namely ``submodel1`` and
     ``submodel2``. These submodels are required to be subclasses of
     :class:`brim.utilities.templates.MySubModelBase`. In this example we orient
     ``submodel2`` with a body-fixed rotation with respect to ``submodel1``.
 
     """
 
-    requirements: tuple[Requirement, ...] = (
-        Requirement("submodel1", MySubModelBase, "Description of submodel1", True),
-        Requirement("submodel2", MySubModelBase, "Description of submodel2", True),
+    required_models: tuple[ModelRequirement, ...] = (
+        ModelRequirement("submodel1", MySubModelBase, "Description of submodel1", True),
+        ModelRequirement("submodel2", MySubModelBase, "Description of submodel2", True),
     )
     # Adding annotations for IDEs
     submodel1: MySubModelBase

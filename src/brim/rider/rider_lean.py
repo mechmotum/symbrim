@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from sympy import Matrix, Symbol
 from sympy.physics.mechanics import PinJoint, Point, Vector, dynamicsymbols
 
-from brim.core import ModelBase, NewtonianBodyMixin, Requirement
+from brim.core import ModelBase, ModelRequirement, NewtonianBodyMixin
 
 if TYPE_CHECKING:
     from sympy import Basic
@@ -71,8 +71,8 @@ class RiderLean(NewtonianBodyMixin, ModelBase):
 class RiderLeanMixin:
     """Mixin that adds rider lean support to the RearFrameBase."""
 
-    requirements = (
-        Requirement("rider", RiderLean, "Leaning rider model."),
+    required_models = (
+        ModelRequirement("rider", RiderLean, "Leaning rider model."),
     )
 
     @property

@@ -15,21 +15,26 @@ from sympy.physics.mechanics import (
 
 from brim.bicycle.grounds import GroundBase
 from brim.bicycle.wheels import WheelBase
-from brim.core import ModelBase, Requirement
+from brim.core import ConnectionRequirement, ModelBase, ModelRequirement
 
 if TYPE_CHECKING:
-    pass
+    from brim.bicycle.tyre_models import TyreModelBase
 
 
 class RollingDisc(ModelBase):
     """Rolling disc model."""
 
-    requirements: tuple[Requirement, ...] = (
-        Requirement("ground", GroundBase, "Ground model."),
-        Requirement("disc", WheelBase, "Disc model."),
+    required_models: tuple[ModelRequirement, ...] = (
+        ModelRequirement("ground", GroundBase, "Ground model."),
+        ModelRequirement("disc", WheelBase, "Disc model."),
+    )
+    required_connections: tuple[ConnectionRequirement, ...] = (
+        ConnectionRequirement("tyre_model", {"ground": "ground", "wheel": "disc"},
+                              "Tyre model."),
     )
     ground: GroundBase
     disc: WheelBase
+    tyre_model: TyreModelBase
 
     @property
     def descriptions(self) -> dict[Any, str]:
@@ -51,6 +56,8 @@ class RollingDisc(ModelBase):
     def define_objects(self) -> None:
         """Define the objects of the rolling disc."""
         super().define_objects()
+        self.tyre_model.define_objects()
+        self.tyre_model.on_ground = True
         self.q = Matrix([dynamicsymbols(self._add_prefix("q1:6"))])
         self.u = Matrix([dynamicsymbols(self._add_prefix("u1:6"))])
 
@@ -63,18 +70,17 @@ class RollingDisc(ModelBase):
             self.ground.frame, self.disc.frame.ang_vel_in(self.ground.frame).xreplace(
                 {qi.diff(dynamicsymbols._t): ui for qi, ui in zip(self.q, self.u)}
             ))
-        self.disc.contact_point.set_pos(
+        self.tyre_model.contact_point.set_pos(
             self.ground.origin,
             self.q[0] * self.ground.planar_vectors[0] +
             self.q[1] * self.ground.planar_vectors[1]
         )
-        self.disc.contact_point.set_vel(
+        self.tyre_model.contact_point.set_vel(
             self.ground.frame,
             self.u[0] * self.ground.planar_vectors[0] +
             self.u[1] * self.ground.planar_vectors[1]
         )
-        self.disc.compute_contact_point(self.ground)
-        self.disc.compute_tyre_model(self.ground, True)
+        self.tyre_model.define_kinematics()
         self.system.q_ind = self.q
         self.system.u_ind = self.u
         self.system.kdes = [
@@ -83,6 +89,7 @@ class RollingDisc(ModelBase):
     def define_loads(self) -> None:
         """Define the loads of the rolling disc."""
         super().define_loads()
+        self.tyre_model.define_loads()
 
 
 def rolling_disc_manual() -> System:

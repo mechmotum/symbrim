@@ -26,7 +26,7 @@ class TestRollingDisc:
     def _rolling_disc_brim(self) -> None:
         self.rolling_disc = RollingDisc("rolling_disc")
         self.rolling_disc.disc = KnifeEdgeWheel("disc")
-        self.rolling_disc.disc.tyre_model = NonHolonomicTyreModel("tyre_model")
+        self.rolling_disc.tyre_model = NonHolonomicTyreModel("tyre_model")
         self.rolling_disc.ground = FlatGround("ground")
         self.rolling_disc.define_objects()
         self.rolling_disc.define_kinematics()

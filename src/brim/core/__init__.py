@@ -1,7 +1,12 @@
 """Module containing the core elements of BRiM."""
 
-__all__ = ["ModelMeta", "ModelBase", "Requirement", "NewtonianBodyMixin"]
+__all__ = [
+    "ConnectionRequirement", "ModelRequirement",
+    "ConnectionMeta", "ModelMeta",
+    "ConnectionBase", "ModelBase",
+    "NewtonianBodyMixin",
+]
 
 from brim.core.mixins import NewtonianBodyMixin
-from brim.core.model_base import ModelBase, ModelMeta
-from brim.core.requirement import Requirement
+from brim.core.model_base import ConnectionBase, ConnectionMeta, ModelBase, ModelMeta
+from brim.core.requirement import ConnectionRequirement, ModelRequirement

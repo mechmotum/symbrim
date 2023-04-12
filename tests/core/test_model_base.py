@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import pytest
-from brim.core import ModelBase, Requirement
+from brim.core import ModelBase, ModelRequirement
 from brim.utilities.templates import MyModel, MySubModel
 from sympy.physics.mechanics.system import System
 
@@ -80,9 +80,9 @@ class TestModelBase:
 
     def test_add_mixin_complex(self, _create_model) -> None:
         class MyMixin:
-            requirements = (
-                Requirement("submodel2", MySubModel, "overwritten"),
-                Requirement("submodel3", MySubModel, "desc"),
+            required_models = (
+                ModelRequirement("submodel2", MySubModel, "overwritten"),
+                ModelRequirement("submodel3", MySubModel, "desc"),
             )
 
             @property
@@ -99,11 +99,11 @@ class TestModelBase:
         assert isinstance(self.model.submodel1, MySubModel)
         assert self.model.submodel3 is None
         assert self.model.new_symbol == 5
-        assert [req.attribute_name for req in self.model.requirements] == [
+        assert [req.attribute_name for req in self.model.required_models] == [
             "submodel2", "submodel3", "submodel1"]
         # A mixin is not able to overwrite a requirement of the base class, as inherited
-        # requirements are overwritten.
-        assert self.model.requirements[0].description != "overwritten"
+        # required_models are overwritten.
+        assert self.model.required_models[0].description != "overwritten"
 
     def test_add_invalid_mixin(self, _create_model) -> None:
         with pytest.raises(TypeError):

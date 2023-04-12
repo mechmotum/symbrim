@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 
 import pytest
-from brim.core import ModelBase, Requirement
+from brim.core import ModelBase, ModelRequirement
 
 
 class MyModel(ModelBase):
@@ -21,14 +21,14 @@ class MyOtherSubModel(ModelBase):
 
 class TestRequirement:
     def test_default(self) -> None:
-        req = Requirement("my_sub_model_attr", MyModel)
+        req = ModelRequirement("my_sub_model_attr", MyModel)
         assert req.attribute_name == "my_sub_model_attr"
         assert req.types == (MyModel,)
         assert req.description == "My model description."
         assert req.full_name == "My sub model attr"
         assert req.type_name == "MyModel"
         assert str(req) == "my_sub_model_attr"
-        assert re.match(r"Requirement\(.+\)$", repr(req))
+        assert re.match(r"ModelRequirement\(.+\)$", repr(req))
 
     @pytest.mark.parametrize("args, kwargs, attribute, expected", [
         (("my_sub", MyModel), {"description": "New desc."}, "description", "New desc."),
@@ -36,15 +36,15 @@ class TestRequirement:
         (("my_sub", MyModel), {"type_name": "New type"}, "type_name", "New type"),
     ])
     def test_specify_args(self, args, kwargs, attribute, expected) -> None:
-        req = Requirement(*args, **kwargs)
+        req = ModelRequirement(*args, **kwargs)
         assert getattr(req, attribute) == expected
 
     def test_multiple_types(self) -> None:
-        req = Requirement("my_sub", (MyModel, MyOtherSubModel))
+        req = ModelRequirement("my_sub", (MyModel, MyOtherSubModel))
         assert req.types == (MyModel, MyOtherSubModel)
         assert req.type_name == "MyModel or MyOtherSubModel"
 
     @pytest.mark.parametrize("attribute_name", ["my sub model", "my,sub_model"])
     def test_invalid_attribute_name(self, attribute_name) -> None:
         with pytest.raises(ValueError):
-            Requirement(attribute_name, MyModel)
+            ModelRequirement(attribute_name, MyModel)
