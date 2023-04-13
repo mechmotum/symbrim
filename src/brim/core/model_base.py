@@ -219,6 +219,9 @@ class ConnectionBase(BrimBase, metaclass=ConnectionMeta):
     def define_loads(self) -> None:
         """Define the loads on the connection."""
 
+    def define_constraints(self) -> None:
+        """Define the constraints on the connection."""
+
 
 class ModelBase(BrimBase, metaclass=ModelMeta):
     """Base class for all objects in brim."""
@@ -272,6 +275,11 @@ class ModelBase(BrimBase, metaclass=ModelMeta):
             submodel.define_kinematics()
 
     def define_loads(self) -> None:
-        """Define the loads that are part of the model."""
+        """Define the loads that are acting upon the model."""
         for submodel in self.submodels:
             submodel.define_loads()
+
+    def define_constraints(self) -> None:
+        """Define the constraints on the model."""
+        for submodel in self.submodels:
+            submodel.define_constraints()

@@ -148,3 +148,9 @@ class WhippleBicycleMoore(WhippleBicycle):
         super().define_loads()
         self.rear_tyre.define_loads()
         self.front_tyre.define_loads()
+
+    def define_constraints(self) -> None:
+        """Define the constraints of the Whipple bicycle."""
+        super().define_constraints()
+        self.rear_tyre.define_constraints()
+        self.front_tyre.define_constraints()
