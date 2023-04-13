@@ -94,6 +94,7 @@ class TestWhippleBicycleMoore:
 
     def test_basu_mandal(self, _setup_default) -> None:
         t = dynamicsymbols._t
+        self.bike.define_connections()
         self.bike.define_objects()
         self.bike.define_kinematics()
         self.bike.define_loads()
@@ -135,6 +136,7 @@ class TestWhippleBicycleMoore:
         assert np.allclose(ud0, ud0_expected)
 
     def test_descriptions(self, _setup_default) -> None:
+        self.bike.define_connections()
         self.bike.define_objects()
         for qi in self.bike.q:
             assert self.bike.descriptions[qi]

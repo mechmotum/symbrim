@@ -1,7 +1,7 @@
 """Module containing the rolling disc model."""
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 from sympy import Matrix, Symbol, symbols
 from sympy.physics.mechanics import (
@@ -14,23 +14,20 @@ from sympy.physics.mechanics import (
 )
 
 from brim.bicycle.grounds import GroundBase
+from brim.bicycle.tyre_models import TyreModelBase
 from brim.bicycle.wheels import WheelBase
-from brim.core import ConnectionRequirement, ModelBase, ModelRequirement
-
-if TYPE_CHECKING:
-    from brim.bicycle.tyre_models import TyreModelBase
+from brim.core import ModelBase, Requirement
 
 
 class RollingDisc(ModelBase):
     """Rolling disc model."""
 
-    required_models: tuple[ModelRequirement, ...] = (
-        ModelRequirement("ground", GroundBase, "Ground model."),
-        ModelRequirement("disc", WheelBase, "Disc model."),
+    required_models: tuple[Requirement, ...] = (
+        Requirement("ground", GroundBase, "Ground model."),
+        Requirement("disc", WheelBase, "Disc model."),
     )
-    required_connections: tuple[ConnectionRequirement, ...] = (
-        ConnectionRequirement("tyre", {"ground": "ground", "wheel": "disc"},
-                              "Tyre model."),
+    required_connections: tuple[Requirement, ...] = (
+        Requirement("tyre", TyreModelBase, "Tyre model."),
     )
     ground: GroundBase
     disc: WheelBase
@@ -52,6 +49,12 @@ class RollingDisc(ModelBase):
         desc.update({ui: f"Generalized speed of the {desc[qi].lower()}"
                      for qi, ui in zip(self.q, self.u)})
         return desc
+
+    def define_connections(self) -> None:
+        """Define the connections between the submodels."""
+        super().define_connections()
+        self.tyre.ground = self.ground
+        self.tyre.wheel = self.disc
 
     def define_objects(self) -> None:
         """Define the objects of the rolling disc."""

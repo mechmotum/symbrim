@@ -4,7 +4,7 @@ import pytest
 from brim.bicycle.grounds import FlatGround
 from brim.bicycle.tyre_models import NonHolonomicTyreModel, _set_pos_contact_point
 from brim.bicycle.wheels import KnifeEdgeWheel, ToroidalWheel
-from brim.core import ConnectionRequirement, ModelBase, ModelRequirement
+from brim.core import ModelBase, Requirement
 from sympy import cos, sin
 from sympy.physics.mechanics import Point, ReferenceFrame, dynamicsymbols
 from sympy.physics.mechanics.system import System
@@ -48,17 +48,21 @@ class TestNonHolonomicTyreModel:
     def _setup(self) -> None:
         class Model(ModelBase):
             required_models = (
-                ModelRequirement("ground", FlatGround, "Submodel of the ground."),
-                ModelRequirement("wheel", KnifeEdgeWheel, "Submodel of the wheel."),
+                Requirement("ground", FlatGround, "Submodel of the ground."),
+                Requirement("wheel", KnifeEdgeWheel, "Submodel of the wheel."),
             )
             required_connections = (
-                ConnectionRequirement("tyre_model",
-                                      {"ground": "ground", "wheel": "wheel"},
-                                      "Tyre model for the wheel."),
+                Requirement("tyre_model", NonHolonomicTyreModel,
+                            "Tyre model for the wheel."),
                 )
             ground: FlatGround
             wheel: KnifeEdgeWheel
             tyre_model: NonHolonomicTyreModel
+
+            def define_connections(self) -> None:
+                super().define_connections()
+                self.tyre_model.ground = self.ground
+                self.tyre_model.wheel = self.wheel
 
             def define_objects(self) -> None:
                 super().define_objects()
@@ -78,12 +82,14 @@ class TestNonHolonomicTyreModel:
         self.model.tyre_model = NonHolonomicTyreModel("tyre_model")
 
     def test_default(self) -> None:
+        self.model.define_connections()
         self.model.define_objects()
         assert self.model.tyre_model.name == "tyre_model"
         assert isinstance(self.model.tyre_model.system, System)
 
     @pytest.mark.parametrize("on_ground", [True, False])
     def test_compute_on_ground(self, on_ground: bool) -> None:
+        self.model.define_connections()
         self.model.define_objects()
         self.model.tyre_model.on_ground = on_ground
         ground, wheel, tyre_model = (

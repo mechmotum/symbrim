@@ -1,7 +1,7 @@
 """Module containing the Whipple bicycle model."""
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 from sympy import Matrix
 from sympy.physics.mechanics import PinJoint, System, dynamicsymbols
@@ -10,11 +10,9 @@ from brim.bicycle.bicycle_base import BicycleBase
 from brim.bicycle.front_frames import FrontFrameBase
 from brim.bicycle.grounds import GroundBase
 from brim.bicycle.rear_frames import RearFrameBase
+from brim.bicycle.tyre_models import TyreModelBase
 from brim.bicycle.wheels import WheelBase
-from brim.core import ConnectionRequirement, ModelRequirement
-
-if TYPE_CHECKING:
-    from brim.bicycle.tyre_models import TyreModelBase
+from brim.core import Requirement
 
 __all__ = ["WhippleBicycle", "WhippleBicycleMoore"]
 
@@ -22,20 +20,16 @@ __all__ = ["WhippleBicycle", "WhippleBicycleMoore"]
 class WhippleBicycle(BicycleBase):
     """Base class for the Whipple bicycle model."""
 
-    required_models: tuple[ModelRequirement, ...] = (
-        ModelRequirement("ground", GroundBase, "Submodel of the ground."),
-        ModelRequirement("rear_frame", RearFrameBase, "Submodel of the rear frame."),
-        ModelRequirement("front_frame", FrontFrameBase, "Submodel of the front frame."),
-        ModelRequirement("rear_wheel", WheelBase, "Submodel of the rear wheel."),
-        ModelRequirement("front_wheel", WheelBase, "Submodel of the front wheel."),
+    required_models: tuple[Requirement, ...] = (
+        Requirement("ground", GroundBase, "Submodel of the ground."),
+        Requirement("rear_frame", RearFrameBase, "Submodel of the rear frame."),
+        Requirement("front_frame", FrontFrameBase, "Submodel of the front frame."),
+        Requirement("rear_wheel", WheelBase, "Submodel of the rear wheel."),
+        Requirement("front_wheel", WheelBase, "Submodel of the front wheel."),
     )
-    required_connections: tuple[ConnectionRequirement, ...] = (
-        ConnectionRequirement("rear_tyre",
-                              {"ground": "ground", "wheel": "rear_wheel"},
-                              "Tyre model for the rear wheel."),
-        ConnectionRequirement("front_tyre",
-                              {"ground": "ground", "wheel": "front_wheel"},
-                              "Tyre model for the front wheel."),
+    required_connections: tuple[Requirement, ...] = (
+        Requirement("rear_tyre", TyreModelBase, "Tyre model for the rear wheel."),
+        Requirement("front_tyre", TyreModelBase, "Tyre model for the front wheel."),
     )
     ground: GroundBase
     rear_frame: RearFrameBase
@@ -63,6 +57,14 @@ class WhippleBicycle(BicycleBase):
             raise NotImplementedError(f"The formulation '{formulation}' has not "
                                       f"been implemented in {cls}.")
         return super().__new__(cls)
+
+    def define_connections(self) -> None:
+        """Define the connections between the submodels."""
+        super().define_connections()
+        self.rear_tyre.ground = self.ground
+        self.rear_tyre.wheel = self.rear_wheel
+        self.front_tyre.ground = self.ground
+        self.front_tyre.wheel = self.front_wheel
 
 
 class WhippleBicycleMoore(WhippleBicycle):

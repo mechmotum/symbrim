@@ -9,7 +9,7 @@ from sympy import symbols
 if TYPE_CHECKING:
     from sympy.physics.mechanics import System
 
-    from brim.core.requirement import ConnectionRequirement, ModelRequirement
+    from brim.core.requirement import Requirement
 
 __all__ = ["ConnectionBase", "ConnectionMeta", "ModelBase", "ModelMeta"]
 
@@ -33,7 +33,7 @@ class ModelMeta(ABCMeta):
     def __new__(mcs, name, bases, namespace, **kwargs):  # noqa: N804
         """Create a new class."""
 
-        def create_submodel_property(requirement: ModelRequirement) -> property:
+        def create_submodel_property(requirement: Requirement) -> property:
             def getter(self):
                 return getattr(self, f"_{requirement.attribute_name}")
 
@@ -49,27 +49,21 @@ class ModelMeta(ABCMeta):
             setter.__annotations__ = {"model": requirement.type_hint, "return": None}
             return property(getter, setter, None, requirement.description)
 
-        def create_connection_property(requirement: ConnectionRequirement) -> property:
+        def create_connection_property(requirement: Requirement) -> property:
             def getter(self):
                 return getattr(self, f"_{requirement.attribute_name}")
 
             def setter(self, conn):
-                if not (conn is None or isinstance(conn, ConnectionBase)):
+                if not (conn is None or isinstance(conn, requirement.types)):
                     raise TypeError(
                         f"{requirement.full_name} should be an instance of an subclass "
-                        f"of {ConnectionBase}, but {conn!r} is an instance of "
+                        f"of {requirement.type_name}, but {conn!r} is an instance of "
                         f"{type(conn)}.")
                 setattr(self, f"_{requirement.attribute_name}", conn)
-                for c_ref, m_ref in requirement.model_references.items():
-                    # Set the protected attribute on the connection to retrieve the
-                    # reference from the model it belongs to. The double lambda is
-                    # required to bind the loop variable.
-                    setattr(conn, f"_get_{c_ref}", (
-                        lambda m_ref:
-                        lambda self_conn: getattr(self, m_ref))(m_ref))  # noqa: B023
+                conn._parent = self
 
-            getter.__annotations__ = {"return": ConnectionBase}
-            setter.__annotations__ = {"conn": ConnectionBase, "return": None}
+            getter.__annotations__ = {"return": requirement.type_hint}
+            setter.__annotations__ = {"conn": requirement.type_hint, "return": None}
             return property(getter, setter, None, requirement.description)
 
         # Create properties for each of the requirements
@@ -106,12 +100,25 @@ class ConnectionMeta(ABCMeta):
     def __new__(mcs, name, bases, namespace, **kwargs):  # noqa: N804
         """Create a new class."""
 
-        def create_submodel_property(requirement: ModelRequirement) -> property:
+        def create_submodel_property(requirement: Requirement) -> property:
             def getter(self):
-                return getattr(self, f"_get_{requirement.attribute_name}")(self)
+                model_reference = getattr(self, f"_{requirement.attribute_name}")
+                if isinstance(model_reference, str):
+                    return getattr(self._parent, model_reference)
+                return model_reference
+
+            def setter(self, model):
+                if not (isinstance(model, (requirement.types, str)) or model is None):
+                    raise TypeError(
+                        f"{requirement.full_name} should be an instance of an subclass "
+                        f"of {requirement.types} or the name of the model in the "
+                        f"parent, but {model!r} is an instance of {type(model)}.")
+                setattr(self, f"_{requirement.attribute_name}", model)
 
             getter.__annotations__ = {"return": requirement.type_hint}
-            return property(getter, None, None, requirement.description)
+            setter.__annotations__ = {"model": requirement.type_hint | str,
+                                      "return": None}
+            return property(getter, setter, None, requirement.description)
 
         # Create properties for each of the requirements
         requirements = _get_requirements(bases, namespace, "required_models")
@@ -188,7 +195,7 @@ class BrimBase:
 class ConnectionBase(BrimBase, metaclass=ConnectionMeta):
     """Base class for all connections in brim."""
 
-    required_models: tuple[ModelRequirement, ...] = ()
+    required_models: tuple[Requirement, ...] = ()
 
     def __init__(self, name: str) -> None:
         """Create a new instance of the connection.
@@ -198,13 +205,10 @@ class ConnectionBase(BrimBase, metaclass=ConnectionMeta):
         name : str
             Name of the connection.
         """
-
-        def conn_not_part_of_model(self):
-            raise ValueError(f"The connection {self.name!r} is not part of a model.")
-
         super().__init__(name)
+        self._parent = None
         for req in self.required_models:
-            setattr(self, f"_get_{req.attribute_name}", conn_not_part_of_model)
+            setattr(self, f"_{req.attribute_name}", None)
 
     def _check_submodel_types(self):
         """Check the types of the submodels.
@@ -237,8 +241,8 @@ class ConnectionBase(BrimBase, metaclass=ConnectionMeta):
 class ModelBase(BrimBase, metaclass=ModelMeta):
     """Base class for all objects in brim."""
 
-    required_models: tuple[ModelRequirement, ...] = ()
-    required_connections: tuple[ConnectionRequirement, ...] = ()
+    required_models: tuple[Requirement, ...] = ()
+    required_connections: tuple[Requirement, ...] = ()
 
     def __init__(self, name: str) -> None:
         """Create a new instance of the model.

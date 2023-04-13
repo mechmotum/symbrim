@@ -1,6 +1,6 @@
 import pytest
 from brim.bicycle import RigidRearFrame
-from brim.core import ConnectionRequirement, ModelBase, ModelRequirement
+from brim.core import ModelBase, Requirement
 from brim.rider import RiderLean, RiderLeanConnection
 from brim.utilities import to_system
 from sympy import Matrix, Symbol, simplify, sin, zeros
@@ -12,19 +12,22 @@ class TestRiderLean:
     @pytest.fixture(autouse=True)
     def setup(self) -> None:
         class Model(ModelBase):
-            required_models = (
-                ModelRequirement("rear_frame", RigidRearFrame, "Rear frame model."),
-                ModelRequirement("rider", RiderLean, "Rider lean model."),
+            required_models: tuple[Requirement] = (
+                Requirement("rear_frame", RigidRearFrame, "Rear frame model."),
+                Requirement("rider", RiderLean, "Rider lean model."),
             )
             required_connections = (
-                ConnectionRequirement(
-                    "rider_connection",
-                    {"rear_frame": "rear_frame", "rider": "rider"},
-                    "Rear to rider connection."),
+                Requirement("rider_connection", RiderLeanConnection,
+                            "Rear to rider connection."),
             )
             rear_frame: RigidRearFrame
             rider: RiderLean
             rider_connection: RiderLeanConnection
+
+            def define_connections(self) -> None:
+                super().define_connections()
+                self.rider_connection.rider = self.rider
+                self.rider_connection.rear_frame = self.rear_frame
 
             def define_objects(self) -> None:
                 super().define_objects()
@@ -43,6 +46,7 @@ class TestRiderLean:
         self.model.rear_frame = RigidRearFrame("rear_frame")
         self.model.rider = RiderLean("rider")
         self.model.rider_connection = RiderLeanConnection("rear_rider")
+        self.model.define_connections()
         self.model.define_objects()
         self.rear, self.rider, self.conn = (
             self.model.rear_frame, self.model.rider, self.model.rider_connection)

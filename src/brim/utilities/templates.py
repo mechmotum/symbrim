@@ -40,11 +40,7 @@ from sympy import Matrix
 from sympy.physics.mechanics import dynamicsymbols
 from sympy.physics.mechanics.system import System
 
-from brim.core import (
-    ModelBase,
-    ModelRequirement,
-    NewtonianBodyMixin,
-)
+from brim.core import ModelBase, NewtonianBodyMixin, Requirement
 
 __all__ = ["MySubModelBase", "MySubModel", "MyModel"]
 
@@ -174,9 +170,9 @@ class MyModel(ModelBase):
 
     """
 
-    required_models: tuple[ModelRequirement, ...] = (
-        ModelRequirement("submodel1", MySubModelBase, "Description of submodel1", True),
-        ModelRequirement("submodel2", MySubModelBase, "Description of submodel2", True),
+    required_models: tuple[Requirement, ...] = (
+        Requirement("submodel1", MySubModelBase, "Description of submodel1", True),
+        Requirement("submodel2", MySubModelBase, "Description of submodel2", True),
     )
     # Adding annotations for IDEs
     submodel1: MySubModelBase
