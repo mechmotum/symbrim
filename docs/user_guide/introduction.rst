@@ -28,4 +28,29 @@ Symbolic equations of motion were chosen because they are analytically exact, ha
 potential to be mathematically efficient, and can be used to generate high-performance
 numeric code, all of which lead to accurate and fast simulations.
 
+..
+    explain the concept of using subsystems by choosing and uniting a system boundaries
+
+One of the fundamental concepts in BRiM is the flexibility in the selection of the
+system's boundary when modeling a mechanical system. In general, a system boundary is
+chosen such that it excludes other system parts that are not of interest. For example,
+when modelling a bicycle, one can choose to exclude the rider and only add additional
+loads on the system boundary. This vastly simplifies the analysis. It is of course also
+possible to also solely model the rider without the bicycle. To model bicycle and the
+rider together, one will choose a system boundary that is the union of both systems.
+Therefore, it is possible to use the descriptions of both subsystems to construct an
+overarching bicycle-rider system, which additionally describes the interactions between
+the two. This is the approach that BRiM takes. It breaks down a model of a bicycle-rider
+system into smaller models, which can be combined to form a larger model.
+
+..
+    Mention the following thing about the above approach:
+    - Simplification: the subsystems do not describe their interactions at the system
+      boundary with another system, as this can be more easily done in the overarching
+      system.
+    - Advantages of tree structure
+    - Need for connections
+    - Need for mixins
+    - Final summarizing paragraph also mentioning when to use what
+
 .. bibliography::

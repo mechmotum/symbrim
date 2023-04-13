@@ -18,7 +18,7 @@ def to_system(model: ModelBase) -> System:  # pragma: no cover
 
     def get_systems(model):
         """Get the systems of the submodels."""
-        return ([model.system] +
+        return ([model.system] + [conn.system for conn in model.connections] +
                 [s for submodel in model.submodels for s in get_systems(submodel)])
 
     return merge_systems(model.system, *get_systems(model))

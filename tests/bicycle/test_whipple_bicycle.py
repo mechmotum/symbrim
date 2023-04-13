@@ -81,24 +81,29 @@ class TestWhippleBicycleMoore:
                 -8.0133620584155))}}
         return constants, initial_state
 
-    def test_basu_mandal(self) -> None:
+    @pytest.fixture()
+    def _setup_default(self) -> None:
+        self.bike = WhippleBicycleMoore("bike")
+        self.bike.ground = FlatGround("ground")
+        self.bike.rear_frame = RigidRearFrame("rear_frame")
+        self.bike.front_frame = RigidFrontFrame("front_frame")
+        self.bike.rear_wheel = KnifeEdgeWheel("rear_wheel")
+        self.bike.front_wheel = KnifeEdgeWheel("front_wheel")
+        self.bike.rear_tyre = NonHolonomicTyreModel("rear_tyre")
+        self.bike.front_tyre = NonHolonomicTyreModel("front_tyre")
+
+    def test_basu_mandal(self, _setup_default) -> None:
         t = dynamicsymbols._t
-        bike = WhippleBicycleMoore("bike")
-        bike.ground = FlatGround("ground")
-        bike.rear_frame = RigidRearFrame("rear_frame")
-        bike.front_frame = RigidFrontFrame("front_frame")
-        bike.rear_wheel = KnifeEdgeWheel("rear_wheel")
-        bike.front_wheel = KnifeEdgeWheel("front_wheel")
-        bike.rear_wheel.tyre_model = NonHolonomicTyreModel("rear_tyre")
-        bike.front_wheel.tyre_model = NonHolonomicTyreModel("front_tyre")
-        bike.define_kinematics()
-        bike.define_loads()
-        system = to_system(bike)
-        system.apply_gravity(-Symbol("g") * bike.ground.normal)
-        system.q_ind = [*bike.q[:4], *bike.q[5:]]
-        system.q_dep = [bike.q[4]]
-        system.u_ind = [bike.u[3], *bike.u[5:7]]
-        system.u_dep = [*bike.u[:3], bike.u[4], bike.u[7]]
+        self.bike.define_connections()
+        self.bike.define_objects()
+        self.bike.define_kinematics()
+        self.bike.define_loads()
+        system = to_system(self.bike)
+        system.apply_gravity(-Symbol("g") * self.bike.ground.normal)
+        system.q_ind = [*self.bike.q[:4], *self.bike.q[5:]]
+        system.q_dep = [self.bike.q[4]]
+        system.u_ind = [self.bike.u[3], *self.bike.u[5:7]]
+        system.u_dep = [*self.bike.u[:3], self.bike.u[4], self.bike.u[7]]
         system._eom_method = KanesMethod(
             system.frame, system.q_ind, system.u_ind, kd_eqs=system.kdes,
             q_dependent=system.q_dep, u_dependent=system.u_dep,
@@ -109,7 +114,7 @@ class TestWhippleBicycleMoore:
             explicit_kinematics=False, constraint_solver=cramer_solve)
         system.eom_method.kanes_equations()
 
-        constants, initial_state = self._get_basu_mandal_values(bike)
+        constants, initial_state = self._get_basu_mandal_values(self.bike)
         p, p_vals = zip(*constants.items())
         q0 = [initial_state[qi] for qi in system.q]
         u0 = [initial_state[ui] for ui in system.u]
@@ -122,7 +127,7 @@ class TestWhippleBicycleMoore:
         md, gd = eval_sys(q0, u0, p_vals)
         ud0 = np.linalg.solve(md.astype(np.float64), gd.astype(np.float64)).ravel()
         expected_state = {
-            udi: val for udi, val in zip(bike.u.diff(t), (
+            udi: val for udi, val in zip(self.bike.u.diff(t), (
                 0.5903429412631302, -2.090870556233152, -0.8353281706376822,
                 7.855528112824374, -0.12055438978863461, -1.8472554144218631,
                 4.6198904039391895, -2.4548072904552343))
@@ -130,9 +135,10 @@ class TestWhippleBicycleMoore:
         ud0_expected = [expected_state[udi] for udi in system.u.diff(t)]
         assert np.allclose(ud0, ud0_expected)
 
-    def test_descriptions(self) -> None:
-        bike = WhippleBicycleMoore("bike")
-        for qi in bike.q:
-            assert bike.descriptions[qi]
-        for ui in bike.u:
-            assert bike.descriptions[ui]
+    def test_descriptions(self, _setup_default) -> None:
+        self.bike.define_connections()
+        self.bike.define_objects()
+        for qi in self.bike.q:
+            assert self.bike.descriptions[qi]
+        for ui in self.bike.u:
+            assert self.bike.descriptions[ui]

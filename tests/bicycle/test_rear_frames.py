@@ -23,6 +23,7 @@ class TestRigidRearFrame:
 class TestRigidRearFrameMoore:
     def test_default(self):
         rear = RigidRearFrameMoore("rear")
+        rear.define_objects()
         assert rear.name == "rear"
         assert rear.frame == rear.body.frame
         assert isinstance(rear.steer_attachment, Point)
@@ -31,6 +32,7 @@ class TestRigidRearFrameMoore:
 
     def test_kinematics(self):
         rear = RigidRearFrameMoore("rear")
+        rear.define_objects()
         rear.define_kinematics()
         # Test if kinematics is defined
         rear.steer_attachment.pos_from(rear.body.masscenter)
@@ -42,5 +44,6 @@ class TestRigidRearFrameMoore:
 
     def test_descriptions(self):
         rear = RigidRearFrameMoore("rear")
+        rear.define_objects()
         for length in rear.symbols.values():
             assert rear.descriptions[length] is not None

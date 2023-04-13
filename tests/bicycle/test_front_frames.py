@@ -23,6 +23,7 @@ class TestRigidFrontFrame:
 class TestRigidFrontFrameMoore:
     def test_default(self) -> None:
         front = RigidFrontFrameMoore("front")
+        front.define_objects()
         assert front.name == "front"
         assert front.frame == front.body.frame
         assert isinstance(front.steer_attachment, Point)
@@ -31,6 +32,7 @@ class TestRigidFrontFrameMoore:
 
     def test_kinematics(self) -> None:
         front = RigidFrontFrameMoore("front")
+        front.define_objects()
         front.define_kinematics()
         # Test if kinematics is defined
         front.steer_attachment.pos_from(front.body.masscenter)
@@ -42,5 +44,6 @@ class TestRigidFrontFrameMoore:
 
     def test_descriptions(self) -> None:
         front = RigidFrontFrameMoore("front")
+        front.define_objects()
         for length in front.symbols.values():
             assert front.descriptions[length] is not None

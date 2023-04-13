@@ -16,6 +16,7 @@ class MyModel(NewtonianBodyMixin, ModelBase):
 class TestNewtonianBodyMixin:
     def test_mixin(self) -> None:
         model = MyModel("name")
+        model.define_objects()
         assert isinstance(model.body, RigidBody)
         assert model.system.bodies[0] is model.body
         assert model.frame is model.body.frame

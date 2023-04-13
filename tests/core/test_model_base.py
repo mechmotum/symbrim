@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import pytest
-from brim.core import ModelBase, Requirement
-from brim.utilities.templates import MyModel, MySubModel
+from brim.bicycle import FlatGround, KnifeEdgeWheel, NonHolonomicTyreModel
+from brim.core import ModelBase
+from brim.other.rolling_disc import RollingDisc
 from sympy.physics.mechanics.system import System
 
 
@@ -11,92 +12,62 @@ class TestModelBase:
 
     Explanation
     -----------
-    As ModelBase is an abstract class, this test actually uses the WhippleBicycleMoore
-    to test certain characteristics of the ModelBase class.
+    As ModelBase is an abstract class, this test actually uses the rolling disc to test
+    certain characteristics of the ModelBase class.
     """
 
     @pytest.fixture()
     def _create_model(self) -> None:
-        self.model = MyModel("model")
-        self.model.submodel1 = MySubModel("submodel1")
-        self.model.submodel2 = MySubModel("submodel2")
+        self.disc = RollingDisc("rolling_disc")
+        self.disc.disc = KnifeEdgeWheel("disc")
+        self.disc.ground = FlatGround("ground")
+        self.disc.tyre = NonHolonomicTyreModel("tyre")
+        self.disc.define_connections()
+        self.disc.define_objects()
 
     def test_init(self) -> None:
-        bike = MyModel("model")
-        assert isinstance(bike, ModelBase)
-        assert bike.name == "model"
-        assert bike.submodel1 is None
-        assert bike.submodel2 is None
+        disc = RollingDisc("model")
+        assert isinstance(disc, ModelBase)
+        assert str(disc) == "model"
+        assert disc.name == "model"
+        assert disc.disc is None
+        assert disc.ground is None
+        assert disc.tyre is None
 
     @pytest.mark.parametrize("name", ["", " ", "my model", "my,model", "my:model"])
     def test_invalid_name(self, name) -> None:
         with pytest.raises(ValueError):
-            MyModel(name)
+            RollingDisc(name)
 
-    @pytest.mark.parametrize("meth", ["define_kinematics", "define_loads"])
-    def test_call_traversal(self, _create_model, meth) -> None:
-        # Test should ideally also test for the correct order
-        def register_call(meth):
-            def wrapper():
-                call_order.append(meth.__self__.name)
-                return meth()
+    def test_invalid_model(self) -> None:
+        disc = RollingDisc("model")
+        with pytest.raises(TypeError):
+            disc.disc = FlatGround("ground")
 
-            return wrapper
+    def test_invalid_connection(self) -> None:
+        disc = RollingDisc("model")
+        with pytest.raises(TypeError):
+            disc.tyre = KnifeEdgeWheel("disc")
 
-        call_order = []
-        for m in [self.model, self.model.submodel1, self.model.submodel2]:
-            setattr(m, meth, register_call(getattr(m, meth)))
-        getattr(self.model, meth)()
-        assert set(call_order) == {"model", "submodel1", "submodel2"}
+    def test_overwrite_submodel_of_connection(self, _create_model) -> None:
+        self.disc.tyre.wheel = KnifeEdgeWheel("disc2")
+        assert self.disc.tyre.wheel.name == "disc2"
+
+    def test_invalid_submodel_of_connection(self, _create_model) -> None:
+        with pytest.raises(TypeError):
+            self.disc.tyre.ground = KnifeEdgeWheel("disc")
 
     def test_get_description_own_description(self, _create_model) -> None:
-        assert (self.model.get_description(self.model.q[0]) ==
-                self.model.descriptions[self.model.q[0]])
+        assert (self.disc.disc.get_description(self.disc.disc.radius) ==
+                self.disc.disc.descriptions[self.disc.disc.radius])
 
     def test_get_description_of_submodel(self, _create_model) -> None:
-        assert self.model.get_description(self.model.submodel1.my_symbol) is not None
+        assert self.disc.get_description(self.disc.disc.radius) is not None
 
     def test_get_description_of_not_existing_symbol(self, _create_model) -> None:
-        assert self.model.get_description("not existing symbol") is None
+        assert self.disc.get_description("not existing symbol") is None
 
     def test_call_system(self, _create_model) -> None:
-        self.model.define_kinematics()
-        self.model.define_loads()
-        assert isinstance(self.model.system, System)
-
-    def test_add_mixin_simple(self, _create_model) -> None:
-        class MyMixin:
-            @property
-            def my_method(self):
-                return 5
-
-        self.model.add_mixin(MyMixin)
-        assert isinstance(self.model, MyMixin)
-        assert self.model.my_method == 5
-        assert isinstance(self.model, MyModel)
-        assert isinstance(self.model.submodel1, MySubModel)
-
-    def test_add_mixin_complex(self, _create_model) -> None:
-        class MyMixin:
-            requirements = (
-                Requirement("submodel3", MySubModel, "desc"),
-            )
-
-            @property
-            def my_method(self):
-                return 5
-
-            def define_objects(self):
-                self.new_symbol = 5
-
-        self.model.add_mixin(MyMixin)
-        assert isinstance(self.model, MyMixin)
-        assert self.model.my_method == 5
-        assert isinstance(self.model, MyModel)
-        assert isinstance(self.model.submodel1, MySubModel)
-        assert self.model.submodel3 is None
-        assert self.model.new_symbol == 5
-
-    def test_add_invalid_mixin(self, _create_model) -> None:
-        with pytest.raises(TypeError):
-            self.model.add_mixin(MyModel("invalid"))
+        self.disc.define_kinematics()
+        self.disc.define_loads()
+        assert isinstance(self.disc.system, System)

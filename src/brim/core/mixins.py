@@ -14,9 +14,9 @@ class NewtonianBodyMixin:
 
     def define_objects(self) -> None:
         """Define the objects of the model."""
+        super().define_objects()
         body = RigidBody(self.name)
         self._system = System.from_newtonian(body)
-        super().define_objects()
 
     @property
     def descriptions(self) -> dict[Basic, str]:

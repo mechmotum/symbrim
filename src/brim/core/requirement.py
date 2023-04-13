@@ -4,6 +4,8 @@ from __future__ import annotations
 from collections.abc import Iterable
 from typing import Union
 
+__all__ = ["Requirement"]
+
 
 class Requirement:
     """Simple class containing the requirement properties."""
@@ -11,7 +13,6 @@ class Requirement:
     def __init__(self, attribute_name: str,
                  submodel_types: type | tuple[type, ...],
                  description: str | None = None,
-                 hard_requirement: bool = False,
                  full_name: str | None = None,
                  type_name: str | None = None) -> None:
         """Initialize a new instance of the requirement.
@@ -19,20 +20,17 @@ class Requirement:
         Parameters
         ----------
         attribute_name : str
-            Name of the attribute that is used to store the submodel in the parent.
+            Name of the attribute that is used to store the object in the parent.
         submodel_types : type | tuple[type, ...]
-            Supported types of the submodel.
+            Supported types of the object.
         description : str, optional
-            Description of the submodel, by default None.
-        hard_requirement : bool, optional
-            Whether the submodel is a hard requirement, by default False.
+            Description of the object, by default None.
         full_name : str, optional
-            Full name of the submodel, by default capitalized version of the attribute
+            Full name of the object, by default capitalized version of the attribute
             name, where the underscores are replaced by spaces.
         type_name : str, optional
-            Names of the supported types of the submodel. The names of the type classes
+            Names of the supported types of the object. The names of the type classes
             are used by default.
-
         """
         attribute_name = str(attribute_name)
         if not attribute_name.isidentifier():
@@ -45,7 +43,6 @@ class Requirement:
         if description is None:
             description = self.types[0].__doc__.split("\n", 1)[0]
         self._description = str(description)
-        self._hard = bool(hard_requirement)
         if full_name is None:
             full_name = self.attribute_name.replace("_", " ").capitalize()
         self._full_name = str(full_name)
@@ -55,7 +52,7 @@ class Requirement:
 
     @property
     def attribute_name(self) -> str:
-        """Name of the attribute that is used to store the submodel in the parent."""
+        """Name of the attribute that is used to store the object in the parent."""
         return self._attribute_name
 
     @property
@@ -65,17 +62,12 @@ class Requirement:
 
     @property
     def description(self) -> str:
-        """Description of the submodel."""
+        """Description of the object."""
         return self._description
 
     @property
-    def hard(self) -> bool:
-        """Whether the submodel is a hard requirement."""
-        return self._hard
-
-    @property
     def full_name(self) -> str:
-        """Full name of the submodel."""
+        """Full name of the object."""
         return self._full_name
 
     @property
@@ -90,3 +82,8 @@ class Requirement:
 
     def __str__(self):
         return self.attribute_name
+
+    def __repr__(self):
+        return (f"{self.__class__.__name__}(attribute_name={self.attribute_name!r}, "
+                f"types={self.types!r}, description={self.description!r}, "
+                f"full_name={self.full_name!r}, type_name={self.type_name!r})")
