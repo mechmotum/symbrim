@@ -210,21 +210,6 @@ class ConnectionBase(BrimBase, metaclass=ConnectionMeta):
         for req in self.required_models:
             setattr(self, f"_{req.attribute_name}", None)
 
-    def _check_submodel_types(self):
-        """Check the types of the submodels.
-
-        Notes
-        -----
-        This is a helper method which can be called, if there is a hard requirement
-        check required. It is not called automatically to allow possible duck typing.
-        """
-        for req in self.required_models:
-            if not isinstance(getattr(self, req.attribute_name), req.types):
-                raise TypeError(
-                    f"The submodel {req.attribute_name!r} of the connection "
-                    f"{self.name!r} should be of type {req.types!r}."
-                )
-
     @abstractmethod
     def define_objects(self) -> None:
         """Define the objects in the connection."""

@@ -61,10 +61,10 @@ class WhippleBicycle(BicycleBase):
     def define_connections(self) -> None:
         """Define the connections between the submodels."""
         super().define_connections()
-        self.rear_tyre.ground = self.ground
-        self.rear_tyre.wheel = self.rear_wheel
-        self.front_tyre.ground = self.ground
-        self.front_tyre.wheel = self.front_wheel
+        self.rear_tyre.ground = "ground"
+        self.rear_tyre.wheel = "rear_wheel"
+        self.front_tyre.ground = "ground"
+        self.front_tyre.wheel = "front_wheel"
 
 
 class WhippleBicycleMoore(WhippleBicycle):

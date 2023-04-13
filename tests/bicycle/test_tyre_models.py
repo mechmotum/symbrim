@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import pytest
 from brim.bicycle.grounds import FlatGround
+from brim.bicycle.rear_frames import RigidRearFrameMoore
 from brim.bicycle.tyre_models import NonHolonomicTyreModel, _set_pos_contact_point
 from brim.bicycle.wheels import KnifeEdgeWheel, ToroidalWheel
 from brim.core import ModelBase, Requirement
@@ -42,6 +43,14 @@ class TestComputeContactPoint:
             {self.q[1]: 0.123, self.q[2]: 1.234}) == 0
         # sqrt(cos(q2)**2) is not simplified
 
+    @pytest.mark.parametrize("ground, wheel", [
+        (FlatGround("ground"), RigidRearFrameMoore("wheel")),
+        (RigidRearFrameMoore("ground"), KnifeEdgeWheel("wheel")),
+    ])
+    def test_not_implemented_combination(self, ground, wheel) -> None:
+        with pytest.raises(NotImplementedError):
+            _set_pos_contact_point(Point("cp"), ground, wheel)
+
 
 class TestNonHolonomicTyreModel:
     @pytest.fixture(autouse=True)
@@ -54,7 +63,7 @@ class TestNonHolonomicTyreModel:
             required_connections = (
                 Requirement("tyre_model", NonHolonomicTyreModel,
                             "Tyre model for the wheel."),
-                )
+            )
             ground: FlatGround
             wheel: KnifeEdgeWheel
             tyre_model: NonHolonomicTyreModel

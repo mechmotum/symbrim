@@ -53,8 +53,8 @@ class RollingDisc(ModelBase):
     def define_connections(self) -> None:
         """Define the connections between the submodels."""
         super().define_connections()
-        self.tyre.ground = self.ground
-        self.tyre.wheel = self.disc
+        self.tyre.ground = "ground"
+        self.tyre.wheel = "disc"
 
     def define_objects(self) -> None:
         """Define the objects of the rolling disc."""

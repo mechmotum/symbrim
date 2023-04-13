@@ -68,5 +68,4 @@ class RiderLean(NewtonianBodyMixin, ModelBase):
     def define_loads(self) -> None:
         """Define the loads of the rider lean."""
         super().define_loads()
-        if self.actuator is not None:
-            self.system.add_actuator(self.actuator)
+        # TODO: Add actuator loads.
