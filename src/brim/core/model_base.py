@@ -270,17 +270,6 @@ class ModelBase(BrimBase, metaclass=ModelMeta):
             connections.append(getattr(self, req.attribute_name))
         return frozenset(conn for conn in connections if conn is not None)
 
-    def add_mixin(self, mixin: type) -> None:
-        """Extend model with a mixin class."""
-        if not isinstance(mixin, type):
-            raise TypeError("Mixin should be a class.")
-        self.__class__ = type(self.__class__.__name__, (mixin, self.__class__), {})
-        if hasattr(mixin, "required_models"):
-            for req in mixin.required_models:
-                setattr(self, f"_{req.attribute_name}", None)
-        if hasattr(mixin, "define_objects"):
-            mixin.define_objects(self)
-
     def define_connections(self) -> None:
         """Define the submodels used by connections in the model."""
         for submodel in self.submodels:
