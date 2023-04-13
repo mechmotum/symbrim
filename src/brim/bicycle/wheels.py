@@ -57,14 +57,6 @@ class KnifeEdgeWheel(WheelBase):
                                             *symbols(self._add_prefix("ixx iyy ixx")))
         self.symbols["r"] = Symbol(self._add_prefix("r"))
 
-    def define_kinematics(self) -> None:
-        """Define the kinematics of the wheel."""
-        super().define_kinematics()
-
-    def define_loads(self) -> None:
-        """Define the loads acting upon the wheel."""
-        super().define_loads()
-
     @property
     def center(self) -> Point:
         """Point representing the center of the wheel."""
@@ -105,14 +97,6 @@ class ToroidalWheel(WheelBase):
                                             *symbols(self._add_prefix("ixx iyy ixx")))
         self.symbols["r"] = Symbol(self._add_prefix("r"))
         self.symbols["tr"] = Symbol(self._add_prefix("tr"))
-
-    def define_kinematics(self) -> None:
-        """Define the kinematics of the wheel."""
-        super().define_kinematics()
-
-    def define_loads(self) -> None:
-        """Define the loads acting upon the wheel."""
-        super().define_loads()
 
     @property
     def center(self) -> Point:

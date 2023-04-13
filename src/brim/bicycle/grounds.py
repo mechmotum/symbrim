@@ -32,10 +32,6 @@ class GroundBase(ModelBase):
         super().define_kinematics()
         self.origin.set_vel(self.frame, 0)
 
-    def define_loads(self) -> None:
-        """Define the loads acting upon the ground."""
-        super().define_loads()
-
     @property
     def body(self) -> RigidBody:
         """The body representing the ground."""

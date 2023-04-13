@@ -1,7 +1,7 @@
 """Module containing the base class for all models in BRiM."""
 from __future__ import annotations
 
-from abc import ABCMeta, abstractmethod
+from abc import ABCMeta
 from typing import TYPE_CHECKING, Any
 
 from sympy import symbols
@@ -210,15 +210,12 @@ class ConnectionBase(BrimBase, metaclass=ConnectionMeta):
         for req in self.required_models:
             setattr(self, f"_{req.attribute_name}", None)
 
-    @abstractmethod
     def define_objects(self) -> None:
         """Define the objects in the connection."""
 
-    @abstractmethod
     def define_kinematics(self) -> None:
         """Define the kinematics of the connection."""
 
-    @abstractmethod
     def define_loads(self) -> None:
         """Define the loads on the connection."""
 
@@ -264,19 +261,16 @@ class ModelBase(BrimBase, metaclass=ModelMeta):
         for submodel in self.submodels:
             submodel.define_connections()
 
-    @abstractmethod
     def define_objects(self) -> None:
         """Initialize the objects belonging to the model."""
         for submodel in self.submodels:
             submodel.define_objects()
 
-    @abstractmethod
     def define_kinematics(self) -> None:
         """Establish the kinematics of the objects belonging to the model."""
         for submodel in self.submodels:
             submodel.define_kinematics()
 
-    @abstractmethod
     def define_loads(self) -> None:
         """Define the loads that are part of the model."""
         for submodel in self.submodels:
