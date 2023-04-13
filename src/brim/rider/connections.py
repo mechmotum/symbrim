@@ -82,7 +82,3 @@ class RiderLeanConnection(ConnectionBase):
                      self.q[0], self.u[0], self.lean_point, self.rider.lean_point,
                      self.lean_axis, self.rider.lean_axis)
         )
-
-    def define_loads(self) -> None:
-        """Define the loads of the rider lean connection for the rear frame."""
-        super().define_loads()

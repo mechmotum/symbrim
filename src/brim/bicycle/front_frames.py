@@ -61,10 +61,6 @@ class RigidFrontFrame(FrontFrameBase):
         super().define_kinematics()
         self.wheel_attachment.set_vel(self.frame, 0)
 
-    def define_loads(self):
-        """Define the loads acting upon the front frame."""
-        super().define_loads()
-
     @property
     @abstractmethod
     def wheel_axis(self) -> Vector:
