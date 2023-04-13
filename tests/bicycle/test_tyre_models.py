@@ -85,6 +85,10 @@ class TestNonHolonomicTyreModel:
                 super().define_loads()
                 self.tyre_model.define_loads()
 
+            def define_constraints(self) -> None:
+                super().define_constraints()
+                self.tyre_model.define_constraints()
+
         self.model = Model("model")
         self.model.ground = FlatGround("ground")
         self.model.wheel = KnifeEdgeWheel("wheel")
@@ -111,6 +115,7 @@ class TestNonHolonomicTyreModel:
                             + int(not on_ground) * z * ground.normal))
         self.model.define_kinematics()
         self.model.define_loads()
+        self.model.define_constraints()
         fnh = [
             wheel.radius * cos(q1) * q2.diff(t) + x.diff(t),
             wheel.radius * sin(q1) * q2.diff(t) + y.diff(t),

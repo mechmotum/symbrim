@@ -32,6 +32,7 @@ class TestRollingDisc:
         self.rolling_disc.define_objects()
         self.rolling_disc.define_kinematics()
         self.rolling_disc.define_loads()
+        self.rolling_disc.define_constraints()
         self.system = to_system(self.rolling_disc)
         str_vals = self._arbitrary_values()
         inertia = self.rolling_disc.disc.body.central_inertia.to_matrix(

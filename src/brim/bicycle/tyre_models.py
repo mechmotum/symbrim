@@ -71,9 +71,9 @@ class NonHolonomicTyreModel(TyreModelBase):
         super().define_kinematics()
         _set_pos_contact_point(self.contact_point, self.ground, self.wheel)
 
-    def define_loads(self) -> None:
-        """Define the loads of the tyre model."""
-        super().define_loads()
+    def define_constraints(self) -> None:
+        """Define the constraints of the tyre model."""
+        super().define_constraints()
         v0 = self.wheel.center.vel(self.ground.frame) + cross(
             self.wheel.frame.ang_vel_in(self.ground.frame),
             self.contact_point.pos_from(self.wheel.center)

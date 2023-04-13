@@ -11,6 +11,7 @@ class TestWheelsGeneral:
         wheel.define_objects()
         wheel.define_kinematics()
         wheel.define_loads()
+        wheel.define_constraints()
         assert wheel.name == "wheel"
         assert wheel.frame == wheel.body.frame
         assert wheel.center == wheel.body.masscenter

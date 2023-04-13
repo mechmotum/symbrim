@@ -70,4 +70,5 @@ class TestModelBase:
     def test_call_system(self, _create_model) -> None:
         self.disc.define_kinematics()
         self.disc.define_loads()
+        self.disc.define_constraints()
         assert isinstance(self.disc.system, System)
