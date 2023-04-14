@@ -21,3 +21,10 @@ class TestSingleton:
         assert instance2 is not instance
         instance.activate()
         assert instance is self.TestClass()
+
+    def test_singleton_invalid_deactivate(self) -> None:
+        instance = self.TestClass()
+        instance.deactivate()
+        self.TestClass()
+        with pytest.raises(ValueError):
+            instance.deactivate()
