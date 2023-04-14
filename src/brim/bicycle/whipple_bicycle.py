@@ -4,7 +4,8 @@ from __future__ import annotations
 from typing import Any
 
 from sympy import Matrix
-from sympy.physics.mechanics import PinJoint, System, dynamicsymbols
+from sympy.physics.mechanics import PinJoint, dynamicsymbols
+from sympy.physics.mechanics._system import System
 
 from brim.bicycle.bicycle_base import BicycleBase
 from brim.bicycle.front_frames import FrontFrameBase

@@ -5,7 +5,7 @@ from brim.rider import RiderLean, RiderLeanConnection
 from brim.utilities import to_system
 from sympy import Matrix, Symbol, simplify, sin, zeros
 from sympy.physics.mechanics import Point
-from sympy.physics.mechanics.system import System
+from sympy.physics.mechanics._system import System
 
 
 class TestRiderLean:

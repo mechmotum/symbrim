@@ -4,7 +4,7 @@ import pytest
 from brim.bicycle import FlatGround, KnifeEdgeWheel, NonHolonomicTyreModel
 from brim.core import ModelBase, Registry, set_default_formulation
 from brim.other.rolling_disc import RollingDisc
-from sympy.physics.mechanics.system import System
+from sympy.physics.mechanics._system import System
 
 
 class TestModelBase:

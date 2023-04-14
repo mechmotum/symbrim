@@ -8,7 +8,7 @@ from brim.bicycle.wheels import KnifeEdgeWheel, ToroidalWheel
 from brim.core import ConnectionRequirement, ModelBase, ModelRequirement
 from sympy import cos, sin
 from sympy.physics.mechanics import Point, ReferenceFrame, dynamicsymbols
-from sympy.physics.mechanics.system import System
+from sympy.physics.mechanics._system import System
 
 
 class TestComputeContactPoint:

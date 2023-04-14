@@ -3,14 +3,8 @@ from __future__ import annotations
 
 from abc import abstractmethod
 
-from sympy.physics.mechanics import (
-    Point,
-    ReferenceFrame,
-    RigidBody,
-    System,
-    Vector,
-    cross,
-)
+from sympy.physics.mechanics import Point, ReferenceFrame, RigidBody, Vector, cross
+from sympy.physics.mechanics._system import System
 
 from brim.core import ModelBase
 

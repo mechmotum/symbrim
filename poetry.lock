@@ -1345,7 +1345,7 @@ resolved_reference = "79478315408ea5ae115777619ec1bb50d8b8f3df"
 
 [[package]]
 name = "sympy"
-version = "1.12.dev0"
+version = "1.13.dev0"
 description = "Computer algebra system (CAS) in Python"
 category = "main"
 optional = false
@@ -1358,9 +1358,9 @@ mpmath = ">=0.19"
 
 [package.source]
 type = "git"
-url = "https://github.com/TJStienstra/sympy.git"
-reference = "sympy-for-brim"
-resolved_reference = "fc421eb45cc45833378c885e1a23af785382f240"
+url = "https://github.com/sympy/sympy.git"
+reference = "HEAD"
+resolved_reference = "bce780e23c0408e76c83d1c2866b469baa1e1e66"
 
 [[package]]
 name = "tomli"
@@ -1413,4 +1413,4 @@ plotting = ["symmeplot"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "374c68d5fe06543668d84acdf20c5dc2cb6ac8510b69cd40c7ad482c7ec04a5a"
+content-hash = "572156dcd08a31ebf78165e10ea5eb52dc00f50b4772e66b4c4d13ad3029158f"

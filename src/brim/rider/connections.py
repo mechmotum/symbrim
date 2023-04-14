@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 from sympy import Matrix, Symbol
 from sympy.physics.mechanics import PinJoint, Point, dynamicsymbols
-from sympy.physics.mechanics.system import System
+from sympy.physics.mechanics._system import System
 
 from brim.bicycle import RearFrameBase
 from brim.core import ConnectionBase, ModelRequirement

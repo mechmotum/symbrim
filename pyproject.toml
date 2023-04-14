@@ -9,7 +9,7 @@ repository = "https://github.com/TJStienstra/brim"
 
 [tool.poetry.dependencies]
 python = "^3.8"
-sympy = {git = "https://github.com/TJStienstra/sympy.git", rev = "sympy-for-brim"}
+sympy = {git = "https://github.com/sympy/sympy.git"}
 symmeplot = {git = "https://github.com/TJStienstra/symmeplot.git", optional = true}
 
 [tool.poetry.group.lint.dependencies]
