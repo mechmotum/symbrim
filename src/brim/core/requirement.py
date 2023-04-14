@@ -13,6 +13,7 @@ class Requirement:
     def __init__(self, attribute_name: str,
                  submodel_types: type | tuple[type, ...],
                  description: str | None = None,
+                 hard: bool = True,
                  full_name: str | None = None,
                  type_name: str | None = None) -> None:
         """Initialize a new instance of the requirement.
@@ -25,6 +26,9 @@ class Requirement:
             Supported types of the object.
         description : str, optional
             Description of the object, by default None.
+        hard : bool, optional
+            Whether the requirement is hard, i.e. the requirement should be satisfied
+            for the model to be defined, by default True.
         full_name : str, optional
             Full name of the object, by default capitalized version of the attribute
             name, where the underscores are replaced by spaces.
@@ -43,6 +47,7 @@ class Requirement:
         if description is None:
             description = self.types[0].__doc__.split("\n", 1)[0]
         self._description = str(description)
+        self._hard = bool(hard)
         if full_name is None:
             full_name = self.attribute_name.replace("_", " ").capitalize()
         self._full_name = str(full_name)
@@ -64,6 +69,11 @@ class Requirement:
     def description(self) -> str:
         """Description of the object."""
         return self._description
+
+    @property
+    def hard(self) -> bool:
+        """Boolean whether the requirement is a hard requirement."""
+        return self._hard
 
     @property
     def full_name(self) -> str:
