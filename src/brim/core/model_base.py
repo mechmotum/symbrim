@@ -29,54 +29,55 @@ def _get_requirements(bases, namespace, req_attr_name):
     return tuple(requirements.values())
 
 
+def _create_submodel_property(requirement: Requirement) -> property:
+    def getter(self):
+        return getattr(self, f"_{requirement.attribute_name}")
+
+    def setter(self, model):
+        if not (model is None or isinstance(model, requirement.types)):
+            raise TypeError(
+                f"{requirement.full_name} should be an instance of an subclass of "
+                f"{requirement.type_name}, but {model!r} is an instance of "
+                f"{type(model)}.")
+        setattr(self, f"_{requirement.attribute_name}", model)
+
+    getter.__annotations__ = {"return": requirement.type_hint}
+    setter.__annotations__ = {"model": requirement.type_hint, "return": None}
+    return property(getter, setter, None, requirement.description)
+
+
+def _create_connection_property(requirement: Requirement) -> property:
+    def getter(self):
+        return getattr(self, f"_{requirement.attribute_name}")
+
+    def setter(self, conn):
+        if not (conn is None or isinstance(conn, requirement.types)):
+            raise TypeError(
+                f"{requirement.full_name} should be an instance of an subclass "
+                f"of {requirement.type_name}, but {conn!r} is an instance of "
+                f"{type(conn)}.")
+        setattr(self, f"_{requirement.attribute_name}", conn)
+        conn._parent = self
+
+    getter.__annotations__ = {"return": requirement.type_hint}
+    setter.__annotations__ = {"conn": requirement.type_hint, "return": None}
+    return property(getter, setter, None, requirement.description)
+
+
 class ModelMeta(ABCMeta):
     """Metaclass for the :class:`brim.core.model_base.ModelBase`."""
 
     def __new__(mcs, name, bases, namespace, **kwargs):  # noqa: N804
         """Create a new class."""
-
-        def create_submodel_property(requirement: Requirement) -> property:
-            def getter(self):
-                return getattr(self, f"_{requirement.attribute_name}")
-
-            def setter(self, model):
-                if not (model is None or isinstance(model, requirement.types)):
-                    raise TypeError(
-                        f"{requirement.full_name} should be an instance of an subclass "
-                        f"of {requirement.type_name}, but {model!r} is an instance of "
-                        f"{type(model)}.")
-                setattr(self, f"_{requirement.attribute_name}", model)
-
-            getter.__annotations__ = {"return": requirement.type_hint}
-            setter.__annotations__ = {"model": requirement.type_hint, "return": None}
-            return property(getter, setter, None, requirement.description)
-
-        def create_connection_property(requirement: Requirement) -> property:
-            def getter(self):
-                return getattr(self, f"_{requirement.attribute_name}")
-
-            def setter(self, conn):
-                if not (conn is None or isinstance(conn, requirement.types)):
-                    raise TypeError(
-                        f"{requirement.full_name} should be an instance of an subclass "
-                        f"of {requirement.type_name}, but {conn!r} is an instance of "
-                        f"{type(conn)}.")
-                setattr(self, f"_{requirement.attribute_name}", conn)
-                conn._parent = self
-
-            getter.__annotations__ = {"return": requirement.type_hint}
-            setter.__annotations__ = {"conn": requirement.type_hint, "return": None}
-            return property(getter, setter, None, requirement.description)
-
         # Create properties for each of the requirements
         requirements = _get_requirements(bases, namespace, "required_models")
         for req in requirements:
-            namespace[req.attribute_name] = create_submodel_property(req)
+            namespace[req.attribute_name] = _create_submodel_property(req)
         namespace["required_models"] = tuple(requirements)  # Update the requirements
         # Create properties for each of the requirements
         requirements = _get_requirements(bases, namespace, "required_connections")
         for req in requirements:
-            namespace[req.attribute_name] = create_connection_property(req)
+            namespace[req.attribute_name] = _create_connection_property(req)
         namespace["required_connections"] = tuple(requirements)  # Update
         instance = super().__new__(mcs, name, bases, namespace, **kwargs)
         Registry().register_model(instance)
@@ -103,31 +104,10 @@ class ConnectionMeta(ABCMeta):
 
     def __new__(mcs, name, bases, namespace, **kwargs):  # noqa: N804
         """Create a new class."""
-
-        def create_submodel_property(requirement: Requirement) -> property:
-            def getter(self):
-                model_reference = getattr(self, f"_{requirement.attribute_name}")
-                if isinstance(model_reference, str):
-                    return getattr(self._parent, model_reference)
-                return model_reference
-
-            def setter(self, model):
-                if not (isinstance(model, (requirement.types, str)) or model is None):
-                    raise TypeError(
-                        f"{requirement.full_name} should be an instance of an subclass "
-                        f"of {requirement.types} or the name of the model in the "
-                        f"parent, but {model!r} is an instance of {type(model)}.")
-                setattr(self, f"_{requirement.attribute_name}", model)
-
-            getter.__annotations__ = {"return": requirement.type_hint}
-            setter.__annotations__ = {"model": requirement.type_hint | str,
-                                      "return": None}
-            return property(getter, setter, None, requirement.description)
-
         # Create properties for each of the requirements
         requirements = _get_requirements(bases, namespace, "required_models")
         for req in requirements:
-            namespace[req.attribute_name] = create_submodel_property(req)
+            namespace[req.attribute_name] = _create_submodel_property(req)
         namespace["required_models"] = tuple(requirements)  # Update the requirements
         instance = super().__new__(mcs, name, bases, namespace, **kwargs)
         Registry().register_connection(instance)
