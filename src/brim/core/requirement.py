@@ -1,13 +1,14 @@
 """Module containing the requirement class."""
 from __future__ import annotations
 
+from abc import ABC, abstractmethod
 from collections.abc import Iterable
 from typing import Union
 
 __all__ = ["ConnectionRequirement", "ModelRequirement"]
 
 
-class RequirementBase:
+class RequirementBase(ABC):
     """Simple class containing the requirement properties."""
 
     def __init__(self, attribute_name: str,
@@ -98,10 +99,60 @@ class RequirementBase:
                 f"types={self.types!r}, description={self.description!r}, "
                 f"full_name={self.full_name!r}, type_name={self.type_name!r})")
 
+    @abstractmethod
+    def is_satisfied_by(self, obj: object | type) -> bool:
+        """Check whether the object satisfies the requirement.
+
+        Parameters
+        ----------
+        obj : object
+            Object to check.
+
+        Returns
+        -------
+        bool
+            Whether the object satisfies the requirement.
+        """
+
 
 class ModelRequirement(RequirementBase):
     """Class representing a requirement for a submodel."""
 
+    def is_satisfied_by(self, submodel: object | type) -> bool:
+        """Check whether the submodel satisfies the requirement.
+
+        Parameters
+        ----------
+        submodel : Model | type
+            Submodel to check.
+
+        Returns
+        -------
+        bool
+            Whether the submodel satisfies the requirement.
+        """
+        if not (isinstance(submodel, self.types) or issubclass(submodel, self.types)):
+            return False
+        return True
+
 
 class ConnectionRequirement(RequirementBase):
     """Class representing a requirement for a connection."""
+
+    def is_satisfied_by(self, connection: object | type) -> bool:
+        """Check whether the connection satisfies the requirement.
+
+        Parameters
+        ----------
+        connection : Connection
+            Connection to check.
+
+        Returns
+        -------
+        bool
+            Whether the connection satisfies the requirement.
+        """
+        if not (isinstance(connection, self.types) or
+                issubclass(connection, self.types)):
+            return False
+        return True

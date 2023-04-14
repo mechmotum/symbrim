@@ -51,3 +51,8 @@ class TestRequirementGeneral:
     def test_invalid_attribute_name(self, cls, attribute_name) -> None:
         with pytest.raises(ValueError):
             cls(attribute_name, MyModel)
+
+    def test_is_satisfied_by_type(self, cls) -> None:
+        req = cls("my_sub", MyModel)
+        assert req.is_satisfied_by(MyModel)
+        assert not req.is_satisfied_by(MyOtherSubModel)
