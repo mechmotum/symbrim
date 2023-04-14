@@ -6,6 +6,8 @@ from typing import TYPE_CHECKING, Any
 
 from sympy import symbols
 
+from brim.core.registry import Registry
+
 if TYPE_CHECKING:
     from sympy.physics.mechanics import System
 
@@ -76,7 +78,9 @@ class ModelMeta(ABCMeta):
         for req in requirements:
             namespace[req.attribute_name] = create_connection_property(req)
         namespace["required_connections"] = tuple(requirements)  # Update
-        return super().__new__(mcs, name, bases, namespace, **kwargs)
+        instance = super().__new__(mcs, name, bases, namespace, **kwargs)
+        Registry().register_model(instance)
+        return instance
 
     def __call__(cls, *args, **kwargs):
         """Create a new instance of the class.
@@ -125,7 +129,9 @@ class ConnectionMeta(ABCMeta):
         for req in requirements:
             namespace[req.attribute_name] = create_submodel_property(req)
         namespace["required_models"] = tuple(requirements)  # Update the requirements
-        return super().__new__(mcs, name, bases, namespace, **kwargs)
+        instance = super().__new__(mcs, name, bases, namespace, **kwargs)
+        Registry().register_connection(instance)
+        return instance
 
 
 class BrimBase:
