@@ -1,3 +1,4 @@
+"""Module containing the connections between the rider and the bicycle."""
 from __future__ import annotations
 
 from typing import TYPE_CHECKING

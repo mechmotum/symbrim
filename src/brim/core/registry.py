@@ -1,3 +1,4 @@
+"""Registry to keep track of all existing model and connection types in BRiM."""
 from __future__ import annotations
 
 from brim.core.singleton import Singleton
