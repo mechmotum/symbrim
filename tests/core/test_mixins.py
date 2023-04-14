@@ -6,11 +6,7 @@ from sympy.physics.mechanics import RigidBody
 
 
 class MyModel(NewtonianBodyMixin, ModelBase):
-    def define_kinematics(self) -> None:
-        pass
-
-    def define_loads(self) -> None:
-        pass
+    pass
 
 
 class TestNewtonianBodyMixin:

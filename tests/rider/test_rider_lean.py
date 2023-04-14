@@ -42,6 +42,10 @@ class TestRiderLean:
                 super().define_loads()
                 self.rider_connection.define_loads()
 
+            def define_constraints(self) -> None:
+                super().define_constraints()
+                self.rider_connection.define_constraints()
+
         self.model = Model("model")
         self.model.rear_frame = RigidRearFrame("rear_frame")
         self.model.rider = RiderLean("rider")
@@ -70,6 +74,7 @@ class TestRiderLean:
         ixx = self.rider.body.central_inertia.to_matrix(self.rider.frame)[0]
         self.model.define_kinematics()
         self.model.define_loads()
+        self.model.define_constraints()
         system = to_system(self.model)
         system.apply_gravity(g * self.rear.z)
         system.form_eoms()

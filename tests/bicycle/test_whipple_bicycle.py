@@ -98,6 +98,7 @@ class TestWhippleBicycleMoore:
         self.bike.define_objects()
         self.bike.define_kinematics()
         self.bike.define_loads()
+        self.bike.define_constraints()
         system = to_system(self.bike)
         system.apply_gravity(-Symbol("g") * self.bike.ground.normal)
         system.q_ind = [*self.bike.q[:4], *self.bike.q[5:]]

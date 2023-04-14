@@ -94,6 +94,11 @@ class RollingDisc(ModelBase):
         super().define_loads()
         self.tyre.define_loads()
 
+    def define_constraints(self) -> None:
+        """Define the constraints of the rolling disc."""
+        super().define_constraints()
+        self.tyre.define_constraints()
+
 
 def rolling_disc_manual() -> System:
     """Create a rolling disc model manually.
