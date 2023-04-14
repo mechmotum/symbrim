@@ -7,7 +7,7 @@ from typing import Any
 from sympy import Symbol, symbols
 from sympy.physics.mechanics import Point, Vector, inertia
 
-from brim.core import ModelBase, NewtonianBodyMixin
+from brim.core import ModelBase, NewtonianBodyMixin, set_default_formulation
 
 __all__ = ["FrontFrameBase", "RigidFrontFrame", "RigidFrontFrameMoore"]
 
@@ -26,27 +26,9 @@ class FrontFrameBase(NewtonianBodyMixin, ModelBase):
         """Wheel axis expressed in the front frame."""
 
 
+@set_default_formulation("moore")
 class RigidFrontFrame(FrontFrameBase):
     """Rigid front frame."""
-
-    def __new__(cls, name: str, *args, formulation: str = "moore", **kwargs
-                ) -> RigidFrontFrame:
-        """Create a new instance of the front frame.
-
-        Parameters
-        ----------
-        name : str
-            Name of the front frame.
-        formulation : str, optional
-            Formulation of the front frame, by default "moore".
-
-        """
-        if formulation == "moore":
-            cls = RigidFrontFrameMoore
-        else:
-            raise NotImplementedError(f"Formulation '{formulation}' has not been "
-                                      f"implemented.")
-        return super().__new__(cls)
 
     def define_objects(self):
         """Define the objects of the front frame."""
@@ -75,6 +57,8 @@ class RigidFrontFrame(FrontFrameBase):
 class RigidFrontFrameMoore(RigidFrontFrame):
     """Rigid front frame model based on Moore's formulation."""
 
+    formulation: str = "moore"
+
     @property
     def descriptions(self) -> dict[Any, str]:
         """Descriptions of the attributes of the front frame."""
@@ -82,13 +66,13 @@ class RigidFrontFrameMoore(RigidFrontFrame):
             **super().descriptions,
             self.symbols["d2"]: "Distance between wheels along the steer axis.",
             self.symbols["d3"]: "Perpendicular distance from the steer axis to the "
-                                 "center of the front wheel (fork offset).",
+                                "center of the front wheel (fork offset).",
             self.symbols["l3"]: "Distance in the front frame x drection from the front "
-                                 "wheel center to the center of mass of the front "
-                                 "frame.",
+                                "wheel center to the center of mass of the front "
+                                "frame.",
             self.symbols["l4"]: "Distance in the front frame z drection from the front "
-                                 "wheel center to the center of mass of the front "
-                                 "frame.",
+                                "wheel center to the center of mass of the front "
+                                "frame.",
         }
 
     def define_objects(self):

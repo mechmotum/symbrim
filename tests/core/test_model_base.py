@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 from brim.bicycle import FlatGround, KnifeEdgeWheel, NonHolonomicTyreModel
-from brim.core import ModelBase
+from brim.core import ModelBase, Registry, set_default_formulation
 from brim.other.rolling_disc import RollingDisc
 from sympy.physics.mechanics.system import System
 
@@ -72,3 +72,67 @@ class TestModelBase:
         self.disc.define_loads()
         self.disc.define_constraints()
         assert isinstance(self.disc.system, System)
+
+
+class TestFromFormulation:
+    @pytest.fixture(autouse=True)
+    def _setup_registry(self, request) -> None:
+        def activate_registry():
+            old_reg.activate()
+
+        old_reg = Registry()
+        old_reg.deactivate()
+        request.addfinalizer(activate_registry)
+
+        @set_default_formulation("default_formulation")
+        class MyModel(ModelBase):
+            pass
+
+        class MyModel2(MyModel):
+            formulation = "default_formulation"
+
+        class MyModel3(MyModel):
+            formulation = "other_formulation"
+
+        class MyModel4(MyModel):
+            formulation = "double_formulation"
+
+        class MyModel5(MyModel):
+            formulation = "double_formulation"
+
+        self.MyModel, self.MyModel2, self.MyModel3, self.MyModel4, self.MyModel5 = (
+            MyModel, MyModel2, MyModel3, MyModel4, MyModel5)
+
+    def test_formulation_string(self) -> None:
+        assert self.MyModel.formulation == ""
+        assert self.MyModel2.formulation == "default_formulation"
+        assert self.MyModel3.formulation == "other_formulation"
+
+    def test_default_formulation(self) -> None:
+        model = self.MyModel("model")
+        assert model.formulation == "default_formulation"
+        assert isinstance(model, self.MyModel2)
+
+    def test_formulation_argument(self) -> None:
+        model = self.MyModel.from_formulation("other_formulation", "model")
+        assert model.formulation == "other_formulation"
+        assert isinstance(model, self.MyModel3)
+
+    def test_not_existing_formulation(self) -> None:
+        with pytest.raises(ValueError):
+            self.MyModel.from_formulation("not existing formulation", "model")
+
+    def test_double_formulation(self) -> None:
+        with pytest.raises(ValueError):
+            self.MyModel.from_formulation("double_formulation", "model")
+
+    def test_direct_instantiation(self) -> None:
+        model = self.MyModel4("model")
+        assert model.formulation == "double_formulation"
+        assert isinstance(model, self.MyModel4)
+
+    def test_set_default_formulation_invalid_type(self) -> None:
+        with pytest.raises(TypeError):
+            @set_default_formulation("my_formulation")
+            class A:
+                pass

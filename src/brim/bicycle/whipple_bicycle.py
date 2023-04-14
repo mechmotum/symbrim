@@ -12,11 +12,12 @@ from brim.bicycle.grounds import GroundBase
 from brim.bicycle.rear_frames import RearFrameBase
 from brim.bicycle.tyre_models import TyreModelBase
 from brim.bicycle.wheels import WheelBase
-from brim.core import ConnectionRequirement, ModelRequirement
+from brim.core import ConnectionRequirement, ModelRequirement, set_default_formulation
 
 __all__ = ["WhippleBicycle", "WhippleBicycleMoore"]
 
 
+@set_default_formulation("moore")
 class WhippleBicycle(BicycleBase):
     """Base class for the Whipple bicycle model."""
 
@@ -41,25 +42,6 @@ class WhippleBicycle(BicycleBase):
     rear_tyre: TyreModelBase
     front_tyre: TyreModelBase
 
-    def __new__(cls, name: str, *args, formulation: str = "moore", **kwargs
-                ) -> WhippleBicycle:
-        """Create a new instance of the Whipple bicycle.
-
-        Parameters
-        ----------
-        name : str
-            Name of the Whipple bicycle.
-        formulation : str, optional
-            Formulation of the Whipple bicycle, by default "moore".
-
-        """
-        if formulation == "moore":
-            cls = WhippleBicycleMoore
-        else:
-            raise NotImplementedError(f"The formulation '{formulation}' has not "
-                                      f"been implemented in {cls}.")
-        return super().__new__(cls)
-
     def define_connections(self) -> None:
         """Define the connections between the submodels."""
         super().define_connections()
@@ -71,6 +53,8 @@ class WhippleBicycle(BicycleBase):
 
 class WhippleBicycleMoore(WhippleBicycle):
     """Whipple bicycle model based on Moore's formulation."""
+
+    formulation: str = "moore"
 
     @property
     def descriptions(self) -> dict[Any, str]:
