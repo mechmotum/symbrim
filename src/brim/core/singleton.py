@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+__all__ = ["SingletonMeta", "Singleton"]
+
 
 class SingletonMeta(type):
     """Metaclass for Singleton."""
