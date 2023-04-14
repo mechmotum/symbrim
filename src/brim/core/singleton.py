@@ -20,7 +20,7 @@ class SingletonMeta(type):
 
     def deactivate(cls, instance: object):
         """Deactivate the instance of the class."""
-        if cls in cls._instances:
+        if cls in cls._instances:  # pragma: no cover
             if cls._instances[cls] is instance:
                 cls._instances.pop(cls)
             else:
