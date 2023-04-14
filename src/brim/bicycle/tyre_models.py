@@ -5,7 +5,7 @@ from sympy.physics.mechanics import Point, System, cross
 
 from brim.bicycle.grounds import FlatGround, GroundBase
 from brim.bicycle.wheels import KnifeEdgeWheel, ToroidalWheel, WheelBase
-from brim.core import ConnectionBase, Requirement
+from brim.core import ConnectionBase, ModelRequirement
 
 __all__ = ["TyreModelBase", "NonHolonomicTyreModel"]
 
@@ -31,9 +31,9 @@ def _set_pos_contact_point(contact_point: Point, ground: GroundBase, wheel: Whee
 class TyreModelBase(ConnectionBase):
     """Base class for the tyre model connectors."""
 
-    required_models: tuple[Requirement, ...] = (
-        Requirement("ground", GroundBase, "Submodel of the ground."),
-        Requirement("wheel", WheelBase, "Submodel of the wheel."),
+    required_models: tuple[ModelRequirement, ...] = (
+        ModelRequirement("ground", GroundBase, "Submodel of the ground."),
+        ModelRequirement("wheel", WheelBase, "Submodel of the wheel."),
     )
 
     def define_objects(self) -> None:
@@ -61,9 +61,10 @@ class TyreModelBase(ConnectionBase):
 class NonHolonomicTyreModel(TyreModelBase):
     """Tyre model connection based on non-holonomic constraints."""
 
-    required_models: tuple[Requirement, ...] = (
-        Requirement("ground", FlatGround, "Submodel of the ground."),
-        Requirement("wheel", (KnifeEdgeWheel, ToroidalWheel), "Submodel of the wheel."),
+    required_models: tuple[ModelRequirement, ...] = (
+        ModelRequirement("ground", FlatGround, "Submodel of the ground."),
+        ModelRequirement("wheel", (KnifeEdgeWheel, ToroidalWheel),
+                         "Submodel of the wheel."),
     )
 
     def define_kinematics(self) -> None:

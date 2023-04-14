@@ -12,7 +12,7 @@ from brim.bicycle.grounds import GroundBase
 from brim.bicycle.rear_frames import RearFrameBase
 from brim.bicycle.tyre_models import TyreModelBase
 from brim.bicycle.wheels import WheelBase
-from brim.core import Requirement
+from brim.core import ConnectionRequirement, ModelRequirement
 
 __all__ = ["WhippleBicycle", "WhippleBicycleMoore"]
 
@@ -20,16 +20,18 @@ __all__ = ["WhippleBicycle", "WhippleBicycleMoore"]
 class WhippleBicycle(BicycleBase):
     """Base class for the Whipple bicycle model."""
 
-    required_models: tuple[Requirement, ...] = (
-        Requirement("ground", GroundBase, "Submodel of the ground."),
-        Requirement("rear_frame", RearFrameBase, "Submodel of the rear frame."),
-        Requirement("front_frame", FrontFrameBase, "Submodel of the front frame."),
-        Requirement("rear_wheel", WheelBase, "Submodel of the rear wheel."),
-        Requirement("front_wheel", WheelBase, "Submodel of the front wheel."),
+    required_models: tuple[ModelRequirement, ...] = (
+        ModelRequirement("ground", GroundBase, "Submodel of the ground."),
+        ModelRequirement("rear_frame", RearFrameBase, "Submodel of the rear frame."),
+        ModelRequirement("front_frame", FrontFrameBase, "Submodel of the front frame."),
+        ModelRequirement("rear_wheel", WheelBase, "Submodel of the rear wheel."),
+        ModelRequirement("front_wheel", WheelBase, "Submodel of the front wheel."),
     )
-    required_connections: tuple[Requirement, ...] = (
-        Requirement("rear_tyre", TyreModelBase, "Tyre model for the rear wheel."),
-        Requirement("front_tyre", TyreModelBase, "Tyre model for the front wheel."),
+    required_connections: tuple[ConnectionRequirement, ...] = (
+        ConnectionRequirement("rear_tyre", TyreModelBase,
+                              "Tyre model for the rear wheel."),
+        ConnectionRequirement("front_tyre", TyreModelBase,
+                              "Tyre model for the front wheel."),
     )
     ground: GroundBase
     rear_frame: RearFrameBase

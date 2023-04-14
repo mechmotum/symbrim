@@ -8,7 +8,7 @@ from sympy.physics.mechanics import PinJoint, Point, dynamicsymbols
 from sympy.physics.mechanics.system import System
 
 from brim.bicycle import RearFrameBase
-from brim.core import ConnectionBase, Requirement
+from brim.core import ConnectionBase, ModelRequirement
 from brim.rider.rider_lean import RiderLean
 
 if TYPE_CHECKING:
@@ -20,9 +20,9 @@ __all__ = ["RiderLeanConnection"]
 class RiderLeanConnection(ConnectionBase):
     """Mixin that adds rider lean support to the RearFrameBase."""
 
-    required_models: tuple[Requirement, ...] = (
-        Requirement("rider", RiderLean, "Leaning rider model."),
-        Requirement("rear_frame", RearFrameBase, "Rear frame model."),
+    required_models: tuple[ModelRequirement, ...] = (
+        ModelRequirement("rider", RiderLean, "Leaning rider model."),
+        ModelRequirement("rear_frame", RearFrameBase, "Rear frame model."),
     )
     rider: RiderLean
     rear_frame: RearFrameBase

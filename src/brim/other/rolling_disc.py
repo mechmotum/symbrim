@@ -16,18 +16,18 @@ from sympy.physics.mechanics import (
 from brim.bicycle.grounds import GroundBase
 from brim.bicycle.tyre_models import TyreModelBase
 from brim.bicycle.wheels import WheelBase
-from brim.core import ModelBase, Requirement
+from brim.core import ConnectionRequirement, ModelBase, ModelRequirement
 
 
 class RollingDisc(ModelBase):
     """Rolling disc model."""
 
-    required_models: tuple[Requirement, ...] = (
-        Requirement("ground", GroundBase, "Ground model."),
-        Requirement("disc", WheelBase, "Disc model."),
+    required_models: tuple[ModelRequirement, ...] = (
+        ModelRequirement("ground", GroundBase, "Ground model."),
+        ModelRequirement("disc", WheelBase, "Disc model."),
     )
-    required_connections: tuple[Requirement, ...] = (
-        Requirement("tyre", TyreModelBase, "Tyre model."),
+    required_connections: tuple[ConnectionRequirement, ...] = (
+        ConnectionRequirement("tyre", TyreModelBase, "Tyre model."),
     )
     ground: GroundBase
     disc: WheelBase

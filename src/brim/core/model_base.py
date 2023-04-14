@@ -11,7 +11,7 @@ from brim.core.registry import Registry
 if TYPE_CHECKING:
     from sympy.physics.mechanics import System
 
-    from brim.core.requirement import Requirement
+    from brim.core.requirement import ConnectionRequirement, ModelRequirement
 
 __all__ = ["ConnectionBase", "ConnectionMeta", "ModelBase", "ModelMeta"]
 
@@ -29,7 +29,7 @@ def _get_requirements(bases, namespace, req_attr_name):
     return tuple(requirements.values())
 
 
-def _create_submodel_property(requirement: Requirement) -> property:
+def _create_submodel_property(requirement: ModelRequirement) -> property:
     def getter(self):
         return getattr(self, f"_{requirement.attribute_name}")
 
@@ -46,7 +46,7 @@ def _create_submodel_property(requirement: Requirement) -> property:
     return property(getter, setter, None, requirement.description)
 
 
-def _create_connection_property(requirement: Requirement) -> property:
+def _create_connection_property(requirement: ConnectionRequirement) -> property:
     def getter(self):
         return getattr(self, f"_{requirement.attribute_name}")
 
@@ -181,7 +181,7 @@ class BrimBase:
 class ConnectionBase(BrimBase, metaclass=ConnectionMeta):
     """Base class for all connections in brim."""
 
-    required_models: tuple[Requirement, ...] = ()
+    required_models: tuple[ModelRequirement, ...] = ()
 
     def __init__(self, name: str) -> None:
         """Create a new instance of the connection.
@@ -212,8 +212,8 @@ class ConnectionBase(BrimBase, metaclass=ConnectionMeta):
 class ModelBase(BrimBase, metaclass=ModelMeta):
     """Base class for all objects in brim."""
 
-    required_models: tuple[Requirement, ...] = ()
-    required_connections: tuple[Requirement, ...] = ()
+    required_models: tuple[ModelRequirement, ...] = ()
+    required_connections: tuple[ConnectionRequirement, ...] = ()
 
     def __init__(self, name: str) -> None:
         """Create a new instance of the model.
