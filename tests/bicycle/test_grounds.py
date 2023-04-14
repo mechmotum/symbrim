@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 from brim.bicycle.grounds import FlatGround
-from sympy.physics.mechanics.system import System
+from sympy.physics.mechanics._system import System
 
 
 class TestFlatGround:

@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 from sympy import ImmutableMatrix, zeros
 from sympy.core.cache import cacheit
-from sympy.physics.mechanics import System
+from sympy.physics.mechanics._system import System
 
 if TYPE_CHECKING:
     from brim.core import ModelBase

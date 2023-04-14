@@ -1,7 +1,8 @@
 """Module containing tyre models for bicycles."""
 from __future__ import annotations
 
-from sympy.physics.mechanics import Point, System, cross
+from sympy.physics.mechanics import Point, cross
+from sympy.physics.mechanics._system import System
 
 from brim.bicycle.grounds import FlatGround, GroundBase
 from brim.bicycle.wheels import KnifeEdgeWheel, ToroidalWheel, WheelBase

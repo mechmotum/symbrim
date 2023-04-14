@@ -7,11 +7,11 @@ from sympy import Matrix, Symbol, symbols
 from sympy.physics.mechanics import (
     ReferenceFrame,
     RigidBody,
-    System,
     cross,
     dynamicsymbols,
     inertia,
 )
+from sympy.physics.mechanics._system import System
 
 from brim.bicycle.grounds import GroundBase
 from brim.bicycle.tyre_models import TyreModelBase

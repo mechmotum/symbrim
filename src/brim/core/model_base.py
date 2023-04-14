@@ -10,7 +10,7 @@ from sympy import symbols
 from brim.core.registry import Registry
 
 if TYPE_CHECKING:
-    from sympy.physics.mechanics import System
+    from sympy.physics.mechanics._system import System
 
     from brim.core.requirement import ConnectionRequirement, ModelRequirement
 
