@@ -12,12 +12,12 @@ class TestRigidRearFrame:
         ("moore", RigidRearFrameMoore),
     ])
     def test_init(self, formulation_name, expected_class) -> None:
-        front = RigidRearFrame("rear", formulation=formulation_name)
+        front = RigidRearFrame.from_formulation(formulation_name, "rear")
         assert isinstance(front, expected_class)
 
     def test_init_error(self) -> None:
-        with pytest.raises(NotImplementedError):
-            RigidRearFrame("rear", formulation="not_implemented")
+        with pytest.raises(ValueError):
+            RigidRearFrame.from_formulation("not_implemented", "rear")
 
 
 class TestRigidRearFrameMoore:

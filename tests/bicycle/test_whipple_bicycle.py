@@ -29,12 +29,12 @@ class TestWhippleBicycle:
         ("moore", WhippleBicycleMoore),
     ])
     def test_init(self, formulation_name, expected_class) -> None:
-        front = WhippleBicycle("bike", formulation=formulation_name)
+        front = WhippleBicycle.from_formulation(formulation_name, "bike")
         assert isinstance(front, expected_class)
 
     def test_init_error(self) -> None:
-        with pytest.raises(NotImplementedError):
-            WhippleBicycle("bike", formulation="not_implemented")
+        with pytest.raises(ValueError):
+            WhippleBicycle.from_formulation("not_implemented", "bike")
 
 
 class TestWhippleBicycleMoore:

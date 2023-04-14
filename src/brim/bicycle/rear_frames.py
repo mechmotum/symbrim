@@ -7,7 +7,7 @@ from typing import Any
 from sympy import Symbol, symbols
 from sympy.physics.mechanics import Point, Vector, inertia
 
-from brim.core import ModelBase, NewtonianBodyMixin
+from brim.core import ModelBase, NewtonianBodyMixin, set_default_formulation
 
 __all__ = ["RearFrameBase", "RigidRearFrame", "RigidRearFrameMoore"]
 
@@ -26,26 +26,9 @@ class RearFrameBase(NewtonianBodyMixin, ModelBase):
         """Wheel axis expressed in the rear frame."""
 
 
+@set_default_formulation("moore")
 class RigidRearFrame(RearFrameBase):
     """Rigid rear frame."""
-
-    def __new__(cls, name: str, *args, formulation="moore", **kwargs):
-        """Create a new instance of the rear frame.
-
-        Parameters
-        ----------
-        name : str
-            Name of the rear frame.
-        formulation : str, optional
-            Formulation of the rear frame, by default "moore".
-
-        """
-        if formulation == "moore":
-            cls = RigidRearFrameMoore
-        else:
-            raise NotImplementedError(f"Formulation '{formulation}' has not been "
-                                      f"implemented.")
-        return super().__new__(cls)
 
     def define_objects(self):
         """Define the objects of the rear frame."""
@@ -82,6 +65,8 @@ class RigidRearFrame(RearFrameBase):
 
 class RigidRearFrameMoore(RigidRearFrame):
     """Rigid rear frame model based on Moore's formulation."""
+
+    formulation: str = "moore"
 
     @property
     def descriptions(self) -> dict[Any, str]:

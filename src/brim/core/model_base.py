@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from abc import ABCMeta
+from functools import wraps
 from typing import TYPE_CHECKING, Any
 
 from sympy import symbols
@@ -13,7 +14,8 @@ if TYPE_CHECKING:
 
     from brim.core.requirement import ConnectionRequirement, ModelRequirement
 
-__all__ = ["ConnectionBase", "ConnectionMeta", "ModelBase", "ModelMeta"]
+__all__ = ["ConnectionBase", "ConnectionMeta", "ModelBase", "ModelMeta",
+           "set_default_formulation"]
 
 
 def _get_requirements(bases, namespace, req_attr_name):
@@ -82,21 +84,6 @@ class ModelMeta(ABCMeta):
         instance = super().__new__(mcs, name, bases, namespace, **kwargs)
         Registry().register_model(instance)
         return instance
-
-    def __call__(cls, *args, **kwargs):
-        """Create a new instance of the class.
-
-        Notes
-        -----
-        The formulation is removed from the keyword arguments before the instance is
-        created. This is done to prevent the formulation from being passed to the
-        ``__init__`` method.
-        """
-        obj = cls.__new__(cls, *args, **kwargs)
-        if "formulation" in kwargs:
-            del kwargs["formulation"]
-        obj.__init__(*args, **kwargs)
-        return obj
 
 
 class ConnectionMeta(ABCMeta):
@@ -214,6 +201,7 @@ class ModelBase(BrimBase, metaclass=ModelMeta):
 
     required_models: tuple[ModelRequirement, ...] = ()
     required_connections: tuple[ConnectionRequirement, ...] = ()
+    formulation: str = ""
 
     def __init__(self, name: str) -> None:
         """Create a new instance of the model.
@@ -245,6 +233,22 @@ class ModelBase(BrimBase, metaclass=ModelMeta):
             connections.append(getattr(self, req.attribute_name))
         return frozenset(conn for conn in connections if conn is not None)
 
+    @classmethod
+    def from_formulation(cls, formulation: str, name: str, *args, **kwargs
+                         ) -> ModelBase:
+        """Create a model from a formulation."""
+        possible_models = []
+        for model in Registry().models:
+            if issubclass(model, cls) and model.formulation == formulation:
+                possible_models.append(model)
+        if len(possible_models) == 0:
+            raise ValueError(f"No model found for formulation {formulation!r} of type "
+                             f"{cls}.")
+        if len(possible_models) > 1:
+            raise ValueError(f"Multiple models found for formulation {formulation!r} "
+                             f"of type {cls}: {set(possible_models)}.")
+        return possible_models[0](name, *args, **kwargs)
+
     def define_connections(self) -> None:
         """Define the submodels used by connections in the model."""
         for submodel in self.submodels:
@@ -269,3 +273,22 @@ class ModelBase(BrimBase, metaclass=ModelMeta):
         """Define the constraints on the model."""
         for submodel in self.submodels:
             submodel.define_constraints()
+
+
+def set_default_formulation(formulation: str) -> None:
+    """Set the default formulation for a model."""
+
+    def decorator(model: ModelBase) -> ModelBase:
+        old_new = model.__new__
+        @wraps(old_new)
+        def new_new(cls, *args, **kwargs) -> ModelBase:
+            if cls is model:
+                return cls.from_formulation(formulation, *args, **kwargs)
+            return old_new(cls)
+
+        if not issubclass(model, ModelBase):
+            raise TypeError(f"Model {model} is not a subclass of ModelBase.")
+        model.__new__ = new_new
+        return model
+
+    return decorator
