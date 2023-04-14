@@ -5,7 +5,7 @@ from brim.bicycle.grounds import FlatGround
 from brim.bicycle.rear_frames import RigidRearFrameMoore
 from brim.bicycle.tyre_models import NonHolonomicTyreModel, _set_pos_contact_point
 from brim.bicycle.wheels import KnifeEdgeWheel, ToroidalWheel
-from brim.core import ModelBase, Requirement
+from brim.core import ConnectionRequirement, ModelBase, ModelRequirement
 from sympy import cos, sin
 from sympy.physics.mechanics import Point, ReferenceFrame, dynamicsymbols
 from sympy.physics.mechanics.system import System
@@ -56,13 +56,13 @@ class TestNonHolonomicTyreModel:
     @pytest.fixture(autouse=True)
     def _setup(self) -> None:
         class Model(ModelBase):
-            required_models = (
-                Requirement("ground", FlatGround, "Submodel of the ground."),
-                Requirement("wheel", KnifeEdgeWheel, "Submodel of the wheel."),
+            required_models: tuple[ModelRequirement, ...] = (
+                ModelRequirement("ground", FlatGround, "Submodel of the ground."),
+                ModelRequirement("wheel", KnifeEdgeWheel, "Submodel of the wheel."),
             )
-            required_connections = (
-                Requirement("tyre_model", NonHolonomicTyreModel,
-                            "Tyre model for the wheel."),
+            required_connections: tuple[ConnectionRequirement, ...] = (
+                ConnectionRequirement("tyre_model", NonHolonomicTyreModel,
+                                      "Tyre model for the wheel."),
             )
             ground: FlatGround
             wheel: KnifeEdgeWheel

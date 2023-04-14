@@ -1,6 +1,6 @@
 import pytest
 from brim.bicycle import RigidRearFrame
-from brim.core import ModelBase, Requirement
+from brim.core import ConnectionRequirement, ModelBase, ModelRequirement
 from brim.rider import RiderLean, RiderLeanConnection
 from brim.utilities import to_system
 from sympy import Matrix, Symbol, simplify, sin, zeros
@@ -12,12 +12,12 @@ class TestRiderLean:
     @pytest.fixture(autouse=True)
     def setup(self) -> None:
         class Model(ModelBase):
-            required_models: tuple[Requirement] = (
-                Requirement("rear_frame", RigidRearFrame, "Rear frame model."),
-                Requirement("rider", RiderLean, "Rider lean model."),
+            required_models: tuple[ModelRequirement, ...] = (
+                ModelRequirement("rear_frame", RigidRearFrame, "Rear frame model."),
+                ModelRequirement("rider", RiderLean, "Rider lean model."),
             )
-            required_connections = (
-                Requirement("rider_connection", RiderLeanConnection,
+            required_connections: tuple[ConnectionRequirement, ...] = (
+                ConnectionRequirement("rider_connection", RiderLeanConnection,
                             "Rear to rider connection."),
             )
             rear_frame: RigidRearFrame

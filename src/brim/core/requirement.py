@@ -4,10 +4,10 @@ from __future__ import annotations
 from collections.abc import Iterable
 from typing import Union
 
-__all__ = ["Requirement"]
+__all__ = ["ConnectionRequirement", "ModelRequirement"]
 
 
-class Requirement:
+class RequirementBase:
     """Simple class containing the requirement properties."""
 
     def __init__(self, attribute_name: str,
@@ -97,3 +97,11 @@ class Requirement:
         return (f"{self.__class__.__name__}(attribute_name={self.attribute_name!r}, "
                 f"types={self.types!r}, description={self.description!r}, "
                 f"full_name={self.full_name!r}, type_name={self.type_name!r})")
+
+
+class ModelRequirement(RequirementBase):
+    """Class representing a requirement for a submodel."""
+
+
+class ConnectionRequirement(RequirementBase):
+    """Class representing a requirement for a connection."""
