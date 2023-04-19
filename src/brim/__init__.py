@@ -30,6 +30,14 @@ __all__ = [
     "SphericalLeftShoulder", "SphericalRightShoulder",
 
     "FixedPelvisToTorso",
+
+    "BicycleRider",
+
+    "SideLeanConnection",
+
+    "HolonomicSteerConnection",
+
+    "HolonomicPedalsConnection",
 ]
 
 from brim.bicycle import (
@@ -39,6 +47,12 @@ from brim.bicycle import (
     RigidFrontFrame,
     RigidRearFrame,
     WhippleBicycle,
+)
+from brim.brim import (
+    BicycleRider,
+    HolonomicPedalsConnection,
+    HolonomicSteerConnection,
+    SideLeanConnection,
 )
 from brim.rider import (
     FixedPelvisToTorso,
