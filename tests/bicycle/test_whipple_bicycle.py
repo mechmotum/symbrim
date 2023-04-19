@@ -11,7 +11,7 @@ from brim import (
     RigidFrontFrame,
     RigidRearFrame,
 )
-from brim.bicycle import WhippleBicycle, WhippleBicycleMoore
+from brim.bicycle import SimplePedals, WhippleBicycle, WhippleBicycleMoore
 from brim.utilities.utilities import cramer_solve, to_system
 from sympy import Symbol, lambdify
 from sympy.physics.mechanics import KanesMethod, dynamicsymbols
@@ -143,3 +143,12 @@ class TestWhippleBicycleMoore:
             assert self.bike.descriptions[qi]
         for ui in self.bike.u:
             assert self.bike.descriptions[ui]
+
+    def test_pedals(self, _setup_default) -> None:
+        self.bike.pedals = SimplePedals("pedals")
+        self.bike.define_all()
+        assert self.bike.pedals.center_point.pos_from(self.bike.rear_wheel.center).diff(
+            dynamicsymbols._t, self.bike.rear_frame.frame) == 0
+        assert self.bike.pedals.frame.ang_vel_in(self.bike.rear_frame.frame).dot(
+            self.bike.rear_frame.frame.y) == self.bike.u[7] / self.bike.symbols[
+            "gear_ratio"]

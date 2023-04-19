@@ -140,6 +140,14 @@ class BrimBase:
         return self.name
 
     @property
+    def submodels(self) -> frozenset[ModelBase]:
+        """Submodels out of which this model exists."""
+        submodels = []
+        for req in self.required_models:
+            submodels.append(getattr(self, req.attribute_name))
+        return frozenset(submodel for submodel in submodels if submodel is not None)
+
+    @property
     def descriptions(self) -> dict[Any, str]:
         """Descriptions of the attributes of the object."""
         return {}
@@ -148,7 +156,7 @@ class BrimBase:
         """Get description of a given object."""
         if obj in self.descriptions:
             return self.descriptions[obj]
-        if hasattr(self, "submodels"):
+        if hasattr(self, "submodels"):  # pragma: no cover  (is always True)
             for submodel in self.submodels:
                 desc = submodel.get_description(obj)
                 if desc is not None:
@@ -218,14 +226,6 @@ class ModelBase(BrimBase, metaclass=ModelMeta):
             setattr(self, f"_{req.attribute_name}", None)
 
     @property
-    def submodels(self) -> frozenset[ModelBase]:
-        """Submodels out of which this model exists."""
-        submodels = []
-        for req in self.required_models:
-            submodels.append(getattr(self, req.attribute_name))
-        return frozenset(submodel for submodel in submodels if submodel is not None)
-
-    @property
     def connections(self) -> frozenset[ConnectionBase]:
         """Submodels out of which this model exists."""
         connections = []
@@ -273,6 +273,14 @@ class ModelBase(BrimBase, metaclass=ModelMeta):
         """Define the constraints on the model."""
         for submodel in self.submodels:
             submodel.define_constraints()
+
+    def define_all(self) -> None:
+        """Define all aspects of the model."""
+        self.define_connections()
+        self.define_objects()
+        self.define_kinematics()
+        self.define_loads()
+        self.define_constraints()
 
 
 def set_default_formulation(formulation: str) -> None:

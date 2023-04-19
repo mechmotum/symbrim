@@ -1,13 +1,12 @@
 """Mixin classes providing common properties for models."""
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from sympy.physics.mechanics import RigidBody
 from sympy.physics.mechanics._system import System
 
 if TYPE_CHECKING:
-    from sympy import Basic
     from sympy.physics.mechanics import ReferenceFrame, Vector
 
 
@@ -21,7 +20,7 @@ class NewtonianBodyMixin:
         self._system = System.from_newtonian(body)
 
     @property
-    def descriptions(self) -> dict[Basic, str]:
+    def descriptions(self) -> dict[Any, str]:
         """Descriptions of the symbols used in defining the body."""
         body = self.body
         inertia_matrix = body.central_inertia.to_matrix(body.frame)

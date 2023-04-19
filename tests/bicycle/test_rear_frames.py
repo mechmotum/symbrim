@@ -28,6 +28,7 @@ class TestRigidRearFrameMoore:
         assert rear.frame == rear.body.frame
         assert isinstance(rear.steer_attachment, Point)
         assert isinstance(rear.wheel_attachment, Point)
+        assert isinstance(rear.saddle, Point)
         assert rear.wheel_axis == rear.y
 
     def test_kinematics(self):
@@ -37,10 +38,12 @@ class TestRigidRearFrameMoore:
         # Test if kinematics is defined
         rear.steer_attachment.pos_from(rear.body.masscenter)
         rear.wheel_attachment.pos_from(rear.body.masscenter)
+        rear.saddle.pos_from(rear.body.masscenter)
         # Test velocities
         assert rear.body.masscenter.vel(rear.frame) == 0
         assert rear.steer_attachment.vel(rear.frame) == 0
         assert rear.wheel_attachment.vel(rear.frame) == 0
+        assert rear.saddle.vel(rear.frame) == 0
 
     def test_descriptions(self):
         rear = RigidRearFrameMoore("rear")

@@ -1,7 +1,7 @@
 """Module containing the connections between the rider and the bicycle."""
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from sympy import Matrix, Symbol
 from sympy.physics.mechanics import PinJoint, Point, dynamicsymbols
@@ -12,7 +12,6 @@ from brim.core import ConnectionBase, ModelRequirement
 from brim.rider.rider_lean import RiderLean
 
 if TYPE_CHECKING:
-    from sympy import Basic
     from sympy.physics.mechanics import Vector
 __all__ = ["RiderLeanConnection"]
 
@@ -47,7 +46,7 @@ class RiderLeanConnection(ConnectionBase):
         return self._lean_point
 
     @property
-    def descriptions(self) -> dict[Basic, str]:
+    def descriptions(self) -> dict[Any, str]:
         """Descriptions of the symbols of the rider lean connection."""
         desc = {
             **super().descriptions,

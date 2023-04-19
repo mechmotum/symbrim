@@ -25,6 +25,11 @@ class RearFrameBase(NewtonianBodyMixin, ModelBase):
     def wheel_axis(self) -> Vector:
         """Wheel axis expressed in the rear frame."""
 
+    @property
+    @abstractmethod
+    def saddle(self) -> Point:
+        """Point representing the saddle."""
+
 
 @set_default_formulation("moore")
 class RigidRearFrame(RearFrameBase):
@@ -36,12 +41,14 @@ class RigidRearFrame(RearFrameBase):
         self.body.central_inertia = inertia(self.body.frame,
                                             *symbols(self._add_prefix("ixx iyy izz")),
                                             izx=Symbol(self._add_prefix("izx")))
-        self._wheel_attachment = Point("wheel_attachment")
+        self._wheel_attachment = Point(self._add_prefix("wheel_attachment"))
+        self._saddle = Point(self._add_prefix("saddle"))
 
     def define_kinematics(self):
         """Define the kinematics of the rear frame."""
         super().define_kinematics()
         self.wheel_attachment.set_vel(self.frame, 0)
+        self.saddle.set_vel(self.frame, 0)
 
     def define_loads(self):
         """Define the loads acting upon the rear frame."""
@@ -62,6 +69,11 @@ class RigidRearFrame(RearFrameBase):
         """Point representing attachment of the rear wheel."""
         return self._wheel_attachment
 
+    @property
+    def saddle(self) -> Point:
+        """Point representing the saddle."""
+        return self._saddle
+
 
 class RigidRearFrameMoore(RigidRearFrame):
     """Rigid rear frame model based on Moore's formulation."""
@@ -79,30 +91,37 @@ class RigidRearFrameMoore(RigidRearFrame):
                                 "wheel center to the center of mass of the rear frame.",
             self.symbols["l2"]: "Distance in the rear frame z drection from the rear "
                                 "wheel center to the center of mass of the rear frame.",
+            self.symbols["d4"]: "Distance in the rear frame x drection from the rear "
+                                "wheel center to the point representing the saddle.",
+            self.symbols["d5"]: "Distance in the rear frame z drection from the rear "
+                                "wheel center to the point representng the saddle.",
         }
 
     def define_objects(self):
         """Define the objects of the rear frame."""
         super().define_objects()
         self.symbols.update({
-            name: Symbol(self._add_prefix(name)) for name in ("d1", "l1", "l2")})
+            name: Symbol(self._add_prefix(name)) for name in ("d1", "l1", "l2", "d4",
+                                                              "d5")})
         self._steer_attachment = Point("steer_attachment")
 
     def define_kinematics(self):
         """Define the kinematics of the rear frame."""
         super().define_kinematics()
-        d1, l1, l2 = (self.symbols[name] for name in ("d1", "l1", "l2"))
-        self.steer_attachment.set_pos(self.wheel_attachment, d1 * self.body.x)
-        self.body.masscenter.set_pos(self.wheel_attachment,
-                                     l1 * self.body.x + l2 * self.body.z)
+        d1, l1, l2, d4, d5 = (self.symbols[name] for name in ("d1", "l1", "l2", "d4",
+                                                              "d5"))
+        self.steer_attachment.set_pos(self.wheel_attachment, d1 * self.x)
+        self.body.masscenter.set_pos(self.wheel_attachment, l1 * self.x + l2 * self.z)
+        self.saddle.set_pos(self.wheel_attachment, d4 * self.x + d5 * self.z)
         self.body.masscenter.set_vel(self.frame, 0)
         self.steer_attachment.set_vel(self.frame, 0)
         self.wheel_attachment.set_vel(self.frame, 0)
+        self.saddle.set_vel(self.frame, 0)
 
     @property
     def steer_axis(self) -> Vector:
         """Steer axis expressed in the rear frame."""
-        return self.body.z
+        return self.z
 
     @property
     def steer_attachment(self) -> Point:

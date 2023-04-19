@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from sympy import Matrix
+from sympy import Matrix, Symbol
 from sympy.physics.mechanics import PinJoint, dynamicsymbols
 from sympy.physics.mechanics._system import System
 
@@ -72,6 +72,12 @@ class WhippleBicycleMoore(WhippleBicycle):
             self.q[5]: f"Front wheel rotation angle of {self.name}.",
             self.q[6]: f"Steering rotation angle of {self.name}.",
             self.q[7]: f"Rear wheel rotation angle of {self.name}.",
+            self.symbols["gear_ratio"]: "Ratio between the angle of the rear wheel and"
+                                        " the pedals.",
+            self.symbols["l_px"]: f"Distance between the rear wheel and the pedals "
+                                  f"along {self.rear_frame.x}.",
+            self.symbols["l_py"]: f"Distance between the rear wheel and the pedals "
+                                  f"along {self.rear_frame.y}.",
         }
         desc.update({ui: f"Generalized speed of the {desc[qi].lower()}"
                      for qi, ui in zip(self.q, self.u)})
@@ -85,11 +91,13 @@ class WhippleBicycleMoore(WhippleBicycle):
         self.front_tyre.define_objects()
         self.q: Matrix = Matrix(dynamicsymbols(self._add_prefix("q1:9")))
         self.u: Matrix = Matrix(dynamicsymbols(self._add_prefix("u1:9")))
+        self.symbols.update({name: Symbol(
+            self._add_prefix(name)) for name in ("gear_ratio", "l_px", "l_py")})
+        self._system = System.from_newtonian(self.ground.body)
 
     def define_kinematics(self) -> None:
         """Define the kinematics of the Whipple bicycle."""
         super().define_kinematics()
-        self._system = System.from_newtonian(self.ground.body)
         # Define the location of the rear wheel contact point in the ground frame.
         self.rear_tyre.contact_point.set_pos(
             self.ground.origin,
@@ -129,6 +137,16 @@ class WhippleBicycleMoore(WhippleBicycle):
         self.system.add_speeds(*self.u[:5])
         self.system.add_kdes(*(
             ui - qi.diff(dynamicsymbols._t) for qi, ui in zip(self.q[:5], self.u[:5])))
+        if self.pedals:
+            self.pedals.center_point.set_pos(self.rear_wheel.center,
+                                             self.symbols["l_px"] * self.rear_frame.x +
+                                             self.symbols["l_py"] * self.rear_frame.y)
+            self.pedals.frame.orient_axis(
+                self.rear_frame.frame, self.rear_frame.wheel_axis,
+                self.q[7] / self.symbols["gear_ratio"])
+            self.pedals.frame.set_ang_vel(
+                self.rear_frame.frame,
+                self.u[7] / self.symbols["gear_ratio"] * self.rear_frame.wheel_axis)
 
     def define_loads(self) -> None:
         """Define the loads of the Whipple bicycle."""

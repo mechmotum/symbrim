@@ -1,7 +1,7 @@
 """Module containing rider lean models."""
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from sympy import Symbol
 from sympy.physics.mechanics import Point
@@ -45,7 +45,7 @@ class RiderLean(NewtonianBodyMixin, ModelBase):
         self._lean_axis = lean_axis
 
     @property
-    def descriptions(self) -> dict[Symbol, str]:
+    def descriptions(self) -> dict[Any, str]:
         """Descriptions of the symbols of the rider lean model."""
         return {
             **super().descriptions,

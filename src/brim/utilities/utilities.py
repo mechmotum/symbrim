@@ -3,11 +3,15 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from sympy import ImmutableMatrix, zeros
+from sympy import Basic, Derivative, Dummy, ImmutableMatrix, lambdify, zeros
 from sympy.core.cache import cacheit
+from sympy.core.random import random
+from sympy.physics.mechanics import find_dynamicsymbols, msubs
 from sympy.physics.mechanics._system import System
 
 if TYPE_CHECKING:
+    from sympy import Expr
+
     from brim.core import ModelBase
 
 __all__ = ["merge_systems", "to_system", "cramer_solve"]
@@ -28,6 +32,8 @@ def merge_systems(*systems: System) -> System:  # pragma: no cover
     """Combine multiple system instance into one."""
     system = System(systems[0].origin, systems[0].frame)
     for s in systems:
+        if s is None:
+            continue
         for qi in s.q_ind:
             if qi not in system.q:
                 system.add_coordinates(qi, independent=True)
@@ -87,3 +93,20 @@ def cramer_solve(mat, rhs, det_method=det_laplace):  # pragma: no cover
         for col in range(rhs.shape[0]):
             x[col, sol] = det_method(ImmutableMatrix(*mat_im.shape, entry)) / det_mat
     return x
+
+
+def random_eval(expr: Expr, prec: int = 7, method: str = "lambdify") -> float:
+    """Evaluate an expression with random values."""
+    if not isinstance(expr, Basic):
+        return expr
+    free = tuple(expr.free_symbols.union(find_dynamicsymbols(expr)))
+    if method == "lambdify":
+        if any(isinstance(f, Derivative) for f in free):
+            dummy_map = {f: Dummy() for f in free if isinstance(f, Derivative)}
+            free = tuple(dummy_map.get(f, f) for f in free)
+            expr = msubs(expr, dummy_map)
+        return round(lambdify(free, expr, cse=True)(*(random() for _ in free)), prec)
+    elif method == "evalf":
+        return round(expr.evalf(prec, {s: random() for s in free}), prec)
+    else:
+        raise NotImplementedError(f"Method {method} not implemented.")
