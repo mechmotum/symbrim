@@ -30,6 +30,11 @@ class RearFrameBase(NewtonianBodyMixin, ModelBase):
     def saddle(self) -> Point:
         """Point representing the saddle."""
 
+    @property
+    @abstractmethod
+    def wheel_attachment(self) -> Point:
+        """Point representing attachment of the rear wheel."""
+
 
 @set_default_formulation("moore")
 class RigidRearFrame(RearFrameBase):
