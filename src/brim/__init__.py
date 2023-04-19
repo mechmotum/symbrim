@@ -15,6 +15,8 @@ __all__ = [
 
     "NonHolonomicTyreModel",
 
+    "SimplePedals",
+
     "Rider",
 
     "SimpleRigidPelvis",
@@ -46,6 +48,7 @@ from brim.bicycle import (
     NonHolonomicTyreModel,
     RigidFrontFrame,
     RigidRearFrame,
+    SimplePedals,
     WhippleBicycle,
 )
 from brim.brim import (
