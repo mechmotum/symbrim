@@ -71,6 +71,6 @@ class SimpleRigidPelvis(PelvisBase):
         """Define the kinematics."""
         super().define_kinematics()
         self.left_hip_point.set_pos(self.body.masscenter,
-                                    -self.symbols["hip_width"] * self.x / 2)
+                                    -self.symbols["hip_width"] * self.y / 2)
         self.right_hip_point.set_pos(self.body.masscenter,
-                                     self.symbols["hip_width"] * self.x / 2)
+                                     self.symbols["hip_width"] * self.y / 2)

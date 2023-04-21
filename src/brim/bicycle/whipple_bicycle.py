@@ -76,8 +76,8 @@ class WhippleBicycleMoore(WhippleBicycle):
                                         " the pedals.",
             self.symbols["l_px"]: f"Distance between the rear wheel and the pedals "
                                   f"along {self.rear_frame.x}.",
-            self.symbols["l_py"]: f"Distance between the rear wheel and the pedals "
-                                  f"along {self.rear_frame.y}.",
+            self.symbols["l_pz"]: f"Distance between the rear wheel and the pedals "
+                                  f"along {self.rear_frame.z}.",
         }
         desc.update({ui: f"Generalized speed of the {desc[qi].lower()}"
                      for qi, ui in zip(self.q, self.u)})
@@ -92,7 +92,7 @@ class WhippleBicycleMoore(WhippleBicycle):
         self.q: Matrix = Matrix(dynamicsymbols(self._add_prefix("q1:9")))
         self.u: Matrix = Matrix(dynamicsymbols(self._add_prefix("u1:9")))
         self.symbols.update({name: Symbol(
-            self._add_prefix(name)) for name in ("gear_ratio", "l_px", "l_py")})
+            self._add_prefix(name)) for name in ("gear_ratio", "l_px", "l_pz")})
         self._system = System.from_newtonian(self.ground.body)
 
     def define_kinematics(self) -> None:
@@ -140,7 +140,7 @@ class WhippleBicycleMoore(WhippleBicycle):
         if self.pedals:
             self.pedals.center_point.set_pos(self.rear_wheel.center,
                                              self.symbols["l_px"] * self.rear_frame.x +
-                                             self.symbols["l_py"] * self.rear_frame.y)
+                                             self.symbols["l_pz"] * self.rear_frame.z)
             self.pedals.frame.orient_axis(
                 self.rear_frame.frame, self.rear_frame.wheel_axis,
                 self.q[7] / self.symbols["gear_ratio"])

@@ -136,11 +136,11 @@ class TwoPinStickLegMixin:
             PinJoint(
                 self._add_prefix("knee"), self.thigh, self.shank, self.q[0], self.u[0],
                 (l_t - l_t_com) * self.thigh.z, -l_s_com * self.shank.z,
-                joint_axis=self.thigh.y),
+                joint_axis=-self.thigh.y),
             PinJoint(
                 self._add_prefix("ankle"), self.shank, self.foot, self.q[1], self.u[1],
                 (l_s - l_s_com) * self.shank.z, -l_f_com * self.foot.x,
-                joint_axis=self.shank.y),
+                joint_axis=-self.shank.y),
         )
 
     @property
