@@ -72,13 +72,13 @@ class TestWhippleBicycleMoore:
             get_inertia_matrix(bike.front_frame)[2, 2]: 0.007586622998470264,
             Symbol("g"): 9.81}
         initial_state = {
-            **{qi: val for qi, val in zip(bike.q, (
+            **dict(zip(bike.q, (
                 -0.0, -0.17447337661787718, -0.0, 0.6206670416476966,
-                0.3300446174593725, -0.0, -0.2311385135743, -0.0))},
-            **{ui: val for ui, val in zip(bike.u, (
+                0.3300446174593725, -0.0, -0.2311385135743, -0.0))),
+            **dict(zip(bike.u, (
                 2.6703213326046784, -2.453592884421596e-14, -0.7830033527065,
                 -0.6068425835418, 0.0119185528069, -8.912989661489, -0.4859824687093,
-                -8.0133620584155))}}
+                -8.0133620584155)))}
         return constants, initial_state
 
     @pytest.fixture()
@@ -127,12 +127,10 @@ class TestWhippleBicycleMoore:
         assert np.allclose(eval_fnh(q0, u0, p_vals).ravel(), np.zeros(4))
         md, gd = eval_sys(q0, u0, p_vals)
         ud0 = np.linalg.solve(md.astype(np.float64), gd.astype(np.float64)).ravel()
-        expected_state = {
-            udi: val for udi, val in zip(self.bike.u.diff(t), (
+        expected_state = dict(zip(self.bike.u.diff(t), (
                 0.5903429412631302, -2.090870556233152, -0.8353281706376822,
                 7.855528112824374, -0.12055438978863461, -1.8472554144218631,
-                4.6198904039391895, -2.4548072904552343))
-        }
+                4.6198904039391895, -2.4548072904552343)))
         ud0_expected = [expected_state[udi] for udi in system.u.diff(t)]
         assert np.allclose(ud0, ud0_expected)
 

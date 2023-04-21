@@ -31,4 +31,4 @@ class TestSimpleRigidPelvis:
 
     def test_kinematics(self):
         assert self.pelvis.right_hip_point.pos_from(self.pelvis.left_hip_point).dot(
-            self.pelvis.x) == self.pelvis.symbols["hip_width"]
+            self.pelvis.y) == self.pelvis.symbols["hip_width"]

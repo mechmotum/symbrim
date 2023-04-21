@@ -39,7 +39,7 @@ class RiderLean(NewtonianBodyMixin, ModelBase):
     def lean_axis(self, lean_axis: Vector) -> None:
         try:
             lean_axis.express(self.frame)
-        except AttributeError or ValueError as e:
+        except (AttributeError, ValueError) as e:
             raise ValueError(f"The lean axis {lean_axis!r} must be a Vector expressable"
                              f" in the leaning rider frame {self.frame!r}.") from e
         self._lean_axis = lean_axis

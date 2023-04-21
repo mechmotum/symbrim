@@ -60,4 +60,4 @@ class TestTwoPinStickLeg:
         assert self.leg.thigh.masscenter.pos_from(
             self.leg.hip_interpoint) == self.l_t_com * self.leg.thigh.z
         assert self.leg.foot.frame.ang_vel_in(self.leg.hip.frame).dot(
-            self.leg.thigh.y) == sum(self.leg.u)
+            -self.leg.thigh.y) == sum(self.leg.u)
