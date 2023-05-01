@@ -69,11 +69,10 @@ source = ["brim"]
 [tool.coverage.report]
 show_missing = true
 fail_under = 100
-exclude_lines = [
-    "pragma: no cover",
+exclude_also = [
     "if __name__ == .__main__.:",
     "if TYPE_CHECKING:",
-    "get_param_values",
+    "def get_param_values",
 ]
 omit = [
     "src/brim/utilities/plotting.py",

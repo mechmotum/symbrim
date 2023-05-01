@@ -43,7 +43,8 @@ class WheelBase(NewtonianBodyMixin, ModelBase):
         """Rotation axis of the wheel."""
 
     def get_param_values(self, bicycle_parameters: Bicycle,
-                         position: str | None = None) -> dict[Symbol, float]:
+                         position: str | None = None
+                         ) -> dict[Symbol, float]:  # pragma: no cover
         """Get the parameter values of the wheel.
 
         Parameters
@@ -103,7 +104,8 @@ class KnifeEdgeWheel(WheelBase):
         return self.body.y
 
     def get_param_values(self, bicycle_parameters: Bicycle,
-                         position: str | None = None) -> dict[Symbol, float]:
+                         position: str | None = None
+                         ) -> dict[Symbol, float]:  # pragma: no cover
         """Get the parameter values of the wheel.
 
         Parameters
