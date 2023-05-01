@@ -35,14 +35,30 @@ except ImportError:
 data_dir = os.path.join(__file__[:__file__.index("brim") + 4], "data")
 
 
+def _check_dir(bicycle: str, rider: str) -> bool:
+    if bicycle is not None and not os.path.isdir(
+            os.path.join(data_dir, "bicycles", bicycle)):
+        return False
+    if rider is not None and not os.path.isdir(os.path.join(data_dir, "riders", rider)):
+        return False
+    if bicycle is not None and rider is not None:
+        raw_data_dir = os.path.join(data_dir, "riders", rider, "RawData")
+        if not (os.path.isfile(
+                os.path.join(raw_data_dir, f"{rider}{bicycle}YeadonCFG.txt")) and
+                os.path.isfile(
+                    os.path.join(raw_data_dir, f"{rider}{bicycle}YeadonMeas.txt"))):
+            return False
+    return True
+
+
 @pytest.mark.skipif(not os.path.isdir(data_dir), reason="data directory not found")
 class TestParametrize:
     @pytest.mark.parametrize("bicycle, rider", [
         ("Benchmark", None),
         ("Browser", "Jason"),
-        ("Rigidcl", "Luke"),
     ])
     def test_find_data(self, bicycle, rider) -> None:
+        # Only check whether the data that is required at a minimum for the other tests
         bike = Bicycle(bicycle, pathToData=data_dir)
         if rider is not None:
             bike.add_rider(rider)
@@ -158,6 +174,8 @@ class TestParametrize:
         ("Rigidcl", "Luke"),
     ])
     def test_full_model_example(self, _setup_full_model, bicycle, rider) -> None:
+        if not _check_dir(bicycle, rider):
+            pytest.skip("data not found")
         bike_params = Bicycle(bicycle, pathToData=data_dir)
         bike_params.add_rider(rider, reCalc=True)
         bp = remove_uncertainties(bike_params.parameters["Benchmark"])

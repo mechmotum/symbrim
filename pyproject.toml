@@ -77,4 +77,5 @@ exclude_lines = [
 ]
 omit = [
     "src/brim/utilities/plotting.py",
+    "src/brim/utilities/parametrize.py",
 ]
