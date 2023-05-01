@@ -21,7 +21,6 @@ from brim.rider.pelvis_to_torso import FixedPelvisToTorso
 from brim.rider.rider import Rider
 from brim.rider.shoulder_joints import SphericalLeftShoulder, SphericalRightShoulder
 from brim.rider.torso import SimpleRigidTorso
-from brim.utilities.parametrize import get_inertia_vals
 from brim.utilities.utilities import to_system
 from sympy import Symbol, diag
 from sympy.physics.mechanics import ReferenceFrame, RigidBody, msubs
@@ -29,6 +28,7 @@ from sympy.physics.mechanics import ReferenceFrame, RigidBody, msubs
 try:
     from bicycleparameters import Bicycle
     from bicycleparameters.io import remove_uncertainties
+    from brim.utilities.parametrize import get_inertia_vals
 except ImportError:
     pytest.skip("bicycleparameters not installed", allow_module_level=True)
 
