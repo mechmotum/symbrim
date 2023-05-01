@@ -2,12 +2,25 @@
 from __future__ import annotations
 
 from abc import abstractmethod
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from sympy import Symbol, symbols
 from sympy.physics.mechanics import Point, Vector, inertia
 
 from brim.core import ModelBase, NewtonianBodyMixin, set_default_formulation
+
+try:  # pragma: no cover
+    import numpy as np
+    from bicycleparameters.io import remove_uncertainties
+    from dtk.bicycle import benchmark_to_moore
+    from scipy.optimize import fsolve
+
+    from brim.utilities.parametrize import get_inertia_vals
+
+    if TYPE_CHECKING:
+        from bicycleparameters import Bicycle
+except ImportError:  # pragma: no cover
+    pass
 
 __all__ = ["FrontFrameBase", "RigidFrontFrame", "RigidFrontFrameMoore"]
 
@@ -34,6 +47,18 @@ class FrontFrameBase(NewtonianBodyMixin, ModelBase):
     @abstractmethod
     def right_handgrip(self) -> Point:
         """Point representing the right handgrip."""
+
+    def get_param_values(self, bicycle_parameters: Bicycle) -> dict[Symbol, float]:
+        """Get the parameter values of the front frame."""
+        params = super().get_param_values(bicycle_parameters)
+        bp = remove_uncertainties(bicycle_parameters.parameters.get(
+            "Benchmark", bicycle_parameters.parameters.get("Measured")))
+        if bp is not None:
+            if hasattr(bp["mH"], "nominal_value"):
+                params[self.body.mass] = bp["mH"].nominal_value
+            else:
+                params[self.body.mass] = bp["mH"]
+        return params
 
 
 @set_default_formulation("moore")
@@ -151,3 +176,49 @@ class RigidFrontFrameMoore(RigidFrontFrame):
         rear frame.
         """
         return self._steer_attachment
+
+    def get_param_values(self, bicycle_parameters: Bicycle) -> dict[Symbol, float]:
+        """Get the parameter values of the front frame."""
+        params = super().get_param_values(bicycle_parameters)
+        if "Benchmark" in bicycle_parameters.parameters:
+            bp = remove_uncertainties(bicycle_parameters.parameters["Benchmark"])
+            mop = benchmark_to_moore(bp)
+            params[self.body.mass] = mop["me"]
+            params.update(get_inertia_vals(
+                self.body, mop["ie11"], mop["ie22"], mop["ie33"], mop["ie12"],
+                mop["ie23"], mop["ie31"]))
+            params[self.symbols["d2"]] = mop["d2"]
+            params[self.symbols["d3"]] = mop["d3"]
+            params[self.symbols["l3"]] = mop["l3"]
+            params[self.symbols["l4"]] = mop["l4"]
+        if "Measured" in bicycle_parameters.parameters:
+            mep = remove_uncertainties(bicycle_parameters.parameters["Measured"])
+            rr, rf, w, lamht, whb, lhbr, lhbf = (mep.get(name) for name in (
+                "rR", "rF", "w", "lamht", "whb", "LhbR", "LhbF"))
+            if "Benchmark" in bicycle_parameters.parameters:
+                rr = bp["rR"]
+                rf = bp["rF"]
+                w = bp["w"]
+                lamht = np.pi / 2 - bp["lam"]
+                d2, d3 = mop["d2"], mop["d3"]
+            else:
+                d2, d3 = None, None
+            if whb is not None:
+                params[self.symbols["d7"]] = mep["whb"] / 2
+            if not any(value is None for value in (rr, rf, w, lamht, whb, lhbr, lhbf,
+                                                   d2, d3)):
+                def f(vals: tuple[float, ...]) -> tuple[float, ...]:
+                    ay, az, by, bz = vals
+                    return (
+                        -lhbf + np.sqrt(ay ** 2 + az ** 2 + 0.25 * whb ** 2),
+                        -lhbr + np.sqrt(by ** 2 + bz ** 2 + 0.25 * whb ** 2),
+                        ay - by - w,
+                        az - bz + rf - rr
+                    )
+
+                ay, az, by, bz = fsolve(f, (0.3, 0.8, -0.7, 0.8))
+                params[self.symbols["d6"]] = -(
+                        ay * np.sin(lamht) - az * np.cos(lamht) - d3)
+                params[self.symbols["d8"]] = -(
+                        ay * np.cos(lamht) + az * np.sin(lamht) - d2)
+        return params

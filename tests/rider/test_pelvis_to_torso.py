@@ -45,7 +45,7 @@ class TestFixedPelvisToTorso:
     def test_default(self) -> None:
         self.model.define_kinematics()
         assert self.pelvis.body.masscenter.pos_from(self.torso.body.masscenter).express(
-            self.pelvis.frame) == self.conn.symbols["d"] * self.pelvis.z
+            self.pelvis.frame) == self.conn.symbols["d_p_t"] * self.pelvis.z
         assert self.pelvis.frame.dcm(self.torso.frame) == eye(3)
 
     def test_set_torso_wrt_pelvis(self) -> None:

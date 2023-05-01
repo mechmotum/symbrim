@@ -9,6 +9,17 @@ from sympy.physics.mechanics import Point
 
 from brim.core import ModelBase, NewtonianBodyMixin
 
+try:  # pragma: no cover
+    import numpy as np
+    from yeadon.inertia import rotate_inertia
+
+    from brim.utilities.parametrize import get_inertia_vals_from_yeadon
+
+    if TYPE_CHECKING:
+        from bicycleparameters import Bicycle
+except ImportError:  # pragma: no cover
+    pass
+
 if TYPE_CHECKING:
     from sympy.physics.mechanics import ReferenceFrame
 
@@ -72,6 +83,15 @@ class TorsoBase(NewtonianBodyMixin, ModelBase):
         self._left_shoulder_point = Point(self._add_prefix("LSP"))
         self._right_shoulder_point = Point(self._add_prefix("RSP"))
 
+    def get_param_values(self, bicycle_parameters: Bicycle) -> dict[Symbol, float]:
+        """Get the parameter values of the pelvis."""
+        params = super().get_param_values(bicycle_parameters)
+        human = bicycle_parameters.human
+        if human is None:
+            return params
+        params[self.body.mass] = human.T.mass + human.C.mass
+        return params
+
 
 class SimpleRigidTorso(TorsoBase):
     """A simple rigid torso.
@@ -118,3 +138,18 @@ class SimpleRigidTorso(TorsoBase):
     def right_shoulder_frame(self) -> ReferenceFrame:
         """The right shoulder frame."""
         return self.body.frame
+
+    def get_param_values(self, bicycle_parameters: Bicycle) -> dict[Symbol, float]:
+        """Get the parameter values of the pelvis."""
+        params = super().get_param_values(bicycle_parameters)
+        human = bicycle_parameters.human
+        if human is None:
+            return params
+        torso_props = human.combine_inertia(("T", "C"))
+        params.update(get_inertia_vals_from_yeadon(
+            self.body, rotate_inertia(human.T.rot_mat, torso_props[2])))
+        params[self.symbols["shoulder_height"]] = np.linalg.norm(
+            (human.A1.pos + human.B1.pos) / 2 - torso_props[1])
+        params[self.symbols["shoulder_width"]] = np.linalg.norm(
+            human.A1.pos - human.B1.pos)
+        return params

@@ -5,10 +5,18 @@ from abc import abstractmethod
 from typing import TYPE_CHECKING, Any
 
 from sympy import Symbol
-from sympy.physics.mechanics import PinJoint, Point, RigidBody, dynamicsymbols, inertia
+from sympy.physics.mechanics import PinJoint, Point, RigidBody, dynamicsymbols
 from sympy.physics.mechanics._system import System
 
 from brim.core import ModelBase
+
+try:  # pragma: no cover
+    from brim.utilities.parametrize import get_inertia_vals_from_yeadon
+
+    if TYPE_CHECKING:
+        from bicycleparameters import Bicycle
+except ImportError:  # pragma: no cover
+    pass
 
 if TYPE_CHECKING:
     from sympy.physics.mechanics import ReferenceFrame
@@ -79,8 +87,6 @@ class PinElbowStickArmMixin:
             self.symbols["l_forearm"]: "Forearm length",
             self.symbols["l_forearm_com"]: "Forearm center of mass position from "
                                            "elbow.",
-            self.symbols["I_upper_arm"]: "Upper arm moment of inertia.",
-            self.symbols["I_forearm"]: "Forearm moment of inertia.",
             self.q: "Elbow flexion angle",
             self.u: "Elbow flexion angular velocity",
         }
@@ -93,18 +99,11 @@ class PinElbowStickArmMixin:
             "l_upper_arm_com": Symbol(self._add_prefix("l_upper_arm_com")),
             "l_forearm": Symbol(self._add_prefix("l_forearm")),
             "l_forearm_com": Symbol(self._add_prefix("l_forearm_com")),
-            "I_upper_arm": Symbol(self._add_prefix("I_upper_arm")),
-            "I_forearm": Symbol(self._add_prefix("I_forearm")),
         })
         self.q = dynamicsymbols(self._add_prefix("q_elbow_flexion"))
         self.u = dynamicsymbols(self._add_prefix("u_elbow_flexion"))
         self._upper_arm = RigidBody(self._add_prefix("upper_arm"))
-        self.upper_arm.central_inertia = inertia(
-            self.upper_arm.frame, self.symbols["I_upper_arm"],
-            self.symbols["I_upper_arm"], 0)
         self._forearm = RigidBody(self._add_prefix("forearm"))
-        self.forearm.central_inertia = inertia(
-            self.forearm.frame, self.symbols["I_forearm"], self.symbols["I_forearm"], 0)
         self._system = System.from_newtonian(self.upper_arm)
 
     def define_kinematics(self) -> None:
@@ -157,6 +156,46 @@ class PinElbowStickArmMixin:
 class PinElbowStickLeftArm(PinElbowStickArmMixin, LeftArmBase):
     """Left arm of the rider with a pin elbow joint."""
 
+    def get_param_values(self, bicycle_parameters: Bicycle) -> dict[Symbol, float]:
+        """Get the parameter values of the pelvis."""
+        params = super().get_param_values(bicycle_parameters)
+        human = bicycle_parameters.human
+        if human is None:
+            return params
+        params[self.upper_arm.mass] = human.A1.mass
+        params[self.forearm.mass] = human.A2.mass
+        params.update(
+            get_inertia_vals_from_yeadon(self.upper_arm, human.A1.rel_inertia))
+        params.update(get_inertia_vals_from_yeadon(self.forearm, human.A2.rel_inertia))
+        params.update({
+            self.symbols["l_upper_arm"]: human.meas["La2L"],
+            self.symbols["l_forearm"]:
+                human.meas["La5L"] + human.meas["La4L"] - human.meas["La2L"],
+            self.symbols["l_upper_arm_com"]: -human.A1.rel_center_of_mass[2, 0],
+            self.symbols["l_forearm_com"]: -human.A2.rel_center_of_mass[2, 0],
+        })
+        return params
+
 
 class PinElbowStickRightArm(PinElbowStickArmMixin, RightArmBase):
     """Right arm of the rider with a pin elbow joint."""
+
+    def get_param_values(self, bicycle_parameters: Bicycle) -> dict[Symbol, float]:
+        """Get the parameter values of the pelvis."""
+        params = super().get_param_values(bicycle_parameters)
+        human = bicycle_parameters.human
+        if human is None:
+            return params
+        params[self.upper_arm.mass] = human.B1.mass
+        params[self.forearm.mass] = human.B2.mass
+        params.update(
+            get_inertia_vals_from_yeadon(self.upper_arm, human.B1.rel_inertia))
+        params.update(get_inertia_vals_from_yeadon(self.forearm, human.B2.rel_inertia))
+        params.update({
+            self.symbols["l_upper_arm"]: human.meas["Lb2L"],
+            self.symbols["l_forearm"]:
+                human.meas["Lb5L"] + human.meas["Lb4L"] - human.meas["Lb2L"],
+            self.symbols["l_upper_arm_com"]: -human.B1.rel_center_of_mass[2, 0],
+            self.symbols["l_forearm_com"]: -human.B2.rel_center_of_mass[2, 0],
+        })
+        return params

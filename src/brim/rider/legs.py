@@ -5,10 +5,21 @@ from abc import abstractmethod
 from typing import TYPE_CHECKING, Any
 
 from sympy import Matrix, Symbol
-from sympy.physics.mechanics import PinJoint, Point, RigidBody, dynamicsymbols, inertia
+from sympy.physics.mechanics import PinJoint, Point, RigidBody, dynamicsymbols
 from sympy.physics.mechanics._system import System
 
 from brim.core import ModelBase
+
+try:  # pragma: no cover
+    import numpy as np
+    from yeadon.inertia import rotate_inertia
+
+    from brim.utilities.parametrize import get_inertia_vals_from_yeadon
+
+    if TYPE_CHECKING:
+        from bicycleparameters import Bicycle
+except ImportError:  # pragma: no cover
+    pass
 
 if TYPE_CHECKING:
     from sympy.physics.mechanics import ReferenceFrame
@@ -87,12 +98,6 @@ class TwoPinStickLegMixin:
             self.symbols["l_foot"]: "Length of the foot.",
             self.symbols["l_foot_com"]: "Distance from the ankle joint to the center of"
                                         " mass of the foot.",
-            self.symbols["I_thigh"]: "Moment of inertia of the thigh around its "
-                                     "center of mass.",
-            self.symbols["I_shank"]: "Moment of inertia of the shank around its "
-                                     "center of mass.",
-            self.symbols["I_foot"]: "Moment of inertia of the foot around its "
-                                    "center of mass.",
         }
 
     def define_objects(self) -> None:
@@ -105,23 +110,14 @@ class TwoPinStickLegMixin:
             "l_shank_com": Symbol(self._add_prefix("l_shank_com")),
             "l_foot": Symbol(self._add_prefix("l_foot")),
             "l_foot_com": Symbol(self._add_prefix("l_foot_com")),
-            "I_thigh": Symbol(self._add_prefix("I_thigh")),
-            "I_shank": Symbol(self._add_prefix("I_shank")),
-            "I_foot": Symbol(self._add_prefix("I_foot")),
         })
         self.q = Matrix(
             dynamicsymbols(self._add_prefix("q_knee_flexion q_ankle_flexion")))
         self.u = Matrix(
             dynamicsymbols(self._add_prefix("u_knee_flexion u_ankle_flexion")))
         self._thigh = RigidBody(self._add_prefix("thigh"))
-        self.thigh.central_inertia = inertia(
-            self.thigh.frame, self.symbols["I_thigh"], self.symbols["I_thigh"], 0)
         self._shank = RigidBody(self._add_prefix("shank"))
-        self.shank.central_inertia = inertia(
-            self.shank.frame, self.symbols["I_shank"], self.symbols["I_shank"], 0)
         self._foot = RigidBody(self._add_prefix("foot"))
-        self.foot.central_inertia = inertia(
-            self.foot.frame, 0, self.symbols["I_foot"], self.symbols["I_foot"])
         self._system = System.from_newtonian(self.hip)
 
     def define_kinematics(self) -> None:
@@ -177,6 +173,62 @@ class TwoPinStickLegMixin:
 class TwoPinStickLeftLeg(TwoPinStickLegMixin, LeftLegBase):
     """Left leg of the rider with two pin joints."""
 
+    def get_param_values(self, bicycle_parameters: Bicycle) -> dict[Symbol, float]:
+        """Get the parameter values of the pelvis."""
+        params = super().get_param_values(bicycle_parameters)
+        human = bicycle_parameters.human
+        if human is None:
+            return params
+        params[self.thigh.mass] = human.J1.mass
+        shank_props = human.combine_inertia(("j3", "j4", "j5"))
+        foot_props = human.combine_inertia(("j6", "j7", "j8"))
+        params[self.shank.mass] = shank_props[0]
+        params[self.foot.mass] = foot_props[0]
+        params.update(get_inertia_vals_from_yeadon(self.thigh, human.J1.rel_inertia))
+        params.update(get_inertia_vals_from_yeadon(
+            self.shank, rotate_inertia(human.J2.rot_mat, shank_props[2])))
+        params.update(get_inertia_vals_from_yeadon(
+            self.foot, rotate_inertia(human.J2.rot_mat, foot_props[2])))
+        params.update({
+            self.symbols["l_thigh"]: human.meas["Lj3L"],
+            self.symbols["l_shank"]:
+                human.meas["Lj5L"] - human.meas["Lj3L"] + human.meas["Lj6L"],
+            self.symbols["l_foot"]: human.meas["Lj9L"] - human.meas["Lj6L"],
+            self.symbols["l_thigh_com"]: -human.J1.rel_center_of_mass[2, 0],
+            self.symbols["l_shank_com"]: np.linalg.norm(shank_props[1] - human.J2.pos),
+            self.symbols["l_foot_com"]: np.linalg.norm(
+                foot_props[1] - human.J2.solids[2].pos),
+        })
+        return params
+
 
 class TwoPinStickRightLeg(TwoPinStickLegMixin, RightLegBase):
     """Right leg of the rider with two pin joints."""
+
+    def get_param_values(self, bicycle_parameters: Bicycle) -> dict[Symbol, float]:
+        """Get the parameter values of the pelvis."""
+        params = super().get_param_values(bicycle_parameters)
+        human = bicycle_parameters.human
+        if human is None:
+            return params
+        params[self.thigh.mass] = human.K1.mass
+        shank_props = human.combine_inertia(("k3", "k4", "k5"))
+        foot_props = human.combine_inertia(("k6", "k7", "k8"))
+        params[self.shank.mass] = shank_props[0]
+        params[self.foot.mass] = foot_props[0]
+        params.update(get_inertia_vals_from_yeadon(self.thigh, human.K1.rel_inertia))
+        params.update(get_inertia_vals_from_yeadon(
+            self.shank, rotate_inertia(human.K2.rot_mat, shank_props[2])))
+        params.update(get_inertia_vals_from_yeadon(
+            self.foot, rotate_inertia(human.K2.rot_mat, foot_props[2])))
+        params.update({
+            self.symbols["l_thigh"]: human.meas["Lk3L"],
+            self.symbols["l_shank"]:
+                human.meas["Lk5L"] - human.meas["Lk3L"] + human.meas["Lk6L"],
+            self.symbols["l_foot"]: human.meas["Lk9L"] - human.meas["Lk6L"],
+            self.symbols["l_thigh_com"]: -human.K1.rel_center_of_mass[2, 0],
+            self.symbols["l_shank_com"]: np.linalg.norm(shank_props[1] - human.K2.pos),
+            self.symbols["l_foot_com"]: np.linalg.norm(
+                foot_props[1] - human.K2.solids[2].pos),
+        })
+        return params

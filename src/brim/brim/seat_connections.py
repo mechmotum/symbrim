@@ -10,8 +10,8 @@ from brim.brim.base_connections import SeatConnectionBase
 
 if TYPE_CHECKING:
     from sympy.physics.mechanics import Point
-
 __all__ = ["SideLeanConnection"]
+
 
 class SideLeanConnection(SeatConnectionBase):
     """Rider lean connection between the rear frame and the pelvis."""

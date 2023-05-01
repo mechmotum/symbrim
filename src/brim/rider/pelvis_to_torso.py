@@ -9,6 +9,14 @@ from sympy.physics.mechanics._system import System
 
 from brim.rider.base_connections import PelvisToTorsoBase
 
+try:  # pragma: no cover
+    import numpy as np
+
+    if TYPE_CHECKING:
+        from bicycleparameters import Bicycle
+except ImportError:  # pragma: no cover
+    pass
+
 if TYPE_CHECKING:
     from sympy.physics.mechanics import Vector
 
@@ -23,14 +31,15 @@ class FixedPelvisToTorso(PelvisToTorsoBase):
         """Return the descriptions."""
         return {
             **super().descriptions,
-            self.symbols["d"]: "Distance from the torso center of mass to the pelvis.",
+            self.symbols["d_p_t"]: "Distance from the torso center of mass to the "
+                                   "pelvis.",
         }
 
     def define_objects(self) -> None:
         """Define the objects."""
         super().define_objects()
-        self.symbols["d"] = Symbol(self._add_prefix("d"))
-        self._torso_wrt_pelvis = -self.symbols["d"] * self.pelvis.z
+        self.symbols["d_p_t"] = Symbol(self._add_prefix("d_p_t"))
+        self._torso_wrt_pelvis = -self.symbols["d_p_t"] * self.pelvis.z
         self._system = System.from_newtonian(self.pelvis.body)
 
     def define_kinematics(self) -> None:
@@ -55,3 +64,14 @@ class FixedPelvisToTorso(PelvisToTorsoBase):
             raise ValueError(
                 "Torso position must be expressable in the pelvis frame.") from e
         self._torso_wrt_pelvis = value
+
+    def get_param_values(self, bicycle_parameters: Bicycle) -> dict[Symbol, float]:
+        """Get a parameters mapping of a model based on a bicycle parameters object."""
+        params = super().get_param_values(bicycle_parameters)
+        human = bicycle_parameters.human
+        if human is None:
+            return params
+        torso_props = human.combine_inertia(("T", "C"))
+        params[self.symbols["d_p_t"]] = np.linalg.norm(
+            torso_props[1] - human.P.center_of_mass)
+        return params

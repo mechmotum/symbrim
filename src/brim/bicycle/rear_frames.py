@@ -2,12 +2,25 @@
 from __future__ import annotations
 
 from abc import abstractmethod
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from sympy import Symbol, symbols
 from sympy.physics.mechanics import Point, Vector, inertia
 
 from brim.core import ModelBase, NewtonianBodyMixin, set_default_formulation
+
+try:  # pragma: no cover
+    import numpy as np
+    from bicycleparameters.io import remove_uncertainties
+    from bicycleparameters.rider import yeadon_vec_to_bicycle_vec
+    from dtk.bicycle import benchmark_to_moore
+
+    from brim.utilities.parametrize import get_inertia_vals
+
+    if TYPE_CHECKING:
+        from bicycleparameters import Bicycle
+except ImportError:  # pragma: no cover
+    pass
 
 __all__ = ["RearFrameBase", "RigidRearFrame", "RigidRearFrameMoore"]
 
@@ -34,6 +47,18 @@ class RearFrameBase(NewtonianBodyMixin, ModelBase):
     @abstractmethod
     def wheel_attachment(self) -> Point:
         """Point representing attachment of the rear wheel."""
+
+    def get_param_values(self, bicycle_parameters: Bicycle) -> dict[Symbol, float]:
+        """Get the parameter values of the rear frame."""
+        params = super().get_param_values(bicycle_parameters)
+        bp = remove_uncertainties(bicycle_parameters.parameters.get(
+            "Measured", bicycle_parameters.parameters.get("Benchmark")))
+        if bp is not None:
+            if hasattr(bp["mB"], "nominal_value"):
+                params[self.body.mass] = bp["mB"].nominal_value
+            else:
+                params[self.body.mass] = bp["mB"]
+        return params
 
 
 @set_default_formulation("moore")
@@ -140,3 +165,33 @@ class RigidRearFrameMoore(RigidRearFrame):
         rear frame.
         """
         return self._steer_attachment
+
+    def get_param_values(self, bicycle_parameters: Bicycle) -> dict[Symbol, float]:
+        """Get the parameter values of the rear frame."""
+        params = super().get_param_values(bicycle_parameters)
+        if "Benchmark" in bicycle_parameters.parameters:
+            bp = remove_uncertainties(bicycle_parameters.parameters["Benchmark"])
+            mop = benchmark_to_moore(bp)
+            params[self.body.mass] = mop["mc"]
+            params.update(get_inertia_vals(
+                self.body, mop["ic11"], mop["ic22"], mop["ic33"], mop["ic12"],
+                mop["ic23"], mop["ic31"]))
+            params[self.symbols["d1"]] = mop["d1"]
+            params[self.symbols["l1"]] = mop["l1"]
+            params[self.symbols["l2"]] = mop["l2"]
+        if "Measured" in bicycle_parameters.parameters:
+            mep = remove_uncertainties(bicycle_parameters.parameters["Measured"])
+            rr, lcs, hbb, lst, lsp, lamst, lamht = (mep.get(name) for name in (
+                "rR", "lcs", "hbb", "lst", "lsp", "lamst", "lamht"))
+            if rr is None and "Benchmark" in bicycle_parameters.parameters:
+                rr = bp["rR"]
+            if lamht is None and "Benchmark" in bicycle_parameters.parameters:
+                lamht = np.pi / 2 - bp["lam"]
+            if not any(value is None for value in (rr, lcs, hbb, lst, lsp, lamst)):
+                r_rc_sdl = (yeadon_vec_to_bicycle_vec(
+                    np.matrix([[0], [0], [0]]), mep, bp) + np.matrix([[0], [0], [rr]]))
+                params[self.symbols["d4"]] = (
+                        r_rc_sdl[0, 0] * np.sin(lamht) - r_rc_sdl[2, 0] * np.cos(lamht))
+                params[self.symbols["d5"]] = (
+                        r_rc_sdl[0, 0] * np.cos(lamht) + r_rc_sdl[2, 0] * np.sin(lamht))
+        return params
