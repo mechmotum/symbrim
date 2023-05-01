@@ -7,6 +7,7 @@ __all__ = [
     "FrontFrameBase", "RigidFrontFrame", "RigidFrontFrameMoore",
     "WheelBase", "KnifeEdgeWheel", "ToroidalWheel",
     "TyreModelBase", "NonHolonomicTyreModel",
+    "PedalsBase", "SimplePedals",
 ]
 
 from brim.bicycle.bicycle_base import BicycleBase
@@ -16,6 +17,7 @@ from brim.bicycle.front_frames import (
     RigidFrontFrameMoore,
 )
 from brim.bicycle.grounds import FlatGround, GroundBase
+from brim.bicycle.pedals import PedalsBase, SimplePedals
 from brim.bicycle.rear_frames import RearFrameBase, RigidRearFrame, RigidRearFrameMoore
 from brim.bicycle.tyre_models import NonHolonomicTyreModel, TyreModelBase
 from brim.bicycle.wheels import KnifeEdgeWheel, ToroidalWheel, WheelBase

@@ -1,9 +1,9 @@
 """Module containing the Whipple bicycle model."""
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
-from sympy import Matrix
+from sympy import Matrix, Symbol
 from sympy.physics.mechanics import PinJoint, dynamicsymbols
 from sympy.physics.mechanics._system import System
 
@@ -14,6 +14,15 @@ from brim.bicycle.rear_frames import RearFrameBase
 from brim.bicycle.tyre_models import TyreModelBase
 from brim.bicycle.wheels import WheelBase
 from brim.core import ConnectionRequirement, ModelRequirement, set_default_formulation
+
+try:  # pragma: no cover
+    import numpy as np
+    from bicycleparameters.io import remove_uncertainties
+
+    if TYPE_CHECKING:
+        from bicycleparameters import Bicycle
+except ImportError:  # pragma: no cover
+    pass
 
 __all__ = ["WhippleBicycle", "WhippleBicycleMoore"]
 
@@ -72,6 +81,12 @@ class WhippleBicycleMoore(WhippleBicycle):
             self.q[5]: f"Front wheel rotation angle of {self.name}.",
             self.q[6]: f"Steering rotation angle of {self.name}.",
             self.q[7]: f"Rear wheel rotation angle of {self.name}.",
+            self.symbols["gear_ratio"]: "Ratio between the angle of the rear wheel and"
+                                        " the pedals.",
+            self.symbols["l_px"]: f"Distance between the rear wheel and the pedals "
+                                  f"along {self.rear_frame.x}.",
+            self.symbols["l_pz"]: f"Distance between the rear wheel and the pedals "
+                                  f"along {self.rear_frame.z}.",
         }
         desc.update({ui: f"Generalized speed of the {desc[qi].lower()}"
                      for qi, ui in zip(self.q, self.u)})
@@ -85,11 +100,13 @@ class WhippleBicycleMoore(WhippleBicycle):
         self.front_tyre.define_objects()
         self.q: Matrix = Matrix(dynamicsymbols(self._add_prefix("q1:9")))
         self.u: Matrix = Matrix(dynamicsymbols(self._add_prefix("u1:9")))
+        self.symbols.update({name: Symbol(
+            self._add_prefix(name)) for name in ("gear_ratio", "l_px", "l_pz")})
+        self._system = System.from_newtonian(self.ground.body)
 
     def define_kinematics(self) -> None:
         """Define the kinematics of the Whipple bicycle."""
         super().define_kinematics()
-        self._system = System.from_newtonian(self.ground.body)
         # Define the location of the rear wheel contact point in the ground frame.
         self.rear_tyre.contact_point.set_pos(
             self.ground.origin,
@@ -129,6 +146,16 @@ class WhippleBicycleMoore(WhippleBicycle):
         self.system.add_speeds(*self.u[:5])
         self.system.add_kdes(*(
             ui - qi.diff(dynamicsymbols._t) for qi, ui in zip(self.q[:5], self.u[:5])))
+        if self.pedals:
+            self.pedals.center_point.set_pos(self.rear_wheel.center,
+                                             self.symbols["l_px"] * self.rear_frame.x +
+                                             self.symbols["l_pz"] * self.rear_frame.z)
+            self.pedals.frame.orient_axis(
+                self.rear_frame.frame, self.rear_frame.wheel_axis,
+                self.q[7] / self.symbols["gear_ratio"])
+            self.pedals.frame.set_ang_vel(
+                self.rear_frame.frame,
+                self.u[7] / self.symbols["gear_ratio"] * self.rear_frame.wheel_axis)
 
     def define_loads(self) -> None:
         """Define the loads of the Whipple bicycle."""
@@ -141,3 +168,25 @@ class WhippleBicycleMoore(WhippleBicycle):
         super().define_constraints()
         self.rear_tyre.define_constraints()
         self.front_tyre.define_constraints()
+
+    def get_param_values(self, bicycle_parameters: Bicycle) -> dict[Symbol, float]:
+        """Get a parameters mapping of a model based on a bicycle parameters object."""
+        params = super().get_param_values(bicycle_parameters)
+        if "Benchmark" in bicycle_parameters.parameters:
+            bp = remove_uncertainties(bicycle_parameters.parameters["Benchmark"])
+        if "Measured" in bicycle_parameters.parameters:
+            mep = remove_uncertainties(bicycle_parameters.parameters["Measured"])
+            rr, lcs, hbb, lamht = (mep.get(name) for name in (
+                "rR", "lcs", "hbb", "lamht"))
+            if rr is None and "Benchmark" in bicycle_parameters.parameters:
+                rr = bp["rR"]
+            if lamht is None and "Benchmark" in bicycle_parameters.parameters:
+                lamht = np.pi / 2 - bp["lam"]
+            if not any(value is None for value in (rr, lcs, hbb, lamht)):
+                glob_z = rr - hbb
+                glob_x = np.sqrt(lcs ** 2 - glob_z ** 2)
+                params[self.symbols["l_px"]] = (
+                        glob_x * np.sin(lamht) - glob_z * np.cos(lamht))
+                params[self.symbols["l_pz"]] = (
+                        glob_x * np.cos(lamht) + glob_z * np.sin(lamht))
+        return params

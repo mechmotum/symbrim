@@ -1,7 +1,7 @@
 """Module containing rider lean models."""
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from sympy import Symbol
 from sympy.physics.mechanics import Point
@@ -39,13 +39,13 @@ class RiderLean(NewtonianBodyMixin, ModelBase):
     def lean_axis(self, lean_axis: Vector) -> None:
         try:
             lean_axis.express(self.frame)
-        except AttributeError or ValueError as e:
+        except (AttributeError, ValueError) as e:
             raise ValueError(f"The lean axis {lean_axis!r} must be a Vector expressable"
                              f" in the leaning rider frame {self.frame!r}.") from e
         self._lean_axis = lean_axis
 
     @property
-    def descriptions(self) -> dict[Symbol, str]:
+    def descriptions(self) -> dict[Any, str]:
         """Descriptions of the symbols of the rider lean model."""
         return {
             **super().descriptions,

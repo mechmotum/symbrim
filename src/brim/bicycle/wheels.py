@@ -9,9 +9,18 @@ from sympy.physics.mechanics import Point, inertia
 
 from brim.core import ModelBase, NewtonianBodyMixin
 
+try:  # pragma: no cover
+    from bicycleparameters.io import remove_uncertainties
+
+    from brim.utilities.parametrize import get_inertia_vals
+
+    if TYPE_CHECKING:
+        from bicycleparameters import Bicycle
+except ImportError:  # pragma: no cover
+    pass
+
 if TYPE_CHECKING:
     from sympy.physics.mechanics import Vector
-
 
 __all__ = ["WheelBase", "KnifeEdgeWheel", "ToroidalWheel"]
 
@@ -32,6 +41,33 @@ class WheelBase(NewtonianBodyMixin, ModelBase):
     @abstractmethod
     def rotation_axis(self) -> Vector:
         """Rotation axis of the wheel."""
+
+    def get_param_values(self, bicycle_parameters: Bicycle,
+                         position: str | None = None
+                         ) -> dict[Symbol, float]:  # pragma: no cover
+        """Get the parameter values of the wheel.
+
+        Parameters
+        ----------
+        bicycle_parameters : Bicycle
+            Bicycle parameters object from the BicycleParameters package.
+        position : str, optional
+            Position of the wheel, by default None. Options are "front" and "rear".
+        """
+        params = super().get_param_values(bicycle_parameters)
+        if position is None:
+            return params
+        elif position not in ["front", "rear"]:
+            raise ValueError("Position must be 'front' or 'rear'.")
+        bp = remove_uncertainties(bicycle_parameters.parameters.get(
+            "Measured", bicycle_parameters.parameters.get("Benchmark")))
+        if bp is not None:
+            m = bp["mF"] if position == "front" else bp["mR"]
+            if hasattr(m, "nominal_value"):
+                params[self.body.mass] = m.nominal_value
+            else:
+                params[self.body.mass] = m
+        return params
 
 
 class KnifeEdgeWheel(WheelBase):
@@ -66,6 +102,31 @@ class KnifeEdgeWheel(WheelBase):
     def rotation_axis(self) -> Vector:
         """Rotation axis of the wheel."""
         return self.body.y
+
+    def get_param_values(self, bicycle_parameters: Bicycle,
+                         position: str | None = None
+                         ) -> dict[Symbol, float]:  # pragma: no cover
+        """Get the parameter values of the wheel.
+
+        Parameters
+        ----------
+        bicycle_parameters : Bicycle
+            Bicycle parameters object from the BicycleParameters package.
+        position : str, optional
+            Position of the wheel, by default None. Options are "front" and "rear".
+        """
+        params = super().get_param_values(bicycle_parameters, position)
+        if position is None:
+            return params
+        bp = remove_uncertainties(bicycle_parameters.parameters.get(
+            "Benchmark", bicycle_parameters.parameters.get("Measured")))
+        if position == "front":
+            params[self.radius] = bp["rF"]
+            params.update(get_inertia_vals(self.body, bp["IFxx"], bp["IFyy"]))
+        elif position == "rear":
+            params[self.radius] = bp["rR"]
+            params.update(get_inertia_vals(self.body, bp["IRxx"], bp["IRyy"]))
+        return params
 
 
 class ToroidalWheel(WheelBase):

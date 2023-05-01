@@ -9,7 +9,13 @@ from sympy import symbols
 
 from brim.core.registry import Registry
 
+try:  # pragma: no cover
+    from bicycleparameters import Bicycle
+except ImportError:  # pragma: no cover
+    Bicycle = None
+
 if TYPE_CHECKING:
+    from sympy import Symbol
     from sympy.physics.mechanics._system import System
 
     from brim.core.requirement import ConnectionRequirement, ModelRequirement
@@ -140,6 +146,14 @@ class BrimBase:
         return self.name
 
     @property
+    def submodels(self) -> frozenset[ModelBase]:
+        """Submodels out of which this model exists."""
+        submodels = []
+        for req in self.required_models:
+            submodels.append(getattr(self, req.attribute_name))
+        return frozenset(submodel for submodel in submodels if submodel is not None)
+
+    @property
     def descriptions(self) -> dict[Any, str]:
         """Descriptions of the attributes of the object."""
         return {}
@@ -148,7 +162,7 @@ class BrimBase:
         """Get description of a given object."""
         if obj in self.descriptions:
             return self.descriptions[obj]
-        if hasattr(self, "submodels"):
+        if hasattr(self, "submodels"):  # pragma: no cover  (is always True)
             for submodel in self.submodels:
                 desc = submodel.get_description(obj)
                 if desc is not None:
@@ -163,6 +177,12 @@ class BrimBase:
     def system(self) -> System | None:
         """System object representing the model."""
         return self._system
+
+    def get_param_values(self, bicycle_parameters: Bicycle) -> dict[Symbol, float]:
+        """Get a parameters mapping of a model based on a bicycle parameters object."""
+        if Bicycle is None:
+            raise ImportError("The bicycle parameters package is not installed.")
+        return {}
 
 
 class ConnectionBase(BrimBase, metaclass=ConnectionMeta):
@@ -218,14 +238,6 @@ class ModelBase(BrimBase, metaclass=ModelMeta):
             setattr(self, f"_{req.attribute_name}", None)
 
     @property
-    def submodels(self) -> frozenset[ModelBase]:
-        """Submodels out of which this model exists."""
-        submodels = []
-        for req in self.required_models:
-            submodels.append(getattr(self, req.attribute_name))
-        return frozenset(submodel for submodel in submodels if submodel is not None)
-
-    @property
     def connections(self) -> frozenset[ConnectionBase]:
         """Submodels out of which this model exists."""
         connections = []
@@ -274,12 +286,30 @@ class ModelBase(BrimBase, metaclass=ModelMeta):
         for submodel in self.submodels:
             submodel.define_constraints()
 
+    def define_all(self) -> None:
+        """Define all aspects of the model."""
+        self.define_connections()
+        self.define_objects()
+        self.define_kinematics()
+        self.define_loads()
+        self.define_constraints()
+
+    def get_param_values(self, bicycle_parameters: Bicycle) -> dict[Symbol, float]:
+        """Get a parameters mapping of a model based on a bicycle parameters object."""
+        params = super().get_param_values(bicycle_parameters)
+        for submodel in self.submodels:
+            params.update(submodel.get_param_values(bicycle_parameters))
+        for conn in self.connections:
+            params.update(conn.get_param_values(bicycle_parameters))
+        return params
+
 
 def set_default_formulation(formulation: str) -> None:
     """Set the default formulation for a model."""
 
     def decorator(model: ModelBase) -> ModelBase:
         old_new = model.__new__
+
         @wraps(old_new)
         def new_new(cls, *args, **kwargs) -> ModelBase:
             if cls is model:
