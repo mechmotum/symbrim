@@ -36,6 +36,8 @@ class TyreModelBase(ConnectionBase):
         ModelRequirement("ground", GroundBase, "Submodel of the ground."),
         ModelRequirement("wheel", WheelBase, "Submodel of the wheel."),
     )
+    ground: GroundBase
+    wheel: WheelBase
 
     def define_objects(self) -> None:
         """Define the objects of the tyre model."""
@@ -67,6 +69,8 @@ class NonHolonomicTyreModel(TyreModelBase):
         ModelRequirement("wheel", (KnifeEdgeWheel, ToroidalWheel),
                          "Submodel of the wheel."),
     )
+    ground: FlatGround
+    wheel: KnifeEdgeWheel | ToroidalWheel
 
     def define_kinematics(self) -> None:
         """Define the kinematics of the tyre model."""
