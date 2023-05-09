@@ -18,6 +18,8 @@ class PelvisToTorsoBase(ConnectionBase):
         ModelRequirement("pelvis", PelvisBase, "Pelvis of the rider."),
         ModelRequirement("torso", TorsoBase, "Torso of the rider."),
     )
+    pelvis: PelvisBase
+    torso: TorsoBase
 
 
 class ShoulderBase(ConnectionBase):
@@ -27,6 +29,8 @@ class ShoulderBase(ConnectionBase):
         ModelRequirement("torso", TorsoBase, "Torso of the rider."),
         ModelRequirement("arm", ArmBase, "Arm of the rider."),
     )
+    torso: TorsoBase
+    arm: ArmBase
 
 
 class LeftShoulderBase(ShoulderBase):
@@ -35,6 +39,7 @@ class LeftShoulderBase(ShoulderBase):
     required_models: tuple[ModelRequirement, ...] = (
         ModelRequirement("arm", LeftArmBase, "Left arm of the rider."),
     )
+    arm: LeftArmBase
 
 
 class RightShoulderBase(ShoulderBase):
@@ -43,6 +48,7 @@ class RightShoulderBase(ShoulderBase):
     required_models: tuple[ModelRequirement, ...] = (
         ModelRequirement("arm", RightArmBase, "Right arm of the rider."),
     )
+    arm: RightArmBase
 
 
 class HipBase(ConnectionBase):
