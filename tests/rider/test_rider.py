@@ -15,7 +15,6 @@ from brim.rider import (
     TwoPinStickLeftLeg,
     TwoPinStickRightLeg,
 )
-from brim.utilities import to_system
 
 
 class TestCompleteRider:
@@ -57,6 +56,6 @@ class TestCompleteRider:
 
     def test_form_eoms(self, _setup) -> None:
         self.rider.define_all()
-        system = to_system(self.rider)
+        system = self.rider.to_system()
         system.validate_system()
         system.form_eoms()

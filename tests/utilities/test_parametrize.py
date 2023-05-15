@@ -21,7 +21,6 @@ from brim.rider.pelvis_to_torso import FixedPelvisToTorso
 from brim.rider.rider import Rider
 from brim.rider.shoulder_joints import SphericalLeftShoulder, SphericalRightShoulder
 from brim.rider.torso import SimpleRigidTorso
-from brim.utilities.utilities import to_system
 from sympy import Symbol, diag
 from sympy.physics.mechanics import ReferenceFrame, RigidBody, msubs
 
@@ -116,7 +115,7 @@ class TestParametrize:
         self.br.define_kinematics()
         self.br.define_loads()
         self.br.define_constraints()
-        self.system = to_system(self.br)
+        self.system = self.br.to_system()
 
     @pytest.mark.parametrize("args, kwargs, expected", [
         ([], {}, {}),

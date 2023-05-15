@@ -2,7 +2,6 @@ import pytest
 from brim.bicycle import RigidRearFrame
 from brim.core import ConnectionRequirement, ModelBase, ModelRequirement
 from brim.rider import RiderLean, RiderLeanConnection
-from brim.utilities import to_system
 from sympy import Matrix, Symbol, simplify, sin, zeros
 from sympy.physics.mechanics import Point
 from sympy.physics.mechanics._system import System
@@ -75,7 +74,7 @@ class TestRiderLean:
         self.model.define_kinematics()
         self.model.define_loads()
         self.model.define_constraints()
-        system = to_system(self.model)
+        system = self.model.to_system()
         system.apply_gravity(g * self.rear.z)
         system.form_eoms()
         assert simplify(system.mass_matrix - Matrix([d_lp ** 2 * m + ixx])) == zeros(1)

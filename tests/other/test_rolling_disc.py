@@ -3,7 +3,6 @@ from typing import TYPE_CHECKING
 import pytest
 from brim.bicycle import FlatGround, KnifeEdgeWheel, NonHolonomicTyreModel
 from brim.other.rolling_disc import RollingDisc, rolling_disc_manual
-from brim.utilities.utilities import to_system
 from sympy import Symbol, lambdify
 from sympy.physics.mechanics import dynamicsymbols
 
@@ -33,7 +32,7 @@ class TestRollingDisc:
         self.rolling_disc.define_kinematics()
         self.rolling_disc.define_loads()
         self.rolling_disc.define_constraints()
-        self.system = to_system(self.rolling_disc)
+        self.system = self.rolling_disc.to_system()
         str_vals = self._arbitrary_values()
         inertia = self.rolling_disc.disc.body.central_inertia.to_matrix(
             self.rolling_disc.disc.frame)

@@ -30,7 +30,6 @@ from brim.rider import (
     TwoPinStickLeftLeg,
     TwoPinStickRightLeg,
 )
-from brim.utilities import to_system
 
 
 class TestCompleteBicycleRider:
@@ -86,7 +85,7 @@ class TestCompleteBicycleRider:
 
     def test_form_eoms(self, _bicycle_rider_setup) -> None:
         self.br.define_all()
-        system = to_system(self.br)
+        system = self.br.to_system()
         system.q_ind = [*self.bicycle.q[:4], *self.bicycle.q[5:],
                         self.rider.left_hip.q[0], self.rider.left_leg.q[0],
                         self.rider.right_hip.q[0], self.rider.right_leg.q[0],
