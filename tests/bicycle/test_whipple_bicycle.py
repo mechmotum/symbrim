@@ -12,7 +12,7 @@ from brim import (
     RigidRearFrame,
 )
 from brim.bicycle import SimplePedals, WhippleBicycle, WhippleBicycleMoore
-from brim.utilities.utilities import cramer_solve, to_system
+from brim.utilities.utilities import cramer_solve
 from sympy import Symbol, lambdify
 from sympy.physics.mechanics import KanesMethod, dynamicsymbols
 
@@ -99,7 +99,7 @@ class TestWhippleBicycleMoore:
         self.bike.define_kinematics()
         self.bike.define_loads()
         self.bike.define_constraints()
-        system = to_system(self.bike)
+        system = self.bike.to_system()
         system.apply_gravity(-Symbol("g") * self.bike.ground.normal)
         system.q_ind = [*self.bike.q[:4], *self.bike.q[5:]]
         system.q_dep = [self.bike.q[4]]

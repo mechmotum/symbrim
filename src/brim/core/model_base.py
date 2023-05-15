@@ -3,9 +3,10 @@ from __future__ import annotations
 
 from abc import ABCMeta
 from functools import wraps
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Callable
 
 from sympy import symbols
+from sympy.physics.mechanics._system import System
 
 from brim.core.registry import Registry
 
@@ -16,7 +17,6 @@ except ImportError:  # pragma: no cover
 
 if TYPE_CHECKING:
     from sympy import Symbol
-    from sympy.physics.mechanics._system import System
 
     from brim.core.requirement import ConnectionRequirement, ModelRequirement
 
@@ -303,11 +303,22 @@ class ModelBase(BrimBase, metaclass=ModelMeta):
             params.update(conn.get_param_values(bicycle_parameters))
         return params
 
+    def to_system(self) -> System:
+        """Export the model to a single system instance."""
 
-def set_default_formulation(formulation: str) -> None:
+        def get_systems(model):
+            """Get the systems of the submodels."""
+            return ([model.system] + [conn.system for conn in model.connections] +
+                    [s for submodel in model.submodels for s in get_systems(submodel)])
+
+        return _merge_systems(*get_systems(self))
+
+
+def set_default_formulation(formulation: str
+                            ) -> Callable[[type[ModelBase]], type[ModelBase]]:
     """Set the default formulation for a model."""
 
-    def decorator(model: ModelBase) -> ModelBase:
+    def decorator(model: type[ModelBase]) -> type[ModelBase]:
         old_new = model.__new__
 
         @wraps(old_new)
@@ -322,3 +333,48 @@ def set_default_formulation(formulation: str) -> None:
         return model
 
     return decorator
+
+
+def _merge_systems(*systems: System) -> System:  # pragma: no cover
+    """Combine multiple system instance into one.
+
+    Notes
+    -----
+    This function is not used in the current implementation of brim.
+    However it should in the end be moved to sympy mechanics.
+    """
+    system = System(systems[0].origin, systems[0].frame)
+    for s in systems:
+        if s is None:
+            continue
+        for qi in s.q_ind:
+            if qi not in system.q:
+                system.add_coordinates(qi, independent=True)
+        for qi in s.q_dep:
+            if qi not in system.q:
+                system.add_coordinates(qi, independent=False)
+        for ui in s.u_ind:
+            if ui not in system.u:
+                system.add_speeds(ui, independent=True)
+        for ui in s.u_dep:
+            if ui not in system.u:
+                system.add_speeds(ui, independent=False)
+        for body in s.bodies:
+            if body not in system.bodies:
+                system.add_bodies(body)
+        for joint in s.joints:
+            if joint not in system.joints:
+                system.add_joints(joint)
+        for load in s.loads:
+            if load not in system.loads:
+                system.add_loads(load)
+        for kde in s.kdes:
+            if kde not in system.kdes:
+                system.add_kdes(kde)
+        for fh in s.holonomic_constraints:
+            if fh not in system.holonomic_constraints:
+                system.add_holonomic_constraints(fh)
+        for fnh in s.nonholonomic_constraints:
+            if fnh not in system.nonholonomic_constraints:
+                system.add_nonholonomic_constraints(fnh)
+    return system

@@ -1,5 +1,8 @@
 # BRiM
-A Modular and Extensible Open-Source Framework for Creating Bicycle-Rider Models
+A Modular and Extensible Open-Source Framework for Creating Bicycle-Rider Models.
+
+This package is still under development, therefore there is no guarantee on backwards
+compatibility.
 
 ## Installation
 This packages has not been released yet.

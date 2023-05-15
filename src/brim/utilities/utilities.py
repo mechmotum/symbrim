@@ -7,64 +7,12 @@ from sympy import Basic, Derivative, Dummy, ImmutableMatrix, lambdify, zeros
 from sympy.core.cache import cacheit
 from sympy.core.random import random
 from sympy.physics.mechanics import find_dynamicsymbols, msubs
-from sympy.physics.mechanics._system import System
 
 if TYPE_CHECKING:
     from sympy import Expr
 
-    from brim.core import ModelBase
 
-__all__ = ["merge_systems", "to_system", "cramer_solve"]
-
-
-def to_system(model: ModelBase) -> System:  # pragma: no cover
-    """Export the Whipple bicycle to a Sympy system."""
-
-    def get_systems(model):
-        """Get the systems of the submodels."""
-        return ([model.system] + [conn.system for conn in model.connections] +
-                [s for submodel in model.submodels for s in get_systems(submodel)])
-
-    return merge_systems(model.system, *get_systems(model))
-
-
-def merge_systems(*systems: System) -> System:  # pragma: no cover
-    """Combine multiple system instance into one."""
-    system = System(systems[0].origin, systems[0].frame)
-    for s in systems:
-        if s is None:
-            continue
-        for qi in s.q_ind:
-            if qi not in system.q:
-                system.add_coordinates(qi, independent=True)
-        for qi in s.q_dep:
-            if qi not in system.q:
-                system.add_coordinates(qi, independent=False)
-        for ui in s.u_ind:
-            if ui not in system.u:
-                system.add_speeds(ui, independent=True)
-        for ui in s.u_dep:
-            if ui not in system.u:
-                system.add_speeds(ui, independent=False)
-        for body in s.bodies:
-            if body not in system.bodies:
-                system.add_bodies(body)
-        for joint in s.joints:
-            if joint not in system.joints:
-                system.add_joints(joint)
-        for load in s.loads:
-            if load not in system.loads:
-                system.add_loads(load)
-        for kde in s.kdes:
-            if kde not in system.kdes:
-                system.add_kdes(kde)
-        for fh in s.holonomic_constraints:
-            if fh not in system.holonomic_constraints:
-                system.add_holonomic_constraints(fh)
-        for fnh in s.nonholonomic_constraints:
-            if fnh not in system.nonholonomic_constraints:
-                system.add_nonholonomic_constraints(fnh)
-    return system
+__all__ = ["cramer_solve"]
 
 
 @cacheit
