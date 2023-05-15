@@ -3,3 +3,4 @@ __pycache__
 docs/_build
 docs/_autosummary
 data
+dist
