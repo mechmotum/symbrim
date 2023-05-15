@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from abc import ABCMeta
 from functools import wraps
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Callable
 
 from sympy import symbols
 
@@ -304,10 +304,11 @@ class ModelBase(BrimBase, metaclass=ModelMeta):
         return params
 
 
-def set_default_formulation(formulation: str) -> None:
+def set_default_formulation(formulation: str
+                            ) -> Callable[[type[ModelBase]], type[ModelBase]]:
     """Set the default formulation for a model."""
 
-    def decorator(model: ModelBase) -> ModelBase:
+    def decorator(model: type[ModelBase]) -> type[ModelBase]:
         old_new = model.__new__
 
         @wraps(old_new)
