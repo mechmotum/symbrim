@@ -5,7 +5,14 @@ This package is still under development, therefore there is no guarantee on back
 compatibility.
 
 ## Installation
-This packages has not been released yet.
+The package can be installed using `pip`:
+```bash
+pip install brim
+```
+The development version can easily be installed using:
+```bash
+pip install git+https://github.com/TJStienstra/brim.git
+```
 
 ## Contributing
 One of the aims when developing this package make it more easy for researchers to also
