@@ -11,8 +11,6 @@ permissions:
 jobs:
 
   deploy_docs_job:
-    needs: test_docs_job
-
     runs-on: ubuntu-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
