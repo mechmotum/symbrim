@@ -5,14 +5,23 @@ This package is still under development, therefore there is no guarantee on back
 compatibility.
 
 ## Installation
-The package can be installed using `pip`:
+`brim` can either be installed from `PyPI` or from the development version on `GitHub`.
+If one installs from `PyPI` then one needs to install some (optional) dependencies
+manually.
 ```bash
+pip install git+https://github.com/sympy/sympy.git
 pip install brim
+```
+Optionally one can also install:
+```bash
+pip install git+https://github.com/moorepants/BicycleParameters.git
+pip install git+https://github.com/TJStienstra/symmeplot.git
 ```
 The development version can easily be installed using:
 ```bash
 pip install git+https://github.com/TJStienstra/brim.git
 ```
+In the last case the dependencies should be correctly handled by `poetry`.
 
 ## Contributing
 One of the aims when developing this package make it more easy for researchers to also
