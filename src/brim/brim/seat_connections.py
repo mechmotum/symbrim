@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
+from sympy import Symbol, cos, sin
 from sympy.physics.mechanics import PinJoint, Vector, dynamicsymbols
 from sympy.physics.mechanics._system import System
 
@@ -23,16 +24,20 @@ class SideLeanConnection(SeatConnectionBase):
             **super().descriptions,
             self.q: "Lean angle.",
             self.u: "Angular lean velocity.",
+            self.symbols["alpha"]: "Angle of the rider lean axis.",
         }
 
     def define_objects(self) -> None:
         """Define the objects."""
         super().define_objects()
-        self._frame_lean_axis = self.rear_frame.x
-        self._pelvis_lean_axis = self.pelvis.x
-        self._pelvis_interpoint = Vector(0)
         self.q = dynamicsymbols(self._add_prefix("q"))
         self.u = dynamicsymbols(self._add_prefix("u"))
+        alpha = Symbol(self._add_prefix("alpha"))
+        self.symbols["alpha"] = alpha
+        self._frame_lean_axis = (cos(alpha) * self.rear_frame.x -
+                                 sin(alpha) * self.rear_frame.z)
+        self._pelvis_lean_axis = self.pelvis.x
+        self._pelvis_interpoint = Vector(0)
         self._system = System.from_newtonian(self.rear_frame.body)
 
     def define_kinematics(self) -> None:

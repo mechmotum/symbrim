@@ -6,6 +6,8 @@ from brim.brim.base_connections import SeatConnectionBase
 from brim.brim.seat_connections import SideLeanConnection
 from brim.rider.pelvis import SimpleRigidPelvis
 from brim.utilities.testing import _test_descriptions, create_model_of_connection
+from sympy import simplify, zeros
+from sympy.physics.mechanics import ReferenceFrame
 
 
 @pytest.mark.parametrize("seat_cls", [SideLeanConnection])
@@ -43,7 +45,11 @@ class TestSideLeanConnection:
 
     def test_default(self) -> None:
         self.model.define_kinematics()
-        assert self.conn.frame_lean_axis == self.rear_frame.x
+        a = self.conn.symbols["alpha"]
+        int_frame = ReferenceFrame("int_frame")
+        int_frame.orient_axis(self.rear_frame.frame, a, self.rear_frame.y)
+        assert simplify(self.conn.frame_lean_axis.to_matrix(self.rear_frame.frame) -
+                        int_frame.x.to_matrix(self.rear_frame.frame)) == zeros(3, 1)
         assert self.conn.pelvis_lean_axis == self.pelvis.x
         assert self.pelvis.body.masscenter.pos_from(self.rear_frame.saddle) == 0
 
