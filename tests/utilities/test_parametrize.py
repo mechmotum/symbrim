@@ -21,8 +21,8 @@ from brim.rider.pelvis_to_torso import FixedPelvisToTorso
 from brim.rider.rider import Rider
 from brim.rider.shoulder_joints import SphericalLeftShoulder, SphericalRightShoulder
 from brim.rider.torso import SimpleRigidTorso
-from sympy import Symbol, diag
-from sympy.physics.mechanics import ReferenceFrame, RigidBody, msubs
+from sympy import diag
+from sympy.physics.mechanics import RigidBody, msubs
 
 try:
     from bicycleparameters import Bicycle
@@ -105,16 +105,7 @@ class TestParametrize:
         self.br.pedal_connection = HolonomicPedalsConnection("pedals_conn")
         self.br.steer_connection = HolonomicSteerConnection("steer_conn")
 
-        self.rider_angle = Symbol("alpha")
-        self.br.define_connections()
-        self.br.define_objects()
-        saddle_interframe = ReferenceFrame("pelvis_interframe")
-        saddle_interframe.orient_axis(self.bike.rear_frame.frame,
-                                      self.bike.rear_frame.y, self.rider_angle)
-        self.br.seat_connection.frame_lean_axis = saddle_interframe.x
-        self.br.define_kinematics()
-        self.br.define_loads()
-        self.br.define_constraints()
+        self.br.define_all()
         self.system = self.br.to_system()
 
     @pytest.mark.parametrize("args, kwargs, expected", [
@@ -181,7 +172,7 @@ class TestParametrize:
         mp = remove_uncertainties(bike_params.parameters["Measured"])
         constants = self.br.get_param_values(bike_params)
         constants.update({
-            self.rider_angle: -0.7,
+            self.br.seat_connection.symbols["alpha"]: -0.7,
             self.bike.pedals.symbols["radius"]: 0.15,
             self.bike.pedals.symbols["offset"]: constants[self.rider.pelvis.symbols[
                 "hip_width"]] / 2,
