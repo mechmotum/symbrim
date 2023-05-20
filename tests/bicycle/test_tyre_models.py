@@ -3,7 +3,7 @@ from __future__ import annotations
 import pytest
 from brim.bicycle.grounds import FlatGround
 from brim.bicycle.rear_frames import RigidRearFrameMoore
-from brim.bicycle.tyre_models import NonHolonomicTyreModel, _set_pos_contact_point
+from brim.bicycle.tyre_models import NonHolonomicTyre, _set_pos_contact_point
 from brim.bicycle.wheels import KnifeEdgeWheel, ToroidalWheel
 from brim.core import ConnectionRequirement, ModelBase, ModelRequirement
 from sympy import cos, sin
@@ -61,12 +61,12 @@ class TestNonHolonomicTyreModel:
                 ModelRequirement("wheel", KnifeEdgeWheel, "Submodel of the wheel."),
             )
             required_connections: tuple[ConnectionRequirement, ...] = (
-                ConnectionRequirement("tyre_model", NonHolonomicTyreModel,
+                ConnectionRequirement("tyre_model", NonHolonomicTyre,
                                       "Tyre model for the wheel."),
             )
             ground: FlatGround
             wheel: KnifeEdgeWheel
-            tyre_model: NonHolonomicTyreModel
+            tyre_model: NonHolonomicTyre
 
             def define_connections(self) -> None:
                 super().define_connections()
@@ -92,7 +92,7 @@ class TestNonHolonomicTyreModel:
         self.model = Model("model")
         self.model.ground = FlatGround("ground")
         self.model.wheel = KnifeEdgeWheel("wheel")
-        self.model.tyre_model = NonHolonomicTyreModel("tyre_model")
+        self.model.tyre_model = NonHolonomicTyre("tyre_model")
 
     def test_default(self) -> None:
         self.model.define_connections()

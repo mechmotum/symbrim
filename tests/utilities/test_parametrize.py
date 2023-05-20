@@ -6,7 +6,7 @@ from brim.bicycle.front_frames import RigidFrontFrameMoore
 from brim.bicycle.grounds import FlatGround
 from brim.bicycle.pedals import SimplePedals
 from brim.bicycle.rear_frames import RigidRearFrameMoore
-from brim.bicycle.tyre_models import NonHolonomicTyreModel
+from brim.bicycle.tyre_models import NonHolonomicTyre
 from brim.bicycle.wheels import KnifeEdgeWheel
 from brim.bicycle.whipple_bicycle import WhippleBicycleMoore
 from brim.brim.bicycle_rider import BicycleRider
@@ -45,7 +45,7 @@ def _check_dir(bicycle: str, rider: str) -> bool:
         if not (os.path.isfile(
                 os.path.join(raw_data_dir, f"{rider}{bicycle}YeadonCFG.txt")) and
                 os.path.isfile(
-                    os.path.join(raw_data_dir, f"{rider}{bicycle}YeadonMeas.txt"))):
+                    os.path.join(raw_data_dir, f"{rider}YeadonMeas.txt"))):
             return False
     return True
 
@@ -68,9 +68,9 @@ class TestParametrize:
         self.bike.rear_frame = RigidRearFrameMoore("rear_frame")
         self.bike.front_frame = RigidFrontFrameMoore("front_frame")
         self.bike.rear_wheel = KnifeEdgeWheel("rear_wheel")
-        self.bike.rear_tyre = NonHolonomicTyreModel("rear_tyre")
+        self.bike.rear_tyre = NonHolonomicTyre("rear_tyre")
         self.bike.front_wheel = KnifeEdgeWheel("front_wheel")
-        self.bike.front_tyre = NonHolonomicTyreModel("front_tyre")
+        self.bike.front_tyre = NonHolonomicTyre("front_tyre")
         self.bike.ground = FlatGround("ground")
         self.bike.define_all()
 
@@ -81,8 +81,8 @@ class TestParametrize:
         self.bike.rear_frame = RigidRearFrameMoore("rear_frame")
         self.bike.front_wheel = KnifeEdgeWheel("front_wheel")
         self.bike.rear_wheel = KnifeEdgeWheel("rear_wheel")
-        self.bike.front_tyre = NonHolonomicTyreModel("front_tyre")
-        self.bike.rear_tyre = NonHolonomicTyreModel("rear_tyre")
+        self.bike.front_tyre = NonHolonomicTyre("front_tyre")
+        self.bike.rear_tyre = NonHolonomicTyre("rear_tyre")
         self.bike.pedals = SimplePedals("pedals")
         self.bike.ground = FlatGround("ground")
 

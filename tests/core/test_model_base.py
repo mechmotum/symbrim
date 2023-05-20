@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import pytest
-from brim.bicycle import FlatGround, KnifeEdgeWheel, NonHolonomicTyreModel
+from brim.bicycle import FlatGround, KnifeEdgeWheel, NonHolonomicTyre
 from brim.core import ModelBase, Registry, set_default_formulation
 from brim.other.rolling_disc import RollingDisc
 from sympy.physics.mechanics._system import System
@@ -21,7 +21,7 @@ class TestModelBase:
         self.disc = RollingDisc("rolling_disc")
         self.disc.disc = KnifeEdgeWheel("disc")
         self.disc.ground = FlatGround("ground")
-        self.disc.tyre = NonHolonomicTyreModel("tyre")
+        self.disc.tyre = NonHolonomicTyre("tyre")
         self.disc.define_connections()
         self.disc.define_objects()
 

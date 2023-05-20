@@ -1,5 +1,5 @@
 import pytest
-from brim.bicycle import KnifeEdgeWheel, NonHolonomicTyreModel, ToroidalWheel, WheelBase
+from brim.bicycle import KnifeEdgeWheel, NonHolonomicTyre, ToroidalWheel, WheelBase
 from brim.core import Registry
 from brim.other.rolling_disc import RollingDisc
 
@@ -10,7 +10,7 @@ class TestRegistry:
     def test_models_registered(self, model) -> None:
         assert model in Registry().models
 
-    @pytest.mark.parametrize("conn", [NonHolonomicTyreModel])
+    @pytest.mark.parametrize("conn", [NonHolonomicTyre])
     def test_connections_registered(self, conn) -> None:
         assert conn in Registry().connections
 
