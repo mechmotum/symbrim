@@ -14,7 +14,7 @@ from sympy.physics.mechanics import (
 from sympy.physics.mechanics._system import System
 
 from brim.bicycle.grounds import GroundBase
-from brim.bicycle.tyre_models import TyreModelBase
+from brim.bicycle.tyre_models import TyreBase
 from brim.bicycle.wheels import WheelBase
 from brim.core import ConnectionRequirement, ModelBase, ModelRequirement
 
@@ -27,11 +27,11 @@ class RollingDisc(ModelBase):
         ModelRequirement("disc", WheelBase, "Disc model."),
     )
     required_connections: tuple[ConnectionRequirement, ...] = (
-        ConnectionRequirement("tyre", TyreModelBase, "Tyre model."),
+        ConnectionRequirement("tyre", TyreBase, "Tyre model."),
     )
     ground: GroundBase
     disc: WheelBase
-    tyre: TyreModelBase
+    tyre: TyreBase
 
     @property
     def descriptions(self) -> dict[Any, str]:

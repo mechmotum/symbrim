@@ -8,7 +8,7 @@ from brim.bicycle.grounds import FlatGround, GroundBase
 from brim.bicycle.wheels import KnifeEdgeWheel, ToroidalWheel, WheelBase
 from brim.core import ConnectionBase, ModelRequirement
 
-__all__ = ["TyreModelBase", "NonHolonomicTyreModel"]
+__all__ = ["TyreBase", "NonHolonomicTyre"]
 
 
 def _set_pos_contact_point(contact_point: Point, ground: GroundBase, wheel: WheelBase
@@ -29,7 +29,7 @@ def _set_pos_contact_point(contact_point: Point, ground: GroundBase, wheel: Whee
         f" of {type(ground)} and {type(wheel)}.")
 
 
-class TyreModelBase(ConnectionBase):
+class TyreBase(ConnectionBase):
     """Base class for the tyre model connectors."""
 
     required_models: tuple[ModelRequirement, ...] = (
@@ -61,7 +61,7 @@ class TyreModelBase(ConnectionBase):
         self._on_ground = bool(value)
 
 
-class NonHolonomicTyreModel(TyreModelBase):
+class NonHolonomicTyre(TyreBase):
     """Tyre model connection based on non-holonomic constraints."""
 
     required_models: tuple[ModelRequirement, ...] = (

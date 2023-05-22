@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
 
 import pytest
-from brim.bicycle import FlatGround, KnifeEdgeWheel, NonHolonomicTyreModel
+from brim.bicycle import FlatGround, KnifeEdgeWheel, NonHolonomicTyre
 from brim.other.rolling_disc import RollingDisc, rolling_disc_manual
 from sympy import Symbol, lambdify
 from sympy.physics.mechanics import dynamicsymbols
@@ -25,7 +25,7 @@ class TestRollingDisc:
     def _rolling_disc_brim(self) -> None:
         self.rolling_disc = RollingDisc("rolling_disc")
         self.rolling_disc.disc = KnifeEdgeWheel("disc")
-        self.rolling_disc.tyre = NonHolonomicTyreModel("tyre")
+        self.rolling_disc.tyre = NonHolonomicTyre("tyre")
         self.rolling_disc.ground = FlatGround("ground")
         self.rolling_disc.define_connections()
         self.rolling_disc.define_objects()

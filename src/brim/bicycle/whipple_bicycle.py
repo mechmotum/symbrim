@@ -11,7 +11,7 @@ from brim.bicycle.bicycle_base import BicycleBase
 from brim.bicycle.front_frames import FrontFrameBase
 from brim.bicycle.grounds import GroundBase
 from brim.bicycle.rear_frames import RearFrameBase
-from brim.bicycle.tyre_models import TyreModelBase
+from brim.bicycle.tyre_models import TyreBase
 from brim.bicycle.wheels import WheelBase
 from brim.core import ConnectionRequirement, ModelRequirement, set_default_formulation
 
@@ -39,9 +39,9 @@ class WhippleBicycle(BicycleBase):
         ModelRequirement("front_wheel", WheelBase, "Submodel of the front wheel."),
     )
     required_connections: tuple[ConnectionRequirement, ...] = (
-        ConnectionRequirement("rear_tyre", TyreModelBase,
+        ConnectionRequirement("rear_tyre", TyreBase,
                               "Tyre model for the rear wheel."),
-        ConnectionRequirement("front_tyre", TyreModelBase,
+        ConnectionRequirement("front_tyre", TyreBase,
                               "Tyre model for the front wheel."),
     )
     ground: GroundBase
@@ -49,8 +49,8 @@ class WhippleBicycle(BicycleBase):
     front_frame: FrontFrameBase
     rear_wheel: WheelBase
     front_wheel: WheelBase
-    rear_tyre: TyreModelBase
-    front_tyre: TyreModelBase
+    rear_tyre: TyreBase
+    front_tyre: TyreBase
 
     def define_connections(self) -> None:
         """Define the connections between the submodels."""

@@ -7,7 +7,7 @@ import pytest
 from brim import (
     FlatGround,
     KnifeEdgeWheel,
-    NonHolonomicTyreModel,
+    NonHolonomicTyre,
     RigidFrontFrame,
     RigidRearFrame,
 )
@@ -89,8 +89,8 @@ class TestWhippleBicycleMoore:
         self.bike.front_frame = RigidFrontFrame("front_frame")
         self.bike.rear_wheel = KnifeEdgeWheel("rear_wheel")
         self.bike.front_wheel = KnifeEdgeWheel("front_wheel")
-        self.bike.rear_tyre = NonHolonomicTyreModel("rear_tyre")
-        self.bike.front_tyre = NonHolonomicTyreModel("front_tyre")
+        self.bike.rear_tyre = NonHolonomicTyre("rear_tyre")
+        self.bike.front_tyre = NonHolonomicTyre("front_tyre")
 
     def test_basu_mandal(self, _setup_default) -> None:
         t = dynamicsymbols._t
