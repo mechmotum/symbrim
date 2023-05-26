@@ -14,7 +14,7 @@ from brim import (
 from brim.bicycle import SimplePedals, WhippleBicycle, WhippleBicycleMoore
 from brim.utilities.utilities import cramer_solve
 from sympy import Symbol, lambdify
-from sympy.physics.mechanics import KanesMethod, dynamicsymbols
+from sympy.physics.mechanics import dynamicsymbols
 
 if TYPE_CHECKING:
     from sympy import Basic
@@ -105,15 +105,7 @@ class TestWhippleBicycleMoore:
         system.q_dep = [self.bike.q[4]]
         system.u_ind = [self.bike.u[3], *self.bike.u[5:7]]
         system.u_dep = [*self.bike.u[:3], self.bike.u[4], self.bike.u[7]]
-        system._eom_method = KanesMethod(
-            system.frame, system.q_ind, system.u_ind, kd_eqs=system.kdes,
-            q_dependent=system.q_dep, u_dependent=system.u_dep,
-            configuration_constraints=system.holonomic_constraints,
-            velocity_constraints=system.holonomic_constraints.diff(t).col_join(
-                system.nonholonomic_constraints),
-            forcelist=system.loads, bodies=system.bodies,
-            explicit_kinematics=False, constraint_solver=cramer_solve)
-        system.eom_method.kanes_equations()
+        system.form_eoms(constraint_solver=cramer_solve)
 
         constants, initial_state = self._get_basu_mandal_values(self.bike)
         p, p_vals = zip(*constants.items())
