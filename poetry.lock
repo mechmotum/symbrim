@@ -71,9 +71,9 @@ doc = ["numpydoc (>=0.7.0)", "sphinx (>=1.8.5)"]
 
 [package.source]
 type = "git"
-url = "https://github.com/moorepants/BicycleParameters"
+url = "https://github.com/moorepants/BicycleParameters.git"
 reference = "HEAD"
-resolved_reference = "e974f6fbb6fab214aeb9c581d27fe8d6e64353ae"
+resolved_reference = "6498a3b1dd9789d4db722d6143ee841f3e29a66f"
 
 [[package]]
 name = "certifi"
@@ -1511,7 +1511,7 @@ mpmath = ">=0.19"
 type = "git"
 url = "https://github.com/sympy/sympy.git"
 reference = "HEAD"
-resolved_reference = "e0235b4b2681bf8aff8cdf1d1e456653b21dacbd"
+resolved_reference = "e2cadc140cc969fea038240a39961a66a2f3dd6d"
 
 [[package]]
 name = "tenacity"
@@ -1632,4 +1632,4 @@ plotting = ["symmeplot"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "d525e6bb5476ebf5b62c21bb9cf7b6eb7a78d017cc5bc03fad1f6555c3593c02"
+content-hash = "faecda8edc70ac308793f8bccae64aea35daec0910f0fb46b16d9dc60c5fb09d"
