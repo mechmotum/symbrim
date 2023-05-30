@@ -175,7 +175,16 @@ class BrimBase:
 
     @property
     def system(self) -> System | None:
-        """System object representing the model."""
+        """System object used to store the information of the model itself.
+
+        Notes
+        -----
+        This system object is used to store the information of the model itself. It does
+        not by definition contain any information about the submodels or connections.
+        Therefore, one cannot use this system object to form the equations of motion.
+        Instead one should use the :meth:`to_system` method to get the system object
+        representing the entire model.
+        """
         return self._system
 
     def get_param_values(self, bicycle_parameters: Bicycle) -> dict[Symbol, float]:
