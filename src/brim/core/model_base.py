@@ -110,6 +110,8 @@ class ConnectionMeta(ABCMeta):
 class BrimBase:
     """Base class defining a common interface for the models and connections."""
 
+    required_models: tuple[ModelRequirement]
+
     def __init__(self, name: str) -> None:
         """Create a new instance.
 
@@ -350,7 +352,7 @@ def _merge_systems(*systems: System) -> System:  # pragma: no cover
     Notes
     -----
     This function is not used in the current implementation of brim.
-    However it should in the end be moved to sympy mechanics.
+    However, it should in the end be moved to sympy mechanics.
     """
     system = System(systems[0].origin, systems[0].frame)
     for s in systems:
