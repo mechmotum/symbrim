@@ -108,7 +108,7 @@ class ConnectionMeta(ABCMeta):
 
 
 class BrimBase:
-    """Base class defining a common interfact for the models and connections."""
+    """Base class defining a common interface for the models and connections."""
 
     def __init__(self, name: str) -> None:
         """Create a new instance.
