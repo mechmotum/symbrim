@@ -44,3 +44,18 @@ class TestRegistry:
         options = set(Registry().get_from_requirement(*args, **kwargs))
         assert subset.issubset(options)
         assert disjoint.isdisjoint(options)
+
+    @pytest.mark.parametrize("args, kwargs, subset, disjoint", [
+        ((RollingDisc("disc"), "disc"), {},
+         {KnifeEdgeWheel, ToroidalWheel}, {NonHolonomicTyre, WheelBase, RollingDisc}),
+        ((RollingDisc("disc"), "tyre"), {},
+         {NonHolonomicTyre}, {TyreBase, KnifeEdgeWheel, RollingDisc}),
+        ((RollingDisc("disc"), "disc"), {"drop_abstract": False},
+         {KnifeEdgeWheel, ToroidalWheel, WheelBase}, {NonHolonomicTyre, RollingDisc}),
+        ((RollingDisc("disc"), "tyre"), {"drop_abstract": False},
+         {NonHolonomicTyre, TyreBase}, {KnifeEdgeWheel, RollingDisc}),
+    ])
+    def test_get_from_property_default(self, args, kwargs, subset, disjoint) -> None:
+        options = set(Registry().get_from_property(*args, **kwargs))
+        assert subset.issubset(options)
+        assert disjoint.isdisjoint(options)
