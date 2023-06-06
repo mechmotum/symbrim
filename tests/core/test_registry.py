@@ -24,19 +24,13 @@ class TestRegistry:
     def test_connections_and_models_split(self) -> None:
         assert Registry().models.isdisjoint(Registry().connections)
 
-    @pytest.mark.parametrize("requirement, subset, disjoint", [
-        (ModelRequirement("wheel", WheelBase, "Wheel model."),
+    @pytest.mark.parametrize("args, kwargs, subset, disjoint", [
+        ((ModelRequirement("wheel", WheelBase, "Wheel model."),), {},
          {KnifeEdgeWheel, ToroidalWheel},
          {NonHolonomicTyre, RollingDisc, WheelBase}),
-        (ConnectionRequirement("tyre", TyreBase, "Tyre model."),
+        ((ConnectionRequirement("tyre", TyreBase, "Tyre model."),), {},
          {NonHolonomicTyre},
          {KnifeEdgeWheel, ToroidalWheel, TyreBase, RollingDisc, WheelBase}),
-    ])
-    def test_get_from_requirement_default(self, requirement, subset, disjoint) -> None:
-        assert subset.issubset(Registry().get_from_requirement(requirement))
-        assert disjoint.isdisjoint(Registry().get_from_requirement(requirement))
-
-    @pytest.mark.parametrize("args, kwargs, subset, disjoint", [
         ((ModelRequirement("wheel", WheelBase, "Wheel model."),),
          {"drop_abstract": False},
          {KnifeEdgeWheel, ToroidalWheel, WheelBase},
@@ -46,6 +40,7 @@ class TestRegistry:
          {NonHolonomicTyre, TyreBase},
          {KnifeEdgeWheel, ToroidalWheel, RollingDisc, WheelBase}),
     ])
-    def test_get_from_requirement_custom(self, args, kwargs, subset, disjoint) -> None:
-        assert subset.issubset(Registry().get_from_requirement(*args, **kwargs))
-        assert disjoint.isdisjoint(Registry().get_from_requirement(*args, **kwargs))
+    def test_get_from_requirement(self, args, kwargs, subset, disjoint) -> None:
+        options = set(Registry().get_from_requirement(*args, **kwargs))
+        assert subset.issubset(options)
+        assert disjoint.isdisjoint(options)
