@@ -110,6 +110,8 @@ class ConnectionMeta(ABCMeta):
 class BrimBase:
     """Base class defining a common interface for the models and connections."""
 
+    required_models: tuple[ModelRequirement]
+
     def __init__(self, name: str) -> None:
         """Create a new instance.
 
@@ -182,7 +184,7 @@ class BrimBase:
         This system object is used to store the information of the model itself. It does
         not by definition contain any information about the submodels or connections.
         Therefore, one cannot use this system object to form the equations of motion.
-        Instead one should use the :meth:`to_system` method to get the system object
+        Instead, one should use the :meth:`to_system` method to get the system object
         representing the entire model.
         """
         return self._system
@@ -350,7 +352,7 @@ def _merge_systems(*systems: System) -> System:  # pragma: no cover
     Notes
     -----
     This function is not used in the current implementation of brim.
-    However it should in the end be moved to sympy mechanics.
+    However, it should in the end be moved to sympy mechanics.
     """
     system = System(systems[0].origin, systems[0].frame)
     for s in systems:
