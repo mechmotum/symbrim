@@ -205,7 +205,7 @@ class PinElbowStickRightArm(PinElbowStickArmMixin, RightArmBase):
 class PinElbowStickArmTorque(LoadGroupBase):
     """Torque applied to the elbow of the rider as time-varying quantity."""
 
-    parent: PinElbowStickArmMixin
+    parent: PinElbowStickLeftArm | PinElbowStickRightArm
 
     @property
     def descriptions(self) -> dict[Any, str]:
@@ -229,7 +229,7 @@ class PinElbowStickArmTorque(LoadGroupBase):
 class PinElbowStickArmSpringDamper(LoadGroupBase):
     """Torque applied to the elbow of the rider as linear spring-damper."""
 
-    parent: PinElbowStickArmMixin
+    parent: PinElbowStickLeftArm | PinElbowStickRightArm
 
     @property
     def descriptions(self) -> dict[Any, str]:
