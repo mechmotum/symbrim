@@ -6,9 +6,10 @@ from typing import TYPE_CHECKING, Any
 
 from sympy import Symbol
 from sympy.physics.mechanics import PinJoint, Point, RigidBody, dynamicsymbols
+from sympy.physics.mechanics._actuator import TorqueActuator
 from sympy.physics.mechanics._system import System
 
-from brim.core import ModelBase
+from brim.core import LoadGroupBase, ModelBase
 
 try:  # pragma: no cover
     from brim.utilities.parametrize import get_inertia_vals_from_yeadon
@@ -22,7 +23,7 @@ if TYPE_CHECKING:
     from sympy.physics.mechanics import ReferenceFrame
 
 __all__ = ["ArmBase", "LeftArmBase", "RightArmBase", "PinElbowStickLeftArm",
-           "PinElbowStickRightArm"]
+           "PinElbowStickRightArm", "PinElbowStickArmTorque"]
 
 
 class ArmBase(ModelBase):
@@ -199,3 +200,27 @@ class PinElbowStickRightArm(PinElbowStickArmMixin, RightArmBase):
             self.symbols["l_forearm_com"]: -human.B2.rel_center_of_mass[2, 0],
         })
         return params
+
+
+class PinElbowStickArmTorque(LoadGroupBase):
+    """Torque applied to the elbow of the rider."""
+
+    parent: PinElbowStickArmMixin
+
+    @property
+    def descriptions(self) -> dict[Any, str]:
+        """Descriptions of the objects."""
+        return {
+            self.symbols["T_elbow"]: f"Elbow torque of {self.parent}",
+        }
+
+    def define_objects(self) -> None:
+        """Define the objects."""
+        self.symbols["T_elbow"] = dynamicsymbols(self._add_prefix("T_elbow"))
+
+    def define_loads(self) -> None:
+        """Define the kinematics."""
+        self.system.add_actuators(
+            TorqueActuator(self.symbols["T_elbow"], self.parent.upper_arm.y,
+                           self.parent.forearm, self.parent.upper_arm)
+        )
