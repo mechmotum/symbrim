@@ -5,6 +5,7 @@ from abc import ABCMeta
 from functools import wraps
 from typing import TYPE_CHECKING, Any, Callable
 
+import typeguard
 from sympy import symbols
 from sympy.physics.mechanics._system import System
 
@@ -233,7 +234,7 @@ class LoadGroupBase(BrimBase, metaclass=LoadGroupMeta):
     def parent(self, parent: ModelBase | ConnectionBase) -> None:
         if self._parent is not None:
             raise ValueError(f"Load group is already used by {self.parent}")
-        elif not isinstance(parent, self.__annotations__["parent"]):
+        elif not typeguard.check_type(parent, self.__annotations__["parent"]):
             raise TypeError(
                 f"Parent should be of type {self.__annotations__['parent']}")
         self._parent = parent
