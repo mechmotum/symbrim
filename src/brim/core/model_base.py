@@ -107,10 +107,18 @@ class ConnectionMeta(ABCMeta):
         return instance
 
 
+class LoadGroupMeta(ABCMeta):
+    """Metaclass for the :class:`brim.core.model_base.LoadGroupBase`."""
+
+    def __new__(mcs, name, bases, namespace, **kwargs):  # noqa: N804
+        """Create a new class."""
+        instance = super().__new__(mcs, name, bases, namespace, **kwargs)
+        Registry().register_load_group(instance)
+        return instance
+
+
 class BrimBase:
     """Base class defining a common interface for the models and connections."""
-
-    required_models: tuple[ModelRequirement]
 
     def __init__(self, name: str) -> None:
         """Create a new instance.
@@ -148,14 +156,6 @@ class BrimBase:
         return self.name
 
     @property
-    def submodels(self) -> frozenset[ModelBase]:
-        """Submodels out of which this model exists."""
-        submodels = []
-        for req in self.required_models:
-            submodels.append(getattr(self, req.attribute_name))
-        return frozenset(submodel for submodel in submodels if submodel is not None)
-
-    @property
     def descriptions(self) -> dict[Any, str]:
         """Descriptions of the attributes of the object."""
         return {}
@@ -164,7 +164,7 @@ class BrimBase:
         """Get description of a given object."""
         if obj in self.descriptions:
             return self.descriptions[obj]
-        if hasattr(self, "submodels"):  # pragma: no cover  (is always True)
+        if hasattr(self, "submodels"):
             for submodel in self.submodels:
                 desc = submodel.get_description(obj)
                 if desc is not None:
@@ -195,6 +195,49 @@ class BrimBase:
             raise ImportError("The bicycle parameters package is not installed.")
         return {}
 
+    def define_objects(self) -> None:
+        """Define the objects of the system."""
+
+    def define_kinematics(self) -> None:
+        """Define the kinematics of the system."""
+
+    def define_loads(self) -> None:
+        """Define the loads of the system."""
+
+    def define_constraints(self) -> None:
+        """Define the constraints of the system."""
+
+
+class LoadGroupBase(BrimBase, metaclass=LoadGroupMeta):
+    """Base class for the load groups."""
+
+    parent: ModelBase | ConnectionBase | tuple[ModelBase | ConnectionBase, ...]
+
+    def __init__(self, name: str) -> None:
+        """Create a new instance of the load group.
+
+        Parameters
+        ----------
+        name : str
+            Name of the load group.
+        """
+        super().__init__(name)
+        self._parent = None
+
+    @property
+    def parent(self) -> ModelBase | ConnectionBase | None:
+        """Parent model or connection."""
+        return self._parent
+
+    @parent.setter
+    def parent(self, parent: ModelBase | ConnectionBase) -> None:
+        if self._parent is not None:
+            raise ValueError(f"Load group is already used by {self.parent}")
+        elif not isinstance(parent, self.__annotations__["parent"]):
+            raise TypeError(
+                f"Parent should be of type {self.__annotations__['parent']}")
+        self._parent = parent
+
 
 class ConnectionBase(BrimBase, metaclass=ConnectionMeta):
     """Base class for all connections in brim."""
@@ -211,20 +254,48 @@ class ConnectionBase(BrimBase, metaclass=ConnectionMeta):
         """
         super().__init__(name)
         self._parent = None
+        self._load_groups = []
         for req in self.required_models:
             setattr(self, f"_{req.attribute_name}", None)
 
+    @property
+    def submodels(self) -> frozenset[ModelBase]:
+        """Submodels of the connection."""
+        submodels = []
+        for req in self.required_models:
+            submodels.append(getattr(self, req.attribute_name))
+        return frozenset(submodel for submodel in submodels if submodel is not None)
+
+    @property
+    def load_groups(self) -> frozenset[LoadGroupBase]:
+        """Load groups of the connection."""
+        return frozenset(self._load_groups)
+
+    def add_load_groups(self, *load_groups: LoadGroupBase) -> None:
+        """Add load groups to the connection."""
+        for load_group in load_groups:
+            load_group.parent = self
+        self._load_groups.extend(load_groups)
+
     def define_objects(self) -> None:
         """Define the objects in the connection."""
+        for group in self._load_groups:
+            group.define_objects()
 
     def define_kinematics(self) -> None:
         """Define the kinematics of the connection."""
+        for group in self._load_groups:
+            group.define_kinematics()
 
     def define_loads(self) -> None:
         """Define the loads on the connection."""
+        for group in self._load_groups:
+            group.define_loads()
 
     def define_constraints(self) -> None:
         """Define the constraints on the connection."""
+        for group in self._load_groups:
+            group.define_constraints()
 
 
 class ModelBase(BrimBase, metaclass=ModelMeta):
@@ -243,10 +314,19 @@ class ModelBase(BrimBase, metaclass=ModelMeta):
             Name of the model.
         """
         super().__init__(name)
+        self._load_groups = []
         for req in self.required_models:
             setattr(self, f"_{req.attribute_name}", None)
         for req in self.required_connections:
             setattr(self, f"_{req.attribute_name}", None)
+
+    @property
+    def submodels(self) -> frozenset[ModelBase]:
+        """Submodels out of which this model exists."""
+        submodels = []
+        for req in self.required_models:
+            submodels.append(getattr(self, req.attribute_name))
+        return frozenset(submodel for submodel in submodels if submodel is not None)
 
     @property
     def connections(self) -> frozenset[ConnectionBase]:
@@ -255,6 +335,17 @@ class ModelBase(BrimBase, metaclass=ModelMeta):
         for req in self.required_connections:
             connections.append(getattr(self, req.attribute_name))
         return frozenset(conn for conn in connections if conn is not None)
+
+    @property
+    def load_groups(self) -> frozenset[LoadGroupBase]:
+        """Load groups of the connection."""
+        return frozenset(self._load_groups)
+
+    def add_load_groups(self, *load_groups: LoadGroupBase) -> None:
+        """Add load groups to the connection."""
+        for load_group in load_groups:
+            load_group.parent = self
+        self._load_groups.extend(load_groups)
 
     @classmethod
     def from_formulation(cls, formulation: str, name: str, *args, **kwargs
@@ -281,21 +372,29 @@ class ModelBase(BrimBase, metaclass=ModelMeta):
         """Initialize the objects belonging to the model."""
         for submodel in self.submodels:
             submodel.define_objects()
+        for group in self._load_groups:
+            group.define_objects()
 
     def define_kinematics(self) -> None:
         """Establish the kinematics of the objects belonging to the model."""
         for submodel in self.submodels:
             submodel.define_kinematics()
+        for group in self._load_groups:
+            group.define_kinematics()
 
     def define_loads(self) -> None:
         """Define the loads that are acting upon the model."""
         for submodel in self.submodels:
             submodel.define_loads()
+        for group in self._load_groups:
+            group.define_loads()
 
     def define_constraints(self) -> None:
         """Define the constraints on the model."""
         for submodel in self.submodels:
             submodel.define_constraints()
+        for group in self._load_groups:
+            group.define_constraints()
 
     def define_all(self) -> None:
         """Define all aspects of the model."""

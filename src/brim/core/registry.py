@@ -18,6 +18,7 @@ class Registry(Singleton):
     def __init__(self) -> None:
         self._models = set()
         self._connections = set()
+        self._load_groups = set()
 
     def register_model(self, model: type) -> None:
         """Register a new type in the registry."""
@@ -26,6 +27,10 @@ class Registry(Singleton):
     def register_connection(self, conn: type) -> None:
         """Register a new type in the registry."""
         self._connections.add(conn)
+
+    def register_load_group(self, group: type) -> None:
+        """Register a new load group in the registry."""
+        self._load_groups.add(group)
 
     @property
     def models(self) -> frozenset[type]:
@@ -36,6 +41,11 @@ class Registry(Singleton):
     def connections(self) -> frozenset[type]:
         """Return the registered connections."""
         return frozenset(self._connections)
+
+    @property
+    def load_groups(self) -> frozenset[type]:
+        """Return the registered load groups."""
+        return frozenset(self._load_groups)
 
     def get_from_property(self, obj: ModelBase | ConnectionBase, prop: str,
                           drop_abstract: bool = True) -> list[type]:
