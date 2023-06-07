@@ -4,8 +4,8 @@ __all__ = [
     "Singleton",
     "Registry",
     "ConnectionRequirement", "ModelRequirement",
-    "ConnectionMeta", "ModelMeta",
-    "ConnectionBase", "ModelBase",
+    "ConnectionMeta", "LoadGroupMeta", "ModelMeta",
+    "ConnectionBase", "LoadGroupBase", "ModelBase",
     "set_default_formulation",
     "NewtonianBodyMixin",
 ]
@@ -14,6 +14,8 @@ from brim.core.mixins import NewtonianBodyMixin
 from brim.core.model_base import (
     ConnectionBase,
     ConnectionMeta,
+    LoadGroupBase,
+    LoadGroupMeta,
     ModelBase,
     ModelMeta,
     set_default_formulation,

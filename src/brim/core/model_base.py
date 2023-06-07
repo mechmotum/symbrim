@@ -20,8 +20,8 @@ if TYPE_CHECKING:
 
     from brim.core.requirement import ConnectionRequirement, ModelRequirement
 
-__all__ = ["ConnectionBase", "ConnectionMeta", "ModelBase", "ModelMeta",
-           "set_default_formulation"]
+__all__ = ["ConnectionBase", "ConnectionMeta", "LoadGroupBase", "LoadGroupMeta",
+           "ModelBase", "ModelMeta", "set_default_formulation"]
 
 
 def _get_requirements(bases, namespace, req_attr_name):
