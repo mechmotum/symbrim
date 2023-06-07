@@ -23,7 +23,7 @@ if TYPE_CHECKING:
     from sympy.physics.mechanics import ReferenceFrame
 
 __all__ = ["ArmBase", "LeftArmBase", "RightArmBase", "PinElbowStickLeftArm",
-           "PinElbowStickRightArm", "PinElbowStickArmTorque"]
+           "PinElbowStickRightArm", "PinElbowTorque", "PinElbowSpringDamper"]
 
 
 class ArmBase(ModelBase):
@@ -202,7 +202,7 @@ class PinElbowStickRightArm(PinElbowStickArmMixin, RightArmBase):
         return params
 
 
-class PinElbowStickArmTorque(LoadGroupBase):
+class PinElbowTorque(LoadGroupBase):
     """Torque applied to the elbow of the rider as time-varying quantity."""
 
     parent: PinElbowStickLeftArm | PinElbowStickRightArm
@@ -226,7 +226,7 @@ class PinElbowStickArmTorque(LoadGroupBase):
         )
 
 
-class PinElbowStickArmSpringDamper(LoadGroupBase):
+class PinElbowSpringDamper(LoadGroupBase):
     """Torque applied to the elbow of the rider as linear spring-damper."""
 
     parent: PinElbowStickLeftArm | PinElbowStickRightArm
