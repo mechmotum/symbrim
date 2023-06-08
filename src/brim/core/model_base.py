@@ -260,6 +260,11 @@ class LoadGroupBase(BrimBase, metaclass=LoadGroupMeta):
                 f"Parent should be of type {self.__annotations__['parent']}")
         self._parent = parent
 
+    @property
+    def system(self) -> System | None:
+        """System object used to store the information of the model itself."""
+        return self.parent.system if self.parent is not None else None
+
 
 class ConnectionBase(BrimBase, metaclass=ConnectionMeta):
     """Base class for all connections in brim."""
