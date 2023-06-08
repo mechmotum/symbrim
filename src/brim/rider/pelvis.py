@@ -47,9 +47,9 @@ class PelvisBase(NewtonianBodyMixin, ModelBase):
         """
         return self._right_hip_point
 
-    def define_objects(self) -> None:
+    def _define_objects(self) -> None:
         """Define the objects."""
-        super().define_objects()
+        super()._define_objects()
         self._left_hip_point = Point(self._add_prefix("LHP"))
         self._right_hip_point = Point(self._add_prefix("RHP"))
 
@@ -83,15 +83,15 @@ class SimpleRigidPelvis(PelvisBase):
                                         "of mass and the hip joints.",
         }
 
-    def define_objects(self) -> None:
+    def _define_objects(self) -> None:
         """Define the objects."""
-        super().define_objects()
+        super()._define_objects()
         self.symbols["hip_width"] = Symbol(self._add_prefix("hip_width"))
         self.symbols["com_height"] = Symbol(self._add_prefix("com_height"))
 
-    def define_kinematics(self) -> None:
+    def _define_kinematics(self) -> None:
         """Define the kinematics."""
-        super().define_kinematics()
+        super()._define_kinematics()
         self.left_hip_point.set_pos(self.body.masscenter,
                                     -self.symbols["hip_width"] * self.y / 2 +
                                     self.symbols["com_height"] * self.z)

@@ -196,17 +196,33 @@ class BrimBase:
             raise ImportError("The bicycle parameters package is not installed.")
         return {}
 
+    def _define_objects(self) -> None:
+        """Define the objects of the system."""
+
     def define_objects(self) -> None:
         """Define the objects of the system."""
+        self._define_objects()
+
+    def _define_kinematics(self) -> None:
+        """Define the kinematics of the system."""
 
     def define_kinematics(self) -> None:
         """Define the kinematics of the system."""
+        self._define_kinematics()
+
+    def _define_loads(self) -> None:
+        """Define the loads of the system."""
 
     def define_loads(self) -> None:
         """Define the loads of the system."""
+        self._define_loads()
+
+    def _define_constraints(self) -> None:
+        """Define the constraints of the system."""
 
     def define_constraints(self) -> None:
         """Define the constraints of the system."""
+        self._define_constraints()
 
 
 class LoadGroupBase(BrimBase, metaclass=LoadGroupMeta):
@@ -280,23 +296,27 @@ class ConnectionBase(BrimBase, metaclass=ConnectionMeta):
 
     def define_objects(self) -> None:
         """Define the objects in the connection."""
-        for group in self._load_groups:
-            group.define_objects()
+        self._define_objects()
+        for load_group in self._load_groups:
+            load_group.define_objects()
 
     def define_kinematics(self) -> None:
         """Define the kinematics of the connection."""
-        for group in self._load_groups:
-            group.define_kinematics()
+        self._define_kinematics()
+        for load_group in self._load_groups:
+            load_group.define_kinematics()
 
     def define_loads(self) -> None:
         """Define the loads on the connection."""
-        for group in self._load_groups:
-            group.define_loads()
+        self._define_loads()
+        for load_group in self._load_groups:
+            load_group.define_loads()
 
     def define_constraints(self) -> None:
         """Define the constraints on the connection."""
-        for group in self._load_groups:
-            group.define_constraints()
+        self._define_constraints()
+        for load_group in self._load_groups:
+            load_group.define_constraints()
 
 
 class ModelBase(BrimBase, metaclass=ModelMeta):
@@ -364,8 +384,12 @@ class ModelBase(BrimBase, metaclass=ModelMeta):
                              f"of type {cls}: {set(possible_models)}.")
         return possible_models[0](name, *args, **kwargs)
 
+    def _define_connections(self) -> None:
+        """Define the submodels used by connections in the model."""
+
     def define_connections(self) -> None:
         """Define the submodels used by connections in the model."""
+        self._define_connections()
         for submodel in self.submodels:
             submodel.define_connections()
 
@@ -373,29 +397,33 @@ class ModelBase(BrimBase, metaclass=ModelMeta):
         """Initialize the objects belonging to the model."""
         for submodel in self.submodels:
             submodel.define_objects()
-        for group in self._load_groups:
-            group.define_objects()
+        self._define_objects()
+        for load_group in self._load_groups:
+            load_group.define_objects()
 
     def define_kinematics(self) -> None:
         """Establish the kinematics of the objects belonging to the model."""
         for submodel in self.submodels:
             submodel.define_kinematics()
-        for group in self._load_groups:
-            group.define_kinematics()
+        self._define_kinematics()
+        for load_group in self._load_groups:
+            load_group.define_kinematics()
 
     def define_loads(self) -> None:
         """Define the loads that are acting upon the model."""
         for submodel in self.submodels:
             submodel.define_loads()
-        for group in self._load_groups:
-            group.define_loads()
+        self._define_loads()
+        for load_group in self._load_groups:
+            load_group.define_loads()
 
     def define_constraints(self) -> None:
         """Define the constraints on the model."""
         for submodel in self.submodels:
             submodel.define_constraints()
-        for group in self._load_groups:
-            group.define_constraints()
+        self._define_constraints()
+        for load_group in self._load_groups:
+            load_group.define_constraints()
 
     def define_all(self) -> None:
         """Define all aspects of the model."""

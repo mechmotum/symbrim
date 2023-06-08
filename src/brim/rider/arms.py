@@ -29,9 +29,9 @@ __all__ = ["ArmBase", "LeftArmBase", "RightArmBase", "PinElbowStickLeftArm",
 class ArmBase(ModelBase):
     """Base class for the arms of the rider."""
 
-    def define_objects(self) -> None:
+    def _define_objects(self) -> None:
         """Define the objects."""
-        super().define_objects()
+        super()._define_objects()
         self._shoulder_interpoint = Point(self._add_prefix("SP"))
         self._hand_interpoint = Point(self._add_prefix("HP"))
 
@@ -92,9 +92,9 @@ class PinElbowStickArmMixin:
             self.u: "Elbow flexion angular velocity",
         }
 
-    def define_objects(self):
+    def _define_objects(self):
         """Define the objects."""
-        super().define_objects()
+        super()._define_objects()
         self.symbols.update({
             "l_upper_arm": Symbol(self._add_prefix("l_upper_arm")),
             "l_upper_arm_com": Symbol(self._add_prefix("l_upper_arm_com")),
@@ -107,9 +107,9 @@ class PinElbowStickArmMixin:
         self._forearm = RigidBody(self._add_prefix("forearm"))
         self._system = System.from_newtonian(self.upper_arm)
 
-    def define_kinematics(self) -> None:
+    def _define_kinematics(self) -> None:
         """Define the kinematics."""
-        super().define_kinematics()
+        super()._define_kinematics()
         l_u, l_f, l_uc, l_fc = (self.symbols[name] for name in (
             "l_upper_arm", "l_forearm", "l_upper_arm_com", "l_forearm_com"))
         self.upper_arm.masscenter.set_pos(
@@ -214,11 +214,11 @@ class PinElbowTorque(LoadGroupBase):
             self.symbols["T_elbow"]: f"Elbow torque of {self.parent}",
         }
 
-    def define_objects(self) -> None:
+    def _define_objects(self) -> None:
         """Define the objects."""
         self.symbols["T_elbow"] = dynamicsymbols(self._add_prefix("T_elbow"))
 
-    def define_loads(self) -> None:
+    def _define_loads(self) -> None:
         """Define the kinematics."""
         self.system.add_actuators(
             TorqueActuator(self.symbols["T_elbow"], self.parent.upper_arm.y,
@@ -240,7 +240,7 @@ class PinElbowSpringDamper(LoadGroupBase):
             self.symbols["q_ref"]: f"Elbow reference angle of {self.parent}",
         }
 
-    def define_objects(self) -> None:
+    def _define_objects(self) -> None:
         """Define the objects."""
         self.symbols.update({
             "k_elbow": dynamicsymbols(self._add_prefix("k_elbow")),
@@ -248,7 +248,7 @@ class PinElbowSpringDamper(LoadGroupBase):
             "q_ref": dynamicsymbols(self._add_prefix("q_ref")),
         })
 
-    def define_loads(self) -> None:
+    def _define_loads(self) -> None:
         """Define the kinematics."""
         u = self.parent.forearm.frame.ang_vel_in(self.parent.upper_arm.frame).dot(
             self.parent.upper_arm.y)

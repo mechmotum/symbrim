@@ -39,9 +39,9 @@ class TyreBase(ConnectionBase):
     ground: GroundBase
     wheel: WheelBase
 
-    def define_objects(self) -> None:
+    def _define_objects(self) -> None:
         """Define the objects of the tyre model."""
-        super().define_objects()
+        super()._define_objects()
         self._system = System.from_newtonian(self.ground.body)
         self._contact_point = Point(self._add_prefix("contact_point"))
         self._on_ground = False
@@ -72,14 +72,14 @@ class NonHolonomicTyre(TyreBase):
     ground: FlatGround
     wheel: KnifeEdgeWheel | ToroidalWheel
 
-    def define_kinematics(self) -> None:
+    def _define_kinematics(self) -> None:
         """Define the kinematics of the tyre model."""
-        super().define_kinematics()
+        super()._define_kinematics()
         _set_pos_contact_point(self.contact_point, self.ground, self.wheel)
 
-    def define_constraints(self) -> None:
+    def _define_constraints(self) -> None:
         """Define the constraints of the tyre model."""
-        super().define_constraints()
+        super()._define_constraints()
         v0 = self.wheel.center.vel(self.ground.frame) + cross(
             self.wheel.frame.ang_vel_in(self.ground.frame),
             self.contact_point.pos_from(self.wheel.center)

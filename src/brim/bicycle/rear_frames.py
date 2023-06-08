@@ -65,24 +65,24 @@ class RearFrameBase(NewtonianBodyMixin, ModelBase):
 class RigidRearFrame(RearFrameBase):
     """Rigid rear frame."""
 
-    def define_objects(self):
+    def _define_objects(self):
         """Define the objects of the rear frame."""
-        super().define_objects()
+        super()._define_objects()
         self.body.central_inertia = inertia(self.body.frame,
                                             *symbols(self._add_prefix("ixx iyy izz")),
                                             izx=Symbol(self._add_prefix("izx")))
         self._wheel_attachment = Point(self._add_prefix("wheel_attachment"))
         self._saddle = Point(self._add_prefix("saddle"))
 
-    def define_kinematics(self):
+    def _define_kinematics(self):
         """Define the kinematics of the rear frame."""
-        super().define_kinematics()
+        super()._define_kinematics()
         self.wheel_attachment.set_vel(self.frame, 0)
         self.saddle.set_vel(self.frame, 0)
 
-    def define_loads(self):
+    def _define_loads(self):
         """Define the loads acting upon the rear frame."""
-        super().define_loads()
+        super()._define_loads()
 
     @property
     @abstractmethod
@@ -127,17 +127,17 @@ class RigidRearFrameMoore(RigidRearFrame):
                                 "wheel center to the point representng the saddle.",
         }
 
-    def define_objects(self):
+    def _define_objects(self):
         """Define the objects of the rear frame."""
-        super().define_objects()
+        super()._define_objects()
         self.symbols.update({
             name: Symbol(self._add_prefix(name)) for name in ("d1", "l1", "l2", "d4",
                                                               "d5")})
         self._steer_attachment = Point("steer_attachment")
 
-    def define_kinematics(self):
+    def _define_kinematics(self):
         """Define the kinematics of the rear frame."""
-        super().define_kinematics()
+        super()._define_kinematics()
         d1, l1, l2, d4, d5 = (self.symbols[name] for name in ("d1", "l1", "l2", "d4",
                                                               "d5"))
         self.steer_attachment.set_pos(self.wheel_attachment, d1 * self.x)

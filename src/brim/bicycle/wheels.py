@@ -28,9 +28,9 @@ __all__ = ["WheelBase", "KnifeEdgeWheel", "ToroidalWheel"]
 class WheelBase(NewtonianBodyMixin, ModelBase):
     """Wheel base class."""
 
-    def define_objects(self) -> None:
+    def _define_objects(self) -> None:
         """Define the objects of the wheel."""
-        super().define_objects()
+        super()._define_objects()
 
     @property
     @abstractmethod
@@ -86,9 +86,9 @@ class KnifeEdgeWheel(WheelBase):
         """Radius of the wheel."""
         return self.symbols["r"]
 
-    def define_objects(self) -> None:
+    def _define_objects(self) -> None:
         """Define the objects of the wheel."""
-        super().define_objects()
+        super()._define_objects()
         self.body.central_inertia = inertia(self.body.frame,
                                             *symbols(self._add_prefix("ixx iyy ixx")))
         self.symbols["r"] = Symbol(self._add_prefix("r"))
@@ -151,9 +151,9 @@ class ToroidalWheel(WheelBase):
         """Transverse radius of curvature of the crown of the wheel."""
         return self.symbols["tr"]
 
-    def define_objects(self) -> None:
+    def _define_objects(self) -> None:
         """Define the objects of the wheel."""
-        super().define_objects()
+        super()._define_objects()
         self.body.central_inertia = inertia(self.body.frame,
                                             *symbols(self._add_prefix("ixx iyy ixx")))
         self.symbols["r"] = Symbol(self._add_prefix("r"))

@@ -23,14 +23,14 @@ class HolonomicPedalsConnection(PedalConnectionBase):
     the distance between the pedals is different than the hip width.
     """
 
-    def define_objects(self) -> None:
+    def _define_objects(self) -> None:
         """Define the objects."""
-        super().define_objects()
+        super()._define_objects()
         self._system = System()
 
-    def define_constraints(self) -> None:
+    def _define_constraints(self) -> None:
         """Define the constraints."""
-        super().define_constraints()
+        super()._define_constraints()
         error_msg, constrs = [], []
         for fp, pp in (
                 (self.left_leg.foot_interpoint, self.pedals.left_pedal_point),

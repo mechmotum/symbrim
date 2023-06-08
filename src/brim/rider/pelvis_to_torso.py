@@ -35,16 +35,16 @@ class FixedPelvisToTorso(PelvisToTorsoBase):
                                    "pelvis.",
         }
 
-    def define_objects(self) -> None:
+    def _define_objects(self) -> None:
         """Define the objects."""
-        super().define_objects()
+        super()._define_objects()
         self.symbols["d_p_t"] = Symbol(self._add_prefix("d_p_t"))
         self._torso_wrt_pelvis = -self.symbols["d_p_t"] * self.pelvis.z
         self._system = System.from_newtonian(self.pelvis.body)
 
-    def define_kinematics(self) -> None:
+    def _define_kinematics(self) -> None:
         """Define the kinematics."""
-        super().define_kinematics()
+        super()._define_kinematics()
         self.system.add_joints(
             WeldJoint(
                 self._add_prefix("joint"), self.pelvis.body, self.torso.body,

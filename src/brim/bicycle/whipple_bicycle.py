@@ -52,9 +52,9 @@ class WhippleBicycle(BicycleBase):
     rear_tyre: TyreBase
     front_tyre: TyreBase
 
-    def define_connections(self) -> None:
+    def _define_connections(self) -> None:
         """Define the connections between the submodels."""
-        super().define_connections()
+        super()._define_connections()
         self.rear_tyre.ground = self.ground
         self.rear_tyre.wheel = self.rear_wheel
         self.front_tyre.ground = self.ground
@@ -92,9 +92,9 @@ class WhippleBicycleMoore(WhippleBicycle):
                      for qi, ui in zip(self.q, self.u)})
         return desc
 
-    def define_objects(self) -> None:
+    def _define_objects(self) -> None:
         """Define the objects of the Whipple bicycle."""
-        super().define_objects()
+        super()._define_objects()
         self.rear_tyre.define_objects()
         self.rear_tyre.on_ground = True
         self.front_tyre.define_objects()
@@ -104,9 +104,9 @@ class WhippleBicycleMoore(WhippleBicycle):
             self._add_prefix(name)) for name in ("gear_ratio", "l_px", "l_pz")})
         self._system = System.from_newtonian(self.ground.body)
 
-    def define_kinematics(self) -> None:
+    def _define_kinematics(self) -> None:
         """Define the kinematics of the Whipple bicycle."""
-        super().define_kinematics()
+        super()._define_kinematics()
         # Define the location of the rear wheel contact point in the ground frame.
         self.rear_tyre.contact_point.set_pos(
             self.ground.origin,
@@ -157,15 +157,15 @@ class WhippleBicycleMoore(WhippleBicycle):
                 self.rear_frame.frame,
                 self.u[7] / self.symbols["gear_ratio"] * self.rear_frame.wheel_axis)
 
-    def define_loads(self) -> None:
+    def _define_loads(self) -> None:
         """Define the loads of the Whipple bicycle."""
-        super().define_loads()
+        super()._define_loads()
         self.rear_tyre.define_loads()
         self.front_tyre.define_loads()
 
-    def define_constraints(self) -> None:
+    def _define_constraints(self) -> None:
         """Define the constraints of the Whipple bicycle."""
-        super().define_constraints()
+        super()._define_constraints()
         self.rear_tyre.define_constraints()
         self.front_tyre.define_constraints()
 

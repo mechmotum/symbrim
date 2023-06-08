@@ -14,16 +14,16 @@ __all__ = ["GroundBase", "FlatGround"]
 class GroundBase(ModelBase):
     """Base class for the ground."""
 
-    def define_objects(self) -> None:
+    def _define_objects(self) -> None:
         """Define the objects of the ground."""
-        super().define_objects()
+        super()._define_objects()
         self._body = RigidBody(self.name)
         self._body.masscenter = Point(self._add_prefix("origin"))
         self._system = System.from_newtonian(self.body)
 
-    def define_kinematics(self) -> None:
+    def _define_kinematics(self) -> None:
         """Define the kinematics of the ground."""
-        super().define_kinematics()
+        super()._define_kinematics()
         self.origin.set_vel(self.frame, 0)
 
     @property
@@ -71,9 +71,9 @@ class FlatGround(GroundBase):
         super().__init__(name)
         self._normal = normal
 
-    def define_objects(self) -> None:
+    def _define_objects(self) -> None:
         """Define the objects of the ground."""
-        super().define_objects()
+        super()._define_objects()
         if self._normal[0] == "-":
             self._normal = self._normal[1:]
             times = -1

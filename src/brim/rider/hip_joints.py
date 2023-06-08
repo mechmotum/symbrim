@@ -28,9 +28,9 @@ class SphericalHipMixin:
             self.u[2]: "Rotation angular velocity of the hip.",
         }
 
-    def define_objects(self) -> None:
+    def _define_objects(self) -> None:
         """Define the objects."""
-        super().define_objects()
+        super()._define_objects()
         self.q = Matrix(
             dynamicsymbols(self._add_prefix("q_flexion, q_adduction, q_rotation")))
         self.u = Matrix(
@@ -41,9 +41,9 @@ class SphericalHipMixin:
 class SphericalLeftHip(SphericalHipMixin, LeftHipBase):
     """Spherical joint between the pelvis and the left leg."""
 
-    def define_kinematics(self) -> None:
+    def _define_kinematics(self) -> None:
         """Define the kinematics."""
-        super().define_kinematics()
+        super()._define_kinematics()
         self.system.add_joints(
             SphericalJoint(
                 self._add_prefix("joint"), self.pelvis.body, self.leg.hip, self.q,
@@ -56,9 +56,9 @@ class SphericalLeftHip(SphericalHipMixin, LeftHipBase):
 class SphericalRightHip(SphericalHipMixin, RightHipBase):
     """Spherical joint between the pelvis and the right leg."""
 
-    def define_kinematics(self) -> None:
+    def _define_kinematics(self) -> None:
         """Define the kinematics."""
-        super().define_kinematics()
+        super()._define_kinematics()
         self.system.add_joints(
             SphericalJoint(
                 self._add_prefix("joint"), self.pelvis.body, self.leg.hip, self.q,
@@ -80,9 +80,9 @@ class PinHipMixin:
             self.u: "Flexion angular velocity of the hip.",
         }
 
-    def define_objects(self) -> None:
+    def _define_objects(self) -> None:
         """Define the objects."""
-        super().define_objects()
+        super()._define_objects()
         self.q = dynamicsymbols(self._add_prefix("q_flexion"))
         self.u = dynamicsymbols(self._add_prefix("u_flexion"))
         self._system = System.from_newtonian(self.pelvis.body)
@@ -91,9 +91,9 @@ class PinHipMixin:
 class PinLeftHip(PinHipMixin, LeftHipBase):
     """Pin joint between the pelvis and the left leg."""
 
-    def define_kinematics(self) -> None:
+    def _define_kinematics(self) -> None:
         """Define the kinematics."""
-        super().define_kinematics()
+        super()._define_kinematics()
         self.system.add_joints(
             PinJoint(
                 self._add_prefix("joint"), self.pelvis.body, self.leg.hip, self.q,
@@ -106,9 +106,9 @@ class PinLeftHip(PinHipMixin, LeftHipBase):
 class PinRightHip(PinHipMixin, RightHipBase):
     """Pin joint between the pelvis and the right leg."""
 
-    def define_kinematics(self) -> None:
+    def _define_kinematics(self) -> None:
         """Define the kinematics."""
-        super().define_kinematics()
+        super()._define_kinematics()
         self.system.add_joints(
             PinJoint(
                 self._add_prefix("joint"), self.pelvis.body, self.leg.hip, self.q,

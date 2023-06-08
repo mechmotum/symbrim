@@ -65,9 +65,9 @@ class FrontFrameBase(NewtonianBodyMixin, ModelBase):
 class RigidFrontFrame(FrontFrameBase):
     """Rigid front frame."""
 
-    def define_objects(self):
+    def _define_objects(self):
         """Define the objects of the front frame."""
-        super().define_objects()
+        super()._define_objects()
         self.body.central_inertia = inertia(self.body.frame,
                                             *symbols(self._add_prefix("ixx iyy izz")),
                                             izx=Symbol(self._add_prefix("izx")))
@@ -75,9 +75,9 @@ class RigidFrontFrame(FrontFrameBase):
         self._left_handgrip = Point(self._add_prefix("left_handgrip"))
         self._right_handgrip = Point(self._add_prefix("right_handgrip"))
 
-    def define_kinematics(self):
+    def _define_kinematics(self):
         """Define the kinematics of the front frame."""
-        super().define_kinematics()
+        super()._define_kinematics()
         self.wheel_attachment.set_vel(self.frame, 0)
 
     @property
@@ -129,17 +129,17 @@ class RigidFrontFrameMoore(RigidFrontFrame):
                                 "attachment if d8 is positive.",
         }
 
-    def define_objects(self):
+    def _define_objects(self):
         """Define the objects of the front frame."""
-        super().define_objects()
+        super()._define_objects()
         self.symbols.update({
             name: Symbol(self._add_prefix(name)) for name in ("d2", "d3", "l3", "l4",
                                                               "d6", "d7", "d8")})
         self._steer_attachment = Point(self._add_prefix("steer_attachment"))
 
-    def define_kinematics(self):
+    def _define_kinematics(self):
         """Define the kinematics of the front frame."""
-        super().define_kinematics()
+        super()._define_kinematics()
         d2, d3, l3, l4, d6, d7, d8 = (self.symbols[name] for name in (
             "d2", "d3", "l3", "l4", "d6", "d7", "d8"))
         self.wheel_attachment.set_pos(self.steer_attachment, d3 * self.x + d2 * self.z)

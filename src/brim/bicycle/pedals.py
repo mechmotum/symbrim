@@ -15,17 +15,17 @@ __all__ = ["PedalsBase"]
 class PedalsBase(ModelBase):
     """Base class for the pedals."""
 
-    def define_objects(self) -> None:
+    def _define_objects(self) -> None:
         """Define the objects."""
-        super().define_objects()
+        super()._define_objects()
         self._frame = ReferenceFrame(self._add_prefix("frame"))
         self._left_pedal_point = Point(self._add_prefix("LPP"))
         self._right_pedal_point = Point(self._add_prefix("RPP"))
         self._center_point = Point(self._add_prefix("CP"))
 
-    def define_kinematics(self) -> None:
+    def _define_kinematics(self) -> None:
         """Define the kinematics."""
-        super().define_kinematics()
+        super()._define_kinematics()
         self._left_pedal_point.set_vel(self.frame, 0)
         self._right_pedal_point.set_vel(self.frame, 0)
 
@@ -73,15 +73,15 @@ class SimplePedals(PedalsBase):
         """Rotation axis of the pedals."""
         return self.frame.y
 
-    def define_objects(self) -> None:
+    def _define_objects(self) -> None:
         """Define the objects."""
-        super().define_objects()
+        super()._define_objects()
         self.symbols["radius"] = Symbol(self._add_prefix("radius"))
         self.symbols["offset"] = Symbol(self._add_prefix("offset"))
 
-    def define_kinematics(self) -> None:
+    def _define_kinematics(self) -> None:
         """Define the kinematics."""
-        super().define_kinematics()
+        super()._define_kinematics()
         o, r = self.symbols["offset"], self.symbols["radius"]
         self.left_pedal_point.set_pos(self.center_point,
                                       -o * self.rotation_axis - r * self.frame.x)

@@ -77,9 +77,9 @@ class TorsoBase(NewtonianBodyMixin, ModelBase):
         the torso.
         """
 
-    def define_objects(self) -> None:
+    def _define_objects(self) -> None:
         """Define the objects."""
-        super().define_objects()
+        super()._define_objects()
         self._left_shoulder_point = Point(self._add_prefix("LSP"))
         self._right_shoulder_point = Point(self._add_prefix("RSP"))
 
@@ -114,15 +114,15 @@ class SimpleRigidTorso(TorsoBase):
                                              "center of mass of the the torso.",
         }
 
-    def define_objects(self) -> None:
+    def _define_objects(self) -> None:
         """Define the objects."""
-        super().define_objects()
+        super()._define_objects()
         self.symbols["shoulder_width"] = Symbol(self._add_prefix("shoulder_width"))
         self.symbols["shoulder_height"] = Symbol(self._add_prefix("shoulder_height"))
 
-    def define_kinematics(self) -> None:
+    def _define_kinematics(self) -> None:
         """Define the kinematics."""
-        super().define_kinematics()
+        super()._define_kinematics()
         w, h = self.symbols["shoulder_width"], self.symbols["shoulder_height"]
         self.left_shoulder_point.set_pos(self.body.masscenter,
                                          -w / 2 * self.y - h * self.z)

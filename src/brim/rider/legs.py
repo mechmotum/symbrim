@@ -31,13 +31,13 @@ __all__ = ["LegBase", "LeftLegBase", "RightLegBase", "TwoPinStickLeftLeg",
 class LegBase(ModelBase):
     """Base class for the leg of the rider."""
 
-    def define_objects(self) -> None:
+    def _define_objects(self) -> None:
         """Define the objects."""
-        super().define_objects()
+        super()._define_objects()
         self._hip_interpoint = Point(self._add_prefix("HP"))
         self._foot_interpoint = Point(self._add_prefix("FP"))
 
-    def define_kinematics(self) -> None:
+    def _define_kinematics(self) -> None:
         """Define the kinematics."""
         self.hip_interpoint.set_vel(self.hip_interframe, 0)
         self.foot_interpoint.set_vel(self.foot_interframe, 0)
@@ -100,9 +100,9 @@ class TwoPinStickLegMixin:
                                         " mass of the foot.",
         }
 
-    def define_objects(self) -> None:
+    def _define_objects(self) -> None:
         """Define the objects."""
-        super().define_objects()
+        super()._define_objects()
         self.symbols.update({
             "l_thigh": Symbol(self._add_prefix("l_thigh")),
             "l_thigh_com": Symbol(self._add_prefix("l_thigh_com")),
@@ -120,9 +120,9 @@ class TwoPinStickLegMixin:
         self._foot = RigidBody(self._add_prefix("foot"))
         self._system = System.from_newtonian(self.hip)
 
-    def define_kinematics(self) -> None:
+    def _define_kinematics(self) -> None:
         """Define the kinematics."""
-        super().define_kinematics()
+        super()._define_kinematics()
         l_f, l_t, l_s, l_f_com, l_t_com, l_s_com = (self.symbols[length] for length in (
             "l_foot", "l_thigh", "l_shank", "l_foot_com", "l_thigh_com", "l_shank_com"))
         self.hip.masscenter.set_pos(self.hip_interpoint, l_t_com * self.thigh.z)

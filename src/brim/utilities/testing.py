@@ -41,37 +41,37 @@ def create_model_of_connection(connection_cls: type[ConnectionBase]) -> type[Mod
     required_connections = (ConnectionRequirement("conn", connection_cls),)
     required_models = connection_cls.required_models
 
-    def define_connections(self):
-        ModelBase.define_connections(self)
+    def _define_connections(self):
+        ModelBase._define_connections(self)
         for req in self.conn.required_models:
             setattr(self.conn, req.attribute_name, getattr(self, req.attribute_name))
 
-    def define_objects(self):
-        ModelBase.define_objects(self)
+    def _define_objects(self):
+        ModelBase._define_objects(self)
         for conn in self.connections:
             conn.define_objects()
 
-    def define_kinematics(self):
-        ModelBase.define_kinematics(self)
+    def _define_kinematics(self):
+        ModelBase._define_kinematics(self)
         for conn in self.connections:
             conn.define_kinematics()
 
-    def define_loads(self):
-        ModelBase.define_loads(self)
+    def _define_loads(self):
+        ModelBase._define_loads(self)
         for conn in self.connections:
             conn.define_loads()
 
-    def define_constraints(self):
-        ModelBase.define_constraints(self)
+    def _define_constraints(self):
+        ModelBase._define_constraints(self)
         for conn in self.connections:
             conn.define_constraints()
 
     return type("MyModel", (ModelBase,), {
         "required_connections": required_connections,
         "required_models": required_models,
-        "define_connections": define_connections,
-        "define_objects": define_objects,
-        "define_kinematics": define_kinematics,
-        "define_loads": define_loads,
-        "define_constraints": define_constraints,
+        "define_connections": _define_connections,
+        "_define_objects": _define_objects,
+        "_define_kinematics": _define_kinematics,
+        "_define_loads": _define_loads,
+        "_define_constraints": _define_constraints,
     })
