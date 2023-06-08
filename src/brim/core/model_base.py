@@ -175,6 +175,11 @@ class BrimBase:
                 desc = conn.get_description(obj)
                 if desc is not None:
                     return desc
+        if hasattr(self, "load_groups"):
+            for load_group in self.load_groups:
+                desc = load_group.get_description(obj)
+                if desc is not None:
+                    return desc
 
     @property
     def system(self) -> System | None:
