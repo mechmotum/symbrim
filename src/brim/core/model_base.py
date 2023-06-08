@@ -229,107 +229,6 @@ class BrimBase:
         self._define_constraints()
 
 
-class LoadGroupBase(BrimBase, metaclass=LoadGroupMeta):
-    """Base class for the load groups."""
-
-    required_parent_type: type | tuple[type, ...]
-
-    def __init__(self, name: str) -> None:
-        """Create a new instance of the load group.
-
-        Parameters
-        ----------
-        name : str
-            Name of the load group.
-        """
-        super().__init__(name)
-        self._parent = None
-
-    @property
-    def parent(self) -> ModelBase | ConnectionBase | None:
-        """Parent model or connection."""
-        return self._parent
-
-    @parent.setter
-    def parent(self, parent: ModelBase | ConnectionBase) -> None:
-        if self._parent is not None:
-            raise ValueError(f"Load group is already used by {self.parent}")
-        elif not isinstance(parent, self.required_parent_type):
-            raise TypeError(
-                f"Parent of {self} should be an instance of an subclass of "
-                f"{self.required_parent_type}, but {parent!r} is an instance of "
-                f"{type(parent)}.")
-        self._parent = parent
-
-    @property
-    def system(self) -> System | None:
-        """System object used to store the information of the model itself."""
-        return self.parent.system if self.parent is not None else None
-
-
-class ConnectionBase(BrimBase, metaclass=ConnectionMeta):
-    """Base class for all connections in brim."""
-
-    required_models: tuple[ModelRequirement, ...] = ()
-
-    def __init__(self, name: str) -> None:
-        """Create a new instance of the connection.
-
-        Parameters
-        ----------
-        name : str
-            Name of the connection.
-        """
-        super().__init__(name)
-        self._parent = None
-        self._load_groups = []
-        for req in self.required_models:
-            setattr(self, f"_{req.attribute_name}", None)
-
-    @property
-    def submodels(self) -> frozenset[ModelBase]:
-        """Submodels of the connection."""
-        submodels = []
-        for req in self.required_models:
-            submodels.append(getattr(self, req.attribute_name))
-        return frozenset(submodel for submodel in submodels if submodel is not None)
-
-    @property
-    def load_groups(self) -> frozenset[LoadGroupBase]:
-        """Load groups of the connection."""
-        return frozenset(self._load_groups)
-
-    def add_load_groups(self, *load_groups: LoadGroupBase) -> None:
-        """Add load groups to the connection."""
-        for load_group in load_groups:
-            load_group.parent = self
-        self._load_groups.extend(load_groups)
-
-    def define_objects(self) -> None:
-        """Define the objects in the connection."""
-        self._define_objects()
-        for load_group in self._load_groups:
-            load_group.define_objects()
-
-    def define_kinematics(self) -> None:
-        """Define the kinematics of the connection."""
-        self._define_kinematics()
-        for load_group in self._load_groups:
-            load_group.define_kinematics()
-
-    def define_loads(self) -> None:
-        """Define the loads on the connection."""
-        self._define_loads()
-        for load_group in self._load_groups:
-            load_group.define_loads()
-
-    def define_constraints(self) -> None:
-        """Define the constraints on the connection."""
-        self._define_constraints()
-        for load_group in self._load_groups:
-            load_group.define_constraints()
-
-
 class ModelBase(BrimBase, metaclass=ModelMeta):
     """Base class for all objects in brim."""
 
@@ -462,6 +361,107 @@ class ModelBase(BrimBase, metaclass=ModelMeta):
                     [s for submodel in model.submodels for s in get_systems(submodel)])
 
         return _merge_systems(*get_systems(self))
+
+
+class ConnectionBase(BrimBase, metaclass=ConnectionMeta):
+    """Base class for all connections in brim."""
+
+    required_models: tuple[ModelRequirement, ...] = ()
+
+    def __init__(self, name: str) -> None:
+        """Create a new instance of the connection.
+
+        Parameters
+        ----------
+        name : str
+            Name of the connection.
+        """
+        super().__init__(name)
+        self._parent = None
+        self._load_groups = []
+        for req in self.required_models:
+            setattr(self, f"_{req.attribute_name}", None)
+
+    @property
+    def submodels(self) -> frozenset[ModelBase]:
+        """Submodels of the connection."""
+        submodels = []
+        for req in self.required_models:
+            submodels.append(getattr(self, req.attribute_name))
+        return frozenset(submodel for submodel in submodels if submodel is not None)
+
+    @property
+    def load_groups(self) -> frozenset[LoadGroupBase]:
+        """Load groups of the connection."""
+        return frozenset(self._load_groups)
+
+    def add_load_groups(self, *load_groups: LoadGroupBase) -> None:
+        """Add load groups to the connection."""
+        for load_group in load_groups:
+            load_group.parent = self
+        self._load_groups.extend(load_groups)
+
+    def define_objects(self) -> None:
+        """Define the objects in the connection."""
+        self._define_objects()
+        for load_group in self._load_groups:
+            load_group.define_objects()
+
+    def define_kinematics(self) -> None:
+        """Define the kinematics of the connection."""
+        self._define_kinematics()
+        for load_group in self._load_groups:
+            load_group.define_kinematics()
+
+    def define_loads(self) -> None:
+        """Define the loads on the connection."""
+        self._define_loads()
+        for load_group in self._load_groups:
+            load_group.define_loads()
+
+    def define_constraints(self) -> None:
+        """Define the constraints on the connection."""
+        self._define_constraints()
+        for load_group in self._load_groups:
+            load_group.define_constraints()
+
+
+class LoadGroupBase(BrimBase, metaclass=LoadGroupMeta):
+    """Base class for the load groups."""
+
+    required_parent_type: type | tuple[type, ...] = (ModelBase, ConnectionBase)
+
+    def __init__(self, name: str) -> None:
+        """Create a new instance of the load group.
+
+        Parameters
+        ----------
+        name : str
+            Name of the load group.
+        """
+        super().__init__(name)
+        self._parent = None
+
+    @property
+    def parent(self) -> ModelBase | ConnectionBase | None:
+        """Parent model or connection."""
+        return self._parent
+
+    @parent.setter
+    def parent(self, parent: ModelBase | ConnectionBase) -> None:
+        if self._parent is not None:
+            raise ValueError(f"Load group is already used by {self.parent}")
+        elif not isinstance(parent, self.required_parent_type):
+            raise TypeError(
+                f"Parent of {self} should be an instance of an subclass of "
+                f"{self.required_parent_type}, but {parent!r} is an instance of "
+                f"{type(parent)}.")
+        self._parent = parent
+
+    @property
+    def system(self) -> System | None:
+        """System object used to store the information of the model itself."""
+        return self.parent.system if self.parent is not None else None
 
 
 def set_default_formulation(formulation: str
