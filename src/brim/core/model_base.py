@@ -5,7 +5,6 @@ from abc import ABCMeta
 from functools import wraps
 from typing import TYPE_CHECKING, Any, Callable
 
-import typeguard
 from sympy import symbols
 from sympy.physics.mechanics._system import System
 
@@ -233,7 +232,7 @@ class BrimBase:
 class LoadGroupBase(BrimBase, metaclass=LoadGroupMeta):
     """Base class for the load groups."""
 
-    parent: ModelBase | ConnectionBase | tuple[ModelBase | ConnectionBase, ...]
+    required_parent_type: type | tuple[type, ...]
 
     def __init__(self, name: str) -> None:
         """Create a new instance of the load group.
@@ -255,9 +254,11 @@ class LoadGroupBase(BrimBase, metaclass=LoadGroupMeta):
     def parent(self, parent: ModelBase | ConnectionBase) -> None:
         if self._parent is not None:
             raise ValueError(f"Load group is already used by {self.parent}")
-        elif not typeguard.check_type(parent, self.__annotations__["parent"]):
+        elif not isinstance(parent, self.required_parent_type):
             raise TypeError(
-                f"Parent should be of type {self.__annotations__['parent']}")
+                f"Parent of {self} should be an instance of an subclass of "
+                f"{self.required_parent_type}, but {parent!r} is an instance of "
+                f"{type(parent)}.")
         self._parent = parent
 
     @property
