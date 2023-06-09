@@ -37,12 +37,16 @@ class SideLeanConnection(SeatConnectionBase):
         self._frame_lean_axis = (cos(alpha) * self.rear_frame.x -
                                  sin(alpha) * self.rear_frame.z)
         self._pelvis_lean_axis = self.pelvis.x
-        self._pelvis_interpoint = Vector(0)
+        self._pelvis_interpoint = None
         self._system = System.from_newtonian(self.rear_frame.body)
 
     def _define_kinematics(self) -> None:
         """Define the kinematics."""
         super()._define_kinematics()
+        if self._pelvis_interpoint is None:
+            self._pelvis_interpoint = (self.pelvis.left_hip_point.pos_from(
+                self.pelvis.body.masscenter) + self.pelvis.right_hip_point.pos_from(
+                self.pelvis.body.masscenter)) / 2
         self.system.add_joints(
             PinJoint(
                 self._add_prefix("lean_joint"), self.rear_frame.body, self.pelvis.body,
@@ -80,7 +84,7 @@ class SideLeanConnection(SeatConnectionBase):
         self._pelvis_lean_axis = value
 
     @property
-    def pelvis_interpoint(self) -> Vector | Point:
+    def pelvis_interpoint(self) -> Vector | Point | None:
         """Return the rotation point w.r.t. the pelvis.
 
         Explanation

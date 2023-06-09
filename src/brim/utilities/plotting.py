@@ -147,7 +147,8 @@ class Plotter(SymMePlotter):
             self.add_line([
                 model.left_hip_point,
                 model.body.masscenter,
-                model.right_hip_point],
+                model.right_hip_point,
+                model.left_hip_point],
                 model.name)
         elif isinstance(model, TorsoBase):
             self.add_line([

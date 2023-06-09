@@ -38,22 +38,24 @@ class TestSideLeanConnection:
         self.model.pelvis = SimpleRigidPelvis("pelvis")
         self.model.rear_frame = RigidRearFrameMoore("rear_frame")
         self.model.conn = SideLeanConnection("seat_connection")
-        self.model.define_connections()
-        self.model.define_objects()
         self.pelvis, self.rear_frame, self.conn = (
             self.model.pelvis, self.model.rear_frame, self.model.conn)
 
     def test_default(self) -> None:
-        self.model.define_kinematics()
+        self.model.define_all()
         a = self.conn.symbols["alpha"]
         int_frame = ReferenceFrame("int_frame")
         int_frame.orient_axis(self.rear_frame.frame, a, self.rear_frame.y)
         assert simplify(self.conn.frame_lean_axis.to_matrix(self.rear_frame.frame) -
                         int_frame.x.to_matrix(self.rear_frame.frame)) == zeros(3, 1)
         assert self.conn.pelvis_lean_axis == self.pelvis.x
-        assert self.pelvis.body.masscenter.pos_from(self.rear_frame.saddle) == 0
+        assert self.pelvis.body.masscenter.pos_from(
+            self.rear_frame.saddle) == (
+                -self.pelvis.symbols["com_height"] * self.pelvis.z)
 
     def test_set_frame_lean_axis(self) -> None:
+        self.model.define_connections()
+        self.model.define_objects()
         with pytest.raises(ValueError):
             self.conn.frame_lean_axis = self.pelvis.x
         self.conn.frame_lean_axis = self.rear_frame.y
@@ -63,6 +65,8 @@ class TestSideLeanConnection:
             self.rear_frame.y) == self.conn.u
 
     def test_set_pelvis_lean_axis(self) -> None:
+        self.model.define_connections()
+        self.model.define_objects()
         with pytest.raises(ValueError):
             self.conn.pelvis_lean_axis = self.rear_frame.x
         self.conn.pelvis_lean_axis = self.pelvis.y
@@ -73,6 +77,8 @@ class TestSideLeanConnection:
 
     @pytest.mark.parametrize("as_point", [True, False])
     def test_set_pelvis_interpoint(self, as_point) -> None:
+        self.model.define_connections()
+        self.model.define_objects()
         p = self.rear_frame.x
         if as_point:
             p = self.rear_frame.saddle.locatenew("P", p)
