@@ -12,7 +12,7 @@ class MyModel(NewtonianBodyMixin, ModelBase):
 class TestNewtonianBodyMixin:
     def test_mixin(self) -> None:
         model = MyModel("name")
-        model.define_objects()
+        model.define_all()
         assert isinstance(model.body, RigidBody)
         assert model.system.bodies[0] is model.body
         assert model.frame is model.body.frame
@@ -20,3 +20,4 @@ class TestNewtonianBodyMixin:
         assert model.y is model.frame.y
         assert model.z is model.frame.z
         assert model.system.origin is model.body.masscenter
+        assert model.body.masscenter.vel(model.frame) == 0

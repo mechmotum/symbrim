@@ -65,7 +65,6 @@ def _create_connection_property(requirement: ConnectionRequirement) -> property:
                 f"of {requirement.type_name}, but {conn!r} is an instance of "
                 f"{type(conn)}.")
         setattr(self, f"_{requirement.attribute_name}", conn)
-        conn._parent = self
 
     getter.__annotations__ = {"return": requirement.type_hint}
     setter.__annotations__ = {"conn": requirement.type_hint, "return": None}
@@ -377,7 +376,6 @@ class ConnectionBase(BrimBase, metaclass=ConnectionMeta):
             Name of the connection.
         """
         super().__init__(name)
-        self._parent = None
         self._load_groups = []
         for req in self.required_models:
             setattr(self, f"_{req.attribute_name}", None)
