@@ -12,6 +12,7 @@ from brim.core import ModelBase, NewtonianBodyMixin, set_default_formulation
 try:  # pragma: no cover
     import numpy as np
     from bicycleparameters.io import remove_uncertainties
+    from bicycleparameters.main import calculate_benchmark_from_measured
     from bicycleparameters.rider import yeadon_vec_to_bicycle_vec
     from dtk.bicycle import benchmark_to_moore
 
@@ -170,7 +171,11 @@ class RigidRearFrameMoore(RigidRearFrame):
         """Get the parameter values of the rear frame."""
         params = super().get_param_values(bicycle_parameters)
         if "Benchmark" in bicycle_parameters.parameters:
-            bp = remove_uncertainties(bicycle_parameters.parameters["Benchmark"])
+            if bicycle_parameters.hasRider:
+                bp = remove_uncertainties(calculate_benchmark_from_measured(
+                    bicycle_parameters.parameters["Measured"])[0])
+            else:
+                bp = remove_uncertainties(bicycle_parameters.parameters["Benchmark"])
             mop = benchmark_to_moore(bp)
             params[self.body.mass] = mop["mc"]
             params.update(get_inertia_vals(
