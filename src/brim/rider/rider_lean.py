@@ -53,20 +53,20 @@ class RiderLean(NewtonianBodyMixin, ModelBase):
                                   f"frame center of mass along the z frames axis.",
         }
 
-    def define_objects(self) -> None:
+    def _define_objects(self) -> None:
         """Define the objects of the rider lean."""
-        super().define_objects()
+        super()._define_objects()
         self._actuator = None
         self._lean_axis = self.x
         self._lean_point = Point(self._add_prefix("lean_point"))
         self.symbols["d_lp"] = Symbol(self._add_prefix("d_lp"))
 
-    def define_kinematics(self) -> None:
+    def _define_kinematics(self) -> None:
         """Define the kinematics of the rider lean."""
-        super().define_kinematics()
+        super()._define_kinematics()
         self._lean_point.set_pos(self.body.masscenter, self.symbols["d_lp"] * self.z)
 
-    def define_loads(self) -> None:
+    def _define_loads(self) -> None:
         """Define the loads of the rider lean."""
-        super().define_loads()
+        super()._define_loads()
         # TODO: Add actuator loads.

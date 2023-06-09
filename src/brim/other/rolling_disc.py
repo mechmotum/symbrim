@@ -50,23 +50,23 @@ class RollingDisc(ModelBase):
                      for qi, ui in zip(self.q, self.u)})
         return desc
 
-    def define_connections(self) -> None:
+    def _define_connections(self) -> None:
         """Define the connections between the submodels."""
-        super().define_connections()
+        super()._define_connections()
         self.tyre.ground = self.ground
         self.tyre.wheel = self.disc
 
-    def define_objects(self) -> None:
+    def _define_objects(self) -> None:
         """Define the objects of the rolling disc."""
-        super().define_objects()
+        super()._define_objects()
         self.tyre.define_objects()
         self.tyre.on_ground = True
         self.q = Matrix([dynamicsymbols(self._add_prefix("q1:6"))])
         self.u = Matrix([dynamicsymbols(self._add_prefix("u1:6"))])
 
-    def define_kinematics(self) -> None:
+    def _define_kinematics(self) -> None:
         """Define the kinematics of the rolling disc."""
-        super().define_kinematics()
+        super()._define_kinematics()
         self._system = System.from_newtonian(self.ground.body)
         self.disc.frame.orient_body_fixed(self.ground.frame, self.q[2:], "zxy")
         self.disc.frame.set_ang_vel(
@@ -89,14 +89,14 @@ class RollingDisc(ModelBase):
         self.system.kdes = [
             qdi - ui for qdi, ui in zip(self.q.diff(dynamicsymbols._t), self.u)]
 
-    def define_loads(self) -> None:
+    def _define_loads(self) -> None:
         """Define the loads of the rolling disc."""
-        super().define_loads()
+        super()._define_loads()
         self.tyre.define_loads()
 
-    def define_constraints(self) -> None:
+    def _define_constraints(self) -> None:
         """Define the constraints of the rolling disc."""
-        super().define_constraints()
+        super()._define_constraints()
         self.tyre.define_constraints()
 
 

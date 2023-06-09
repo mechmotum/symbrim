@@ -28,9 +28,9 @@ class SphericalShoulderMixin:
             self.u[2]: "Rotation angular velocity of the shoulder.",
         }
 
-    def define_objects(self) -> None:
+    def _define_objects(self) -> None:
         """Define the objects."""
-        super().define_objects()
+        super()._define_objects()
         self.q = Matrix(
             dynamicsymbols(self._add_prefix("q_flexion, q_adduction, q_rotation")))
         self.u = Matrix(
@@ -41,9 +41,9 @@ class SphericalShoulderMixin:
 class SphericalLeftShoulder(SphericalShoulderMixin, LeftShoulderBase):
     """Spherical joint between the pelvis and the left leg."""
 
-    def define_kinematics(self) -> None:
+    def _define_kinematics(self) -> None:
         """Define the kinematics."""
-        super().define_kinematics()
+        super()._define_kinematics()
         self.system.add_joints(
             SphericalJoint(
                 self._add_prefix("joint"), self.torso.body, self.arm.shoulder, self.q,
@@ -57,9 +57,9 @@ class SphericalLeftShoulder(SphericalShoulderMixin, LeftShoulderBase):
 class SphericalRightShoulder(SphericalShoulderMixin, RightShoulderBase):
     """Spherical joint between the pelvis and the right leg."""
 
-    def define_kinematics(self) -> None:
+    def _define_kinematics(self) -> None:
         """Define the kinematics."""
-        super().define_kinematics()
+        super()._define_kinematics()
         self.system.add_joints(
             SphericalJoint(
                 self._add_prefix("joint"), self.torso.body, self.arm.shoulder, self.q,

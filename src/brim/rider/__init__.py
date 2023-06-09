@@ -15,6 +15,8 @@ __all__ = [
     "ArmBase", "LeftArmBase", "RightArmBase", "PinElbowStickLeftArm",
     "PinElbowStickRightArm",
 
+    "PinElbowTorque", "PinElbowSpringDamper",
+
     "LegBase", "LeftLegBase", "RightLegBase", "TwoPinStickLeftLeg",
     "TwoPinStickRightLeg",
 
@@ -28,8 +30,10 @@ __all__ = [
 from brim.rider.arms import (
     ArmBase,
     LeftArmBase,
+    PinElbowSpringDamper,
     PinElbowStickLeftArm,
     PinElbowStickRightArm,
+    PinElbowTorque,
     RightArmBase,
 )
 from brim.rider.base_connections import (

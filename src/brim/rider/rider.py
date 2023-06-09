@@ -54,9 +54,9 @@ class Rider(ModelBase):
     left_hip: LeftHipBase
     right_hip: RightHipBase
 
-    def define_connections(self) -> None:
+    def _define_connections(self) -> None:
         """Define the connections."""
-        super().define_connections()
+        super()._define_connections()
         if self.pelvis_to_torso:
             self.pelvis_to_torso.pelvis = self.pelvis
             self.pelvis_to_torso.torso = self.torso
@@ -73,27 +73,27 @@ class Rider(ModelBase):
             self.right_hip.pelvis = self.pelvis
             self.right_hip.leg = self.right_leg
 
-    def define_objects(self) -> None:
+    def _define_objects(self) -> None:
         """Define the objects."""
-        super().define_objects()
+        super()._define_objects()
         self._system = System.from_newtonian(self.pelvis.body)
         for conn in self.connections:
             conn.define_objects()
 
-    def define_kinematics(self) -> None:
+    def _define_kinematics(self) -> None:
         """Define the kinematics."""
-        super().define_kinematics()
+        super()._define_kinematics()
         for conn in self.connections:
             conn.define_kinematics()
 
-    def define_loads(self) -> None:
+    def _define_loads(self) -> None:
         """Define the loads."""
-        super().define_loads()
+        super()._define_loads()
         for conn in self.connections:
             conn.define_loads()
 
-    def define_constraints(self) -> None:
+    def _define_constraints(self) -> None:
         """Define the constraints."""
-        super().define_constraints()
+        super()._define_constraints()
         for conn in self.connections:
             conn.define_constraints()

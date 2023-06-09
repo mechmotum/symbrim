@@ -1511,7 +1511,7 @@ mpmath = ">=0.19"
 type = "git"
 url = "https://github.com/sympy/sympy.git"
 reference = "HEAD"
-resolved_reference = "e2cadc140cc969fea038240a39961a66a2f3dd6d"
+resolved_reference = "ffb5a3f062b8a4ed7125f863f9a254775da6eb46"
 
 [[package]]
 name = "tenacity"
@@ -1632,4 +1632,4 @@ plotting = ["symmeplot"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "faecda8edc70ac308793f8bccae64aea35daec0910f0fb46b16d9dc60c5fb09d"
+content-hash = "262b58c77946ab647a818e17d5abbe67f97da95a9f95f45ecfdac6ab029617b9"

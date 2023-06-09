@@ -1,5 +1,5 @@
 __pycache__
-.coverage
+.coverage*
 docs/_build
 docs/_autosummary
 data

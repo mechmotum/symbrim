@@ -13,9 +13,9 @@ if TYPE_CHECKING:
 class NewtonianBodyMixin:
     """Mixin class adding a Newtonian body to a model."""
 
-    def define_objects(self) -> None:
+    def _define_objects(self) -> None:
         """Define the objects of the model."""
-        super().define_objects()
+        super()._define_objects()
         body = RigidBody(self.name)
         self._system = System.from_newtonian(body)
 

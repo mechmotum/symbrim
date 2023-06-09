@@ -4,11 +4,12 @@ from __future__ import annotations
 from abc import abstractmethod
 from typing import TYPE_CHECKING, Any
 
-from sympy import Symbol
+from sympy import Symbol, acos, cos
 from sympy.physics.mechanics import PinJoint, Point, RigidBody, dynamicsymbols
+from sympy.physics.mechanics._actuator import TorqueActuator
 from sympy.physics.mechanics._system import System
 
-from brim.core import ModelBase
+from brim.core import LoadGroupBase, ModelBase
 
 try:  # pragma: no cover
     from brim.utilities.parametrize import get_inertia_vals_from_yeadon
@@ -22,15 +23,15 @@ if TYPE_CHECKING:
     from sympy.physics.mechanics import ReferenceFrame
 
 __all__ = ["ArmBase", "LeftArmBase", "RightArmBase", "PinElbowStickLeftArm",
-           "PinElbowStickRightArm"]
+           "PinElbowStickRightArm", "PinElbowTorque", "PinElbowSpringDamper"]
 
 
 class ArmBase(ModelBase):
     """Base class for the arms of the rider."""
 
-    def define_objects(self) -> None:
+    def _define_objects(self) -> None:
         """Define the objects."""
-        super().define_objects()
+        super()._define_objects()
         self._shoulder_interpoint = Point(self._add_prefix("SP"))
         self._hand_interpoint = Point(self._add_prefix("HP"))
 
@@ -91,9 +92,9 @@ class PinElbowStickArmMixin:
             self.u: "Elbow flexion angular velocity",
         }
 
-    def define_objects(self):
+    def _define_objects(self):
         """Define the objects."""
-        super().define_objects()
+        super()._define_objects()
         self.symbols.update({
             "l_upper_arm": Symbol(self._add_prefix("l_upper_arm")),
             "l_upper_arm_com": Symbol(self._add_prefix("l_upper_arm_com")),
@@ -106,9 +107,9 @@ class PinElbowStickArmMixin:
         self._forearm = RigidBody(self._add_prefix("forearm"))
         self._system = System.from_newtonian(self.upper_arm)
 
-    def define_kinematics(self) -> None:
+    def _define_kinematics(self) -> None:
         """Define the kinematics."""
-        super().define_kinematics()
+        super()._define_kinematics()
         l_u, l_f, l_uc, l_fc = (self.symbols[name] for name in (
             "l_upper_arm", "l_forearm", "l_upper_arm_com", "l_forearm_com"))
         self.upper_arm.masscenter.set_pos(
@@ -199,3 +200,67 @@ class PinElbowStickRightArm(PinElbowStickArmMixin, RightArmBase):
             self.symbols["l_forearm_com"]: -human.B2.rel_center_of_mass[2, 0],
         })
         return params
+
+
+class PinElbowTorque(LoadGroupBase):
+    """Torque applied to the elbow of the rider as time-varying quantity."""
+
+    parent: PinElbowStickLeftArm | PinElbowStickRightArm
+    required_parent_type = (PinElbowStickLeftArm, PinElbowStickRightArm)
+
+    @property
+    def descriptions(self) -> dict[Any, str]:
+        """Descriptions of the objects."""
+        return {
+            **super().descriptions,
+            self.symbols["T"]: f"Elbow torque of {self.parent}",
+        }
+
+    def _define_objects(self) -> None:
+        """Define the objects."""
+        self.symbols["T"] = dynamicsymbols(self._add_prefix("T"))
+
+    def _define_loads(self) -> None:
+        """Define the kinematics."""
+        self.system.add_actuators(
+            TorqueActuator(self.symbols["T"], self.parent.upper_arm.y,
+                           self.parent.forearm, self.parent.upper_arm)
+        )
+
+
+class PinElbowSpringDamper(LoadGroupBase):
+    """Torque applied to the elbow of the rider as linear spring-damper."""
+
+    parent: PinElbowStickLeftArm | PinElbowStickRightArm
+    required_parent_type = (PinElbowStickLeftArm, PinElbowStickRightArm)
+
+    @property
+    def descriptions(self) -> dict[Any, str]:
+        """Descriptions of the objects."""
+        return {
+            **super().descriptions,
+            self.symbols["k"]: f"Elbow stiffness of {self.parent}",
+            self.symbols["c"]: f"Elbow damping of {self.parent}",
+            self.symbols["q_ref"]: f"Elbow reference angle of {self.parent}",
+        }
+
+    def _define_objects(self) -> None:
+        """Define the objects."""
+        self.symbols.update({
+            "k": dynamicsymbols(self._add_prefix("k")),
+            "c": dynamicsymbols(self._add_prefix("c")),
+            "q_ref": dynamicsymbols(self._add_prefix("q_ref")),
+        })
+
+    def _define_loads(self) -> None:
+        """Define the kinematics."""
+        u = self.parent.forearm.frame.ang_vel_in(self.parent.upper_arm.frame).dot(
+            self.parent.upper_arm.y)
+        dotted = self.parent.forearm.z.dot(self.parent.upper_arm.z)
+        q = acos(dotted) if dotted.func != cos else dotted.args[0]
+        self.system.add_actuators(
+            TorqueActuator(
+                -self.symbols["k"] * (q - self.symbols["q_ref"]) -
+                self.symbols["c"] * u,
+                self.parent.upper_arm.y, self.parent.forearm, self.parent.upper_arm)
+        )

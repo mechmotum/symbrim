@@ -27,9 +27,9 @@ class SideLeanConnection(SeatConnectionBase):
             self.symbols["alpha"]: "Angle of the rider lean axis.",
         }
 
-    def define_objects(self) -> None:
+    def _define_objects(self) -> None:
         """Define the objects."""
-        super().define_objects()
+        super()._define_objects()
         self.q = dynamicsymbols(self._add_prefix("q"))
         self.u = dynamicsymbols(self._add_prefix("u"))
         alpha = Symbol(self._add_prefix("alpha"))
@@ -40,9 +40,9 @@ class SideLeanConnection(SeatConnectionBase):
         self._pelvis_interpoint = Vector(0)
         self._system = System.from_newtonian(self.rear_frame.body)
 
-    def define_kinematics(self) -> None:
+    def _define_kinematics(self) -> None:
         """Define the kinematics."""
-        super().define_kinematics()
+        super()._define_kinematics()
         self.system.add_joints(
             PinJoint(
                 self._add_prefix("lean_joint"), self.rear_frame.body, self.pelvis.body,
