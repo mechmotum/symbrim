@@ -22,6 +22,7 @@ from brim.core import ConnectionBase, ModelBase, NewtonianBodyMixin
 from brim.rider.arms import PinElbowStickArmMixin
 from brim.rider.legs import TwoPinStickLegMixin
 from brim.rider.pelvis import PelvisBase
+from brim.rider.pelvis_to_torso import PelvisToTorsoBase
 from brim.rider.torso import TorsoBase
 
 if TYPE_CHECKING:
@@ -70,10 +71,10 @@ class Plotter(SymMePlotter):
         if (isinstance(model, WhippleBicycleMoore) and add_submodels
                 and model.pedals is not None):
             rf = model.rear_frame
-            ax_l = 0.1 * model.pedals.center_point.pos_from(
+            ax_l = 0.15 * model.pedals.center_point.pos_from(
                 rf.wheel_attachment).magnitude()
             saddle_low = rf.saddle.locatenew(
-                "P", 0.1 * model.pedals.center_point.pos_from(rf.saddle))
+                "P", 0.15 * model.pedals.center_point.pos_from(rf.saddle))
             self.add_line([
                 model.pedals.center_point,
                 saddle_low,
@@ -83,9 +84,12 @@ class Plotter(SymMePlotter):
                 saddle_low,
                 rf.saddle,
                 saddle_low,
-                rf.steer_attachment,
+                rf.steer_attachment.locatenew(  # not perfect but close enough
+                    "P", saddle_low.pos_from(rf.steer_attachment).dot(
+                        rf.steer_axis) / 2 * rf.steer_axis),
                 model.pedals.center_point,
             ], model.name)
+            self.add_body(rf.body)
             add_submodels = False
             for submodel in model.submodels:
                 if submodel is not rf:
@@ -151,6 +155,11 @@ class Plotter(SymMePlotter):
                 model.left_shoulder_point,
                 model.right_shoulder_point,
                 model.body.masscenter],
+                model.name)
+        elif isinstance(model, PelvisToTorsoBase):
+            self.add_line([
+                model.pelvis.body.masscenter,
+                model.torso.body.masscenter],
                 model.name)
         if add_submodels:
             for submodel in model.submodels:
