@@ -205,23 +205,25 @@ class PinElbowStickRightArm(PinElbowStickArmMixin, RightArmBase):
 class PinElbowTorque(LoadGroupBase):
     """Torque applied to the elbow of the rider as time-varying quantity."""
 
+    parent: PinElbowStickLeftArm | PinElbowStickRightArm
     required_parent_type = (PinElbowStickLeftArm, PinElbowStickRightArm)
 
     @property
     def descriptions(self) -> dict[Any, str]:
         """Descriptions of the objects."""
         return {
-            self.symbols["T_elbow"]: f"Elbow torque of {self.parent}",
+            **super().descriptions,
+            self.symbols["T"]: f"Elbow torque of {self.parent}",
         }
 
     def _define_objects(self) -> None:
         """Define the objects."""
-        self.symbols["T_elbow"] = dynamicsymbols(self._add_prefix("T_elbow"))
+        self.symbols["T"] = dynamicsymbols(self._add_prefix("T"))
 
     def _define_loads(self) -> None:
         """Define the kinematics."""
         self.system.add_actuators(
-            TorqueActuator(self.symbols["T_elbow"], self.parent.upper_arm.y,
+            TorqueActuator(self.symbols["T"], self.parent.upper_arm.y,
                            self.parent.forearm, self.parent.upper_arm)
         )
 
@@ -229,22 +231,24 @@ class PinElbowTorque(LoadGroupBase):
 class PinElbowSpringDamper(LoadGroupBase):
     """Torque applied to the elbow of the rider as linear spring-damper."""
 
+    parent: PinElbowStickLeftArm | PinElbowStickRightArm
     required_parent_type = (PinElbowStickLeftArm, PinElbowStickRightArm)
 
     @property
     def descriptions(self) -> dict[Any, str]:
         """Descriptions of the objects."""
         return {
-            self.symbols["k_elbow"]: f"Elbow stiffness of {self.parent}",
-            self.symbols["c_elbow"]: f"Elbow damping of {self.parent}",
+            **super().descriptions,
+            self.symbols["k"]: f"Elbow stiffness of {self.parent}",
+            self.symbols["c"]: f"Elbow damping of {self.parent}",
             self.symbols["q_ref"]: f"Elbow reference angle of {self.parent}",
         }
 
     def _define_objects(self) -> None:
         """Define the objects."""
         self.symbols.update({
-            "k_elbow": dynamicsymbols(self._add_prefix("k_elbow")),
-            "c_elbow": dynamicsymbols(self._add_prefix("c_elbow")),
+            "k": dynamicsymbols(self._add_prefix("k")),
+            "c": dynamicsymbols(self._add_prefix("c")),
             "q_ref": dynamicsymbols(self._add_prefix("q_ref")),
         })
 
@@ -256,7 +260,7 @@ class PinElbowSpringDamper(LoadGroupBase):
         q = acos(dotted) if dotted.func != cos else dotted.args[0]
         self.system.add_actuators(
             TorqueActuator(
-                -self.symbols["k_elbow"] * (q - self.symbols["q_ref"]) -
-                self.symbols["c_elbow"] * u,
+                -self.symbols["k"] * (q - self.symbols["q_ref"]) -
+                self.symbols["c"] * u,
                 self.parent.upper_arm.y, self.parent.forearm, self.parent.upper_arm)
         )
