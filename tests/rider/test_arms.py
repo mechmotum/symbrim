@@ -3,11 +3,15 @@ from __future__ import annotations
 import pytest
 from brim.rider.arms import (
     LeftArmBase,
+    PinElbowSpringDamper,
     PinElbowStickLeftArm,
     PinElbowStickRightArm,
+    PinElbowTorque,
     RightArmBase,
 )
+from brim.rider.legs import TwoPinStickLeftLeg
 from brim.utilities.testing import _test_descriptions
+from brim.utilities.utilities import random_eval
 from sympy import simplify, zeros
 from sympy.physics.mechanics import Point, ReferenceFrame, RigidBody
 
@@ -54,3 +58,61 @@ class TestPinElbowStickArm:
             self.arm.system.joints[0].child_point) == self.l_fc * self.arm.forearm.z
         assert self.arm.forearm.frame.ang_vel_in(self.arm.upper_arm.frame).dot(
             self.arm.upper_arm.y) == self.arm.u
+
+
+class TestPinElbowTorque:
+    def test_invalid_type(self) -> None:
+        with pytest.raises(TypeError):
+            TwoPinStickLeftLeg("leg").add_load_groups(PinElbowTorque("arm"))
+
+    def test_descriptions(self) -> None:
+        _test_descriptions(PinElbowTorque("arm"))
+
+    @pytest.mark.parametrize("arm_cls", [PinElbowStickLeftArm, PinElbowStickRightArm])
+    def test_loads(self, arm_cls) -> None:
+        arm = arm_cls("arm")
+        elbow_load = PinElbowTorque("elbow_torque")
+        arm.add_load_groups(elbow_load)
+        arm.define_all()
+        system = arm.to_system()
+        assert len(system.actuators) == 1
+        torque = elbow_load.symbols["T"]
+        loads = system.actuators[0].to_loads()
+        # Carefully check the signs of the torques.
+        rot_axis = arm.forearm.frame.ang_vel_in(arm.upper_arm.frame).normalize()
+        for load in loads:
+            if load.frame == arm.forearm.frame:
+                assert random_eval(load.torque.dot(rot_axis) - torque) == 0
+            else:
+                assert load.frame == arm.upper_arm.frame
+                assert random_eval(load.torque.dot(rot_axis) - -torque) == 0
+
+
+class TestPinElbowSpringDamper:
+    def test_invalid_type(self) -> None:
+        with pytest.raises(TypeError):
+            TwoPinStickLeftLeg("leg").add_load_groups(PinElbowSpringDamper("arm"))
+
+    def test_descriptions(self) -> None:
+        _test_descriptions(PinElbowSpringDamper("arm"))
+
+    @pytest.mark.parametrize("arm_cls", [PinElbowStickLeftArm, PinElbowStickRightArm])
+    def test_loads(self, arm_cls) -> None:
+        arm = arm_cls("arm")
+        elbow_load = PinElbowSpringDamper("elbow_spring_damper")
+        arm.add_load_groups(elbow_load)
+        arm.define_all()
+        system = arm.to_system()
+        assert len(system.actuators) == 1
+        k, c, q_ref = (elbow_load.symbols[name] for name in ("k", "c", "q_ref"))
+        loads = system.actuators[0].to_loads()
+        # Carefully check the signs of the torques.
+        rot_axis = arm.forearm.frame.ang_vel_in(arm.upper_arm.frame).normalize()
+        for load in loads:
+            if load.frame == arm.forearm.frame:
+                assert random_eval(
+                    load.torque.dot(rot_axis) - (k * (q_ref - arm.q) - c * arm.u)) == 0
+            else:
+                assert load.frame == arm.upper_arm.frame
+                assert random_eval(
+                    load.torque.dot(rot_axis) - (-k * (q_ref - arm.q) + c * arm.u)) == 0
