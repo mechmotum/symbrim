@@ -518,6 +518,9 @@ def _merge_systems(*systems: System) -> System:  # pragma: no cover
         for load in s.loads:
             if load not in system.loads:
                 system.add_loads(load)
+        for actuator in s.actuators:
+            if actuator not in system.actuators:
+                system.add_actuators(actuator)
         for kde in s.kdes:
             if kde not in system.kdes:
                 system.add_kdes(kde)
