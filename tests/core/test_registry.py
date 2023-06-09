@@ -9,6 +9,7 @@ from brim.bicycle import (
 from brim.core import Registry
 from brim.core.requirement import ConnectionRequirement, ModelRequirement
 from brim.other.rolling_disc import RollingDisc
+from brim.rider import PinElbowSpringDamper, PinElbowTorque
 
 
 class TestRegistry:
@@ -20,6 +21,10 @@ class TestRegistry:
     @pytest.mark.parametrize("conn", [NonHolonomicTyre])
     def test_connections_registered(self, conn) -> None:
         assert conn in Registry().connections
+
+    @pytest.mark.parametrize("load_group", [PinElbowTorque, PinElbowSpringDamper])
+    def test_load_groups_registered(self, load_group) -> None:
+        assert load_group in Registry().load_groups
 
     def test_connections_and_models_split(self) -> None:
         assert Registry().models.isdisjoint(Registry().connections)
