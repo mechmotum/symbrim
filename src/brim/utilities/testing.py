@@ -3,19 +3,17 @@ from __future__ import annotations
 
 from sympy.utilities.iterables import iterable
 
-from brim.core import (
-    ConnectionBase,
-    ConnectionRequirement,
-    ModelBase,
-)
+from brim.core import ConnectionBase, ConnectionRequirement, LoadGroupBase, ModelBase
 
 
-def _test_descriptions(instance: ModelBase | ConnectionBase):
+def _test_descriptions(instance: ModelBase | ConnectionBase | LoadGroupBase) -> None:
     """Test if all symbols have descriptions."""
     if isinstance(instance, ConnectionBase):
         for model in instance.submodels:
             model.define_connections()
             model.define_objects()
+        instance.define_objects()
+    elif isinstance(instance, LoadGroupBase):
         instance.define_objects()
     else:
         instance.define_connections()
