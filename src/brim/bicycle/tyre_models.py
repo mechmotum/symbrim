@@ -1,32 +1,15 @@
 """Module containing tyre models for bicycles."""
 from __future__ import annotations
 
-from sympy.physics.mechanics import Point, cross
+from sympy.physics.mechanics import Point, Vector, cross
 from sympy.physics.mechanics._system import System
 
 from brim.bicycle.grounds import FlatGround, GroundBase
 from brim.bicycle.wheels import KnifeEdgeWheel, ToroidalWheel, WheelBase
 from brim.core import ConnectionBase, ModelRequirement
+from brim.utilities.utilities import random_eval
 
 __all__ = ["TyreBase", "NonHolonomicTyre"]
-
-
-def _set_pos_contact_point(contact_point: Point, ground: GroundBase, wheel: WheelBase
-                           ) -> None:
-    """Compute the contact point of the wheel with the ground."""
-    if isinstance(ground, FlatGround):
-        if isinstance(wheel, KnifeEdgeWheel):
-            wheel.center.set_pos(contact_point, wheel.radius * cross(
-                wheel.body.y, cross(ground.normal, wheel.body.y)).normalize())
-            return
-        elif isinstance(wheel, ToroidalWheel):
-            wheel.center.set_pos(contact_point, wheel.radius * cross(
-                wheel.body.y, cross(ground.normal, wheel.body.y)
-            ).normalize() + wheel.transverse_radius * ground.normal)
-            return
-    raise NotImplementedError(
-        f"Computation of the contact point has not been implemented for the combination"
-        f" of {type(ground)} and {type(wheel)}.")
 
 
 class TyreBase(ConnectionBase):
@@ -39,12 +22,65 @@ class TyreBase(ConnectionBase):
     ground: GroundBase
     wheel: WheelBase
 
+    def _set_pos_contact_point(self) -> None:
+        """Compute the contact point of the wheel with the ground."""
+        if isinstance(self.ground, FlatGround):
+            if isinstance(self.wheel, KnifeEdgeWheel):
+                self.wheel.center.set_pos(self.contact_point,
+                                          self.wheel.radius * self.upward_radial_axis)
+                return
+            elif isinstance(self.wheel, ToroidalWheel):
+                self.wheel.center.set_pos(
+                    self.contact_point,
+                    self.wheel.radius * self.upward_radial_axis +
+                    self.wheel.transverse_radius * self.ground.normal)
+                return
+        raise NotImplementedError(
+            f"Computation of the contact point has not been implemented for the "
+            f"combination of {type(self.ground)} and {type(self.wheel)}.")
+
     def _define_objects(self) -> None:
         """Define the objects of the tyre model."""
         super()._define_objects()
         self._system = System.from_newtonian(self.ground.body)
         self._contact_point = Point(self._add_prefix("contact_point"))
         self._on_ground = False
+        self._upward_radial_axis = None
+
+    @property
+    def upward_radial_axis(self) -> Vector:
+        """Wheel radial axis pointing upward from the contact point to the wheel center.
+
+        Explanation
+        -----------
+        To possibly simplify the equations of motion, one can overwrite the axis used
+        to compute the location of the contact point with respect to the wheel center.
+        This axis should be normalized. For a knife-edge wheel, one could express the
+        vector from the wheel center to the contact point of the ground as
+        ``wheel.radius * upward_radial_axis``.
+        """
+        if self._upward_radial_axis is None:
+            self._upward_radial_axis = cross(
+                self.wheel.rotation_axis,
+                cross(self.ground.normal, self.wheel.rotation_axis)
+            ).normalize()
+        return self._upward_radial_axis
+
+    @upward_radial_axis.setter
+    def upward_radial_axis(self, axis: Vector) -> None:
+        name = "The upward radial axis of the wheel"
+        if not isinstance(axis, Vector):
+            raise TypeError(f"{name} should be a vector, but received a {type(axis)}")
+        if not random_eval(axis.magnitude()) == 1:
+            raise ValueError(f"{name} should be normalized.")
+        if not random_eval(axis.dot(self.wheel.rotation_axis)) == 0:
+            raise ValueError(f"{name} should be perpendicular to the rotation axis.")
+        if not random_eval(axis.dot(cross(self.ground.normal, self.wheel.rotation_axis))
+                           ) == 0:
+            raise ValueError(
+                f"{name} should be perpendicular to an axis that is perpendicular to "
+                f"both the normal vector and rotation axis.")
+        self._upward_radial_axis = axis
 
     @property
     def contact_point(self) -> Point:
@@ -75,7 +111,7 @@ class NonHolonomicTyre(TyreBase):
     def _define_kinematics(self) -> None:
         """Define the kinematics of the tyre model."""
         super()._define_kinematics()
-        _set_pos_contact_point(self.contact_point, self.ground, self.wheel)
+        self._set_pos_contact_point()
 
     def _define_constraints(self) -> None:
         """Define the constraints of the tyre model."""
