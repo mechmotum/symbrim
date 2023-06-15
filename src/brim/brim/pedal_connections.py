@@ -20,7 +20,7 @@ class HolonomicPedalsConnection(PedalConnectionBase):
     additional constraints making the resulting system invalid. Some simple checks are
     done to verify that this is not the case. It is however that these will not catch
     the error. An example where this may occur is when the legs are purely two 2D and
-    the distance between the pedals is different than the hip width.
+    the distance between the pedals is different then the hip width.
     """
 
     def _define_objects(self) -> None:
