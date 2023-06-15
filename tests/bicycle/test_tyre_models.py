@@ -6,7 +6,7 @@ from brim.bicycle.tyre_models import NonHolonomicTyre, TyreBase
 from brim.bicycle.wheels import KnifeEdgeWheel, ToroidalWheel, WheelBase
 from brim.core import ConnectionRequirement, ModelBase, ModelRequirement
 from sympy import cos, sin
-from sympy.physics.mechanics import ReferenceFrame, dynamicsymbols
+from sympy.physics.mechanics import ReferenceFrame, cross, dynamicsymbols
 from sympy.physics.mechanics._system import System
 
 
@@ -93,17 +93,26 @@ class TestComputeContactPoint:
         wheel.define_objects()
         wheel.define_kinematics()
         self.tyre.wheel = wheel
-        self.tyre.upward_radial_axis = -self.int_frame.z
         wheel.frame.orient_axis(self.int_frame, self.q[2], self.int_frame.y)
+        self.tyre.upward_radial_axis = -self.int_frame.z
         self.tyre._set_pos_contact_point()
         assert (self.tyre.contact_point.pos_from(wheel.center) -
                 wheel.symbols["r"] * self.int_frame.z).simplify() == 0
 
     def test_upward_radial_axis_invalid(self, _setup_flat_ground):
-        with pytest.raises(TypeError):
+        self.tyre.wheel = KnifeEdgeWheel("wheel")
+        self.tyre.wheel.define_objects()
+        self.tyre.wheel.define_kinematics()
+        self.tyre.wheel.frame.orient_axis(self.int_frame, self.q[2], self.int_frame.y)
+        with pytest.raises(TypeError):  # no vector
             self.tyre.upward_radial_axis = 5
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError):  # not normalize
             self.tyre.upward_radial_axis = 2 * self.int_frame.z
+        with pytest.raises(ValueError):  # not radial
+            self.tyre.upward_radial_axis = self.ground.normal
+        with pytest.raises(ValueError):  # not correct with respect to normal
+            self.tyre.upward_radial_axis = cross(
+                self.tyre.wheel.rotation_axis, self.ground.normal).normalize()
 
 
 class TestNonHolonomicTyreModel:

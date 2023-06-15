@@ -28,15 +28,16 @@ class TyreBase(ConnectionBase):
             if isinstance(self.wheel, KnifeEdgeWheel):
                 self.wheel.center.set_pos(self.contact_point,
                                           self.wheel.radius * self.upward_radial_axis)
+                return
             elif isinstance(self.wheel, ToroidalWheel):
                 self.wheel.center.set_pos(
                     self.contact_point,
                     self.wheel.radius * self.upward_radial_axis +
                     self.wheel.transverse_radius * self.ground.normal)
-        else:
-            raise NotImplementedError(
-                f"Computation of the contact point has not been implemented for the "
-                f"combination of {type(self.ground)} and {type(self.wheel)}.")
+                return
+        raise NotImplementedError(
+            f"Computation of the contact point has not been implemented for the "
+            f"combination of {type(self.ground)} and {type(self.wheel)}.")
 
     def _define_objects(self) -> None:
         """Define the objects of the tyre model."""
@@ -67,12 +68,18 @@ class TyreBase(ConnectionBase):
 
     @upward_radial_axis.setter
     def upward_radial_axis(self, axis: Vector) -> None:
+        name = "The upward radial axis of the wheel"
         if not isinstance(axis, Vector):
-            raise TypeError(f"The upward radial axis of the wheel should be a vector, "
-                            f"but received a {type(axis)}")
+            raise TypeError(f"{name} should be a vector, but received a {type(axis)}")
         if not random_eval(axis.magnitude()) == 1:
+            raise ValueError(f"{name} should be normalized.")
+        if not random_eval(axis.dot(self.wheel.rotation_axis)) == 0:
+            raise ValueError(f"{name} should be perpendicular to the rotation axis.")
+        if not random_eval(axis.dot(cross(self.ground.normal, self.wheel.rotation_axis))
+                           ) == 0:
             raise ValueError(
-                "The upward radial axis of the wheel should be normalized.")
+                f"{name} should be perpendicular to an axis that is perpendicular to "
+                f"both the normal vector and rotation axis.")
         self._upward_radial_axis = axis
 
     @property
