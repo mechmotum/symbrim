@@ -1,10 +1,11 @@
 """Module containing the Whipple bicycle model."""
 from __future__ import annotations
 
+import contextlib
 from typing import TYPE_CHECKING, Any
 
 from sympy import Matrix, Symbol
-from sympy.physics.mechanics import PinJoint, dynamicsymbols
+from sympy.physics.mechanics import PinJoint, ReferenceFrame, Vector, dynamicsymbols
 from sympy.physics.mechanics._system import System
 
 from brim.bicycle.bicycle_base import BicycleBase
@@ -117,7 +118,9 @@ class WhippleBicycleMoore(WhippleBicycle):
             self.u[0] * self.ground.planar_vectors[0] +
             self.u[1] * self.ground.planar_vectors[1])
         # Define the orientation of the rear frame.
-        self.rear_frame.frame.orient_body_fixed(self.ground.frame, self.q[2:5], "zxy")
+        int_frame = ReferenceFrame("int_frame")
+        int_frame.orient_body_fixed(self.ground.frame, (*self.q[2:4], 0), "zxy")
+        self.rear_frame.frame.orient_axis(int_frame, int_frame.y, self.q[4])
         self.rear_frame.frame.set_ang_vel(
             self.ground.frame,
             self.rear_frame.frame.ang_vel_in(self.ground.frame).xreplace(
@@ -139,6 +142,9 @@ class WhippleBicycleMoore(WhippleBicycle):
                      self.front_frame.wheel_axis, self.front_wheel.rotation_axis),
         )
         # Define contact points.
+        with contextlib.suppress(ValueError):
+            self.rear_tyre.upward_radial_axis = Vector(
+                {int_frame: self.ground.normal.to_matrix(self.ground.frame)})
         self.rear_tyre.define_kinematics()
         self.front_tyre.define_kinematics()
         # Add the coordinates and speeds to the system.
