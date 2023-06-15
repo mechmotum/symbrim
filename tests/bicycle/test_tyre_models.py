@@ -1,14 +1,17 @@
 from __future__ import annotations
 
 import pytest
-from brim.bicycle.grounds import FlatGround
-from brim.bicycle.rear_frames import RigidRearFrameMoore
-from brim.bicycle.tyre_models import NonHolonomicTyre, _set_pos_contact_point
-from brim.bicycle.wheels import KnifeEdgeWheel, ToroidalWheel
+from brim.bicycle.grounds import FlatGround, GroundBase
+from brim.bicycle.tyre_models import NonHolonomicTyre, TyreBase
+from brim.bicycle.wheels import KnifeEdgeWheel, ToroidalWheel, WheelBase
 from brim.core import ConnectionRequirement, ModelBase, ModelRequirement
 from sympy import cos, sin
-from sympy.physics.mechanics import Point, ReferenceFrame, dynamicsymbols
+from sympy.physics.mechanics import ReferenceFrame, dynamicsymbols
 from sympy.physics.mechanics._system import System
+
+
+class MyTyre(TyreBase):
+    pass
 
 
 class TestComputeContactPoint:
@@ -17,17 +20,21 @@ class TestComputeContactPoint:
         self.ground = FlatGround("ground")
         self.ground.define_objects()
         self.ground.define_kinematics()
-        self.contact_point = Point("contact_point")
         self.q = dynamicsymbols("q1:4")
         self.int_frame = ReferenceFrame("int_frame")
         self.int_frame.orient_body_fixed(self.ground.frame, (*self.q[:2], 0), "zxy")
+        self.tyre = MyTyre("tyre")
+        self.tyre.ground = self.ground
+        self.tyre.define_objects()
 
     def test_knife_edge_wheel_on_flat_ground(self, _setup_flat_ground):
         wheel = KnifeEdgeWheel("wheel")
         wheel.define_objects()
+        wheel.define_kinematics()
+        self.tyre.wheel = wheel
         wheel.frame.orient_axis(self.int_frame, self.q[2], self.int_frame.y)
-        _set_pos_contact_point(self.contact_point, self.ground, wheel)
-        assert (self.contact_point.pos_from(wheel.center) -
+        self.tyre._set_pos_contact_point()
+        assert (self.tyre.contact_point.pos_from(wheel.center) -
                 wheel.symbols["r"] * self.int_frame.z).express(wheel.frame).simplify(
         ).xreplace({self.q[1]: 0.123, self.q[2]: 1.234}) == 0
         # sqrt(cos(q2)**2) is not simplified
@@ -35,21 +42,68 @@ class TestComputeContactPoint:
     def test_toroidal_wheel_on_flat_ground(self, _setup_flat_ground) -> None:
         wheel = ToroidalWheel("wheel")
         wheel.define_objects()
+        wheel.define_kinematics()
+        self.tyre.wheel = wheel
         wheel.frame.orient_axis(self.int_frame, self.q[2], self.int_frame.y)
-        _set_pos_contact_point(self.contact_point, self.ground, wheel)
-        assert (self.contact_point.pos_from(wheel.center) -
+        self.tyre._set_pos_contact_point()
+        assert (self.tyre.contact_point.pos_from(wheel.center) -
                 wheel.symbols["r"] * self.int_frame.z + wheel.symbols["tr"] *
                 self.ground.normal).express(wheel.frame).simplify().xreplace(
             {self.q[1]: 0.123, self.q[2]: 1.234}) == 0
         # sqrt(cos(q2)**2) is not simplified
 
-    @pytest.mark.parametrize("ground, wheel", [
-        (FlatGround("ground"), RigidRearFrameMoore("wheel")),
-        (RigidRearFrameMoore("ground"), KnifeEdgeWheel("wheel")),
-    ])
-    def test_not_implemented_combination(self, ground, wheel) -> None:
-        with pytest.raises(NotImplementedError):
-            _set_pos_contact_point(Point("cp"), ground, wheel)
+    def test_not_implemented_combinations(self) -> None:
+        class NewGround(GroundBase):
+            @property
+            def normal(self):
+                return -self.body.z
+
+            @property
+            def frame(self):
+                return self.body.frame
+
+            @property
+            def planar_vectors(self):
+                return (self.frame.x, self.frame.y)
+
+        class NewWheel(WheelBase):
+            @property
+            def center(self):
+                return self.body.masscenter
+
+            def rotation_axis(self):
+                return self.frame.y
+
+        for wheel_cls, ground_cls in [(KnifeEdgeWheel, NewGround),
+                                      (NewWheel, FlatGround),
+                                      (NewWheel, NewGround)]:
+            tyre = MyTyre("tyre")
+            tyre.ground = ground_cls("ground")
+            tyre.wheel = wheel_cls("wheel")
+            tyre.ground.define_objects()
+            tyre.wheel.define_objects()
+            tyre.define_objects()
+            tyre.ground.define_kinematics()
+            tyre.wheel.define_kinematics()
+            with pytest.raises(NotImplementedError):
+                tyre._set_pos_contact_point()
+
+    def test_upward_radial_axis(self, _setup_flat_ground):
+        wheel = KnifeEdgeWheel("wheel")
+        wheel.define_objects()
+        wheel.define_kinematics()
+        self.tyre.wheel = wheel
+        self.tyre.upward_radial_axis = -self.int_frame.z
+        wheel.frame.orient_axis(self.int_frame, self.q[2], self.int_frame.y)
+        self.tyre._set_pos_contact_point()
+        assert (self.tyre.contact_point.pos_from(wheel.center) -
+                wheel.symbols["r"] * self.int_frame.z).simplify() == 0
+
+    def test_upward_radial_axis_invalid(self, _setup_flat_ground):
+        with pytest.raises(TypeError):
+            self.tyre.upward_radial_axis = 5
+        with pytest.raises(ValueError):
+            self.tyre.upward_radial_axis = 2 * self.int_frame.z
 
 
 class TestNonHolonomicTyreModel:
