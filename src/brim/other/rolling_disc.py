@@ -1,12 +1,14 @@
 """Module containing the rolling disc model."""
 from __future__ import annotations
 
+import contextlib
 from typing import Any
 
 from sympy import Matrix, Symbol, symbols
 from sympy.physics.mechanics import (
     ReferenceFrame,
     RigidBody,
+    Vector,
     cross,
     dynamicsymbols,
     inertia,
@@ -68,7 +70,9 @@ class RollingDisc(ModelBase):
         """Define the kinematics of the rolling disc."""
         super()._define_kinematics()
         self._system = System.from_newtonian(self.ground.body)
-        self.disc.frame.orient_body_fixed(self.ground.frame, self.q[2:], "zxy")
+        int_frame = ReferenceFrame("int_frame")
+        int_frame.orient_body_fixed(self.ground.frame, (*self.q[2:-1], 0), "zxy")
+        self.disc.frame.orient_axis(int_frame, int_frame.y, self.q[-1])
         self.disc.frame.set_ang_vel(
             self.ground.frame, self.disc.frame.ang_vel_in(self.ground.frame).xreplace(
                 {qi.diff(dynamicsymbols._t): ui for qi, ui in zip(self.q, self.u)}
@@ -83,6 +87,10 @@ class RollingDisc(ModelBase):
             self.u[0] * self.ground.planar_vectors[0] +
             self.u[1] * self.ground.planar_vectors[1]
         )
+        with contextlib.suppress(ValueError):
+            self.tyre.upward_radial_axis = Vector(
+                {int_frame: self.ground.normal.to_matrix(self.ground.frame)})
+
         self.tyre.define_kinematics()
         self.system.q_ind = self.q
         self.system.u_ind = self.u
