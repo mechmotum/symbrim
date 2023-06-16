@@ -103,3 +103,28 @@ class Registry(Singleton):
         if drop_abstract:
             options = [option for option in options if option.__name__[-4:] != "Base"]
         return options
+
+    def get_matching_load_groups(self, obj: ConnectionBase | ModelBase,
+                                   drop_abstract: bool = True) -> list[type]:
+        """Return all load groups that could be applied to the given object.
+
+        Parameters
+        ----------
+        obj : ConnectionBase | ModelBase
+            The object to get the load groups from.
+        drop_abstract : bool, optional
+            Whether to drop abstract classes, by default True.
+
+        Returns
+        -------
+        list[type]
+            All load groups that could be applied to the given object.
+        """
+        options = []
+        for group in self.load_groups:
+            if (isinstance(obj, group.required_parent_type) or
+                    issubclass(obj, group.required_parent_type)):
+                options.append(group)
+        if drop_abstract:
+            options = [option for option in options if option.__name__[-4:] != "Base"]
+        return options
