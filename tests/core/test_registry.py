@@ -6,10 +6,10 @@ from brim.bicycle import (
     TyreBase,
     WheelBase,
 )
-from brim.core import Registry
+from brim.core import LoadGroupBase, Registry
 from brim.core.requirement import ConnectionRequirement, ModelRequirement
 from brim.other.rolling_disc import RollingDisc
-from brim.rider import PinElbowSpringDamper, PinElbowTorque
+from brim.rider import PinElbowSpringDamper, PinElbowStickLeftArm, PinElbowTorque
 
 
 class TestRegistry:
@@ -57,6 +57,8 @@ class TestRegistry:
     @pytest.mark.parametrize("args, kwargs, subset, disjoint", [
         ((RollingDisc("disc"), "disc"), {},
          {KnifeEdgeWheel, ToroidalWheel}, {NonHolonomicTyre, WheelBase, RollingDisc}),
+        ((RollingDisc, "disc"), {},
+         {KnifeEdgeWheel, ToroidalWheel}, {NonHolonomicTyre, WheelBase, RollingDisc}),
         ((RollingDisc("disc"), "tyre"), {},
          {NonHolonomicTyre}, {TyreBase, KnifeEdgeWheel, RollingDisc}),
         ((RollingDisc("disc"), "disc"), {"drop_abstract": False},
@@ -72,3 +74,16 @@ class TestRegistry:
     def test_get_from_property_error(self) -> None:
         with pytest.raises(ValueError):
             Registry().get_from_property(RollingDisc("disc"), "wheel")
+
+    @pytest.mark.parametrize("args, kwargs, subset, disjoint", [
+        ((PinElbowStickLeftArm("arm"),), {},
+         {PinElbowTorque, PinElbowSpringDamper}, {LoadGroupBase, PinElbowStickLeftArm}),
+        ((PinElbowStickLeftArm,), {},
+         {PinElbowTorque, PinElbowSpringDamper}, {LoadGroupBase, PinElbowStickLeftArm}),
+        ((PinElbowStickLeftArm("arm"),), {"drop_abstract": False},
+         {PinElbowTorque, PinElbowSpringDamper, LoadGroupBase}, {PinElbowStickLeftArm}),
+    ])
+    def test_get_applicable_load_groups(self, args, kwargs, subset, disjoint) -> None:
+        options = set(Registry().get_matching_load_groups(*args, **kwargs))
+        assert subset.issubset(options)
+        assert disjoint.isdisjoint(options)
