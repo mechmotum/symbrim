@@ -121,9 +121,10 @@ class Registry(Singleton):
             All load groups that could be applied to the given object.
         """
         options = []
+        if not isinstance(obj, type):
+            obj = type(obj)
         for group in self.load_groups:
-            if (isinstance(obj, group.required_parent_type) or
-                    issubclass(obj, group.required_parent_type)):
+            if issubclass(obj, group.required_parent_type):
                 options.append(group)
         if drop_abstract:
             options = [option for option in options if option.__name__[-4:] != "Base"]
