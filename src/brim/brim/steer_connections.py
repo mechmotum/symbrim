@@ -37,8 +37,8 @@ class HolonomicSteerConnection(SteerConnectionBase):
                 (self.right_arm.hand_interpoint, self.steer.right_handgrip)):
             for direction in self.steer.frame:
                 constr = fp.pos_from(pp).dot(direction)
-                if check_zero(constr) != 0:
-                    if check_zero(constr.diff(dynamicsymbols._t)) == 0:
+                if not check_zero(constr):
+                    if check_zero(constr.diff(dynamicsymbols._t)):
                         error_msg.append(
                             f"While constraining the the hands to the steer, it was "
                             f"found that the holonomic constraint of a hand along "

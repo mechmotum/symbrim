@@ -37,8 +37,8 @@ class HolonomicPedalsConnection(PedalConnectionBase):
                 (self.right_leg.foot_interpoint, self.pedals.right_pedal_point)):
             for direction in self.pedals.frame:
                 constr = fp.pos_from(pp).dot(direction)
-                if check_zero(constr) != 0:
-                    if check_zero(constr.diff(dynamicsymbols._t)) == 0:
+                if not check_zero(constr):
+                    if check_zero(constr.diff(dynamicsymbols._t)):
                         error_msg.append(
                             f"While constraining the the feet to the pedals, it was "
                             f"found that the holonomic constraint of a foot along "

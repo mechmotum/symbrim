@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 from brim.utilities.utilities import check_zero, random_eval
-from sympy import acos, cos, sqrt, symbols
+from sympy import S, acos, cos, sqrt, symbols
 from sympy.abc import a, b, c
 from sympy.physics.mechanics import dynamicsymbols
 
@@ -38,12 +38,13 @@ class TestCheckZero:
     @pytest.mark.parametrize("expr", [
         acos(cos(a)) - a + sqrt(b**2) - b + sqrt(c**2) - c,
         sqrt(dynamicsymbols("x", 1)**2) - dynamicsymbols("x", 1),
+        S.Zero,
         ])
     @pytest.mark.parametrize("args, kwargs", [
         ((), {}),
         ((), {"n_evaluations": 100, "atol": 1e-10}),
     ])
-    def test_iszero(self, expr, args, kwargs) -> None:
+    def test_is_zero(self, expr, args, kwargs) -> None:
         assert check_zero(expr, *args, **kwargs)
 
     @pytest.mark.parametrize("expr", [
