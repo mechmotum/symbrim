@@ -5,7 +5,7 @@ from sympy.physics.mechanics import dynamicsymbols
 from sympy.physics.mechanics._system import System
 
 from brim.brim.base_connections import PedalConnectionBase
-from brim.utilities.utilities import random_eval
+from brim.utilities.utilities import check_zero
 
 __all__ = ["HolonomicPedalsConnection"]
 
@@ -37,8 +37,8 @@ class HolonomicPedalsConnection(PedalConnectionBase):
                 (self.right_leg.foot_interpoint, self.pedals.right_pedal_point)):
             for direction in self.pedals.frame:
                 constr = fp.pos_from(pp).dot(direction)
-                if random_eval(constr) != 0:
-                    if random_eval(constr.diff(dynamicsymbols._t)) == 0:
+                if check_zero(constr) != 0:
+                    if check_zero(constr.diff(dynamicsymbols._t)) == 0:
                         error_msg.append(
                             f"While constraining the the feet to the pedals, it was "
                             f"found that the holonomic constraint of a foot along "

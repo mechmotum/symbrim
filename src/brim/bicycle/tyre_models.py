@@ -7,7 +7,7 @@ from sympy.physics.mechanics._system import System
 from brim.bicycle.grounds import FlatGround, GroundBase
 from brim.bicycle.wheels import KnifeEdgeWheel, ToroidalWheel, WheelBase
 from brim.core import ConnectionBase, ModelRequirement
-from brim.utilities.utilities import random_eval
+from brim.utilities.utilities import check_zero
 
 __all__ = ["TyreBase", "NonHolonomicTyre"]
 
@@ -71,12 +71,12 @@ class TyreBase(ConnectionBase):
         name = "The upward radial axis of the wheel"
         if not isinstance(axis, Vector):
             raise TypeError(f"{name} should be a vector, but received a {type(axis)}")
-        if not random_eval(axis.magnitude()) == 1:
+        if not check_zero(axis.magnitude() - 1):
             raise ValueError(f"{name} should be normalized.")
-        if not random_eval(axis.dot(self.wheel.rotation_axis)) == 0:
+        if not check_zero(axis.dot(self.wheel.rotation_axis)):
             raise ValueError(f"{name} should be perpendicular to the rotation axis.")
-        if not random_eval(axis.dot(cross(self.ground.normal, self.wheel.rotation_axis))
-                           ) == 0:
+        if not check_zero(axis.dot(cross(self.ground.normal, self.wheel.rotation_axis))
+                          ):
             raise ValueError(
                 f"{name} should be perpendicular to an axis that is perpendicular to "
                 f"both the normal vector and rotation axis.")

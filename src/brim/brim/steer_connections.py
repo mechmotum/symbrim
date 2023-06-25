@@ -5,7 +5,7 @@ from sympy.physics.mechanics import dynamicsymbols
 from sympy.physics.mechanics._system import System
 
 from brim.brim.base_connections import SteerConnectionBase
-from brim.utilities.utilities import random_eval
+from brim.utilities.utilities import check_zero
 
 __all__ = ["HolonomicSteerConnection"]
 
@@ -37,8 +37,8 @@ class HolonomicSteerConnection(SteerConnectionBase):
                 (self.right_arm.hand_interpoint, self.steer.right_handgrip)):
             for direction in self.steer.frame:
                 constr = fp.pos_from(pp).dot(direction)
-                if random_eval(constr) != 0:
-                    if random_eval(constr.diff(dynamicsymbols._t)) == 0:
+                if check_zero(constr) != 0:
+                    if check_zero(constr.diff(dynamicsymbols._t)) == 0:
                         error_msg.append(
                             f"While constraining the the hands to the steer, it was "
                             f"found that the holonomic constraint of a hand along "

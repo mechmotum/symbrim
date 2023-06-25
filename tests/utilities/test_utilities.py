@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import pytest
-from brim.utilities.utilities import random_eval
-from sympy import sqrt, symbols
+from brim.utilities.utilities import check_zero, random_eval
+from sympy import acos, cos, sqrt, symbols
+from sympy.abc import a, b, c
 from sympy.physics.mechanics import dynamicsymbols
 
 
@@ -31,3 +32,33 @@ class TestRandomEval:
     def test_not_implemented(self) -> None:
         with pytest.raises(NotImplementedError):
             random_eval(symbols("a"), method="not_implemented")
+
+
+class TestCheckZero:
+    @pytest.mark.parametrize("expr", [
+        acos(cos(a)) - a + sqrt(b**2) - b + sqrt(c**2) - c,
+        sqrt(dynamicsymbols("x", 1)**2) - dynamicsymbols("x", 1),
+        ])
+    @pytest.mark.parametrize("args, kwargs", [
+        ((), {}),
+        ((), {"n_evaluations": 100, "atol": 1e-10}),
+    ])
+    def test_iszero(self, expr, args, kwargs) -> None:
+        assert check_zero(expr, *args, **kwargs)
+
+    @pytest.mark.parametrize("expr", [
+        acos(cos(a)) - a + sqrt(b**2) - b + sqrt(c**2),
+        sqrt(dynamicsymbols("x", 1)**2),
+        ])
+    @pytest.mark.parametrize("args, kwargs", [
+        ((), {}),
+        ((), {"n_evaluations": 100, "atol": 1e-10}),
+    ])
+    def test_is_not_zero(self, expr, args, kwargs) -> None:
+        assert not check_zero(expr, *args, **kwargs)
+
+    def test_too_strict_tolerance(self) -> None:
+        assert not check_zero(acos(cos(a)) - a, atol=1e-20)
+
+    def test_too_loose_tolerance(self) -> None:
+        assert check_zero(acos(cos(a)) - a + 0.001, atol=1e-2)

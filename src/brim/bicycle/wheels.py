@@ -5,7 +5,7 @@ from abc import abstractmethod
 from typing import TYPE_CHECKING, Any
 
 from sympy import Symbol, symbols
-from sympy.physics.mechanics import Point, inertia
+from sympy.physics.mechanics import Point, Vector, inertia
 
 from brim.core import ModelBase, NewtonianBodyMixin
 
@@ -18,9 +18,6 @@ try:  # pragma: no cover
         from bicycleparameters import Bicycle
 except ImportError:  # pragma: no cover
     pass
-
-if TYPE_CHECKING:
-    from sympy.physics.mechanics import Vector
 
 __all__ = ["WheelBase", "KnifeEdgeWheel", "ToroidalWheel"]
 
