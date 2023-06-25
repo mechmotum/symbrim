@@ -60,3 +60,7 @@ class TestCheckZero:
 
     def test_too_loose_tolerance(self) -> None:
         assert check_zero(acos(cos(a)) - a + 0.001, atol=1e-2)
+
+    def test_non_expression(self) -> None:
+        assert check_zero(0.0)
+        assert not check_zero(3.3)
