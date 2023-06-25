@@ -36,9 +36,9 @@ class GroundBase(ModelBase):
         return self._body
 
     @property
-    @abstractmethod
     def frame(self) -> ReferenceFrame:
         """Frame fixed to the ground."""
+        return self.body.frame
 
     @abstractmethod
     def get_normal(self, position: Point | tuple[Expr, Expr]) -> Vector:
@@ -95,11 +95,6 @@ class FlatGround(GroundBase):
             self._planar_vectors = (self.frame.x, self.frame.z)
         else:
             self._planar_vectors = (self.frame.x, self.frame.y)
-
-    @property
-    def frame(self) -> ReferenceFrame:
-        """Frame fixed to the ground."""
-        return self.body.frame
 
     def get_normal(self, position: Point | tuple[Expr, Expr]) -> Vector:
         """Get normal vector of the ground."""

@@ -57,10 +57,6 @@ class TestComputeContactPoint:
             def get_normal(self, position):
                 return -self.body.z
 
-            @property
-            def frame(self):
-                return self.body.frame
-
             def get_tangent_vectors(self, position):
                 return (self.frame.x, self.frame.y)
 
