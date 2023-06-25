@@ -40,6 +40,11 @@ class GroundBase(ModelBase):
         """Frame fixed to the ground."""
         return self.body.frame
 
+    @property
+    def origin(self) -> Point:
+        """Origin of the ground."""
+        return self.body.masscenter
+
     @abstractmethod
     def get_normal(self, position: Point | tuple[Expr, Expr]) -> Vector:
         """Get normal vector of the ground."""
@@ -51,12 +56,7 @@ class GroundBase(ModelBase):
 
     @abstractmethod
     def set_point_pos(self, point: Point, position: tuple[Expr, Expr]) -> None:
-        """Locate a point on the ground."""
-
-    @property
-    def origin(self) -> Point:
-        """Origin of the ground."""
-        return self.body.masscenter
+        """Set the location of a point on the ground."""
 
 
 class FlatGround(GroundBase):
@@ -106,6 +106,6 @@ class FlatGround(GroundBase):
         return self._planar_vectors
 
     def set_point_pos(self, point: Point, position: tuple[Expr, Expr]) -> None:
-        """Locate a point on the ground."""
+        """Set the location of a point on the ground."""
         point.set_pos(self.origin, position[0] * self._planar_vectors[0] +
                       position[1] * self._planar_vectors[1])
