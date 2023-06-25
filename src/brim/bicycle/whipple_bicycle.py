@@ -108,23 +108,19 @@ class WhippleBicycleMoore(WhippleBicycle):
     def _define_kinematics(self) -> None:
         """Define the kinematics of the Whipple bicycle."""
         super()._define_kinematics()
+        qd_repl = dict(zip(self.q.diff(dynamicsymbols._t), self.u))
         # Define the location of the rear wheel contact point in the ground frame.
-        self.rear_tyre.contact_point.set_pos(
-            self.ground.origin,
-            self.q[0] * self.ground.planar_vectors[0] +
-            self.q[1] * self.ground.planar_vectors[1])
+        self.ground.set_point_pos(self.rear_tyre.contact_point, self.q[:2])
         self.rear_tyre.contact_point.set_vel(
             self.ground.frame,
-            self.u[0] * self.ground.planar_vectors[0] +
-            self.u[1] * self.ground.planar_vectors[1])
+            self.rear_tyre.contact_point.vel(self.ground.frame).xreplace(qd_repl))
         # Define the orientation of the rear frame.
         int_frame = ReferenceFrame("int_frame")
         int_frame.orient_body_fixed(self.ground.frame, (*self.q[2:4], 0), "zxy")
         self.rear_frame.frame.orient_axis(int_frame, int_frame.y, self.q[4])
         self.rear_frame.frame.set_ang_vel(
             self.ground.frame,
-            self.rear_frame.frame.ang_vel_in(self.ground.frame).xreplace(
-                {qi.diff(dynamicsymbols._t): ui for qi, ui in zip(self.q, self.u)}))
+            self.rear_frame.frame.ang_vel_in(self.ground.frame).xreplace(qd_repl))
         # Define the joints
         self.system.add_joints(
             PinJoint(self._add_prefix("rear_wheel_joint"), self.rear_frame.body,
@@ -144,7 +140,8 @@ class WhippleBicycleMoore(WhippleBicycle):
         # Define contact points.
         with contextlib.suppress(ValueError):
             self.rear_tyre.upward_radial_axis = Vector(
-                {int_frame: self.ground.normal.to_matrix(self.ground.frame)})
+                {int_frame: self.ground.get_normal(
+                    self.rear_tyre.contact_point).to_matrix(self.ground.frame)})
         self.rear_tyre.define_kinematics()
         self.front_tyre.define_kinematics()
         # Add the coordinates and speeds to the system.

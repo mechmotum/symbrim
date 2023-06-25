@@ -2,11 +2,15 @@
 from __future__ import annotations
 
 from abc import abstractmethod
+from typing import TYPE_CHECKING
 
 from sympy.physics.mechanics import Point, ReferenceFrame, RigidBody, Vector, cross
 from sympy.physics.mechanics._system import System
 
 from brim.core import ModelBase
+
+if TYPE_CHECKING:
+    from sympy import Expr
 
 __all__ = ["GroundBase", "FlatGround"]
 
@@ -36,15 +40,18 @@ class GroundBase(ModelBase):
     def frame(self) -> ReferenceFrame:
         """Frame fixed to the ground."""
 
-    @property
     @abstractmethod
-    def normal(self) -> Vector:
-        """Normal vector of the ground."""
+    def get_normal(self, position: Point | tuple[Expr, Expr]) -> Vector:
+        """Get normal vector of the ground."""
 
-    @property
     @abstractmethod
-    def planar_vectors(self) -> tuple[Vector, Vector]:
-        """Planar vectors of the ground."""
+    def get_tangent_vectors(self, position: Point | tuple[Expr, Expr]
+                            ) -> tuple[Vector, Vector]:
+        """Get tangent vectors of the ground plane."""
+
+    @abstractmethod
+    def set_point_pos(self, point: Point, position: tuple[Expr, Expr]) -> None:
+        """Locate a point on the ground."""
 
     @property
     def origin(self) -> Point:
@@ -94,12 +101,16 @@ class FlatGround(GroundBase):
         """Frame fixed to the ground."""
         return self.body.frame
 
-    @property
-    def normal(self) -> Vector:
-        """Normal vector of the ground."""
-        return self._normal
+    def get_normal(self, position: Point | tuple[Expr, Expr]) -> Vector:
+        """Get normal vector of the ground."""
+        return self._normal  # type: ignore
 
-    @property
-    def planar_vectors(self) -> tuple[Vector, Vector]:
-        """Planar vectors of the ground."""
+    def get_tangent_vectors(self, position: Point | tuple[Expr, Expr]
+                            ) -> tuple[Vector, Vector]:
+        """Get tangent vectors of the ground plane."""
         return self._planar_vectors
+
+    def set_point_pos(self, point: Point, position: tuple[Expr, Expr]) -> None:
+        """Locate a point on the ground."""
+        point.set_pos(self.origin, position[0] * self._planar_vectors[0] +
+                      position[1] * self._planar_vectors[1])

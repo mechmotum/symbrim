@@ -48,23 +48,25 @@ class TestComputeContactPoint:
         self.tyre._set_pos_contact_point()
         assert (self.tyre.contact_point.pos_from(wheel.center) -
                 wheel.symbols["r"] * self.int_frame.z + wheel.symbols["tr"] *
-                self.ground.normal).express(wheel.frame).simplify().xreplace(
-            {self.q[1]: 0.123, self.q[2]: 1.234}) == 0
+                self.ground.get_normal(self.tyre.contact_point)).express(
+            wheel.frame).simplify().xreplace({self.q[1]: 0.123, self.q[2]: 1.234}) == 0
         # sqrt(cos(q2)**2) is not simplified
 
     def test_not_implemented_combinations(self) -> None:
         class NewGround(GroundBase):
-            @property
-            def normal(self):
+            def get_normal(self, position):
                 return -self.body.z
 
             @property
             def frame(self):
                 return self.body.frame
 
-            @property
-            def planar_vectors(self):
+            def get_tangent_vectors(self, position):
                 return (self.frame.x, self.frame.y)
+
+            def set_point_pos(self, point, position) -> None:
+                point.set_pos(self.origin, position[0] * self.frame.x +
+                              position[1] * self.frame.y)
 
         class NewWheel(WheelBase):
             @property
@@ -104,15 +106,16 @@ class TestComputeContactPoint:
         self.tyre.wheel.define_objects()
         self.tyre.wheel.define_kinematics()
         self.tyre.wheel.frame.orient_axis(self.int_frame, self.q[2], self.int_frame.y)
+        normal = self.ground.get_normal(self.tyre.contact_point)
         with pytest.raises(TypeError):  # no vector
             self.tyre.upward_radial_axis = 5
         with pytest.raises(ValueError):  # not normalize
             self.tyre.upward_radial_axis = 2 * self.int_frame.z
         with pytest.raises(ValueError):  # not radial
-            self.tyre.upward_radial_axis = self.ground.normal
+            self.tyre.upward_radial_axis = normal
         with pytest.raises(ValueError):  # not correct with respect to normal
             self.tyre.upward_radial_axis = cross(
-                self.tyre.wheel.rotation_axis, self.ground.normal).normalize()
+                self.tyre.wheel.rotation_axis, normal).normalize()
 
 
 class TestNonHolonomicTyreModel:
@@ -173,9 +176,11 @@ class TestNonHolonomicTyreModel:
         t = dynamicsymbols._t
         q1, q2, x, y, z = dynamicsymbols("q1 q2 x y z")
         wheel.frame.orient_body_fixed(ground.frame, (q1, q2, 0), "zyx")
-        tyre_model.contact_point.set_pos(
-            ground.origin, (x * ground.planar_vectors[0] + y * ground.planar_vectors[1]
-                            + int(not on_ground) * z * ground.normal))
+        ground.set_point_pos(tyre_model.contact_point, (x, y))
+        if not on_ground:
+            tyre_model.contact_point.set_pos(
+                ground.origin, tyre_model.contact_point.pos_from(
+                    ground.origin) + z * ground.get_normal(tyre_model.contact_point))
         self.model.define_kinematics()
         self.model.define_loads()
         self.model.define_constraints()

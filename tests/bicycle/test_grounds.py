@@ -11,8 +11,9 @@ class TestFlatGround:
         ground.define_objects()
         assert ground.name == "ground"
         assert ground.frame == ground.body.frame
-        assert ground.normal == -ground.frame.z
-        assert ground.planar_vectors == (ground.frame.x, ground.frame.y)
+        assert ground.get_normal(ground.origin) == -ground.frame.z
+        assert ground.get_tangent_vectors(ground.origin) == (
+            ground.frame.x, ground.frame.y)
         assert ground.origin == ground.body.masscenter
         assert ground.origin.vel(ground.frame) == 0
         assert isinstance(ground.system, System)
@@ -33,5 +34,6 @@ class TestFlatGround:
         ground.define_objects()
         vectors = (ground.frame.x, ground.frame.y, ground.frame.z)
         times = -1 if normal[0] == "-" else 1
-        assert ground.normal == times * vectors[n_idx]
-        assert ground.planar_vectors == (vectors[pl_idx1], vectors[pl_idx2])
+        assert ground.get_normal(ground.origin) == times * vectors[n_idx]
+        assert ground.get_tangent_vectors(ground.origin) == (
+            vectors[pl_idx1], vectors[pl_idx2])
