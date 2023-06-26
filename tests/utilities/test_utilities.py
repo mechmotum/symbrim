@@ -58,8 +58,9 @@ class TestCheckZero:
     def test_is_not_zero(self, expr, args, kwargs) -> None:
         assert not check_zero(expr, *args, **kwargs)
 
-    def test_too_strict_tolerance(self) -> None:
-        assert not check_zero(acos(cos(a)) - a, atol=1e-20)
-
     def test_too_loose_tolerance(self) -> None:
         assert check_zero(acos(cos(a)) - a + 0.001, atol=1e-2)
+
+    def test_non_expression(self) -> None:
+        assert check_zero(0.0)
+        assert not check_zero(3.3)

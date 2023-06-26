@@ -195,7 +195,8 @@ class TestParametrize:
             self.bike.rear_wheel.center).magnitude(), params
                      ) == pytest.approx(mp["lcs"], abs=1e-10)
         assert msubs(self.bike.pedals.center_point.pos_from(
-            self.bike.front_tyre.contact_point).dot(self.bike.ground.normal), params
+            self.bike.front_tyre.contact_point).dot(
+            self.bike.ground.get_normal(self.bike.front_tyre.contact_point)), params
                      ) == pytest.approx(mp["hbb"], abs=1e-10)
         assert msubs(self.bike.pedals.center_point.pos_from(
             self.bike.rear_frame.saddle).magnitude(), params

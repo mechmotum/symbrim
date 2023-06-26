@@ -69,33 +69,27 @@ class RollingDisc(ModelBase):
     def _define_kinematics(self) -> None:
         """Define the kinematics of the rolling disc."""
         super()._define_kinematics()
+        qd_repl = dict(zip(self.q.diff(dynamicsymbols._t), self.u))
         self._system = System.from_newtonian(self.ground.body)
         int_frame = ReferenceFrame("int_frame")
         int_frame.orient_body_fixed(self.ground.frame, (*self.q[2:-1], 0), "zxy")
         self.disc.frame.orient_axis(int_frame, int_frame.y, self.q[-1])
         self.disc.frame.set_ang_vel(
             self.ground.frame, self.disc.frame.ang_vel_in(self.ground.frame).xreplace(
-                {qi.diff(dynamicsymbols._t): ui for qi, ui in zip(self.q, self.u)}
-            ))
-        self.tyre.contact_point.set_pos(
-            self.ground.origin,
-            self.q[0] * self.ground.planar_vectors[0] +
-            self.q[1] * self.ground.planar_vectors[1]
-        )
+                qd_repl))
+        self.ground.set_point_pos(self.tyre.contact_point, self.q[:2])
         self.tyre.contact_point.set_vel(
             self.ground.frame,
-            self.u[0] * self.ground.planar_vectors[0] +
-            self.u[1] * self.ground.planar_vectors[1]
-        )
+            self.tyre.contact_point.vel(self.ground.frame).xreplace(qd_repl))
         with contextlib.suppress(ValueError):
             self.tyre.upward_radial_axis = Vector(
-                {int_frame: self.ground.normal.to_matrix(self.ground.frame)})
+                {int_frame: self.ground.get_normal(self.tyre.contact_point).to_matrix(
+                    self.ground.frame)})
 
         self.tyre.define_kinematics()
         self.system.q_ind = self.q
         self.system.u_ind = self.u
-        self.system.kdes = [
-            qdi - ui for qdi, ui in zip(self.q.diff(dynamicsymbols._t), self.u)]
+        self.system.kdes = [qdi - ui for qdi, ui in qd_repl.items()]
 
     def _define_loads(self) -> None:
         """Define the loads of the rolling disc."""

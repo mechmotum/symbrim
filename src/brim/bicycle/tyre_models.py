@@ -33,7 +33,8 @@ class TyreBase(ConnectionBase):
                 self.wheel.center.set_pos(
                     self.contact_point,
                     self.wheel.radius * self.upward_radial_axis +
-                    self.wheel.transverse_radius * self.ground.normal)
+                    self.wheel.transverse_radius * self.ground.get_normal(
+                        self.contact_point))
                 return
         raise NotImplementedError(
             f"Computation of the contact point has not been implemented for the "
@@ -62,7 +63,8 @@ class TyreBase(ConnectionBase):
         if self._upward_radial_axis is None:
             self._upward_radial_axis = cross(
                 self.wheel.rotation_axis,
-                cross(self.ground.normal, self.wheel.rotation_axis)
+                cross(self.ground.get_normal(self.contact_point),
+                      self.wheel.rotation_axis)
             ).normalize()
         return self._upward_radial_axis
 
@@ -75,8 +77,8 @@ class TyreBase(ConnectionBase):
             raise ValueError(f"{name} should be normalized.")
         if not check_zero(axis.dot(self.wheel.rotation_axis)):
             raise ValueError(f"{name} should be perpendicular to the rotation axis.")
-        if not check_zero(axis.dot(cross(self.ground.normal, self.wheel.rotation_axis))
-                          ):
+        if not check_zero(axis.dot(cross(self.ground.get_normal(self.contact_point),
+                                         self.wheel.rotation_axis))):
             raise ValueError(
                 f"{name} should be perpendicular to an axis that is perpendicular to "
                 f"both the normal vector and rotation axis.")
@@ -116,13 +118,14 @@ class NonHolonomicTyre(TyreBase):
     def _define_constraints(self) -> None:
         """Define the constraints of the tyre model."""
         super()._define_constraints()
+        normal = self.ground.get_normal(self.contact_point)
+        tangent_vectors = self.ground.get_tangent_vectors(self.contact_point)
         v0 = self.wheel.center.vel(self.ground.frame) + cross(
             self.wheel.frame.ang_vel_in(self.ground.frame),
             self.contact_point.pos_from(self.wheel.center)
         )
         self.system.add_nonholonomic_constraints(
-            v0.dot(self.ground.planar_vectors[0]),
-            v0.dot(self.ground.planar_vectors[1]))
+            v0.dot(tangent_vectors[0]), v0.dot(tangent_vectors[1]))
         if not self.on_ground:
             self.system.add_holonomic_constraints(
-                self.contact_point.pos_from(self.ground.origin).dot(self.ground.normal))
+                self.contact_point.pos_from(self.ground.origin).dot(normal))
