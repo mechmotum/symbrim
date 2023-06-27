@@ -3,7 +3,7 @@
 A Modular and Extensible Open-Source Framework for Creating Bicycle-Rider Models.
 """
 __all__ = [
-    "WhippleBicycle",
+    "WhippleBicycle", "StationaryBicycle",
 
     "FlatGround",
 
@@ -49,6 +49,7 @@ from brim.bicycle import (
     RigidFrontFrame,
     RigidRearFrame,
     SimplePedals,
+    StationaryBicycle,
     WhippleBicycle,
 )
 from brim.brim import (
