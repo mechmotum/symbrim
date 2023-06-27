@@ -5,7 +5,6 @@ import contextlib
 from typing import TYPE_CHECKING
 
 from brim.bicycle.front_frames import FrontFrameBase
-from brim.bicycle.grounds import GroundBase
 from brim.bicycle.pedals import PedalsBase
 from brim.bicycle.rear_frames import RearFrameBase
 from brim.bicycle.wheels import WheelBase
@@ -24,7 +23,6 @@ class BicycleBase(ModelBase):
     """Base class for the bicycles."""
 
     required_models: tuple[ModelRequirement, ...] = (
-        ModelRequirement("ground", GroundBase, "Submodel of the ground.", False),
         ModelRequirement("rear_frame", RearFrameBase, "Submodel of the rear frame."),
         ModelRequirement("front_frame", FrontFrameBase, "Submodel of the front frame.",
                          False),
@@ -38,7 +36,6 @@ class BicycleBase(ModelBase):
     rear_wheel: WheelBase
     front_wheel: WheelBase
     pedals: PedalsBase
-    ground: GroundBase
 
     def get_param_values(self, bicycle_parameters: Bicycle) -> dict[Symbol, float]:
         """Get a parameters mapping of a model based on a bicycle parameters object."""

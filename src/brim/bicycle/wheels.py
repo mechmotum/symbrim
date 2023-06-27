@@ -25,10 +25,6 @@ __all__ = ["WheelBase", "KnifeEdgeWheel", "ToroidalWheel"]
 class WheelBase(NewtonianBodyMixin, ModelBase):
     """Wheel base class."""
 
-    def _define_objects(self) -> None:
-        """Define the objects of the wheel."""
-        super()._define_objects()
-
     @property
     @abstractmethod
     def center(self) -> Point:
