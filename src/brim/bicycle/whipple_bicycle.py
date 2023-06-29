@@ -110,7 +110,7 @@ class WhippleBicycleMoore(WhippleBicycle):
         super()._define_kinematics()
         qd_repl = dict(zip(self.q.diff(dynamicsymbols._t), self.u))
         # Define the location of the rear wheel contact point in the ground frame.
-        self.ground.set_point_pos(self.rear_tyre.contact_point, self.q[:2])
+        self.ground.set_pos_point(self.rear_tyre.contact_point, self.q[:2])
         self.rear_tyre.contact_point.set_vel(
             self.ground.frame,
             self.rear_tyre.contact_point.vel(self.ground.frame).xreplace(qd_repl))

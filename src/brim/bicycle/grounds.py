@@ -55,7 +55,7 @@ class GroundBase(ModelBase):
         """Get tangent vectors of the ground plane."""
 
     @abstractmethod
-    def set_point_pos(self, point: Point, position: tuple[Expr, Expr]) -> None:
+    def set_pos_point(self, point: Point, position: tuple[Expr, Expr]) -> None:
         """Set the location of a point on the ground."""
 
 
@@ -105,7 +105,7 @@ class FlatGround(GroundBase):
         """Get tangent vectors of the ground plane."""
         return self._planar_vectors
 
-    def set_point_pos(self, point: Point, position: tuple[Expr, Expr]) -> None:
+    def set_pos_point(self, point: Point, position: tuple[Expr, Expr]) -> None:
         """Set the location of a point on the ground."""
         point.set_pos(self.origin, position[0] * self._planar_vectors[0] +
                       position[1] * self._planar_vectors[1])

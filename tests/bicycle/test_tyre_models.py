@@ -60,7 +60,7 @@ class TestComputeContactPoint:
             def get_tangent_vectors(self, position):
                 return (self.frame.x, self.frame.y)
 
-            def set_point_pos(self, point, position) -> None:
+            def set_pos_point(self, point, position) -> None:
                 point.set_pos(self.origin, position[0] * self.frame.x +
                               position[1] * self.frame.y)
 
@@ -172,7 +172,7 @@ class TestNonHolonomicTyreModel:
         t = dynamicsymbols._t
         q1, q2, x, y, z = dynamicsymbols("q1 q2 x y z")
         wheel.frame.orient_body_fixed(ground.frame, (q1, q2, 0), "zyx")
-        ground.set_point_pos(tyre_model.contact_point, (x, y))
+        ground.set_pos_point(tyre_model.contact_point, (x, y))
         if not on_ground:
             tyre_model.contact_point.set_pos(
                 ground.origin, tyre_model.contact_point.pos_from(
