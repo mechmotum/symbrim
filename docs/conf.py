@@ -37,10 +37,10 @@ intersphinx_mapping = {
     "sympy": ("https://docs.sympy.org/dev/", None),
     "numpy": ("https://numpy.org/doc/stable/", None),
     "symmeplot": ("https://tjstienstra.github.io/symmeplot/", None),
+    "py3": ("https://docs.python.org/3", None),
 }
 
 bibtex_bibfiles = ["references.bib"]
-
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
