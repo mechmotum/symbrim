@@ -77,7 +77,7 @@ class RollingDisc(ModelBase):
         self.disc.frame.set_ang_vel(
             self.ground.frame, self.disc.frame.ang_vel_in(self.ground.frame).xreplace(
                 qd_repl))
-        self.ground.set_point_pos(self.tyre.contact_point, self.q[:2])
+        self.ground.set_pos_point(self.tyre.contact_point, self.q[:2])
         self.tyre.contact_point.set_vel(
             self.ground.frame,
             self.tyre.contact_point.vel(self.ground.frame).xreplace(qd_repl))
