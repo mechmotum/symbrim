@@ -37,7 +37,7 @@ __all__ = [
 
     "SideLeanSeat",
 
-    "HolonomicSteerConnection",
+    "HolonomicHandGrip",
 
     "HolonomicPedalsToFeet",
 ]
@@ -54,8 +54,8 @@ from brim.bicycle import (
 )
 from brim.brim import (
     BicycleRider,
+    HolonomicHandGrip,
     HolonomicPedalsToFeet,
-    HolonomicSteerConnection,
     SideLeanSeat,
 )
 from brim.rider import (

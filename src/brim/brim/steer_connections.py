@@ -4,13 +4,13 @@ from __future__ import annotations
 from sympy.physics.mechanics import dynamicsymbols
 from sympy.physics.mechanics._system import System
 
-from brim.brim.base_connections import SteerConnectionBase
+from brim.brim.base_connections import HandGripBase
 from brim.utilities.utilities import check_zero
 
-__all__ = ["HolonomicSteerConnection"]
+__all__ = ["HolonomicHandGrip"]
 
 
-class HolonomicSteerConnection(SteerConnectionBase):
+class HolonomicHandGrip(HandGripBase):
     """Defines the connection between the hands and the steer as holonomic constraints.
 
     Explanation
