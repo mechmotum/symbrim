@@ -19,7 +19,7 @@ class HolonomicSteerConnection(SteerConnectionBase):
     loop should be time independent in all directions, otherwise one will introduce
     additional constraints making the resulting system invalid. Some simple checks are
     done to verify that this is not the case. An example where this may occur is when
-    the arms cannot move side ways with respect to the steer, while the shoulder width
+    the arms cannot move sideways with respect to the steer, while the shoulder width
     and the steer width are different.
     """
 
