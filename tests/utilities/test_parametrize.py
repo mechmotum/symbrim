@@ -20,7 +20,7 @@ from brim.rider.pelvis import PlanarPelvis
 from brim.rider.pelvis_to_torso import FixedPelvisToTorso
 from brim.rider.rider import Rider
 from brim.rider.shoulder_joints import SphericalLeftShoulder, SphericalRightShoulder
-from brim.rider.torso import SimpleRigidTorso
+from brim.rider.torso import PlanarTorso
 from sympy import diag
 from sympy.physics.mechanics import RigidBody, msubs
 
@@ -88,7 +88,7 @@ class TestParametrize:
 
         self.rider = Rider("rider")
         self.rider.pelvis = PlanarPelvis("pelvis")
-        self.rider.torso = SimpleRigidTorso("torso")
+        self.rider.torso = PlanarTorso("torso")
         self.rider.left_arm = PinElbowStickLeftArm("left_arm")
         self.rider.right_arm = PinElbowStickRightArm("right_arm")
         self.rider.left_leg = TwoPinStickLeftLeg("left_leg")

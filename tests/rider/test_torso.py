@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 import pytest
-from brim.rider.torso import SimpleRigidTorso, TorsoBase
+from brim.rider.torso import PlanarTorso, TorsoBase
 from brim.utilities.testing import _test_descriptions
 from sympy.physics.mechanics import Point, RigidBody
 
 
-@pytest.mark.parametrize("torso_cls", [SimpleRigidTorso])
+@pytest.mark.parametrize("torso_cls", [PlanarTorso])
 class TestTorsoBase:
     def test_types(self, torso_cls) -> None:
         torso = torso_cls("torso")
@@ -23,7 +23,7 @@ class TestTorsoBase:
 class TestSimpleRigidTorso:
     @pytest.fixture(autouse=True)
     def _setup(self) -> None:
-        self.torso = SimpleRigidTorso("torso")
+        self.torso = PlanarTorso("torso")
         self.torso.define_objects()
         self.torso.define_kinematics()
         self.torso.define_loads()

@@ -22,8 +22,8 @@ from brim.rider import (
     PinElbowStickLeftArm,
     PinElbowStickRightArm,
     PlanarPelvis,
+    PlanarTorso,
     Rider,
-    SimpleRigidTorso,
     SphericalLeftHip,
     SphericalLeftShoulder,
     SphericalRightHip,
@@ -59,7 +59,7 @@ class TestCompleteBicycleRider:
     def _rider_setup(self) -> None:
         self.rider = Rider("rider")
         self.rider.pelvis = PlanarPelvis("pelvis")
-        self.rider.torso = SimpleRigidTorso("torso")
+        self.rider.torso = PlanarTorso("torso")
         self.rider.left_arm = PinElbowStickLeftArm("left_arm")
         self.rider.right_arm = PinElbowStickRightArm("right_arm")
         self.rider.left_leg = TwoPinStickLeftLeg("left_leg")

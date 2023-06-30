@@ -10,7 +10,7 @@ __all__ = [
 
     "PelvisBase", "PlanarPelvis",
 
-    "TorsoBase", "SimpleRigidTorso",
+    "TorsoBase", "PlanarTorso",
 
     "ArmBase", "LeftArmBase", "RightArmBase", "PinElbowStickLeftArm",
     "PinElbowStickRightArm",
@@ -64,4 +64,4 @@ from brim.rider.pelvis_to_torso import FixedPelvisToTorso
 from brim.rider.rider import Rider
 from brim.rider.rider_lean import RiderLean
 from brim.rider.shoulder_joints import SphericalLeftShoulder, SphericalRightShoulder
-from brim.rider.torso import SimpleRigidTorso, TorsoBase
+from brim.rider.torso import PlanarTorso, TorsoBase

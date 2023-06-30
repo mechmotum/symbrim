@@ -23,7 +23,7 @@ except ImportError:  # pragma: no cover
 if TYPE_CHECKING:
     from sympy.physics.mechanics import ReferenceFrame
 
-__all__ = ["TorsoBase", "SimpleRigidTorso"]
+__all__ = ["TorsoBase", "PlanarTorso"]
 
 
 class TorsoBase(NewtonianBodyMixin, ModelBase):
@@ -93,12 +93,12 @@ class TorsoBase(NewtonianBodyMixin, ModelBase):
         return params
 
 
-class SimpleRigidTorso(TorsoBase):
-    """A simple rigid torso.
+class PlanarTorso(TorsoBase):
+    """A planar rigid torso.
 
     Explanation
     -----------
-    The simple rigid torso models the torso as being rigid. The shoulder joints are
+    The planar rigid torso models the torso as being rigid. The shoulder joints are
     located a shoulder width apart at a height of the shoulder height above the center
     of mass of the torso.
     """
