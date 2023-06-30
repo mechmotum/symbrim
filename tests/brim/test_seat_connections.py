@@ -2,15 +2,15 @@ from __future__ import annotations
 
 import pytest
 from brim.bicycle.rear_frames import RigidRearFrameMoore
-from brim.brim.base_connections import SeatConnectionBase
-from brim.brim.seat_connections import SideLeanConnection
+from brim.brim.base_connections import SeatBase
+from brim.brim.seat_connections import SideLeanSeat
 from brim.rider.pelvis import PlanarPelvis
 from brim.utilities.testing import _test_descriptions, create_model_of_connection
 from sympy import simplify, zeros
 from sympy.physics.mechanics import ReferenceFrame
 
 
-@pytest.mark.parametrize("seat_cls", [SideLeanConnection])
+@pytest.mark.parametrize("seat_cls", [SideLeanSeat])
 class TestSeatConnectionBase:
     @pytest.fixture(autouse=True)
     def _setup(self, seat_cls) -> None:
@@ -25,7 +25,7 @@ class TestSeatConnectionBase:
         self.model.define_constraints()
 
     def test_types(self) -> None:
-        assert isinstance(self.model.conn, SeatConnectionBase)
+        assert isinstance(self.model.conn, SeatBase)
 
     def test_descriptions(self) -> None:
         _test_descriptions(self.model.conn)
@@ -34,10 +34,10 @@ class TestSeatConnectionBase:
 class TestSideLeanConnection:
     @pytest.fixture(autouse=True)
     def _setup(self) -> None:
-        self.model = create_model_of_connection(SideLeanConnection)("model")
+        self.model = create_model_of_connection(SideLeanSeat)("model")
         self.model.pelvis = PlanarPelvis("pelvis")
         self.model.rear_frame = RigidRearFrameMoore("rear_frame")
-        self.model.conn = SideLeanConnection("seat_connection")
+        self.model.conn = SideLeanSeat("seat_connection")
         self.pelvis, self.rear_frame, self.conn = (
             self.model.pelvis, self.model.rear_frame, self.model.conn)
 

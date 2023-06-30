@@ -7,12 +7,12 @@ from sympy import Symbol, cos, sin
 from sympy.physics.mechanics import PinJoint, Point, Vector, dynamicsymbols
 from sympy.physics.mechanics._system import System
 
-from brim.brim.base_connections import SeatConnectionBase
+from brim.brim.base_connections import SeatBase
 
-__all__ = ["SideLeanConnection"]
+__all__ = ["SideLeanSeat"]
 
 
-class SideLeanConnection(SeatConnectionBase):
+class SideLeanSeat(SeatBase):
     """Rider lean connection between the rear frame and the pelvis."""
 
     @property
