@@ -18,7 +18,7 @@ try:  # pragma: no cover
 except ImportError:  # pragma: no cover
     pass
 
-__all__ = ["PelvisBase", "SimpleRigidPelvis"]
+__all__ = ["PelvisBase", "PlanarPelvis"]
 
 
 class PelvisBase(NewtonianBodyMixin, ModelBase):
@@ -63,12 +63,12 @@ class PelvisBase(NewtonianBodyMixin, ModelBase):
         return params
 
 
-class SimpleRigidPelvis(PelvisBase):
-    """A simple rigid pelvis.
+class PlanarPelvis(PelvisBase):
+    """A planar rigid pelvis.
 
     Explanation
     -----------
-    The simple rigid pelvis models the pelvis as being a rigid body. The hip joints are
+    The planar rigid pelvis models the pelvis as being a rigid body. The hip joints are
     located a hip width apart from each other with the center of mass at the center.
     """
 

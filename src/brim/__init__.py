@@ -19,9 +19,9 @@ __all__ = [
 
     "Rider",
 
-    "SimpleRigidPelvis",
+    "PlanarPelvis",
 
-    "SimpleRigidTorso",
+    "PlanarTorso",
 
     "PinElbowStickLeftArm", "PinElbowStickRightArm",
 
@@ -64,9 +64,9 @@ from brim.rider import (
     PinElbowStickRightArm,
     PinLeftHip,
     PinRightHip,
+    PlanarPelvis,
+    PlanarTorso,
     Rider,
-    SimpleRigidPelvis,
-    SimpleRigidTorso,
     SphericalLeftHip,
     SphericalLeftShoulder,
     SphericalRightHip,

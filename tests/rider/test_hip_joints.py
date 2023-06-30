@@ -10,7 +10,7 @@ from brim.rider.hip_joints import (
     SphericalRightHip,
 )
 from brim.rider.legs import LegBase, TwoPinStickLeftLeg, TwoPinStickRightLeg
-from brim.rider.pelvis import PelvisBase, SimpleRigidPelvis
+from brim.rider.pelvis import PelvisBase, PlanarPelvis
 from brim.utilities.testing import _test_descriptions
 
 
@@ -52,13 +52,13 @@ class HipModel(ModelBase):
 class TestHipJointBase:
     def test_types(self, hip_cls, leg_cls, base_cls) -> None:
         hip = hip_cls("hip")
-        hip.pelvis = SimpleRigidPelvis("pelvis")
+        hip.pelvis = PlanarPelvis("pelvis")
         hip.leg = leg_cls("leg")
         assert isinstance(hip, base_cls)
 
     def test_descriptions(self, hip_cls, leg_cls, base_cls) -> None:
         hip = hip_cls("hip")
-        hip.pelvis = SimpleRigidPelvis("pelvis")
+        hip.pelvis = PlanarPelvis("pelvis")
         hip.leg = leg_cls("leg")
         _test_descriptions(hip)
 
@@ -68,7 +68,7 @@ class TestSphericalLeftHipJoint:
     def _setup(self) -> None:
         self.model = HipModel("model")
         self.model.hip = SphericalLeftHip("hip")
-        self.model.pelvis = SimpleRigidPelvis("pelvis")
+        self.model.pelvis = PlanarPelvis("pelvis")
         self.model.leg = TwoPinStickLeftLeg("leg")
         self.model.define_all()
         self.hip, self.pelvis, self.leg = (
@@ -89,7 +89,7 @@ class TestSphericalRightHipJoint:
     def _setup(self) -> None:
         self.model = HipModel("model")
         self.model.hip = SphericalRightHip("hip")
-        self.model.pelvis = SimpleRigidPelvis("pelvis")
+        self.model.pelvis = PlanarPelvis("pelvis")
         self.model.leg = TwoPinStickRightLeg("leg")
         self.model.define_all()
         self.hip, self.pelvis, self.leg = (
@@ -112,7 +112,7 @@ class TestPinLeftHipJoint:
     def _setup(self, hip_cls, leg_cls) -> None:
         self.model = HipModel("model")
         self.model.hip = hip_cls("hip")
-        self.model.pelvis = SimpleRigidPelvis("pelvis")
+        self.model.pelvis = PlanarPelvis("pelvis")
         self.model.leg = leg_cls("leg")
         self.model.define_all()
         self.hip, self.pelvis, self.leg = (

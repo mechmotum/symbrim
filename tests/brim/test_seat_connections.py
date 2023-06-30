@@ -4,7 +4,7 @@ import pytest
 from brim.bicycle.rear_frames import RigidRearFrameMoore
 from brim.brim.base_connections import SeatConnectionBase
 from brim.brim.seat_connections import SideLeanConnection
-from brim.rider.pelvis import SimpleRigidPelvis
+from brim.rider.pelvis import PlanarPelvis
 from brim.utilities.testing import _test_descriptions, create_model_of_connection
 from sympy import simplify, zeros
 from sympy.physics.mechanics import ReferenceFrame
@@ -15,7 +15,7 @@ class TestSeatConnectionBase:
     @pytest.fixture(autouse=True)
     def _setup(self, seat_cls) -> None:
         self.model = create_model_of_connection(seat_cls)("model")
-        self.model.pelvis = SimpleRigidPelvis("pelvis")
+        self.model.pelvis = PlanarPelvis("pelvis")
         self.model.rear_frame = RigidRearFrameMoore("rear_frame")
         self.model.conn = seat_cls("seat_connection")
         self.model.define_connections()
@@ -35,7 +35,7 @@ class TestSideLeanConnection:
     @pytest.fixture(autouse=True)
     def _setup(self) -> None:
         self.model = create_model_of_connection(SideLeanConnection)("model")
-        self.model.pelvis = SimpleRigidPelvis("pelvis")
+        self.model.pelvis = PlanarPelvis("pelvis")
         self.model.rear_frame = RigidRearFrameMoore("rear_frame")
         self.model.conn = SideLeanConnection("seat_connection")
         self.pelvis, self.rear_frame, self.conn = (

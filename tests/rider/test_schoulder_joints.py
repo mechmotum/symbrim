@@ -9,7 +9,7 @@ from brim.rider.base_connections import (
     ShoulderBase,
 )
 from brim.rider.shoulder_joints import SphericalLeftShoulder, SphericalRightShoulder
-from brim.rider.torso import SimpleRigidTorso, TorsoBase
+from brim.rider.torso import PlanarTorso, TorsoBase
 from brim.utilities.testing import _test_descriptions
 
 
@@ -50,13 +50,13 @@ class ShoulderModel(ModelBase):
 class TestShoulderJointBase:
     def test_types(self, shoulder_cls, arm_cls, base_cls) -> None:
         shoulder = shoulder_cls("shoulder")
-        shoulder.torso = SimpleRigidTorso("torso")
+        shoulder.torso = PlanarTorso("torso")
         shoulder.arm = arm_cls("arm")
         assert isinstance(shoulder, base_cls)
 
     def test_descriptions(self, shoulder_cls, arm_cls, base_cls) -> None:
         shoulder = shoulder_cls("shoulder")
-        shoulder.torso = SimpleRigidTorso("torso")
+        shoulder.torso = PlanarTorso("torso")
         shoulder.arm = arm_cls("arm")
         _test_descriptions(shoulder)
 
@@ -66,7 +66,7 @@ class TestSphericalLeftShoulderJoint:
     def _setup(self) -> None:
         self.model = ShoulderModel("model")
         self.model.shoulder = SphericalLeftShoulder("shoulder")
-        self.model.torso = SimpleRigidTorso("torso")
+        self.model.torso = PlanarTorso("torso")
         self.model.arm = PinElbowStickLeftArm("arm")
         self.model.define_all()
         self.shoulder, self.torso, self.arm = (
@@ -87,7 +87,7 @@ class TestSphericalRightShoulderJoint:
     def _setup(self) -> None:
         self.model = ShoulderModel("model")
         self.model.shoulder = SphericalRightShoulder("shoulder")
-        self.model.torso = SimpleRigidTorso("torso")
+        self.model.torso = PlanarTorso("torso")
         self.model.arm = PinElbowStickRightArm("arm")
         self.model.define_all()
         self.shoulder, self.torso, self.arm = (
