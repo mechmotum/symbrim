@@ -5,7 +5,7 @@ from sympy.physics.mechanics._system import System
 
 from brim.bicycle import BicycleBase
 from brim.brim.base_connections import (
-    PedalConnectionBase,
+    PedalsToFeetBase,
     SeatConnectionBase,
     SteerConnectionBase,
 )
@@ -27,7 +27,7 @@ class BicycleRider(ModelBase):
             "seat_connection", SeatConnectionBase,
             "Connection between the pelvis and the rear frame.", False),
         ConnectionRequirement(
-            "pedal_connection", PedalConnectionBase,
+            "pedal_connection", PedalsToFeetBase,
             "Connection between the pedals and the legs.", False),
         ConnectionRequirement(
             "steer_connection", SteerConnectionBase,
@@ -36,7 +36,7 @@ class BicycleRider(ModelBase):
     bicycle: BicycleBase
     rider: Rider
     seat_connection: SeatConnectionBase
-    pedal_connection: PedalConnectionBase
+    pedal_connection: PedalsToFeetBase
     steer_connection: SteerConnectionBase
 
     def _define_connections(self) -> None:

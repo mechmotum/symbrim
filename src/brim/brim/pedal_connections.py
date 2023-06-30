@@ -4,13 +4,13 @@ from __future__ import annotations
 from sympy.physics.mechanics import dynamicsymbols
 from sympy.physics.mechanics._system import System
 
-from brim.brim.base_connections import PedalConnectionBase
+from brim.brim.base_connections import PedalsToFeetBase
 from brim.utilities.utilities import check_zero
 
-__all__ = ["HolonomicPedalsConnection"]
+__all__ = ["HolonomicPedalsToFeet"]
 
 
-class HolonomicPedalsConnection(PedalConnectionBase):
+class HolonomicPedalsToFeet(PedalsToFeetBase):
     """Defines the connection between the pedals and the feet as holonomic constraints.
 
     Explanation

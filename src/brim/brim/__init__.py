@@ -1,11 +1,11 @@
 """Module containing the bicycle rider model."""
 
 __all__ = [
-    "PedalConnectionBase", "SeatConnectionBase", "SteerConnectionBase",
+    "PedalsToFeetBase", "SeatConnectionBase", "SteerConnectionBase",
 
     "BicycleRider",
 
-    "HolonomicPedalsConnection",
+    "HolonomicPedalsToFeet",
 
     "SideLeanConnection",
 
@@ -13,11 +13,11 @@ __all__ = [
 ]
 
 from brim.brim.base_connections import (
-    PedalConnectionBase,
+    PedalsToFeetBase,
     SeatConnectionBase,
     SteerConnectionBase,
 )
 from brim.brim.bicycle_rider import BicycleRider
-from brim.brim.pedal_connections import HolonomicPedalsConnection
+from brim.brim.pedal_connections import HolonomicPedalsToFeet
 from brim.brim.seat_connections import SideLeanConnection
 from brim.brim.steer_connections import HolonomicSteerConnection
