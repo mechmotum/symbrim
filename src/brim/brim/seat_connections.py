@@ -1,16 +1,14 @@
 """Module containing the seat connections."""
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 from sympy import Symbol, cos, sin
-from sympy.physics.mechanics import PinJoint, Vector, dynamicsymbols
+from sympy.physics.mechanics import PinJoint, Point, Vector, dynamicsymbols
 from sympy.physics.mechanics._system import System
 
 from brim.brim.base_connections import SeatConnectionBase
 
-if TYPE_CHECKING:
-    from sympy.physics.mechanics import Point
 __all__ = ["SideLeanConnection"]
 
 

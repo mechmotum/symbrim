@@ -4,7 +4,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from sympy import Symbol
-from sympy.physics.mechanics import WeldJoint
+from sympy.physics.mechanics import Vector, WeldJoint
 from sympy.physics.mechanics._system import System
 
 from brim.rider.base_connections import PelvisToTorsoBase
@@ -16,9 +16,6 @@ try:  # pragma: no cover
         from bicycleparameters import Bicycle
 except ImportError:  # pragma: no cover
     pass
-
-if TYPE_CHECKING:
-    from sympy.physics.mechanics import Vector
 
 __all__ = ["FixedPelvisToTorso"]
 

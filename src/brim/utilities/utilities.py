@@ -1,15 +1,10 @@
 """Utilities for brim."""
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 import numpy as np
-from sympy import Basic, Derivative, Dummy, lambdify
+from sympy import Basic, Derivative, Dummy, Expr, lambdify
 from sympy.core.random import random
 from sympy.physics.mechanics import find_dynamicsymbols, msubs
-
-if TYPE_CHECKING:
-    from sympy import Expr
 
 __all__ = ["random_eval", "check_zero"]
 
