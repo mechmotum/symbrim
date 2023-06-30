@@ -5,8 +5,8 @@ from brim.rider import (
     FixedPelvisToTorso,
     PinElbowStickLeftArm,
     PinElbowStickRightArm,
+    PlanarPelvis,
     Rider,
-    SimpleRigidPelvis,
     SimpleRigidTorso,
     SphericalLeftHip,
     SphericalLeftShoulder,
@@ -21,7 +21,7 @@ class TestCompleteRider:
     @pytest.fixture()
     def _setup(self) -> None:
         self.rider = Rider("rider")
-        self.rider.pelvis = SimpleRigidPelvis("pelvis")
+        self.rider.pelvis = PlanarPelvis("pelvis")
         self.rider.torso = SimpleRigidTorso("torso")
         self.rider.left_arm = PinElbowStickLeftArm("left_arm")
         self.rider.right_arm = PinElbowStickRightArm("right_arm")
@@ -51,7 +51,7 @@ class TestCompleteRider:
         rider = Rider("rider")
         with pytest.raises(Exception):
             rider.define_all()
-        rider.pelvis = SimpleRigidPelvis("pelvis")
+        rider.pelvis = PlanarPelvis("pelvis")
         rider.define_all()
 
     def test_form_eoms(self, _setup) -> None:

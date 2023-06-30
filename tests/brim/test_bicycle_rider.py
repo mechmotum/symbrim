@@ -21,8 +21,8 @@ from brim.rider import (
     FixedPelvisToTorso,
     PinElbowStickLeftArm,
     PinElbowStickRightArm,
+    PlanarPelvis,
     Rider,
-    SimpleRigidPelvis,
     SimpleRigidTorso,
     SphericalLeftHip,
     SphericalLeftShoulder,
@@ -58,7 +58,7 @@ class TestCompleteBicycleRider:
     @pytest.fixture()
     def _rider_setup(self) -> None:
         self.rider = Rider("rider")
-        self.rider.pelvis = SimpleRigidPelvis("pelvis")
+        self.rider.pelvis = PlanarPelvis("pelvis")
         self.rider.torso = SimpleRigidTorso("torso")
         self.rider.left_arm = PinElbowStickLeftArm("left_arm")
         self.rider.right_arm = PinElbowStickRightArm("right_arm")

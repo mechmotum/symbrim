@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 from brim.rider.base_connections import PelvisToTorsoBase
-from brim.rider.pelvis import SimpleRigidPelvis
+from brim.rider.pelvis import PlanarPelvis
 from brim.rider.pelvis_to_torso import FixedPelvisToTorso
 from brim.rider.torso import SimpleRigidTorso
 from brim.utilities.testing import _test_descriptions, create_model_of_connection
@@ -10,7 +10,7 @@ from sympy import eye
 
 
 @pytest.mark.parametrize("pelvis_cls, torso_cls, pelvis_to_torso_cls", [
-    (SimpleRigidPelvis, SimpleRigidTorso, FixedPelvisToTorso),
+    (PlanarPelvis, SimpleRigidTorso, FixedPelvisToTorso),
 ])
 class TestPelvisToTorsoBase:
     @pytest.fixture(autouse=True)
@@ -34,7 +34,7 @@ class TestFixedPelvisToTorso:
     @pytest.fixture(autouse=True)
     def _setup(self) -> None:
         self.model = create_model_of_connection(FixedPelvisToTorso)("model")
-        self.model.pelvis = SimpleRigidPelvis("pelvis")
+        self.model.pelvis = PlanarPelvis("pelvis")
         self.model.torso = SimpleRigidTorso("torso")
         self.model.conn = FixedPelvisToTorso("pelvis_to_torso")
         self.pelvis, self.torso, self.conn = (
