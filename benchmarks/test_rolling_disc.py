@@ -53,7 +53,7 @@ def rolling_disc_from_sympy_test_suite():
     Dmc.v2pt_theory(C, N, R)
 
     # This is a simple way to form the inertia dyadic.
-    I = inertia(L, m / 4 * r ** 2, m / 2 * r ** 2, m / 4 * r ** 2)  # noqa: N806 E741
+    I = inertia(L, *symbols("Ixx Iyy Ixx"))  # noqa: N806 E741
 
     # Kinematic differential equations; how the generalized coordinate time
     # derivatives relate to generalized speeds.
@@ -147,6 +147,10 @@ def rolling_disc_comparison():
         eoms = kane._form_eoms()
         print("\t\t\t".join(map(str, setting)) +  # noqa: T201
               f"\t\t{count_ops(eoms)}\t\t{count_ops(cse(eoms))}")
+    kane = rolling_disc_from_sympy_test_suite()
+    eoms = kane._form_eoms()
+    print(f"Only three coordinates\t\t\t\t\t\t\t\t\t"  # noqa: T201
+          f"{count_ops(eoms)}\t\t{count_ops(cse(eoms))}")
 
 
 @benchmark(rounds=ROUNDS, group="rolling_disc")
