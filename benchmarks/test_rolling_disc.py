@@ -77,8 +77,8 @@ def rolling_disc_from_sympy_test_suite():
                        bodies=BodyList, forcelist=ForceList)
 
 
-def create_rolling_disc(efficient_kdes: bool, efficient_constraints: bool,
-                        efficient_disc_velocity: bool, efficient_position: bool):
+def create_rolling_disc_manual(efficient_kdes: bool, efficient_constraints: bool,
+                               efficient_disc_velocity: bool, efficient_position: bool):
     t = dynamicsymbols._t
     q1, q2, q3, q4, q5, u1, u2, u3, u4, u5 = dynamicsymbols("q1:6 u1:6")
     g, r, m = symbols("g r m")
@@ -138,43 +138,7 @@ def create_rolling_disc(efficient_kdes: bool, efficient_constraints: bool,
                        bodies=bodies, forcelist=loads, explicit_kinematics=False)
 
 
-def rolling_disc_comparison():
-    settings = itertools.product((True, False), repeat=4)
-    print("efficient_kdes\tefficient_constraints\tefficient_disc_velocity"  # noqa: T201
-          "\tefficient_position\t#ops EoMs\t#ops CSEd EoMs")
-    for setting in settings:
-        kane = create_rolling_disc(*setting)
-        eoms = kane._form_eoms()
-        print("\t\t\t".join(map(str, setting)) +  # noqa: T201
-              f"\t\t{count_ops(eoms)}\t\t{count_ops(cse(eoms))}")
-    kane = rolling_disc_from_sympy_test_suite()
-    eoms = kane._form_eoms()
-    print(f"Only three coordinates\t\t\t\t\t\t\t\t\t"  # noqa: T201
-          f"{count_ops(eoms)}\t\t{count_ops(cse(eoms))}")
-
-
-@benchmark(rounds=ROUNDS, group="rolling_disc")
-def test_rolling_disc_efficient():
-    return create_rolling_disc(True, True, True, True)
-
-
-@benchmark(rounds=ROUNDS, group="rolling_disc")
-def test_rolling_disc_only_efficient_pos():
-    return create_rolling_disc(False, False, False, True)
-
-
-@benchmark(rounds=ROUNDS, group="rolling_disc")
-def test_rolling_disc_inefficient():
-    return create_rolling_disc(False, False, False, False)
-
-
-@benchmark(rounds=ROUNDS, group="rolling_disc")
-def test_rolling_disc_3_coords():
-    return rolling_disc_from_sympy_test_suite()
-
-
-@benchmark(rounds=ROUNDS, group="rolling_disc")
-def test_rolling_disc_brim():
+def create_rolling_disc_brim():
     rolling_disc = RollingDisc("disc")
     rolling_disc.disc = KnifeEdgeWheel("wheel")
     rolling_disc.ground = FlatGround("ground")
@@ -184,6 +148,50 @@ def test_rolling_disc_brim():
     system.u_ind = rolling_disc.u[2:]
     system.u_dep = rolling_disc.u[:2]
     return system
+
+
+def rolling_disc_comparison():
+    settings = itertools.product((True, False), repeat=4)
+    print("efficient_kdes\tefficient_constraints\tefficient_disc_velocity"  # noqa: T201
+          "\tefficient_position\t#ops EoMs\t#ops CSEd EoMs")
+    for setting in settings:
+        kane = create_rolling_disc_manual(*setting)
+        eoms = kane._form_eoms()
+        print("\t\t\t".join(map(str, setting)) +  # noqa: T201
+              f"\t\t{count_ops(eoms)}\t\t{count_ops(cse(eoms))}")
+    kane = rolling_disc_from_sympy_test_suite()
+    eoms = kane._form_eoms()
+    print(f"Only three coordinates\t\t\t\t\t\t\t\t\t"  # noqa: T201
+          f"{count_ops(eoms)}\t\t{count_ops(cse(eoms))}")
+    kane = create_rolling_disc_brim()
+    eoms = kane._form_eoms()
+    print(f"BRiM\t\t\t\t\t\t\t\t\t\t\t"  # noqa: T201
+          f"{count_ops(eoms)}\t\t{count_ops(cse(eoms))}")
+
+
+@benchmark(rounds=ROUNDS, group="rolling_disc")
+def test_rolling_disc_efficient():
+    return create_rolling_disc_manual(True, True, True, True)
+
+
+@benchmark(rounds=ROUNDS, group="rolling_disc")
+def test_rolling_disc_only_efficient_pos():
+    return create_rolling_disc_manual(False, False, False, True)
+
+
+@benchmark(rounds=ROUNDS, group="rolling_disc")
+def test_rolling_disc_inefficient():
+    return create_rolling_disc_manual(False, False, False, False)
+
+
+@benchmark(rounds=ROUNDS, group="rolling_disc")
+def test_rolling_disc_3_coords():
+    return rolling_disc_from_sympy_test_suite()
+
+
+@benchmark(rounds=ROUNDS, group="rolling_disc")
+def test_rolling_disc_brim():
+    return create_rolling_disc_brim()
 
 
 if __name__ == "__main__":
