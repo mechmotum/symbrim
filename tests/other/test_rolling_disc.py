@@ -27,11 +27,7 @@ class TestRollingDisc:
         self.rolling_disc.disc = KnifeEdgeWheel("disc")
         self.rolling_disc.tyre = NonHolonomicTyre("tyre")
         self.rolling_disc.ground = FlatGround("ground")
-        self.rolling_disc.define_connections()
-        self.rolling_disc.define_objects()
-        self.rolling_disc.define_kinematics()
-        self.rolling_disc.define_loads()
-        self.rolling_disc.define_constraints()
+        self.rolling_disc.define_all()
         self.system = self.rolling_disc.to_system()
         str_vals = self._arbitrary_values()
         inertia = self.rolling_disc.disc.body.central_inertia.to_matrix(
