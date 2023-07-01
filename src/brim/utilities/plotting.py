@@ -34,7 +34,8 @@ __all__ = ["Plotter"]
 class Plotter(SymMePlotter):
     """Plotter for models created by BRiM using symmeplot."""
 
-    def __init__(self, ax: Axes3D, model: ModelBase, **inertial_frame_properties):
+    @classmethod
+    def from_model(cls, ax: Axes3D, model: ModelBase, **inertial_frame_properties):
         """Initialize the plotter.
 
         Parameters
@@ -49,10 +50,11 @@ class Plotter(SymMePlotter):
             reference frame.
 
         """
-        self._model = model
-        super().__init__(ax, model.system.frame, model.system.origin,
-                         **inertial_frame_properties)
-        self.add_model(model)
+        plotter = cls(ax, model.system.frame, model.system.origin,
+                      **inertial_frame_properties)
+        plotter._model = model
+        plotter.add_model(model)
+        return plotter
 
     def add_model(self, model: ModelBase | ConnectionBase, add_submodels: bool = True):
         """Add a model to the plotter.
