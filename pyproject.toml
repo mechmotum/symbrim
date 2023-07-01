@@ -79,4 +79,5 @@ exclude_also = [
 omit = [
     "src/brim/utilities/plotting.py",
     "src/brim/utilities/parametrize.py",
+    "src/brim/utilities/benchmarking.py"
 ]

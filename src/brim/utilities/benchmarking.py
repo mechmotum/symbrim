@@ -9,7 +9,7 @@ from sympy.core.cache import clear_cache
 __all__ = ["benchmark"]
 
 
-def benchmark(rounds: int = 3, group: Optional[str] = None):  # pragma: no cover
+def benchmark(rounds: int = 3, group: Optional[str] = None):
     """Create decorator to benchmark a function.
 
     Parameters
