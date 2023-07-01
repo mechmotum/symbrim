@@ -92,7 +92,7 @@ class TestRollingDisc:
         import matplotlib.pyplot as plt
         from brim.utilities.plotting import Plotter
         fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
-        plotter = Plotter(ax, self.rolling_disc)
+        plotter = Plotter.from_model(ax, self.rolling_disc)
         plotter.lambdify_system((self.system.q, self.system.u, self.p))
         plotter.evaluate_system(self.q0, self.u0, self.p_vals)
         plotter.plot()

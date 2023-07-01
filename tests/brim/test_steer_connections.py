@@ -2,15 +2,15 @@ from __future__ import annotations
 
 import pytest
 from brim.bicycle.front_frames import RigidFrontFrameMoore
-from brim.brim.base_connections import SteerConnectionBase
-from brim.brim.steer_connections import HolonomicSteerConnection
+from brim.brim.base_connections import HandGripBase
+from brim.brim.steer_connections import HolonomicHandGrip
 from brim.rider.arms import PinElbowStickLeftArm, PinElbowStickRightArm
 from brim.utilities.testing import _test_descriptions, create_model_of_connection
 from sympy import Symbol
 from sympy.physics.mechanics import dynamicsymbols
 
 
-@pytest.mark.parametrize("steer_cls", [HolonomicSteerConnection])
+@pytest.mark.parametrize("steer_cls", [HolonomicHandGrip])
 class TestSteerConnectionBase:
     @pytest.fixture(autouse=True)
     def _setup(self, steer_cls) -> None:
@@ -36,7 +36,7 @@ class TestSteerConnectionBase:
         self.model.define_constraints()
 
     def test_types(self) -> None:
-        assert isinstance(self.model.conn, SteerConnectionBase)
+        assert isinstance(self.model.conn, HandGripBase)
 
     def test_descriptions(self) -> None:
         _test_descriptions(self.model.conn)
@@ -45,11 +45,11 @@ class TestSteerConnectionBase:
 class TestHolonomicSteerConnection:
     @pytest.fixture(autouse=True)
     def _setup(self) -> None:
-        self.model = create_model_of_connection(HolonomicSteerConnection)("model")
+        self.model = create_model_of_connection(HolonomicHandGrip)("model")
         self.model.steer = RigidFrontFrameMoore("front_frame")
         self.model.left_arm = PinElbowStickLeftArm("left_arm")
         self.model.right_arm = PinElbowStickRightArm("right_arm")
-        self.model.conn = HolonomicSteerConnection("steer_connection")
+        self.model.conn = HolonomicHandGrip("steer_connection")
         self.model.define_connections()
         self.model.define_objects()
         self.model.left_arm.hand_interframe.orient_axis(

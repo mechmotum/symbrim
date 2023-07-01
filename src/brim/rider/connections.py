@@ -1,18 +1,16 @@
 """Module containing the connections between the rider and the bicycle."""
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 from sympy import Matrix, Symbol
-from sympy.physics.mechanics import PinJoint, Point, dynamicsymbols
+from sympy.physics.mechanics import PinJoint, Point, Vector, dynamicsymbols
 from sympy.physics.mechanics._system import System
 
 from brim.bicycle import RearFrameBase
 from brim.core import ConnectionBase, ModelRequirement
 from brim.rider.rider_lean import RiderLean
 
-if TYPE_CHECKING:
-    from sympy.physics.mechanics import Vector
 __all__ = ["RiderLeanConnection"]
 
 

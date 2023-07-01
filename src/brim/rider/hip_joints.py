@@ -87,10 +87,6 @@ class PinHipMixin:
         self.u = dynamicsymbols(self._add_prefix("u_flexion"))
         self._system = System.from_newtonian(self.pelvis.body)
 
-
-class PinLeftHip(PinHipMixin, LeftHipBase):
-    """Pin joint between the pelvis and the left leg."""
-
     def _define_kinematics(self) -> None:
         """Define the kinematics."""
         super()._define_kinematics()
@@ -103,16 +99,9 @@ class PinLeftHip(PinHipMixin, LeftHipBase):
         )
 
 
+class PinLeftHip(PinHipMixin, LeftHipBase):
+    """Pin joint between the pelvis and the left leg."""
+
+
 class PinRightHip(PinHipMixin, RightHipBase):
     """Pin joint between the pelvis and the right leg."""
-
-    def _define_kinematics(self) -> None:
-        """Define the kinematics."""
-        super()._define_kinematics()
-        self.system.add_joints(
-            PinJoint(
-                self._add_prefix("joint"), self.pelvis.body, self.leg.hip, self.q,
-                self.u, self.pelvis.right_hip_point, self.leg.hip_interpoint,
-                self.pelvis.frame, self.leg.hip_interframe,
-                joint_axis=self.pelvis.y)
-        )

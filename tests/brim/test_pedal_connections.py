@@ -2,15 +2,15 @@ from __future__ import annotations
 
 import pytest
 from brim.bicycle.pedals import SimplePedals
-from brim.brim.base_connections import PedalConnectionBase
-from brim.brim.pedal_connections import HolonomicPedalsConnection
+from brim.brim.base_connections import PedalsToFeetBase
+from brim.brim.pedal_connections import HolonomicPedalsToFeet
 from brim.rider.legs import TwoPinStickLeftLeg, TwoPinStickRightLeg
 from brim.utilities.testing import _test_descriptions, create_model_of_connection
 from sympy import Symbol
 from sympy.physics.mechanics import dynamicsymbols
 
 
-@pytest.mark.parametrize("pedal_cls", [HolonomicPedalsConnection])
+@pytest.mark.parametrize("pedal_cls", [HolonomicPedalsToFeet])
 class TestPedalConnectionBase:
     @pytest.fixture(autouse=True)
     def _setup(self, pedal_cls) -> None:
@@ -38,7 +38,7 @@ class TestPedalConnectionBase:
         self.model.define_constraints()
 
     def test_types(self) -> None:
-        assert isinstance(self.model.conn, PedalConnectionBase)
+        assert isinstance(self.model.conn, PedalsToFeetBase)
 
     def test_descriptions(self) -> None:
         _test_descriptions(self.model.conn)
@@ -47,11 +47,11 @@ class TestPedalConnectionBase:
 class TestHolonomicPedalsConnection:
     @pytest.fixture(autouse=True)
     def _setup(self) -> None:
-        self.model = create_model_of_connection(HolonomicPedalsConnection)("model")
+        self.model = create_model_of_connection(HolonomicPedalsToFeet)("model")
         self.model.pedals = SimplePedals("pedals")
         self.model.left_leg = TwoPinStickLeftLeg("left_leg")
         self.model.right_leg = TwoPinStickRightLeg("right_leg")
-        self.model.conn = HolonomicPedalsConnection("pedal_connection")
+        self.model.conn = HolonomicPedalsToFeet("pedal_connection")
         self.model.define_connections()
         self.model.define_objects()
         self.model.left_leg.foot_interframe.orient_axis(

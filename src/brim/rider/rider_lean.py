@@ -1,15 +1,13 @@
 """Module containing rider lean models."""
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 from sympy import Symbol
-from sympy.physics.mechanics import Point
+from sympy.physics.mechanics import Point, Vector
 
 from brim.core import ModelBase, NewtonianBodyMixin
 
-if TYPE_CHECKING:
-    from sympy.physics.mechanics import Vector
 __all__ = ["RiderLean"]
 
 

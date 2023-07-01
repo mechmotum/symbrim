@@ -5,7 +5,7 @@ from abc import ABCMeta
 from functools import wraps
 from typing import TYPE_CHECKING, Any, Callable
 
-from sympy import symbols
+from sympy import Symbol, symbols
 from sympy.physics.mechanics._system import System
 
 from brim.core.registry import Registry
@@ -16,8 +16,6 @@ except ImportError:  # pragma: no cover
     Bicycle = None
 
 if TYPE_CHECKING:
-    from sympy import Symbol
-
     from brim.core.requirement import ConnectionRequirement, ModelRequirement
 
 __all__ = ["ConnectionBase", "ConnectionMeta", "LoadGroupBase", "LoadGroupMeta",

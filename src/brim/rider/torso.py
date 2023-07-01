@@ -5,7 +5,7 @@ from abc import abstractmethod
 from typing import TYPE_CHECKING, Any
 
 from sympy import Symbol
-from sympy.physics.mechanics import Point
+from sympy.physics.mechanics import Point, ReferenceFrame
 
 from brim.core import ModelBase, NewtonianBodyMixin
 
@@ -19,9 +19,6 @@ try:  # pragma: no cover
         from bicycleparameters import Bicycle
 except ImportError:  # pragma: no cover
     pass
-
-if TYPE_CHECKING:
-    from sympy.physics.mechanics import ReferenceFrame
 
 __all__ = ["TorsoBase", "PlanarTorso"]
 

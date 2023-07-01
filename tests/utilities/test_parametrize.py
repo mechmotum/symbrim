@@ -10,9 +10,9 @@ from brim.bicycle.tyre_models import NonHolonomicTyre
 from brim.bicycle.wheels import KnifeEdgeWheel
 from brim.bicycle.whipple_bicycle import WhippleBicycleMoore
 from brim.brim.bicycle_rider import BicycleRider
-from brim.brim.pedal_connections import HolonomicPedalsConnection
-from brim.brim.seat_connections import SideLeanConnection
-from brim.brim.steer_connections import HolonomicSteerConnection
+from brim.brim.pedal_connections import HolonomicPedalsToFeet
+from brim.brim.seat_connections import SideLeanSeat
+from brim.brim.steer_connections import HolonomicHandGrip
 from brim.rider.arms import PinElbowStickLeftArm, PinElbowStickRightArm
 from brim.rider.hip_joints import SphericalLeftHip, SphericalRightHip
 from brim.rider.legs import TwoPinStickLeftLeg, TwoPinStickRightLeg
@@ -101,9 +101,9 @@ class TestParametrize:
         self.br = BicycleRider("br")
         self.br.bicycle = self.bike
         self.br.rider = self.rider
-        self.br.seat_connection = SideLeanConnection("seat_conn")
-        self.br.pedal_connection = HolonomicPedalsConnection("pedals_conn")
-        self.br.steer_connection = HolonomicSteerConnection("steer_conn")
+        self.br.seat_connection = SideLeanSeat("seat_conn")
+        self.br.pedal_connection = HolonomicPedalsToFeet("pedals_conn")
+        self.br.steer_connection = HolonomicHandGrip("steer_conn")
 
         self.br.define_all()
         self.system = self.br.to_system()

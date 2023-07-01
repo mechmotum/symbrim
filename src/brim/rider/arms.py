@@ -5,7 +5,13 @@ from abc import abstractmethod
 from typing import TYPE_CHECKING, Any
 
 from sympy import Symbol, acos, cos
-from sympy.physics.mechanics import PinJoint, Point, RigidBody, dynamicsymbols
+from sympy.physics.mechanics import (
+    PinJoint,
+    Point,
+    ReferenceFrame,
+    RigidBody,
+    dynamicsymbols,
+)
 from sympy.physics.mechanics._actuator import TorqueActuator
 from sympy.physics.mechanics._system import System
 
@@ -18,9 +24,6 @@ try:  # pragma: no cover
         from bicycleparameters import Bicycle
 except ImportError:  # pragma: no cover
     pass
-
-if TYPE_CHECKING:
-    from sympy.physics.mechanics import ReferenceFrame
 
 __all__ = ["ArmBase", "LeftArmBase", "RightArmBase", "PinElbowStickLeftArm",
            "PinElbowStickRightArm", "PinElbowTorque", "PinElbowSpringDamper"]
