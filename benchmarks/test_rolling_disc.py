@@ -15,6 +15,8 @@ from sympy.physics.mechanics import (
     inertia,
 )
 
+ROUNDS = 10
+
 
 def rolling_disc_from_sympy_test_suite():
     # This is the rolling disc example from the test_kane.py file in the
@@ -147,27 +149,27 @@ def rolling_disc_comparison():
               f"\t\t{count_ops(eoms)}\t\t{count_ops(cse(eoms))}")
 
 
-@benchmark(rounds=10, group="rolling_disc")
+@benchmark(rounds=ROUNDS, group="rolling_disc")
 def test_rolling_disc_efficient():
     return create_rolling_disc(True, True, True, True)
 
 
-@benchmark(rounds=10, group="rolling_disc")
+@benchmark(rounds=ROUNDS, group="rolling_disc")
 def test_rolling_disc_only_efficient_pos():
     return create_rolling_disc(False, False, False, True)
 
 
-@benchmark(rounds=10, group="rolling_disc")
+@benchmark(rounds=ROUNDS, group="rolling_disc")
 def test_rolling_disc_inefficient():
     return create_rolling_disc(False, False, False, False)
 
 
-@benchmark(rounds=10, group="rolling_disc")
+@benchmark(rounds=ROUNDS, group="rolling_disc")
 def test_rolling_disc_3_coords():
     return rolling_disc_from_sympy_test_suite()
 
 
-@benchmark(rounds=10, group="rolling_disc")
+@benchmark(rounds=ROUNDS, group="rolling_disc")
 def test_rolling_disc_brim():
     rolling_disc = RollingDisc("disc")
     rolling_disc.disc = KnifeEdgeWheel("wheel")
