@@ -151,6 +151,13 @@ def create_rolling_disc_brim():
 
 
 def rolling_disc_comparison():
+    """Function to quickly compare the different implementations of the rolling disc.
+
+    Explanation
+    -----------
+    This function compares the different implementations of the rolling disc based on
+    the number of operations in the equations of motion before and after CSE.
+    """
     settings = itertools.product((True, False), repeat=4)
     print("efficient_kdes\tefficient_constraints\tefficient_disc_velocity"  # noqa: T201
           "\tefficient_position\t#ops EoMs\t#ops CSEd EoMs")
