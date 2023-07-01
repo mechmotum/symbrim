@@ -91,7 +91,7 @@ jobs:
           python-version: 3.11
       - name: Install dependencies
         run: poetry install --with test
-      - name: Run tests with code coverage
+      - name: Run benchmarks
         run: |
           poetry run pytest ./benchmarks/
 
