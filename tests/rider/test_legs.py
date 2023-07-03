@@ -5,6 +5,7 @@ from brim.rider.arms import PinElbowStickLeftArm
 from brim.rider.legs import (
     LeftLegBase,
     RightLegBase,
+    TwoPinLegSpringDamper,
     TwoPinLegTorque,
     TwoPinStickLeftLeg,
     TwoPinStickRightLeg,
@@ -93,6 +94,47 @@ class TestTwoPinLegTorque:
                         assert check_zero(load.torque.dot(rot_axis) - -torque)
             else:
                 torque = load_group.symbols["T_ankle"]
+                for load in loads:
+                    if load.frame == leg.foot.frame:
+                        assert check_zero(load.torque.dot(rot_axis) - torque)
+                    else:
+                        assert load.frame == leg.shank.frame
+                        assert check_zero(load.torque.dot(rot_axis) - -torque)
+
+
+class TestPinElbowSpringDamper:
+    def test_invalid_type(self) -> None:
+        with pytest.raises(TypeError):
+            PinElbowStickLeftArm("arm").add_load_groups(TwoPinLegSpringDamper("leg"))
+
+    def test_descriptions(self) -> None:
+        _test_descriptions(TwoPinLegSpringDamper("leg"))
+
+    @pytest.mark.parametrize("leg_cls", [TwoPinStickLeftLeg, TwoPinStickRightLeg])
+    def test_loads(self, leg_cls) -> None:
+        leg = leg_cls("leg")
+        load_group = TwoPinLegSpringDamper("spring_damper")
+        leg.add_load_groups(load_group)
+        leg.define_all()
+        system = leg.to_system()
+        assert len(system.actuators) == 2
+        rot_axis = leg.shank.y
+        for actuator in system.actuators:
+            loads = actuator.to_loads()
+            if actuator.target_frame == leg.shank.frame:
+                k, c, q_ref = (
+                    load_group.symbols[name + "_knee"] for name in ("k", "c", "q_ref"))
+                torque = (k * (q_ref - leg.q[0]) - c * leg.u[0])
+                for load in loads:
+                    if load.frame == leg.shank.frame:
+                        assert check_zero(load.torque.dot(rot_axis) - torque)
+                    else:
+                        assert load.frame == leg.thigh.frame
+                        assert check_zero(load.torque.dot(rot_axis) - -torque)
+            else:
+                k, c, q_ref = (
+                    load_group.symbols[name + "_ankle"] for name in ("k", "c", "q_ref"))
+                torque = (k * (q_ref - leg.q[1]) - c * leg.u[1])
                 for load in loads:
                     if load.frame == leg.foot.frame:
                         assert check_zero(load.torque.dot(rot_axis) - torque)

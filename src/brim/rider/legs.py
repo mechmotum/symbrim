@@ -29,7 +29,7 @@ except ImportError:  # pragma: no cover
     pass
 
 __all__ = ["LegBase", "LeftLegBase", "RightLegBase", "TwoPinStickLeftLeg",
-           "TwoPinStickRightLeg", "TwoPinLegTorque"]
+           "TwoPinStickRightLeg", "TwoPinLegTorque", "TwoPinLegSpringDamper"]
 
 
 class LegBase(ModelBase):
@@ -269,4 +269,46 @@ class TwoPinLegTorque(LoadGroupBase):
                            self.parent.shank, self.parent.thigh),
             TorqueActuator(self.symbols["T_ankle"], self.parent.shank.y,
                            self.parent.foot, self.parent.shank)
+        )
+
+
+class TwoPinLegSpringDamper(LoadGroupBase):
+    """Torque applied to the leg of the rider as linear spring-damper."""
+
+    parent: TwoPinStickLeftLeg | TwoPinStickRightLeg
+    required_parent_type = (TwoPinStickLeftLeg, TwoPinStickRightLeg)
+
+    @property
+    def descriptions(self) -> dict[Any, str]:
+        """Descriptions of the objects."""
+        return {
+            **super().descriptions,
+            self.symbols["k_knee"]: f"Knee stiffness of {self.parent}",
+            self.symbols["c_knee"]: f"Knee damping of {self.parent}",
+            self.symbols["q_ref_knee"]: f"Knee reference angle of {self.parent}",
+            self.symbols["k_ankle"]: f"Ankle stiffness of {self.parent}",
+            self.symbols["c_ankle"]: f"Ankle damping of {self.parent}",
+            self.symbols["q_ref_ankle"]: f"Ankle reference angle of {self.parent}",
+        }
+
+    def _define_objects(self) -> None:
+        """Define the objects."""
+        self.symbols.update({name: dynamicsymbols(self._add_prefix(name)) for name in (
+            "k_knee", "c_knee", "q_ref_knee", "k_ankle", "c_ankle", "q_ref_ankle")})
+
+    def _define_loads(self) -> None:
+        """Define the kinematics."""
+        knee = self.parent.system.get_joint(self.parent._add_prefix("knee"))
+        ankle = self.parent.system.get_joint(self.parent._add_prefix("ankle"))
+        q_knee, u_knee = knee.coordinates[0], knee.speeds[0]
+        q_ankle, u_ankle = ankle.coordinates[0], ankle.speeds[0]
+        self.system.add_actuators(
+            TorqueActuator(
+                -self.symbols["k_knee"] * (q_knee - self.symbols["q_ref_knee"]) -
+                self.symbols["c_knee"] * u_knee,
+                self.parent.thigh.y, self.parent.shank, self.parent.thigh),
+            TorqueActuator(
+                -self.symbols["k_ankle"] * (q_ankle - self.symbols["q_ref_ankle"]) -
+                self.symbols["c_ankle"] * u_ankle,
+                self.parent.shank.y, self.parent.foot, self.parent.shank)
         )
