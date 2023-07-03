@@ -1,12 +1,16 @@
 from __future__ import annotations
 
 import pytest
+from brim.rider.arms import PinElbowStickLeftArm
 from brim.rider.legs import (
     LeftLegBase,
     RightLegBase,
+    TwoPinLegTorque,
     TwoPinStickLeftLeg,
     TwoPinStickRightLeg,
 )
+from brim.utilities.testing import _test_descriptions
+from brim.utilities.utilities import check_zero
 from sympy import simplify, zeros
 from sympy.physics.mechanics import Point, ReferenceFrame, RigidBody
 
@@ -16,21 +20,18 @@ from sympy.physics.mechanics import Point, ReferenceFrame, RigidBody
     (TwoPinStickRightLeg, RightLegBase)])
 class TestLegBase:
     def test_types(self, leg_cls, base) -> None:
-        arm = leg_cls("arm")
-        arm.define_objects()
-        assert isinstance(arm, base)
-        assert isinstance(arm.hip, RigidBody)
-        assert isinstance(arm.foot, RigidBody)
-        assert isinstance(arm.hip_interpoint, Point)
-        assert isinstance(arm.foot_interpoint, Point)
-        assert isinstance(arm.hip_interframe, ReferenceFrame)
-        assert isinstance(arm.foot_interframe, ReferenceFrame)
+        leg = leg_cls("leg")
+        leg.define_objects()
+        assert isinstance(leg, base)
+        assert isinstance(leg.hip, RigidBody)
+        assert isinstance(leg.foot, RigidBody)
+        assert isinstance(leg.hip_interpoint, Point)
+        assert isinstance(leg.foot_interpoint, Point)
+        assert isinstance(leg.hip_interframe, ReferenceFrame)
+        assert isinstance(leg.foot_interframe, ReferenceFrame)
 
     def test_descriptions(self, leg_cls, base) -> None:
-        arm = leg_cls("arm")
-        arm.define_objects()
-        for sym in arm.symbols.values():
-            assert sym in arm.descriptions
+        _test_descriptions(leg_cls("leg"))
 
 
 @pytest.mark.parametrize("leg_cls", [TwoPinStickLeftLeg, TwoPinStickRightLeg])
@@ -61,3 +62,40 @@ class TestTwoPinStickLeg:
             self.leg.hip_interpoint) == self.l_t_com * self.leg.thigh.z
         assert self.leg.foot.frame.ang_vel_in(self.leg.hip.frame).dot(
             -self.leg.thigh.y) == sum(self.leg.u)
+
+
+class TestTwoPinLegTorque:
+    def test_invalid_type(self) -> None:
+        with pytest.raises(TypeError):
+            PinElbowStickLeftArm("arm").add_load_groups(TwoPinLegTorque("leg"))
+
+    def test_descriptions(self) -> None:
+        _test_descriptions(TwoPinLegTorque("leg"))
+
+    @pytest.mark.parametrize("leg_cls", [TwoPinStickLeftLeg, TwoPinStickRightLeg])
+    def test_loads(self, leg_cls) -> None:
+        leg = leg_cls("leg")
+        load_group = TwoPinLegTorque("torque")
+        leg.add_load_groups(load_group)
+        leg.define_all()
+        system = leg.to_system()
+        assert len(system.actuators) == 2
+        rot_axis = leg.shank.y
+        for actuator in system.actuators:
+            loads = actuator.to_loads()
+            if actuator.target_frame == leg.shank.frame:
+                torque = load_group.symbols["T_knee"]
+                for load in loads:
+                    if load.frame == leg.shank.frame:
+                        assert check_zero(load.torque.dot(rot_axis) - torque)
+                    else:
+                        assert load.frame == leg.thigh.frame
+                        assert check_zero(load.torque.dot(rot_axis) - -torque)
+            else:
+                torque = load_group.symbols["T_ankle"]
+                for load in loads:
+                    if load.frame == leg.foot.frame:
+                        assert check_zero(load.torque.dot(rot_axis) - torque)
+                    else:
+                        assert load.frame == leg.shank.frame
+                        assert check_zero(load.torque.dot(rot_axis) - -torque)

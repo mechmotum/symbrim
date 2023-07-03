@@ -12,9 +12,10 @@ from sympy.physics.mechanics import (
     RigidBody,
     dynamicsymbols,
 )
+from sympy.physics.mechanics._actuator import TorqueActuator
 from sympy.physics.mechanics._system import System
 
-from brim.core import ModelBase
+from brim.core import LoadGroupBase, ModelBase
 
 try:  # pragma: no cover
     import numpy as np
@@ -28,7 +29,7 @@ except ImportError:  # pragma: no cover
     pass
 
 __all__ = ["LegBase", "LeftLegBase", "RightLegBase", "TwoPinStickLeftLeg",
-           "TwoPinStickRightLeg"]
+           "TwoPinStickRightLeg", "TwoPinLegTorque"]
 
 
 class LegBase(ModelBase):
@@ -101,6 +102,10 @@ class TwoPinStickLegMixin:
             self.symbols["l_foot"]: "Length of the foot.",
             self.symbols["l_foot_com"]: "Distance from the ankle joint to the center of"
                                         " mass of the foot.",
+            self.q[0]: "Knee flexion angle.",
+            self.q[1]: "Ankle flexion angle.",
+            self.u[0]: "Knee flexion rate.",
+            self.u[1]: "Ankle flexion rate.",
         }
 
     def _define_objects(self) -> None:
@@ -235,3 +240,33 @@ class TwoPinStickRightLeg(TwoPinStickLegMixin, RightLegBase):
                 foot_props[1] - human.K2.solids[2].pos),
         })
         return params
+
+
+class TwoPinLegTorque(LoadGroupBase):
+    """Torque applied to the leg of the rider as time-varying quantity."""
+
+    parent: TwoPinStickLeftLeg | TwoPinStickRightLeg
+    required_parent_type = (TwoPinStickLeftLeg, TwoPinStickRightLeg)
+
+    @property
+    def descriptions(self) -> dict[Any, str]:
+        """Descriptions of the objects."""
+        return {
+            **super().descriptions,
+            self.symbols["T_knee"]: f"Knee torque of {self.parent}",
+            self.symbols["T_ankle"]: f"Ankle torque of {self.parent}",
+        }
+
+    def _define_objects(self) -> None:
+        """Define the objects."""
+        self.symbols.update({name: dynamicsymbols(self._add_prefix(name)) for name in (
+            "T_knee", "T_ankle")})
+
+    def _define_loads(self) -> None:
+        """Define the kinematics."""
+        self.system.add_actuators(
+            TorqueActuator(self.symbols["T_knee"], self.parent.thigh.y,
+                           self.parent.shank, self.parent.thigh),
+            TorqueActuator(self.symbols["T_ankle"], self.parent.shank.y,
+                           self.parent.foot, self.parent.shank)
+        )
