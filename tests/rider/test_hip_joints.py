@@ -179,3 +179,11 @@ class TestSphericalHipTorque:
                     load.torque.xreplace({t_flex: 0, t_rot: 0}).dot(add_axis) - t_add)
                 assert check_zero(
                     load.torque.xreplace({t_flex: 0, t_add: 0}).dot(rot_axis) - t_rot)
+            else:
+                assert load.frame == model.pelvis.frame
+                assert check_zero(
+                    load.torque.xreplace({t_add: 0, t_rot: 0}).dot(flex_axis) - -t_flex)
+                assert check_zero(
+                    load.torque.xreplace({t_flex: 0, t_rot: 0}).dot(add_axis) - -t_add)
+                assert check_zero(
+                    load.torque.xreplace({t_flex: 0, t_add: 0}).dot(rot_axis) - -t_rot)
