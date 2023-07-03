@@ -8,6 +8,7 @@ from brim.rider.base_connections import HipBase, LeftHipBase, RightHipBase
 from brim.rider.hip_joints import (
     PinLeftHip,
     PinRightHip,
+    SphericalHipSpringDamper,
     SphericalHipTorque,
     SphericalLeftHip,
     SphericalRightHip,
@@ -136,13 +137,13 @@ class TestPinLeftHipJoint:
 
 class TestSphericalHipTorque:
     @pytest.mark.parametrize("load_group_cls", [
-        SphericalHipTorque])
+        SphericalHipTorque, SphericalHipSpringDamper])
     def test_invalid_type(self, load_group_cls) -> None:
         with pytest.raises(TypeError):
             TestPinLeftHipJoint("hip").add_load_groups(load_group_cls("hip"))
 
     @pytest.mark.parametrize("load_group_cls", [
-        SphericalHipTorque])
+        SphericalHipTorque, SphericalHipSpringDamper])
     def test_descriptions(self, load_group_cls) -> None:
         _test_descriptions(load_group_cls("hip"))
 
@@ -187,3 +188,39 @@ class TestSphericalHipTorque:
                     load.torque.xreplace({t_flex: 0, t_rot: 0}).dot(add_axis) - -t_add)
                 assert check_zero(
                     load.torque.xreplace({t_flex: 0, t_add: 0}).dot(rot_axis) - -t_rot)
+
+    @pytest.mark.parametrize("hip_cls, leg_cls", [
+        (SphericalLeftHip, TwoPinStickLeftLeg),
+        (SphericalRightHip, TwoPinStickRightLeg)])
+    def test_spring_damper_loads(self, hip_cls, leg_cls) -> None:
+        model, load_group, flex_axis, add_axis, rot_axis = self._get_test_torques_info(
+            hip_cls, leg_cls, SphericalHipSpringDamper)
+        syms = [tuple(load_group.symbols[f"{tp}_{name}"] for tp in ("k", "c", "q_ref"))
+                for name in ("flexion", "adduction", "rotation")]
+        zero = [{sym: 0 for sym in syms_tp} for syms_tp in syms]
+
+        def torque(syms, q, u):
+            return -syms[0] * (q - syms[2]) - syms[1] * u
+
+        for load in load_group.system.loads:
+            if load.frame == model.leg.thigh.frame:
+                assert check_zero(
+                    load.torque.xreplace({**zero[1], **zero[2]}).dot(flex_axis) -
+                    torque(syms[0], model.hip.q[0], model.hip.u[0]))
+                assert check_zero(
+                    load.torque.xreplace({**zero[0], **zero[2]}).dot(add_axis) -
+                    torque(syms[1], model.hip.q[1], model.hip.u[1]))
+                assert check_zero(
+                    load.torque.xreplace({**zero[0], **zero[1]}).dot(rot_axis) -
+                    torque(syms[2], model.hip.q[2], model.hip.u[2]))
+            else:
+                assert load.frame == model.pelvis.frame
+                assert check_zero(
+                    load.torque.xreplace({**zero[1], **zero[2]}).dot(flex_axis) +
+                    torque(syms[0], model.hip.q[0], model.hip.u[0]))
+                assert check_zero(
+                    load.torque.xreplace({**zero[0], **zero[2]}).dot(add_axis) +
+                    torque(syms[1], model.hip.q[1], model.hip.u[1]))
+                assert check_zero(
+                    load.torque.xreplace({**zero[0], **zero[1]}).dot(rot_axis) +
+                    torque(syms[2], model.hip.q[2], model.hip.u[2]))
