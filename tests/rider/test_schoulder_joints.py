@@ -8,9 +8,14 @@ from brim.rider.base_connections import (
     RightShoulderBase,
     ShoulderBase,
 )
-from brim.rider.shoulder_joints import SphericalLeftShoulder, SphericalRightShoulder
+from brim.rider.shoulder_joints import (
+    SphericalLeftShoulder,
+    SphericalRightShoulder,
+    SphericalShoulderTorque,
+)
 from brim.rider.torso import PlanarTorso, TorsoBase
 from brim.utilities.testing import _test_descriptions
+from brim.utilities.utilities import check_zero
 
 
 class ShoulderModel(ModelBase):
@@ -101,3 +106,60 @@ class TestSphericalRightShoulderJoint:
             {self.shoulder.q[0]: 0, self.shoulder.q[2]: 0}) == self.shoulder.u[1]
         assert w.dot(self.torso.z).xreplace(
             {self.shoulder.q[0]: 0, self.shoulder.q[1]: 0}) == self.shoulder.u[2]
+
+class TestSphericalShoulderTorque:
+    @pytest.mark.parametrize("load_group_cls", [
+        SphericalShoulderTorque])
+    def test_invalid_type(self, load_group_cls) -> None:
+        with pytest.raises(TypeError):
+            PlanarTorso("torso").add_load_groups(load_group_cls("shoulder"))
+
+    @pytest.mark.parametrize("load_group_cls", [
+        SphericalShoulderTorque])
+    def test_descriptions(self, load_group_cls) -> None:
+        _test_descriptions(load_group_cls("shoulder"))
+
+    @staticmethod
+    def _get_test_torques_info(shoulder_cls: type, arm_cls: type, load_group_cls: type
+                               ) -> tuple:
+        model = ShoulderModel("model")
+        model.shoulder = shoulder_cls("shoulder")
+        model.torso = PlanarTorso("torso")
+        model.arm = arm_cls("arm")
+        load_group = load_group_cls("shoulder")
+        model.shoulder.add_load_groups(load_group)
+        model.define_all()
+        assert len(load_group.system.loads) == 2
+        w = model.arm.shoulder_interframe.ang_vel_in(model.torso.frame)
+        flex_axis = w.xreplace(
+            {model.shoulder.u[1]: 0, model.shoulder.u[2]: 0}).normalize()
+        add_axis = w.xreplace(
+            {model.shoulder.u[0]: 0, model.shoulder.u[2]: 0}).normalize()
+        rot_axis = w.xreplace(
+            {model.shoulder.u[0]: 0, model.shoulder.u[1]: 0}).normalize()
+        return model, load_group, flex_axis, add_axis, rot_axis
+
+    @pytest.mark.parametrize("hip_cls, leg_cls", [
+        (SphericalLeftShoulder, PinElbowStickLeftArm),
+        (SphericalRightShoulder, PinElbowStickRightArm)])
+    def test_torque_loads(self, hip_cls, leg_cls) -> None:
+        model, load_group, flex_axis, add_axis, rot_axis = self._get_test_torques_info(
+            hip_cls, leg_cls, SphericalShoulderTorque)
+        t_flex, t_add, t_rot = (load_group.symbols[name] for name in (
+            "T_flexion", "T_adduction", "T_rotation"))
+        for load in load_group.system.loads:
+            if load.frame == model.arm.shoulder_interframe:
+                assert check_zero(
+                    load.torque.xreplace({t_add: 0, t_rot: 0}).dot(flex_axis) - t_flex)
+                assert check_zero(
+                    load.torque.xreplace({t_flex: 0, t_rot: 0}).dot(add_axis) - t_add)
+                assert check_zero(
+                    load.torque.xreplace({t_flex: 0, t_add: 0}).dot(rot_axis) - t_rot)
+            else:
+                assert load.frame == model.torso.frame
+                assert check_zero(
+                    load.torque.xreplace({t_add: 0, t_rot: 0}).dot(flex_axis) - -t_flex)
+                assert check_zero(
+                    load.torque.xreplace({t_flex: 0, t_rot: 0}).dot(add_axis) - -t_add)
+                assert check_zero(
+                    load.torque.xreplace({t_flex: 0, t_add: 0}).dot(rot_axis) - -t_rot)
