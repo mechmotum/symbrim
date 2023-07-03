@@ -3,9 +3,10 @@ from __future__ import annotations
 import pytest
 from brim.bicycle.rear_frames import RigidRearFrameMoore
 from brim.brim.base_connections import SeatBase
-from brim.brim.seat_connections import SideLeanSeat
+from brim.brim.seat_connections import SideLeanSeat, SideLeanSeatTorque
 from brim.rider.pelvis import PlanarPelvis
 from brim.utilities.testing import _test_descriptions, create_model_of_connection
+from brim.utilities.utilities import check_zero
 from sympy import simplify, zeros
 from sympy.physics.mechanics import ReferenceFrame
 
@@ -91,3 +92,26 @@ class TestSideLeanConnection:
         assert self.conn.pelvis_interpoint == p
         self.model.define_kinematics()
         assert self.pelvis.body.masscenter.pos_from(self.rear_frame.saddle) == -v
+
+    def test_side_lean_torque_invalid_type(self) -> None:
+        with pytest.raises(TypeError):
+            PlanarPelvis("pelvis").add_load_groups(SideLeanSeatTorque("seat_torque"))
+
+    def test_side_lean_torque_descriptions(self) -> None:
+        _test_descriptions(SideLeanSeatTorque("side_lean"))
+
+    def test_side_lean_torque(self) -> None:
+        load_group = SideLeanSeatTorque("seat_torque")
+        self.conn.add_load_groups(load_group)
+        self.model.define_all()
+        assert len(load_group.system.actuators) == 1
+        torque = load_group.symbols["T"]
+        loads = load_group.system.actuators[0].to_loads()
+        # Carefully check the signs of the torques.
+        rot_axis = self.pelvis.frame.ang_vel_in(self.rear_frame.frame).normalize()
+        for load in loads:
+            if load.frame == self.pelvis.frame:
+                assert check_zero(load.torque.dot(rot_axis) - torque)
+            else:
+                assert load.frame == self.rear_frame.frame
+                assert check_zero(load.torque.dot(rot_axis) - -torque)
