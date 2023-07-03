@@ -5,11 +5,13 @@ from typing import Any
 
 from sympy import Symbol, cos, sin
 from sympy.physics.mechanics import PinJoint, Point, Vector, dynamicsymbols
+from sympy.physics.mechanics._actuator import TorqueActuator
 from sympy.physics.mechanics._system import System
 
 from brim.brim.base_connections import SeatBase
+from brim.core import LoadGroupBase
 
-__all__ = ["SideLeanSeat"]
+__all__ = ["SideLeanSeat", "SideLeanSeatTorque", "SideLeanSeatSpringDamper"]
 
 
 class SideLeanSeat(SeatBase):
@@ -105,3 +107,65 @@ class SideLeanSeat(SeatBase):
                 "Pelvis interpoint must be expressable w.r.t. the center of mass in the"
                 " pelvis frame.") from e
         self._pelvis_interpoint = value
+
+
+class SideLeanSeatTorque(LoadGroupBase):
+    """Torque load group for the side lean seat connection."""
+
+    parent: SideLeanSeat
+    required_parent_type = SideLeanSeat
+
+    @property
+    def descriptions(self) -> dict[Any, str]:
+        """Descriptions of the objects."""
+        return {
+            **super().descriptions,
+            self.symbols["T"]: f"Side lean torque of {self.parent}",
+        }
+
+    def _define_objects(self) -> None:
+        """Define the objects."""
+        self.symbols["T"] = dynamicsymbols(self._add_prefix("T"))
+
+    def _define_loads(self) -> None:
+        """Define the kinematics."""
+        self.system.add_actuators(
+            TorqueActuator(self.symbols["T"], self.parent.frame_lean_axis,
+                           self.parent.pelvis.frame, self.parent.rear_frame.frame)
+        )
+
+
+class SideLeanSeatSpringDamper(LoadGroupBase):
+    """Torque applied to the side lean connection as linear spring-damper."""
+
+    parent: SideLeanSeat
+    required_parent_type = SideLeanSeat
+
+    @property
+    def descriptions(self) -> dict[Any, str]:
+        """Descriptions of the objects."""
+        return {
+            **super().descriptions,
+            self.symbols["k"]: f"Side lean stiffness of {self.parent}",
+            self.symbols["c"]: f"Side lean damping of {self.parent}",
+            self.symbols["q_ref"]: f"Side lean reference angle of {self.parent}",
+        }
+
+    def _define_objects(self) -> None:
+        """Define the objects."""
+        self.symbols.update({
+            "k": dynamicsymbols(self._add_prefix("k")),
+            "c": dynamicsymbols(self._add_prefix("c")),
+            "q_ref": dynamicsymbols(self._add_prefix("q_ref")),
+        })
+
+    def _define_loads(self) -> None:
+        """Define the kinematics."""
+        pin = self.parent.system.joints[0]
+        self.system.add_actuators(
+            TorqueActuator(
+                -self.symbols["k"] * (pin.coordinates[0] - self.symbols["q_ref"]) -
+                self.symbols["c"] * pin.speeds[0],
+                self.parent.frame_lean_axis, self.parent.pelvis.frame,
+                self.parent.rear_frame.frame)
+        )
