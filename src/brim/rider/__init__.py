@@ -20,6 +20,8 @@ __all__ = [
     "LegBase", "LeftLegBase", "RightLegBase", "TwoPinStickLeftLeg",
     "TwoPinStickRightLeg",
 
+    "TwoPinLegTorque", "TwoPinLegSpringDamper",
+
     "FixedPelvisToTorso",
 
     "SphericalLeftHip", "SphericalRightHip", "PinLeftHip", "PinRightHip",
@@ -56,6 +58,8 @@ from brim.rider.legs import (
     LeftLegBase,
     LegBase,
     RightLegBase,
+    TwoPinLegSpringDamper,
+    TwoPinLegTorque,
     TwoPinStickLeftLeg,
     TwoPinStickRightLeg,
 )
