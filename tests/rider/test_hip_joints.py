@@ -140,7 +140,7 @@ class TestSphericalHipTorque:
         SphericalHipTorque, SphericalHipSpringDamper])
     def test_invalid_type(self, load_group_cls) -> None:
         with pytest.raises(TypeError):
-            TestPinLeftHipJoint("hip").add_load_groups(load_group_cls("hip"))
+            PinLeftHip("hip").add_load_groups(load_group_cls("hip"))
 
     @pytest.mark.parametrize("load_group_cls", [
         SphericalHipTorque, SphericalHipSpringDamper])
