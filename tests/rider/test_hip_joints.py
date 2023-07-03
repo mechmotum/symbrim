@@ -134,34 +134,44 @@ class TestPinLeftHipJoint:
         assert w.dot(self.pelvis.y) == self.hip.u
 
 
-class TestHipTorque:
-    def test_invalid_type(self) -> None:
+class TestSphericalHipTorque:
+    @pytest.mark.parametrize("load_group_cls", [
+        SphericalHipTorque])
+    def test_invalid_type(self, load_group_cls) -> None:
         with pytest.raises(TypeError):
-            TestPinLeftHipJoint("hip").add_load_groups(SphericalHipTorque("hip"))
+            TestPinLeftHipJoint("hip").add_load_groups(load_group_cls("hip"))
 
-    def test_descriptions(self) -> None:
-        _test_descriptions(SphericalHipTorque("hip"))
+    @pytest.mark.parametrize("load_group_cls", [
+        SphericalHipTorque])
+    def test_descriptions(self, load_group_cls) -> None:
+        _test_descriptions(load_group_cls("hip"))
 
-    @pytest.mark.parametrize("hip_cls, leg_cls", [
-        (SphericalLeftHip, TwoPinStickLeftLeg),
-        (SphericalRightHip, TwoPinStickRightLeg)])
-    def test_loads(self, hip_cls, leg_cls) -> None:
+    @staticmethod
+    def _get_test_torques_info(hip_cls: type, leg_cls: type, load_group_cls: type
+                               ) -> tuple:
         model = HipModel("model")
         model.hip = hip_cls("hip")
         model.pelvis = PlanarPelvis("pelvis")
         model.leg = leg_cls("leg")
-        load_group = SphericalHipTorque("hip")
+        load_group = load_group_cls("hip")
         model.hip.add_load_groups(load_group)
         model.define_all()
-        system = model.to_system()
-        assert len(system.loads) == 2
-        t_flex, t_add, t_rot = (load_group.symbols[name] for name in (
-            "T_flexion", "T_adduction", "T_rotation"))
+        assert len(load_group.system.loads) == 2
         w = model.leg.hip_interframe.ang_vel_in(model.pelvis.frame)
         flex_axis = w.xreplace({model.hip.u[1]: 0, model.hip.u[2]: 0}).normalize()
         add_axis = w.xreplace({model.hip.u[0]: 0, model.hip.u[2]: 0}).normalize()
         rot_axis = w.xreplace({model.hip.u[0]: 0, model.hip.u[1]: 0}).normalize()
-        for load in system.loads:
+        return model, load_group, flex_axis, add_axis, rot_axis
+
+    @pytest.mark.parametrize("hip_cls, leg_cls", [
+        (SphericalLeftHip, TwoPinStickLeftLeg),
+        (SphericalRightHip, TwoPinStickRightLeg)])
+    def test_torque_loads(self, hip_cls, leg_cls) -> None:
+        model, load_group, flex_axis, add_axis, rot_axis = self._get_test_torques_info(
+            hip_cls, leg_cls, SphericalHipTorque)
+        t_flex, t_add, t_rot = (load_group.symbols[name] for name in (
+            "T_flexion", "T_adduction", "T_rotation"))
+        for load in load_group.system.loads:
             if load.frame == model.leg.thigh.frame:
                 assert check_zero(
                     load.torque.xreplace({t_add: 0, t_rot: 0}).dot(flex_axis) - t_flex)
