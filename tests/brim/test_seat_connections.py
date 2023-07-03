@@ -3,7 +3,11 @@ from __future__ import annotations
 import pytest
 from brim.bicycle.rear_frames import RigidRearFrameMoore
 from brim.brim.base_connections import SeatBase
-from brim.brim.seat_connections import SideLeanSeat, SideLeanSeatTorque
+from brim.brim.seat_connections import (
+    SideLeanSeat,
+    SideLeanSeatSpringDamper,
+    SideLeanSeatTorque,
+)
 from brim.rider.pelvis import PlanarPelvis
 from brim.utilities.testing import _test_descriptions, create_model_of_connection
 from brim.utilities.utilities import check_zero
@@ -52,7 +56,7 @@ class TestSideLeanConnection:
         assert self.conn.pelvis_lean_axis == self.pelvis.x
         assert self.pelvis.body.masscenter.pos_from(
             self.rear_frame.saddle) == (
-                -self.pelvis.symbols["com_height"] * self.pelvis.z)
+                       -self.pelvis.symbols["com_height"] * self.pelvis.z)
 
     def test_set_frame_lean_axis(self) -> None:
         self.model.define_connections()
@@ -93,12 +97,14 @@ class TestSideLeanConnection:
         self.model.define_kinematics()
         assert self.pelvis.body.masscenter.pos_from(self.rear_frame.saddle) == -v
 
-    def test_side_lean_torque_invalid_type(self) -> None:
+    @pytest.mark.parametrize("load_cls", [SideLeanSeatTorque, SideLeanSeatSpringDamper])
+    def test_side_lean_torque_invalid_type(self, load_cls) -> None:
         with pytest.raises(TypeError):
-            PlanarPelvis("pelvis").add_load_groups(SideLeanSeatTorque("seat_torque"))
+            PlanarPelvis("pelvis").add_load_groups(load_cls("seat_torque"))
 
-    def test_side_lean_torque_descriptions(self) -> None:
-        _test_descriptions(SideLeanSeatTorque("side_lean"))
+    @pytest.mark.parametrize("load_cls", [SideLeanSeatTorque, SideLeanSeatSpringDamper])
+    def test_side_lean_torque_descriptions(self, load_cls) -> None:
+        _test_descriptions(load_cls("side_lean"))
 
     def test_side_lean_torque(self) -> None:
         load_group = SideLeanSeatTorque("seat_torque")
@@ -106,6 +112,23 @@ class TestSideLeanConnection:
         self.model.define_all()
         assert len(load_group.system.actuators) == 1
         torque = load_group.symbols["T"]
+        loads = load_group.system.actuators[0].to_loads()
+        # Carefully check the signs of the torques.
+        rot_axis = self.pelvis.frame.ang_vel_in(self.rear_frame.frame).normalize()
+        for load in loads:
+            if load.frame == self.pelvis.frame:
+                assert check_zero(load.torque.dot(rot_axis) - torque)
+            else:
+                assert load.frame == self.rear_frame.frame
+                assert check_zero(load.torque.dot(rot_axis) - -torque)
+
+    def test_side_lean_spring_damper(self) -> None:
+        load_group = SideLeanSeatSpringDamper("seat_torque")
+        self.conn.add_load_groups(load_group)
+        self.model.define_all()
+        assert len(load_group.system.actuators) == 1
+        k, c, q_ref = (load_group.symbols[name] for name in ("k", "c", "q_ref"))
+        torque = (k * (q_ref - self.conn.q) - c * self.conn.u)
         loads = load_group.system.actuators[0].to_loads()
         # Carefully check the signs of the torques.
         rot_axis = self.pelvis.frame.ang_vel_in(self.rear_frame.frame).normalize()
