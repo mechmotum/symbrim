@@ -11,7 +11,7 @@ from brim.rider.arms import (
 )
 from brim.rider.legs import TwoPinStickLeftLeg
 from brim.utilities.testing import _test_descriptions
-from brim.utilities.utilities import random_eval
+from brim.utilities.utilities import check_zero
 from sympy import simplify, zeros
 from sympy.physics.mechanics import Point, ReferenceFrame, RigidBody
 
@@ -82,10 +82,10 @@ class TestPinElbowTorque:
         rot_axis = arm.forearm.frame.ang_vel_in(arm.upper_arm.frame).normalize()
         for load in loads:
             if load.frame == arm.forearm.frame:
-                assert random_eval(load.torque.dot(rot_axis) - torque) == 0
+                assert check_zero(load.torque.dot(rot_axis) - torque)
             else:
                 assert load.frame == arm.upper_arm.frame
-                assert random_eval(load.torque.dot(rot_axis) - -torque) == 0
+                assert check_zero(load.torque.dot(rot_axis) - -torque)
 
 
 class TestPinElbowSpringDamper:
@@ -110,9 +110,9 @@ class TestPinElbowSpringDamper:
         rot_axis = arm.forearm.frame.ang_vel_in(arm.upper_arm.frame).normalize()
         for load in loads:
             if load.frame == arm.forearm.frame:
-                assert random_eval(
-                    load.torque.dot(rot_axis) - (k * (q_ref - arm.q) - c * arm.u)) == 0
+                assert check_zero(
+                    load.torque.dot(rot_axis) - (k * (q_ref - arm.q) - c * arm.u))
             else:
                 assert load.frame == arm.upper_arm.frame
-                assert random_eval(
-                    load.torque.dot(rot_axis) - (-k * (q_ref - arm.q) + c * arm.u)) == 0
+                assert check_zero(
+                    load.torque.dot(rot_axis) - (-k * (q_ref - arm.q) + c * arm.u))
