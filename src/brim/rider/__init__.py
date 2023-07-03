@@ -30,7 +30,7 @@ __all__ = [
 
     "SphericalLeftShoulder", "SphericalRightShoulder",
 
-    "SphericalShoulderTorque",
+    "SphericalShoulderTorque", "SphericalShoulderSpringDamper",
 ]
 
 from brim.rider.arms import (
@@ -76,6 +76,7 @@ from brim.rider.rider_lean import RiderLean
 from brim.rider.shoulder_joints import (
     SphericalLeftShoulder,
     SphericalRightShoulder,
+    SphericalShoulderSpringDamper,
     SphericalShoulderTorque,
 )
 from brim.rider.torso import PlanarTorso, TorsoBase

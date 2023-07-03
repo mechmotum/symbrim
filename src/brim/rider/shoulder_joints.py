@@ -10,7 +10,8 @@ from sympy.physics.mechanics._system import System
 from brim.core import LoadGroupBase
 from brim.rider.base_connections import LeftShoulderBase, RightShoulderBase
 
-__all__ = ["SphericalLeftShoulder", "SphericalRightShoulder", "SphericalShoulderTorque"]
+__all__ = ["SphericalLeftShoulder", "SphericalRightShoulder", "SphericalShoulderTorque",
+           "SphericalShoulderSpringDamper"]
 
 
 class SphericalShoulderMixin:
@@ -103,6 +104,54 @@ class SphericalShoulderTorque(LoadGroupBase):
         torque = (self.symbols["T_flexion"] * shoulder.parent_interframe.y +
                   self.symbols["T_adduction"] * adduction_axis +
                   self.symbols["T_rotation"] * shoulder.child_interframe.z)
+        self.parent.system.add_loads(
+            Torque(shoulder.child_interframe, torque),
+            Torque(shoulder.parent_interframe, -torque)
+        )
+
+
+class SphericalShoulderSpringDamper(LoadGroupBase):
+    """Spherical for the spherical shoulder joints."""
+
+    parent: SphericalLeftShoulder | SphericalRightShoulder
+    required_parent_type = (SphericalLeftShoulder, SphericalRightShoulder)
+
+    @property
+    def descriptions(self) -> dict[Any, str]:
+        """Descriptions of the objects."""
+        desc = {**super().descriptions}
+        for tp in ("flexion", "adduction", "rotation"):
+            desc.update({
+                self.symbols[f"k_{tp}"]:
+                    f"{tp.capitalize()} stiffness of shoulder: {self.parent}.",
+                self.symbols[f"c_{tp}"]:
+                    f"{tp.capitalize()} damping of:shoulder {self.parent}.",
+                self.symbols[f"q_ref_{tp}"]:
+                    f"{tp.capitalize()} reference angle of shoulder: {self.parent}.",
+            })
+        return desc
+
+    def _define_objects(self) -> None:
+        """Define the objects."""
+        for tp in ("flexion", "adduction", "rotation"):
+            self.symbols.update({name: dynamicsymbols(self._add_prefix(name))
+                                 for name in (f"k_{tp}", f"c_{tp}", f"q_ref_{tp}")})
+
+    def _define_loads(self) -> None:
+        """Define the loads."""
+        shoulder = self.parent.system.joints[0]
+        adduction_axis = (cos(shoulder.coordinates[0]) * shoulder.parent_interframe.x -
+                          sin(shoulder.coordinates[0]) * shoulder.parent_interframe.z)
+        if isinstance(self.parent, LeftShoulderBase):
+            adduction_axis *= -1
+        torques = []
+        for i, tp in enumerate(("flexion", "adduction", "rotation")):
+            torques.append(-self.symbols[f"k_{tp}"] * (
+                    shoulder.coordinates[i] - self.symbols[f"q_ref_{tp}"]) -
+                           self.symbols[f"c_{tp}"] * shoulder.speeds[i])
+        torque = (torques[0] * shoulder.parent_interframe.y +
+                  torques[1] * adduction_axis +
+                  torques[2] * shoulder.child_interframe.z)
         self.parent.system.add_loads(
             Torque(shoulder.child_interframe, torque),
             Torque(shoulder.parent_interframe, -torque)

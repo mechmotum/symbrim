@@ -11,6 +11,7 @@ from brim.rider.base_connections import (
 from brim.rider.shoulder_joints import (
     SphericalLeftShoulder,
     SphericalRightShoulder,
+    SphericalShoulderSpringDamper,
     SphericalShoulderTorque,
 )
 from brim.rider.torso import PlanarTorso, TorsoBase
@@ -109,13 +110,13 @@ class TestSphericalRightShoulderJoint:
 
 class TestSphericalShoulderTorque:
     @pytest.mark.parametrize("load_group_cls", [
-        SphericalShoulderTorque])
+        SphericalShoulderTorque, SphericalShoulderSpringDamper])
     def test_invalid_type(self, load_group_cls) -> None:
         with pytest.raises(TypeError):
             PlanarTorso("torso").add_load_groups(load_group_cls("shoulder"))
 
     @pytest.mark.parametrize("load_group_cls", [
-        SphericalShoulderTorque])
+        SphericalShoulderTorque, SphericalShoulderSpringDamper])
     def test_descriptions(self, load_group_cls) -> None:
         _test_descriptions(load_group_cls("shoulder"))
 
@@ -139,12 +140,12 @@ class TestSphericalShoulderTorque:
             {model.shoulder.u[0]: 0, model.shoulder.u[1]: 0}).normalize()
         return model, load_group, flex_axis, add_axis, rot_axis
 
-    @pytest.mark.parametrize("hip_cls, leg_cls", [
+    @pytest.mark.parametrize("shoulder_cls, leg_cls", [
         (SphericalLeftShoulder, PinElbowStickLeftArm),
         (SphericalRightShoulder, PinElbowStickRightArm)])
-    def test_torque_loads(self, hip_cls, leg_cls) -> None:
+    def test_torque_loads(self, shoulder_cls, leg_cls) -> None:
         model, load_group, flex_axis, add_axis, rot_axis = self._get_test_torques_info(
-            hip_cls, leg_cls, SphericalShoulderTorque)
+            shoulder_cls, leg_cls, SphericalShoulderTorque)
         t_flex, t_add, t_rot = (load_group.symbols[name] for name in (
             "T_flexion", "T_adduction", "T_rotation"))
         for load in load_group.system.loads:
@@ -163,3 +164,39 @@ class TestSphericalShoulderTorque:
                     load.torque.xreplace({t_flex: 0, t_rot: 0}).dot(add_axis) - -t_add)
                 assert check_zero(
                     load.torque.xreplace({t_flex: 0, t_add: 0}).dot(rot_axis) - -t_rot)
+
+    @pytest.mark.parametrize("shoulder_cls, leg_cls", [
+        (SphericalLeftShoulder, PinElbowStickLeftArm),
+        (SphericalRightShoulder, PinElbowStickRightArm)])
+    def test_spring_damper_loads(self, shoulder_cls, leg_cls) -> None:
+        model, load_group, flex_axis, add_axis, rot_axis = self._get_test_torques_info(
+            shoulder_cls, leg_cls, SphericalShoulderSpringDamper)
+        syms = [tuple(load_group.symbols[f"{tp}_{name}"] for tp in ("k", "c", "q_ref"))
+                for name in ("flexion", "adduction", "rotation")]
+        zero = [{sym: 0 for sym in syms_tp} for syms_tp in syms]
+
+        def torque(syms, q, u):
+            return -syms[0] * (q - syms[2]) - syms[1] * u
+
+        for load in load_group.system.loads:
+            if load.frame == model.arm.shoulder_interframe:
+                assert check_zero(
+                    load.torque.xreplace({**zero[1], **zero[2]}).dot(flex_axis) -
+                    torque(syms[0], model.shoulder.q[0], model.shoulder.u[0]))
+                assert check_zero(
+                    load.torque.xreplace({**zero[0], **zero[2]}).dot(add_axis) -
+                    torque(syms[1], model.shoulder.q[1], model.shoulder.u[1]))
+                assert check_zero(
+                    load.torque.xreplace({**zero[0], **zero[1]}).dot(rot_axis) -
+                    torque(syms[2], model.shoulder.q[2], model.shoulder.u[2]))
+            else:
+                assert load.frame == model.torso.frame
+                assert check_zero(
+                    load.torque.xreplace({**zero[1], **zero[2]}).dot(flex_axis) +
+                    torque(syms[0], model.shoulder.q[0], model.shoulder.u[0]))
+                assert check_zero(
+                    load.torque.xreplace({**zero[0], **zero[2]}).dot(add_axis) +
+                    torque(syms[1], model.shoulder.q[1], model.shoulder.u[1]))
+                assert check_zero(
+                    load.torque.xreplace({**zero[0], **zero[1]}).dot(rot_axis) +
+                    torque(syms[2], model.shoulder.q[2], model.shoulder.u[2]))
