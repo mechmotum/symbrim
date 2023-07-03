@@ -4,7 +4,7 @@ from __future__ import annotations
 from abc import abstractmethod
 from typing import TYPE_CHECKING, Any
 
-from sympy import Symbol, acos, cos
+from sympy import Symbol
 from sympy.physics.mechanics import (
     PinJoint,
     Point,
@@ -257,13 +257,10 @@ class PinElbowSpringDamper(LoadGroupBase):
 
     def _define_loads(self) -> None:
         """Define the kinematics."""
-        u = self.parent.forearm.frame.ang_vel_in(self.parent.upper_arm.frame).dot(
-            self.parent.upper_arm.y)
-        dotted = self.parent.forearm.z.dot(self.parent.upper_arm.z)
-        q = acos(dotted) if dotted.func != cos else dotted.args[0]
+        elbow = self.parent.system.joints[0]
         self.system.add_actuators(
             TorqueActuator(
-                -self.symbols["k"] * (q - self.symbols["q_ref"]) -
-                self.symbols["c"] * u,
+                -self.symbols["k"] * (elbow.coordinates[0] - self.symbols["q_ref"]) -
+                self.symbols["c"] * elbow.speeds[0],
                 self.parent.upper_arm.y, self.parent.forearm, self.parent.upper_arm)
         )
