@@ -152,7 +152,7 @@ class SphericalHipTorque(LoadGroupBase):
 
 
 class SphericalHipSpringDamper(LoadGroupBase):
-    """Torque for the spherical hip joints."""
+    """Spring damper for the spherical hip joints."""
 
     parent: SphericalLeftHip | SphericalRightHip
     required_parent_type = (SphericalLeftHip, SphericalRightHip)
@@ -164,10 +164,11 @@ class SphericalHipSpringDamper(LoadGroupBase):
         for tp in ("flexion", "adduction", "rotation"):
             desc.update({
                 self.symbols[f"k_{tp}"]:
-                    f"{tp.capitalize()} stiffness of {self.parent}.",
-                self.symbols[f"c_{tp}"]: f"{tp.capitalize()} damping of {self.parent}.",
+                    f"{tp.capitalize()} stiffness of hip: {self.parent}.",
+                self.symbols[f"c_{tp}"]:
+                    f"{tp.capitalize()} damping of hip: {self.parent}.",
                 self.symbols[f"q_ref_{tp}"]:
-                    f"{tp.capitalize()} reference angle of {self.parent}.",
+                    f"{tp.capitalize()} reference angle of hip: {self.parent}.",
             })
         return desc
 
