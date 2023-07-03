@@ -32,8 +32,7 @@ class TestArmBase:
         assert isinstance(arm.hand_interframe, ReferenceFrame)
 
     def test_descriptions(self, arm_cls, base_cls) -> None:
-        arm = arm_cls("arm")
-        _test_descriptions(arm)
+        _test_descriptions(arm_cls("arm"))
 
 
 @pytest.mark.parametrize("arm_cls", [PinElbowStickLeftArm, PinElbowStickRightArm])
