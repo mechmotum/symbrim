@@ -114,13 +114,17 @@ class NonHolonomicTyre(TyreBase):
         """Define the kinematics of the tyre model."""
         super()._define_kinematics()
         self._set_pos_contact_point()
+        self.wheel.center.set_vel(self.ground.frame,
+                                  cross(self.wheel.frame.ang_vel_in(self.ground.frame),
+                                        self.wheel.center.pos_from(self.contact_point)))
 
     def _define_constraints(self) -> None:
         """Define the constraints of the tyre model."""
         super()._define_constraints()
         normal = self.ground.get_normal(self.contact_point)
         tangent_vectors = self.ground.get_tangent_vectors(self.contact_point)
-        v0 = self.wheel.center.vel(self.ground.frame) + cross(
+        v0 = self.wheel.center.pos_from(self.ground.origin).dt(self.ground.frame
+                                                               ) + cross(
             self.wheel.frame.ang_vel_in(self.ground.frame),
             self.contact_point.pos_from(self.wheel.center)
         )
