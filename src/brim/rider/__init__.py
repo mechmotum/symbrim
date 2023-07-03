@@ -26,6 +26,8 @@ __all__ = [
 
     "SphericalLeftHip", "SphericalRightHip", "PinLeftHip", "PinRightHip",
 
+    "SphericalHipTorque",
+
     "SphericalLeftShoulder", "SphericalRightShoulder"
 ]
 
@@ -51,6 +53,7 @@ from brim.rider.connections import RiderLeanConnection
 from brim.rider.hip_joints import (
     PinLeftHip,
     PinRightHip,
+    SphericalHipTorque,
     SphericalLeftHip,
     SphericalRightHip,
 )

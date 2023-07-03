@@ -1,17 +1,24 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import pytest
 from brim.core import ConnectionRequirement, ModelBase, ModelRequirement
 from brim.rider.base_connections import HipBase, LeftHipBase, RightHipBase
 from brim.rider.hip_joints import (
     PinLeftHip,
     PinRightHip,
+    SphericalHipTorque,
     SphericalLeftHip,
     SphericalRightHip,
 )
 from brim.rider.legs import LegBase, TwoPinStickLeftLeg, TwoPinStickRightLeg
 from brim.rider.pelvis import PelvisBase, PlanarPelvis
 from brim.utilities.testing import _test_descriptions
+from brim.utilities.utilities import check_zero
+
+if TYPE_CHECKING:
+    from sympy.physics.mechanics._system import System
 
 
 class HipModel(ModelBase):
@@ -25,6 +32,10 @@ class HipModel(ModelBase):
     pelvis: PelvisBase
     leg: LegBase
     hip: HipBase
+
+    @property
+    def system(self) -> System | None:
+        return self.hip.system
 
     def define_connections(self) -> None:
         self.hip.pelvis = self.pelvis
@@ -121,3 +132,40 @@ class TestPinLeftHipJoint:
     def test_kinematics(self):
         w = self.leg.hip_interframe.ang_vel_in(self.pelvis.frame)
         assert w.dot(self.pelvis.y) == self.hip.u
+
+
+class TestHipTorque:
+    def test_invalid_type(self) -> None:
+        with pytest.raises(TypeError):
+            TestPinLeftHipJoint("hip").add_load_groups(SphericalHipTorque("hip"))
+
+    def test_descriptions(self) -> None:
+        _test_descriptions(SphericalHipTorque("hip"))
+
+    @pytest.mark.parametrize("hip_cls, leg_cls", [
+        (SphericalLeftHip, TwoPinStickLeftLeg),
+        (SphericalRightHip, TwoPinStickRightLeg)])
+    def test_loads(self, hip_cls, leg_cls) -> None:
+        model = HipModel("model")
+        model.hip = hip_cls("hip")
+        model.pelvis = PlanarPelvis("pelvis")
+        model.leg = leg_cls("leg")
+        load_group = SphericalHipTorque("hip")
+        model.hip.add_load_groups(load_group)
+        model.define_all()
+        system = model.to_system()
+        assert len(system.loads) == 2
+        t_flex, t_add, t_rot = (load_group.symbols[name] for name in (
+            "T_flexion", "T_adduction", "T_rotation"))
+        w = model.leg.hip_interframe.ang_vel_in(model.pelvis.frame)
+        flex_axis = w.xreplace({model.hip.u[1]: 0, model.hip.u[2]: 0}).normalize()
+        add_axis = w.xreplace({model.hip.u[0]: 0, model.hip.u[2]: 0}).normalize()
+        rot_axis = w.xreplace({model.hip.u[0]: 0, model.hip.u[1]: 0}).normalize()
+        for load in system.loads:
+            if load.frame == model.leg.thigh.frame:
+                assert check_zero(
+                    load.torque.xreplace({t_add: 0, t_rot: 0}).dot(flex_axis) - t_flex)
+                assert check_zero(
+                    load.torque.xreplace({t_flex: 0, t_rot: 0}).dot(add_axis) - t_add)
+                assert check_zero(
+                    load.torque.xreplace({t_flex: 0, t_add: 0}).dot(rot_axis) - t_rot)

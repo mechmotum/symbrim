@@ -3,13 +3,20 @@ from __future__ import annotations
 
 from typing import Any
 
-from sympy import Matrix
-from sympy.physics.mechanics import PinJoint, SphericalJoint, dynamicsymbols
+from sympy import Matrix, cos, sin
+from sympy.physics.mechanics import (
+    PinJoint,
+    SphericalJoint,
+    Torque,
+    dynamicsymbols,
+)
 from sympy.physics.mechanics._system import System
 
+from brim.core import LoadGroupBase
 from brim.rider.base_connections import LeftHipBase, RightHipBase
 
-__all__ = ["SphericalLeftHip", "SphericalRightHip", "PinRightHip", "PinLeftHip"]
+__all__ = ["SphericalLeftHip", "SphericalRightHip", "PinRightHip", "PinLeftHip",
+           "SphericalHipTorque"]
 
 
 class SphericalHipMixin:
@@ -105,3 +112,40 @@ class PinLeftHip(PinHipMixin, LeftHipBase):
 
 class PinRightHip(PinHipMixin, RightHipBase):
     """Pin joint between the pelvis and the right leg."""
+
+
+class SphericalHipTorque(LoadGroupBase):
+    """Torque actuator for the spherical hip joints."""
+
+    parent: SphericalLeftHip | SphericalRightHip
+    required_parent_type = (SphericalLeftHip, SphericalRightHip)
+
+    @property
+    def descriptions(self) -> dict[Any, str]:
+        """Descriptions of the objects."""
+        return {
+            **super().descriptions,
+            self.symbols["T_flexion"]: "Flexion torque of the hip.",
+            self.symbols["T_adduction"]: "Adduction torque of the hip.",
+            self.symbols["T_rotation"]: "Rotation torque of the hip.",
+        }
+
+    def _define_objects(self) -> None:
+        """Define the objects."""
+        self.symbols.update({name: dynamicsymbols(self._add_prefix(name)) for name in (
+            "T_flexion", "T_adduction", "T_rotation")})
+
+    def _define_loads(self) -> None:
+        """Define the loads."""
+        hip = self.parent.system.joints[0]
+        adduction_axis = (cos(hip.coordinates[0]) * hip.parent_interframe.x -
+                          sin(hip.coordinates[0]) * hip.parent_interframe.z)
+        if isinstance(self.parent, LeftHipBase):
+            adduction_axis *= -1
+        torque = (self.symbols["T_flexion"] * hip.parent_interframe.y +
+                  self.symbols["T_adduction"] * adduction_axis +
+                  self.symbols["T_rotation"] * hip.child_interframe.z)
+        self.parent.system.add_loads(
+            Torque(hip.child_interframe, torque),
+            Torque(hip.parent_interframe, -torque)
+        )
