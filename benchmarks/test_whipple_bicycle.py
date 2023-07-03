@@ -19,7 +19,7 @@ from sympy.physics.mechanics import (
     inertia,
 )
 
-ROUNDS = 50
+ROUNDS = 3
 
 
 def create_whipple_bicycle_moore_brim():
