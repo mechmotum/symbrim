@@ -67,7 +67,7 @@ class TestSideLeanConnection:
         assert self.conn.frame_lean_axis == self.rear_frame.y
         self.model.define_kinematics()
         assert self.pelvis.frame.ang_vel_in(self.rear_frame.frame).dot(
-            self.rear_frame.y) == self.conn.u
+            self.rear_frame.y) == self.conn.u[0]
 
     def test_set_pelvis_lean_axis(self) -> None:
         self.model.define_connections()
@@ -78,7 +78,7 @@ class TestSideLeanConnection:
         assert self.conn.pelvis_lean_axis == self.pelvis.y
         self.model.define_kinematics()
         assert self.pelvis.frame.ang_vel_in(self.rear_frame.frame).dot(
-            self.pelvis.y) == self.conn.u
+            self.pelvis.y) == self.conn.u[0]
 
     @pytest.mark.parametrize("as_point", [True, False])
     def test_set_pelvis_interpoint(self, as_point) -> None:
@@ -128,7 +128,7 @@ class TestSideLeanConnection:
         self.model.define_all()
         assert len(load_group.system.actuators) == 1
         k, c, q_ref = (load_group.symbols[name] for name in ("k", "c", "q_ref"))
-        torque = (k * (q_ref - self.conn.q) - c * self.conn.u)
+        torque = (k * (q_ref - self.conn.q[0]) - c * self.conn.u[0])
         loads = load_group.system.actuators[0].to_loads()
         # Carefully check the signs of the torques.
         rot_axis = self.pelvis.frame.ang_vel_in(self.rear_frame.frame).normalize()

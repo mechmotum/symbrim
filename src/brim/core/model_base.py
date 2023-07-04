@@ -5,7 +5,7 @@ from abc import ABCMeta
 from functools import wraps
 from typing import TYPE_CHECKING, Any, Callable
 
-from sympy import Symbol, symbols
+from sympy import MutableDenseMatrix, Symbol, symbols
 from sympy.physics.mechanics._system import System
 
 from brim.core.registry import Registry
@@ -130,6 +130,8 @@ class BrimBase:
         self._name = str(name)
         self._system = None
         self.symbols: dict[str, Any] = {}
+        self.q: MutableDenseMatrix = MutableDenseMatrix()
+        self.u: MutableDenseMatrix = MutableDenseMatrix()
 
     def _add_prefix(self, names: str) -> str:
         """Add the name of the object as a prefix to a set of names.

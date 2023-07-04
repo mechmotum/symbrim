@@ -46,8 +46,8 @@ class StationaryBicycle(BicycleBase):
     def _define_objects(self) -> None:
         """Define the objects of the Whipple bicycle."""
         super()._define_objects()
-        self.q: Matrix = Matrix(dynamicsymbols(self._add_prefix("q1:4")))
-        self.u: Matrix = Matrix(dynamicsymbols(self._add_prefix("u1:4")))
+        self.q = Matrix(dynamicsymbols(self._add_prefix("q1:4")))
+        self.u = Matrix(dynamicsymbols(self._add_prefix("u1:4")))
         self.symbols.update({name: Symbol(
             self._add_prefix(name)) for name in ("gear_ratio", "l_px", "l_pz")})
         self._system = System.from_newtonian(self.rear_frame.body)

@@ -83,15 +83,15 @@ class PinHipMixin:
         """Descriptions of the objects."""
         return {
             **super().descriptions,
-            self.q: "Flexion angle of the hip.",
-            self.u: "Flexion angular velocity of the hip.",
+            self.q[0]: "Flexion angle of the hip.",
+            self.u[0]: "Flexion angular velocity of the hip.",
         }
 
     def _define_objects(self) -> None:
         """Define the objects."""
         super()._define_objects()
-        self.q = dynamicsymbols(self._add_prefix("q_flexion"))
-        self.u = dynamicsymbols(self._add_prefix("u_flexion"))
+        self.q = Matrix([dynamicsymbols(self._add_prefix("q_flexion"))])
+        self.u = Matrix([dynamicsymbols(self._add_prefix("u_flexion"))])
         self._system = System.from_newtonian(self.pelvis.body)
 
     def _define_kinematics(self) -> None:
