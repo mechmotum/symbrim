@@ -40,10 +40,10 @@ class WhippleBicycle(BicycleBase):
         ModelRequirement("front_wheel", WheelBase, "Submodel of the front wheel."),
     )
     required_connections: tuple[ConnectionRequirement, ...] = (
-        ConnectionRequirement("rear_tyre", TyreBase,
-                              "Tyre model for the rear wheel."),
         ConnectionRequirement("front_tyre", TyreBase,
                               "Tyre model for the front wheel."),
+        ConnectionRequirement("rear_tyre", TyreBase,
+                              "Tyre model for the rear wheel."),
     )
     ground: GroundBase
     rear_frame: RearFrameBase
