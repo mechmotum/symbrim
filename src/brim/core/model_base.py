@@ -249,25 +249,25 @@ class ModelBase(BrimBase, metaclass=ModelMeta):
             setattr(self, f"_{req.attribute_name}", None)
 
     @property
-    def submodels(self) -> frozenset[ModelBase]:
+    def submodels(self) -> tuple[ModelBase]:
         """Submodels out of which this model exists."""
         submodels = []
         for req in self.required_models:
             submodels.append(getattr(self, req.attribute_name))
-        return frozenset(submodel for submodel in submodels if submodel is not None)
+        return tuple(smd for smd in submodels if smd is not None)  # type: ignore
 
     @property
-    def connections(self) -> frozenset[ConnectionBase]:
+    def connections(self) -> tuple[ConnectionBase]:
         """Submodels out of which this model exists."""
         connections = []
         for req in self.required_connections:
             connections.append(getattr(self, req.attribute_name))
-        return frozenset(conn for conn in connections if conn is not None)
+        return tuple(conn for conn in connections if conn is not None)  # type: ignore
 
     @property
-    def load_groups(self) -> frozenset[LoadGroupBase]:
+    def load_groups(self) -> tuple[LoadGroupBase]:
         """Load groups of the connection."""
-        return frozenset(self._load_groups)
+        return tuple(self._load_groups)  # type: ignore
 
     def add_load_groups(self, *load_groups: LoadGroupBase) -> None:
         """Add load groups to the connection."""
@@ -379,17 +379,17 @@ class ConnectionBase(BrimBase, metaclass=ConnectionMeta):
             setattr(self, f"_{req.attribute_name}", None)
 
     @property
-    def submodels(self) -> frozenset[ModelBase]:
+    def submodels(self) -> tuple[ModelBase]:
         """Submodels of the connection."""
         submodels = []
         for req in self.required_models:
             submodels.append(getattr(self, req.attribute_name))
-        return frozenset(submodel for submodel in submodels if submodel is not None)
+        return tuple(smd for smd in submodels if smd is not None)  # type: ignore
 
     @property
-    def load_groups(self) -> frozenset[LoadGroupBase]:
+    def load_groups(self) -> tuple[LoadGroupBase]:
         """Load groups of the connection."""
-        return frozenset(self._load_groups)
+        return tuple(self._load_groups)  # type: ignore
 
     def add_load_groups(self, *load_groups: LoadGroupBase) -> None:
         """Add load groups to the connection."""
