@@ -93,11 +93,7 @@ class TestWhippleBicycleMoore:
 
     def test_basu_mandal(self, _setup_default) -> None:
         t = dynamicsymbols._t
-        self.bike.define_connections()
-        self.bike.define_objects()
-        self.bike.define_kinematics()
-        self.bike.define_loads()
-        self.bike.define_constraints()
+        self.bike.define_all()
         system = self.bike.to_system()
         system.apply_gravity(-Symbol("g") * self.bike.ground.get_normal(
             self.bike.ground.origin))
