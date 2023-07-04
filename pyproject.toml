@@ -77,7 +77,8 @@ exclude_also = [
     "def get_param_values",
 ]
 omit = [
-    "src/brim/utilities/plotting.py",
+    "src/brim/utilities/benchmarking.py",
     "src/brim/utilities/parametrize.py",
-    "src/brim/utilities/benchmarking.py"
+    "src/brim/utilities/plotting.py",
+    "src/brim/utilities/testing.py"
 ]
