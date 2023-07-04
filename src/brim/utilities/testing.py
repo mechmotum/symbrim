@@ -1,8 +1,6 @@
 """Module containing utilities for testing."""
 from __future__ import annotations
 
-from sympy.utilities.iterables import iterable
-
 from brim.core import ConnectionBase, ConnectionRequirement, LoadGroupBase, ModelBase
 
 
@@ -20,18 +18,10 @@ def _test_descriptions(instance: ModelBase | ConnectionBase | LoadGroupBase) -> 
         instance.define_objects()
     for sym in instance.symbols.values():
         assert sym in instance.descriptions
-    if hasattr(instance, "q"):
-        if iterable(instance.q):
-            for qi in instance.q:
-                assert qi in instance.descriptions
-        else:
-            assert instance.q in instance.descriptions
-    if hasattr(instance, "u"):
-        if iterable(instance.u):
-            for ui in instance.u:
-                assert ui in instance.descriptions
-        else:
-            assert instance.u in instance.descriptions
+    for qi in instance.q:
+        assert qi in instance.descriptions
+    for ui in instance.u:
+        assert ui in instance.descriptions
 
 
 def create_model_of_connection(connection_cls: type[ConnectionBase]) -> type[ModelBase]:

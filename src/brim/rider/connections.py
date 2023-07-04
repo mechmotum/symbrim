@@ -66,8 +66,8 @@ class RiderLeanConnection(ConnectionBase):
         self._lean_point = Point(self._add_prefix("lean_point"))
         self.symbols["d_lp_x"] = Symbol(self._add_prefix("d_lp_x"))
         self.symbols["d_lp_z"] = Symbol(self._add_prefix("d_lp_z"))
-        self.q: Matrix = Matrix([dynamicsymbols(self._add_prefix("q_rl"))])
-        self.u: Matrix = Matrix([dynamicsymbols(self._add_prefix("u_rl"))])
+        self.q = Matrix([dynamicsymbols(self._add_prefix("q_rl"))])
+        self.u = Matrix([dynamicsymbols(self._add_prefix("u_rl"))])
 
     def _define_kinematics(self):
         """Define the kinematics of the rider lean connection for the rear frame."""

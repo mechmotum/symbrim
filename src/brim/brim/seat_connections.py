@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from sympy import Symbol, cos, sin
+from sympy import Matrix, Symbol, cos, sin
 from sympy.physics.mechanics import PinJoint, Point, Vector, dynamicsymbols
 from sympy.physics.mechanics._actuator import TorqueActuator
 from sympy.physics.mechanics._system import System
@@ -22,16 +22,16 @@ class SideLeanSeat(SeatBase):
         """Descriptions of the objects."""
         return {
             **super().descriptions,
-            self.q: "Lean angle.",
-            self.u: "Angular lean velocity.",
+            self.q[0]: "Lean angle.",
+            self.u[0]: "Angular lean velocity.",
             self.symbols["alpha"]: "Angle of the rider lean axis.",
         }
 
     def _define_objects(self) -> None:
         """Define the objects."""
         super()._define_objects()
-        self.q = dynamicsymbols(self._add_prefix("q"))
-        self.u = dynamicsymbols(self._add_prefix("u"))
+        self.q = Matrix([dynamicsymbols(self._add_prefix("q"))])
+        self.u = Matrix([dynamicsymbols(self._add_prefix("u"))])
         alpha = Symbol(self._add_prefix("alpha"))
         self.symbols["alpha"] = alpha
         self._frame_lean_axis = (cos(alpha) * self.rear_frame.x -

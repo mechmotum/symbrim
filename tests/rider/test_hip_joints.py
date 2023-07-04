@@ -132,7 +132,7 @@ class TestPinLeftHipJoint:
 
     def test_kinematics(self):
         w = self.leg.hip_interframe.ang_vel_in(self.pelvis.frame)
-        assert w.dot(self.pelvis.y) == self.hip.u
+        assert w.dot(self.pelvis.y) == self.hip.u[0]
 
 
 class TestSphericalHipTorque:

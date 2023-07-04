@@ -99,8 +99,8 @@ class WhippleBicycleMoore(WhippleBicycle):
         self.rear_tyre.define_objects()
         self.rear_tyre.on_ground = True
         self.front_tyre.define_objects()
-        self.q: Matrix = Matrix(dynamicsymbols(self._add_prefix("q1:9")))
-        self.u: Matrix = Matrix(dynamicsymbols(self._add_prefix("u1:9")))
+        self.q = Matrix(dynamicsymbols(self._add_prefix("q1:9")))
+        self.u = Matrix(dynamicsymbols(self._add_prefix("u1:9")))
         self.symbols.update({name: Symbol(
             self._add_prefix(name)) for name in ("gear_ratio", "l_px", "l_pz")})
         self._system = System.from_newtonian(self.ground.body)

@@ -40,10 +40,7 @@ class TestPinElbowStickArm:
     @pytest.fixture(autouse=True)
     def _setup(self, arm_cls: type) -> None:
         self.arm = arm_cls("arm")
-        self.arm.define_objects()
-        self.arm.define_kinematics()
-        self.arm.define_loads()
-        self.arm.define_constraints()
+        self.arm.define_all()
         self.l_u, self.l_f, self.l_uc, self.l_fc = (self.arm.symbols[name] for name in (
             "l_upper_arm", "l_forearm", "l_upper_arm_com", "l_forearm_com"))
 
@@ -56,7 +53,7 @@ class TestPinElbowStickArm:
         assert self.arm.forearm.masscenter.pos_from(
             self.arm.system.joints[0].child_point) == self.l_fc * self.arm.forearm.z
         assert self.arm.forearm.frame.ang_vel_in(self.arm.upper_arm.frame).dot(
-            self.arm.upper_arm.y) == self.arm.u
+            self.arm.upper_arm.y) == self.arm.u[0]
 
 
 class TestPinElbowTorque:
@@ -109,9 +106,9 @@ class TestPinElbowSpringDamper:
         rot_axis = arm.forearm.frame.ang_vel_in(arm.upper_arm.frame).normalize()
         for load in loads:
             if load.frame == arm.forearm.frame:
-                assert check_zero(
-                    load.torque.dot(rot_axis) - (k * (q_ref - arm.q) - c * arm.u))
+                assert check_zero(load.torque.dot(rot_axis) -
+                                  (k * (q_ref - arm.q[0]) - c * arm.u[0]))
             else:
                 assert load.frame == arm.upper_arm.frame
-                assert check_zero(
-                    load.torque.dot(rot_axis) - (-k * (q_ref - arm.q) + c * arm.u))
+                assert check_zero(load.torque.dot(rot_axis) -
+                                  (-k * (q_ref - arm.q[0]) + c * arm.u[0]))

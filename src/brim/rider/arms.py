@@ -4,7 +4,7 @@ from __future__ import annotations
 from abc import abstractmethod
 from typing import TYPE_CHECKING, Any
 
-from sympy import Symbol
+from sympy import Matrix, Symbol
 from sympy.physics.mechanics import (
     PinJoint,
     Point,
@@ -91,8 +91,8 @@ class PinElbowStickArmMixin:
             self.symbols["l_forearm"]: "Forearm length",
             self.symbols["l_forearm_com"]: "Forearm center of mass position from "
                                            "elbow.",
-            self.q: "Elbow flexion angle",
-            self.u: "Elbow flexion angular velocity",
+            self.q[0]: "Elbow flexion angle",
+            self.u[0]: "Elbow flexion angular velocity",
         }
 
     def _define_objects(self):
@@ -104,8 +104,8 @@ class PinElbowStickArmMixin:
             "l_forearm": Symbol(self._add_prefix("l_forearm")),
             "l_forearm_com": Symbol(self._add_prefix("l_forearm_com")),
         })
-        self.q = dynamicsymbols(self._add_prefix("q_elbow_flexion"))
-        self.u = dynamicsymbols(self._add_prefix("u_elbow_flexion"))
+        self.q = Matrix([dynamicsymbols(self._add_prefix("q_elbow_flexion"))])
+        self.u = Matrix([dynamicsymbols(self._add_prefix("u_elbow_flexion"))])
         self._upper_arm = RigidBody(self._add_prefix("upper_arm"))
         self._forearm = RigidBody(self._add_prefix("forearm"))
         self._system = System.from_newtonian(self.upper_arm)

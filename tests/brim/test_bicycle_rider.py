@@ -116,8 +116,8 @@ class TestCompleteBicycleRider:
         system.q_ind = [*self.bicycle.q[:4], *self.bicycle.q[5:],
                         self.rider.left_hip.q[0], self.rider.left_leg.q[0],
                         self.rider.right_hip.q[0], self.rider.right_leg.q[0],
-                        self.rider.left_arm.q, self.rider.right_arm.q,
-                        self.br.seat_connection.q]
+                        *self.rider.left_arm.q, *self.rider.right_arm.q,
+                        *self.br.seat_connection.q]
         system.q_dep = [self.bicycle.q[4],
                         *self.rider.left_hip.q[1:], self.rider.left_leg.q[1],
                         *self.rider.right_hip.q[1:], self.rider.right_leg.q[1],
@@ -125,8 +125,8 @@ class TestCompleteBicycleRider:
         system.u_ind = [self.bicycle.u[3], *self.bicycle.u[5:7],
                         self.rider.left_hip.u[0], self.rider.left_leg.u[0],
                         self.rider.right_hip.u[0], self.rider.right_leg.u[0],
-                        self.rider.left_arm.u, self.rider.right_arm.u,
-                        self.br.seat_connection.u]
+                        *self.rider.left_arm.u, *self.rider.right_arm.u,
+                        *self.br.seat_connection.u]
         system.u_dep = [*self.bicycle.u[:3], self.bicycle.u[4], self.bicycle.u[7],
                         *self.rider.left_hip.u[1:], self.rider.left_leg.u[1],
                         *self.rider.right_hip.u[1:], self.rider.right_leg.u[1],
