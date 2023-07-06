@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from sympy import Symbol
+from sympy import symbols
 from sympy.physics.mechanics import dynamicsymbols
 from sympy.physics.mechanics._actuator import LinearDamper, LinearSpring
 from sympy.physics.mechanics._pathway import LinearPathway
@@ -16,7 +16,7 @@ __all__ = ["HolonomicPedalsToFeet", "SpringDamperPedalsToFeet"]
 
 
 class HolonomicPedalsToFeet(PedalsToFeetBase):
-    """Defines the connection between the pedals and the feet as holonomic constraints.
+    """Constrain the feet to the pedals using holonomic constraints.
 
     Explanation
     -----------
@@ -57,7 +57,7 @@ class HolonomicPedalsToFeet(PedalsToFeetBase):
 
 
 class SpringDamperPedalsToFeet(PedalsToFeetBase):
-    """Defines the connection between the pedals and the feet as spring-damper."""
+    """Constrain the feet to the pedals using spring-damper."""
 
     @property
     def descriptions(self) -> dict[Any, str]:
@@ -72,8 +72,7 @@ class SpringDamperPedalsToFeet(PedalsToFeetBase):
 
     def _define_objects(self) -> None:
         """Define the objects."""
-        self.symbols["k"] = Symbol(self._add_prefix("k"))
-        self.symbols["c"] = Symbol(self._add_prefix("c"))
+        self.symbols["k"], self.symbols["c"] = symbols(self._add_prefix("k c"))
         self._system = System()
 
     def _define_loads(self) -> None:
