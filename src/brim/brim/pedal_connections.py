@@ -1,17 +1,22 @@
 """Module containing the pedal connections."""
 from __future__ import annotations
 
+from typing import Any
+
+from sympy import symbols
 from sympy.physics.mechanics import dynamicsymbols
+from sympy.physics.mechanics._actuator import LinearDamper, LinearSpring
+from sympy.physics.mechanics._pathway import LinearPathway
 from sympy.physics.mechanics._system import System
 
 from brim.brim.base_connections import PedalsToFeetBase
 from brim.utilities.utilities import check_zero
 
-__all__ = ["HolonomicPedalsToFeet"]
+__all__ = ["HolonomicPedalsToFeet", "SpringDamperPedalsToFeet"]
 
 
 class HolonomicPedalsToFeet(PedalsToFeetBase):
-    """Defines the connection between the pedals and the feet as holonomic constraints.
+    """Constrain the feet to the pedals using holonomic constraints.
 
     Explanation
     -----------
@@ -49,3 +54,37 @@ class HolonomicPedalsToFeet(PedalsToFeetBase):
         if error_msg:
             raise ValueError(error_msg)
         self.system.add_holonomic_constraints(*constrs)
+
+
+class SpringDamperPedalsToFeet(PedalsToFeetBase):
+    """Constrain the feet to the pedals using spring-damper."""
+
+    @property
+    def descriptions(self) -> dict[Any, str]:
+        """Descriptions of the objects."""
+        return {
+            **super().descriptions,
+            self.symbols["k"]:
+                "Spring stiffness of the connection between the pedals and the feet.",
+            self.symbols["c"]: "Damping coefficient of the connection between the "
+                               "pedals and the feet.",
+        }
+
+    def _define_objects(self) -> None:
+        """Define the objects."""
+        self.symbols["k"], self.symbols["c"] = symbols(self._add_prefix("k c"))
+        self._system = System()
+
+    def _define_loads(self) -> None:
+        """Define the loads."""
+        super()._define_loads()
+        path_left = LinearPathway(
+            self.pedals.left_pedal_point, self.left_leg.foot_interpoint)
+        path_right = LinearPathway(
+            self.pedals.right_pedal_point, self.right_leg.foot_interpoint)
+        self.system.add_actuators(
+            LinearSpring(self.symbols["k"], path_left),
+            LinearDamper(self.symbols["c"], path_left),
+            LinearSpring(self.symbols["k"], path_right),
+            LinearDamper(self.symbols["c"], path_right)
+        )

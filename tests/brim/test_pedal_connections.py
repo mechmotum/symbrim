@@ -3,14 +3,14 @@ from __future__ import annotations
 import pytest
 from brim.bicycle.pedals import SimplePedals
 from brim.brim.base_connections import PedalsToFeetBase
-from brim.brim.pedal_connections import HolonomicPedalsToFeet
+from brim.brim.pedal_connections import HolonomicPedalsToFeet, SpringDamperPedalsToFeet
 from brim.rider.legs import TwoPinStickLeftLeg, TwoPinStickRightLeg
 from brim.utilities.testing import _test_descriptions, create_model_of_connection
 from sympy import Symbol
-from sympy.physics.mechanics import dynamicsymbols
+from sympy.physics.mechanics import Vector, dynamicsymbols
 
 
-@pytest.mark.parametrize("pedal_cls", [HolonomicPedalsToFeet])
+@pytest.mark.parametrize("pedal_cls", [HolonomicPedalsToFeet, SpringDamperPedalsToFeet])
 class TestPedalConnectionBase:
     @pytest.fixture(autouse=True)
     def _setup(self, pedal_cls) -> None:
@@ -104,3 +104,57 @@ class TestHolonomicPedalsConnection:
         self.model.define_loads()
         with pytest.raises(ValueError):
             self.model.define_constraints()
+
+
+class TestSpringDamperPedalsConnection:
+    @pytest.fixture(autouse=True)
+    def _setup(self) -> None:
+        self.model = create_model_of_connection(SpringDamperPedalsToFeet)("model")
+        self.model.pedals = SimplePedals("pedals")
+        self.model.left_leg = TwoPinStickLeftLeg("left_leg")
+        self.model.right_leg = TwoPinStickRightLeg("right_leg")
+        self.model.conn = SpringDamperPedalsToFeet("pedal_connection")
+        self.model.define_connections()
+        self.model.define_objects()
+        self.model.left_leg.foot_interframe.orient_axis(
+            self.model.pedals.frame, self.model.pedals.rotation_axis, 0)
+        self.model.right_leg.foot_interframe.orient_axis(
+            self.model.pedals.frame, self.model.pedals.rotation_axis, 0)
+        self.pedals, self.left_leg, self.right_leg, self.conn = (
+            self.model.pedals, self.model.left_leg, self.model.right_leg,
+            self.model.conn)
+
+    def test_loads(self) -> None:
+        q1, q2 = dynamicsymbols("q1:3")
+        self.left_leg.foot_interpoint.set_pos(
+            self.pedals.left_pedal_point, q1 * self.pedals.frame.x)
+        self.right_leg.foot_interpoint.set_pos(
+            self.pedals.right_pedal_point, -q2 * self.pedals.frame.y)
+        self.model.define_kinematics()
+        self.model.define_loads()
+        self.model.define_constraints()
+        loads_indi = [ld for act in self.conn.system.actuators for ld in act.to_loads()]
+        locations, loads = {}, []
+        for ld in loads_indi:
+            if ld.location not in locations:
+                locations[ld.location] = len(loads)
+                loads.append(ld)
+            else:
+                loads[locations[ld.location]] = ld.__class__(
+                    ld.location, ld.vector + loads[locations[ld.location]].vector)
+        assert len(loads) == 4
+        k, c = self.conn.symbols["k"], self.conn.symbols["c"]
+        for ld in loads:
+            if ld.location == self.pedals.left_pedal_point:
+                assert (ld.vector - (k * q1 + c * q1.diff()) * self.pedals.frame.x
+                        ).simplify() == Vector(0)
+            elif ld.location == self.left_leg.foot_interpoint:
+                assert (ld.vector + (k * q1 + c * q1.diff()) * self.pedals.frame.x
+                        ).simplify() == Vector(0)
+            elif ld.location == self.pedals.right_pedal_point:
+                assert (ld.vector - (-k * q2 - c * q2.diff()) * self.pedals.frame.y
+                        ).simplify() == Vector(0)
+            else:
+                assert ld.location == self.right_leg.foot_interpoint
+                assert (ld.vector + (-k * q2 - c * q2.diff()) * self.pedals.frame.y
+                        ).simplify() == Vector(0)

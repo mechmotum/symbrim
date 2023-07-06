@@ -3,14 +3,14 @@ from __future__ import annotations
 import pytest
 from brim.bicycle.front_frames import RigidFrontFrameMoore
 from brim.brim.base_connections import HandGripBase
-from brim.brim.steer_connections import HolonomicHandGrip
+from brim.brim.steer_connections import HolonomicHandGrip, SpringDamperHandGrip
 from brim.rider.arms import PinElbowStickLeftArm, PinElbowStickRightArm
 from brim.utilities.testing import _test_descriptions, create_model_of_connection
 from sympy import Symbol
-from sympy.physics.mechanics import dynamicsymbols
+from sympy.physics.mechanics import Vector, dynamicsymbols
 
 
-@pytest.mark.parametrize("steer_cls", [HolonomicHandGrip])
+@pytest.mark.parametrize("steer_cls", [HolonomicHandGrip, SpringDamperHandGrip])
 class TestSteerConnectionBase:
     @pytest.fixture(autouse=True)
     def _setup(self, steer_cls) -> None:
@@ -42,7 +42,7 @@ class TestSteerConnectionBase:
         _test_descriptions(self.model.conn)
 
 
-class TestHolonomicSteerConnection:
+class TestHolonomicHandGrip:
     @pytest.fixture(autouse=True)
     def _setup(self) -> None:
         self.model = create_model_of_connection(HolonomicHandGrip)("model")
@@ -102,3 +102,57 @@ class TestHolonomicSteerConnection:
         self.model.define_loads()
         with pytest.raises(ValueError):
             self.model.define_constraints()
+
+
+class TestSpringDamperHandGrip:
+    @pytest.fixture(autouse=True)
+    def _setup(self) -> None:
+        self.model = create_model_of_connection(SpringDamperHandGrip)("model")
+        self.model.steer = RigidFrontFrameMoore("front_frame")
+        self.model.left_arm = PinElbowStickLeftArm("left_arm")
+        self.model.right_arm = PinElbowStickRightArm("right_arm")
+        self.model.conn = SpringDamperHandGrip("steer_connection")
+        self.model.define_connections()
+        self.model.define_objects()
+        self.model.left_arm.hand_interframe.orient_axis(
+            self.model.steer.frame, self.model.steer.steer_axis, 0)
+        self.model.right_arm.hand_interframe.orient_axis(
+            self.model.steer.frame, self.model.steer.steer_axis, 0)
+        self.steer, self.left_arm, self.right_arm, self.conn = (
+            self.model.steer, self.model.left_arm, self.model.right_arm,
+            self.model.conn)
+
+    def test_loads(self) -> None:
+        q1, q2 = dynamicsymbols("q1:3")
+        self.left_arm.hand_interpoint.set_pos(
+            self.steer.left_handgrip, q1 * self.steer.frame.x)
+        self.right_arm.hand_interpoint.set_pos(
+            self.steer.right_handgrip, -q2 * self.steer.frame.y)
+        self.model.define_kinematics()
+        self.model.define_loads()
+        self.model.define_constraints()
+        loads_indi = [ld for act in self.conn.system.actuators for ld in act.to_loads()]
+        locations, loads = {}, []
+        for ld in loads_indi:
+            if ld.location not in locations:
+                locations[ld.location] = len(loads)
+                loads.append(ld)
+            else:
+                loads[locations[ld.location]] = ld.__class__(
+                    ld.location, ld.vector + loads[locations[ld.location]].vector)
+        assert len(loads) == 4
+        k, c = self.conn.symbols["k"], self.conn.symbols["c"]
+        for ld in loads:
+            if ld.location == self.steer.left_handgrip:
+                assert (ld.vector - (k * q1 + c * q1.diff()) * self.steer.frame.x
+                        ).simplify() == Vector(0)
+            elif ld.location == self.left_arm.hand_interpoint:
+                assert (ld.vector + (k * q1 + c * q1.diff()) * self.steer.frame.x
+                        ).simplify() == Vector(0)
+            elif ld.location == self.steer.right_handgrip:
+                assert (ld.vector - (-k * q2 - c * q2.diff()) * self.steer.frame.y
+                        ).simplify() == Vector(0)
+            else:
+                assert ld.location == self.right_arm.hand_interpoint
+                assert (ld.vector + (-k * q2 - c * q2.diff()) * self.steer.frame.y
+                        ).simplify() == Vector(0)
