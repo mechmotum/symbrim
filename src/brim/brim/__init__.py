@@ -9,7 +9,7 @@ __all__ = [
 
     "SideLeanSeat", "SideLeanSeatTorque", "SideLeanSeatSpringDamper",
 
-    "HolonomicHandGrip",
+    "HolonomicHandGrip", "SpringDamperHandGrip",
 ]
 
 from brim.brim.base_connections import (
@@ -24,4 +24,4 @@ from brim.brim.seat_connections import (
     SideLeanSeatSpringDamper,
     SideLeanSeatTorque,
 )
-from brim.brim.steer_connections import HolonomicHandGrip
+from brim.brim.steer_connections import HolonomicHandGrip, SpringDamperHandGrip
