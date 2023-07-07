@@ -91,7 +91,7 @@ class TestSphericalLeftHipJoint:
         assert w.dot(self.pelvis.y).xreplace(
             {self.hip.q[1]: 0, self.hip.q[2]: 0}) == self.hip.u[0]
         assert w.dot(self.pelvis.x).xreplace(
-            {self.hip.q[0]: 0, self.hip.q[2]: 0}) == -self.hip.u[1]
+            {self.hip.q[0]: 0, self.hip.q[2]: 0}) == self.hip.u[1]
         assert w.dot(self.pelvis.z).xreplace(
             {self.hip.q[0]: 0, self.hip.q[1]: 0}) == self.hip.u[2]
 
@@ -112,7 +112,7 @@ class TestSphericalRightHipJoint:
         assert w.dot(self.pelvis.y).xreplace(
             {self.hip.q[1]: 0, self.hip.q[2]: 0}) == self.hip.u[0]
         assert w.dot(self.pelvis.x).xreplace(
-            {self.hip.q[0]: 0, self.hip.q[2]: 0}) == self.hip.u[1]
+            {self.hip.q[0]: 0, self.hip.q[2]: 0}) == -self.hip.u[1]
         assert w.dot(self.pelvis.z).xreplace(
             {self.hip.q[0]: 0, self.hip.q[1]: 0}) == self.hip.u[2]
 
@@ -160,24 +160,24 @@ class TestSphericalHipTorque:
         assert len(load_group.system.loads) == 2
         w = model.leg.hip_interframe.ang_vel_in(model.pelvis.frame)
         flex_axis = w.xreplace({model.hip.u[1]: 0, model.hip.u[2]: 0}).normalize()
-        add_axis = w.xreplace({model.hip.u[0]: 0, model.hip.u[2]: 0}).normalize()
+        abd_axis = w.xreplace({model.hip.u[0]: 0, model.hip.u[2]: 0}).normalize()
         rot_axis = w.xreplace({model.hip.u[0]: 0, model.hip.u[1]: 0}).normalize()
-        return model, load_group, flex_axis, add_axis, rot_axis
+        return model, load_group, flex_axis, abd_axis, rot_axis
 
     @pytest.mark.parametrize("hip_cls, leg_cls", [
         (SphericalLeftHip, TwoPinStickLeftLeg),
         (SphericalRightHip, TwoPinStickRightLeg)])
     def test_torque_loads(self, hip_cls, leg_cls) -> None:
-        model, load_group, flex_axis, add_axis, rot_axis = self._get_test_torques_info(
+        model, load_group, flex_axis, abd_axis, rot_axis = self._get_test_torques_info(
             hip_cls, leg_cls, SphericalHipTorque)
         t_flex, t_add, t_rot = (load_group.symbols[name] for name in (
-            "T_flexion", "T_adduction", "T_rotation"))
+            "T_flexion", "T_abduction", "T_rotation"))
         for load in load_group.system.loads:
             if load.frame == model.leg.thigh.frame:
                 assert check_zero(
                     load.torque.xreplace({t_add: 0, t_rot: 0}).dot(flex_axis) - t_flex)
                 assert check_zero(
-                    load.torque.xreplace({t_flex: 0, t_rot: 0}).dot(add_axis) - t_add)
+                    load.torque.xreplace({t_flex: 0, t_rot: 0}).dot(abd_axis) - t_add)
                 assert check_zero(
                     load.torque.xreplace({t_flex: 0, t_add: 0}).dot(rot_axis) - t_rot)
             else:
@@ -185,7 +185,7 @@ class TestSphericalHipTorque:
                 assert check_zero(
                     load.torque.xreplace({t_add: 0, t_rot: 0}).dot(flex_axis) - -t_flex)
                 assert check_zero(
-                    load.torque.xreplace({t_flex: 0, t_rot: 0}).dot(add_axis) - -t_add)
+                    load.torque.xreplace({t_flex: 0, t_rot: 0}).dot(abd_axis) - -t_add)
                 assert check_zero(
                     load.torque.xreplace({t_flex: 0, t_add: 0}).dot(rot_axis) - -t_rot)
 
@@ -193,10 +193,10 @@ class TestSphericalHipTorque:
         (SphericalLeftHip, TwoPinStickLeftLeg),
         (SphericalRightHip, TwoPinStickRightLeg)])
     def test_spring_damper_loads(self, hip_cls, leg_cls) -> None:
-        model, load_group, flex_axis, add_axis, rot_axis = self._get_test_torques_info(
+        model, load_group, flex_axis, abd_axis, rot_axis = self._get_test_torques_info(
             hip_cls, leg_cls, SphericalHipSpringDamper)
         syms = [tuple(load_group.symbols[f"{tp}_{name}"] for tp in ("k", "c", "q_ref"))
-                for name in ("flexion", "adduction", "rotation")]
+                for name in ("flexion", "abduction", "rotation")]
         zero = [{sym: 0 for sym in syms_tp} for syms_tp in syms]
 
         def torque(syms, q, u):
@@ -208,7 +208,7 @@ class TestSphericalHipTorque:
                     load.torque.xreplace({**zero[1], **zero[2]}).dot(flex_axis) -
                     torque(syms[0], model.hip.q[0], model.hip.u[0]))
                 assert check_zero(
-                    load.torque.xreplace({**zero[0], **zero[2]}).dot(add_axis) -
+                    load.torque.xreplace({**zero[0], **zero[2]}).dot(abd_axis) -
                     torque(syms[1], model.hip.q[1], model.hip.u[1]))
                 assert check_zero(
                     load.torque.xreplace({**zero[0], **zero[1]}).dot(rot_axis) -
@@ -219,7 +219,7 @@ class TestSphericalHipTorque:
                     load.torque.xreplace({**zero[1], **zero[2]}).dot(flex_axis) +
                     torque(syms[0], model.hip.q[0], model.hip.u[0]))
                 assert check_zero(
-                    load.torque.xreplace({**zero[0], **zero[2]}).dot(add_axis) +
+                    load.torque.xreplace({**zero[0], **zero[2]}).dot(abd_axis) +
                     torque(syms[1], model.hip.q[1], model.hip.u[1]))
                 assert check_zero(
                     load.torque.xreplace({**zero[0], **zero[1]}).dot(rot_axis) +
