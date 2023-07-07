@@ -114,7 +114,7 @@ class TestSphericalRightHipJoint:
         assert w.dot(self.pelvis.x).xreplace(
             {self.hip.q[0]: 0, self.hip.q[2]: 0}) == -self.hip.u[1]
         assert w.dot(self.pelvis.z).xreplace(
-            {self.hip.q[0]: 0, self.hip.q[1]: 0}) == self.hip.u[2]
+            {self.hip.q[0]: 0, self.hip.q[1]: 0}) == -self.hip.u[2]
 
 
 @pytest.mark.parametrize("hip_cls, leg_cls", [

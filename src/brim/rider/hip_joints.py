@@ -29,7 +29,7 @@ class SphericalHipMixin:
             **super().descriptions,
             self.q[0]: "Flexion angle of the hip.",
             self.q[1]: "Abduction angle of the hip.",
-            self.q[2]: "Rotation angle of the hip.",
+            self.q[2]: "Endorotation angle of the hip.",
             self.u[0]: "Flexion angular velocity of the hip.",
             self.u[1]: "Abduction angular velocity of the hip.",
             self.u[2]: "Rotation angular velocity of the hip.",
@@ -71,7 +71,7 @@ class SphericalRightHip(SphericalHipMixin, RightHipBase):
                 self._add_prefix("joint"), self.pelvis.body, self.leg.hip, self.q,
                 self.u, self.pelvis.right_hip_point, self.leg.hip_interpoint,
                 self.pelvis.frame, self.leg.hip_interframe, rot_type="BODY",
-                amounts=(self.q[0], -self.q[1], self.q[2]), rot_order="YXZ")
+                amounts=(self.q[0], -self.q[1], -self.q[2]), rot_order="YXZ")
         )
 
 
@@ -142,9 +142,12 @@ class SphericalHipTorque(LoadGroupBase):
                           sin(hip.coordinates[0]) * hip.parent_interframe.z)
         if isinstance(self.parent, RightHipBase):
             abduction_axis *= -1
+            rot_dir = -1
+        else:
+            rot_dir = 1
         torque = (self.symbols["T_flexion"] * hip.parent_interframe.y +
                   self.symbols["T_abduction"] * abduction_axis +
-                  self.symbols["T_rotation"] * hip.child_interframe.z)
+                  self.symbols["T_rotation"] * rot_dir * hip.child_interframe.z)
         self.parent.system.add_loads(
             Torque(hip.child_interframe, torque),
             Torque(hip.parent_interframe, -torque)
@@ -185,6 +188,9 @@ class SphericalHipSpringDamper(LoadGroupBase):
                           sin(hip.coordinates[0]) * hip.parent_interframe.z)
         if isinstance(self.parent, RightHipBase):
             abduction_axis *= -1
+            rot_dir = -1
+        else:
+            rot_dir = 1
         torques = []
         for i, tp in enumerate(("flexion", "abduction", "rotation")):
             torques.append(-self.symbols[f"k_{tp}"] * (
@@ -192,7 +198,7 @@ class SphericalHipSpringDamper(LoadGroupBase):
                            self.symbols[f"c_{tp}"] * hip.speeds[i])
         torque = (torques[0] * hip.parent_interframe.y +
                   torques[1] * abduction_axis +
-                  torques[2] * hip.child_interframe.z)
+                  torques[2] * rot_dir * hip.child_interframe.z)
         self.parent.system.add_loads(
             Torque(hip.child_interframe, torque),
             Torque(hip.parent_interframe, -torque)
