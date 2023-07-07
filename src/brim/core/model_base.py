@@ -483,7 +483,7 @@ def set_default_formulation(formulation: str
     return decorator
 
 
-def _merge_systems(*systems: System) -> System:  # pragma: no cover
+def _merge_systems(*systems: System) -> System:
     """Combine multiple system instance into one.
 
     Notes
@@ -495,37 +495,23 @@ def _merge_systems(*systems: System) -> System:  # pragma: no cover
     for s in systems:
         if s is None:
             continue
-        for qi in s.q_ind:
-            if qi not in system.q:
-                system.add_coordinates(qi, independent=True)
-        for qi in s.q_dep:
-            if qi not in system.q:
-                system.add_coordinates(qi, independent=False)
-        for ui in s.u_ind:
-            if ui not in system.u:
-                system.add_speeds(ui, independent=True)
-        for ui in s.u_dep:
-            if ui not in system.u:
-                system.add_speeds(ui, independent=False)
-        for body in s.bodies:
-            if body not in system.bodies:
-                system.add_bodies(body)
-        for joint in s.joints:
-            if joint not in system.joints:
-                system.add_joints(joint)
-        for load in s.loads:
-            if load not in system.loads:
-                system.add_loads(load)
-        for actuator in s.actuators:
-            if actuator not in system.actuators:
-                system.add_actuators(actuator)
-        for kde in s.kdes:
-            if kde not in system.kdes:
-                system.add_kdes(kde)
-        for fh in s.holonomic_constraints:
-            if fh not in system.holonomic_constraints:
-                system.add_holonomic_constraints(fh)
-        for fnh in s.nonholonomic_constraints:
-            if fnh not in system.nonholonomic_constraints:
-                system.add_nonholonomic_constraints(fnh)
+        attributes = [
+            ("q_ind", "q", "add_coordinates", {"independent": True}),
+            ("q_dep", "q", "add_coordinates", {"independent": False}),
+            ("u_ind", "u", "add_speeds", {"independent": True}),
+            ("u_dep", "u", "add_speeds", {"independent": False}),
+            ("bodies", "bodies", "add_bodies", {}),
+            ("joints", "joints", "add_joints", {}),
+            ("loads", "loads", "add_loads", {}),
+            ("actuators", "actuators", "add_actuators", {}),
+            ("kdes", "kdes", "add_kdes", {}),
+            ("holonomic_constraints", "holonomic_constraints",
+             "add_holonomic_constraints", {}),
+            ("nonholonomic_constraints", "nonholonomic_constraints",
+             "add_nonholonomic_constraints", {}),
+        ]
+        for attr_to_add, attr_existing, add_method, kwargs in attributes:
+            for item in getattr(s, attr_to_add):
+                if item not in getattr(system, attr_existing):
+                    getattr(system, add_method)(item, **kwargs)
     return system
