@@ -86,7 +86,8 @@ class SphericalShoulderTorque(LoadGroupBase):
             self.symbols["T_flexion"]: f"Flexion torque of shoulder: {self.parent}.",
             self.symbols["T_adduction"]:
                 f"Adduction torque of shoulder: {self.parent}.",
-            self.symbols["T_rotation"]: f"Rotation torque of shoulder: {self.parent}.",
+            self.symbols["T_rotation"]:
+                f"Endorotation torque of shoulder: {self.parent}.",
         }
 
     def _define_objects(self) -> None:

@@ -32,7 +32,7 @@ class SphericalHipMixin:
             self.q[2]: "Endorotation angle of the hip.",
             self.u[0]: "Flexion angular velocity of the hip.",
             self.u[1]: "Adduction angular velocity of the hip.",
-            self.u[2]: "Rotation angular velocity of the hip.",
+            self.u[2]: "Endorotation angular velocity of the hip.",
         }
 
     def _define_objects(self) -> None:
@@ -127,7 +127,7 @@ class SphericalHipTorque(LoadGroupBase):
             **super().descriptions,
             self.symbols["T_flexion"]: "Flexion torque of the hip.",
             self.symbols["T_adduction"]: "Adduction torque of the hip.",
-            self.symbols["T_rotation"]: "Rotation torque of the hip.",
+            self.symbols["T_rotation"]: "Endorotation torque of the hip.",
         }
 
     def _define_objects(self) -> None:
