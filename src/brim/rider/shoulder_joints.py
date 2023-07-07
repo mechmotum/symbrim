@@ -24,7 +24,7 @@ class SphericalShoulderMixin:
             **super().descriptions,
             self.q[0]: "Flexion angle of the shoulder.",
             self.q[1]: "Abduction angle of the shoulder.",
-            self.q[2]: "Rotation angle of the shoulder.",
+            self.q[2]: "Endorotation angle of the shoulder.",
             self.u[0]: "Flexion angular velocity of the shoulder.",
             self.u[1]: "Abduction angular velocity of the shoulder.",
             self.u[2]: "Rotation angular velocity of the shoulder.",
@@ -67,7 +67,7 @@ class SphericalRightShoulder(SphericalShoulderMixin, RightShoulderBase):
                 self._add_prefix("joint"), self.torso.body, self.arm.shoulder, self.q,
                 self.u, self.torso.right_shoulder_point, self.arm.shoulder_interpoint,
                 self.torso.right_shoulder_frame, self.arm.shoulder_interframe,
-                rot_type="BODY", amounts=(self.q[0], -self.q[1], self.q[2]),
+                rot_type="BODY", amounts=(self.q[0], -self.q[1], -self.q[2]),
                 rot_order="YXZ")
         )
 
@@ -101,9 +101,12 @@ class SphericalShoulderTorque(LoadGroupBase):
                           sin(shoulder.coordinates[0]) * shoulder.parent_interframe.z)
         if isinstance(self.parent, RightShoulderBase):
             abduction_axis *= -1
+            rot_dir = -1
+        else:
+            rot_dir = 1
         torque = (self.symbols["T_flexion"] * shoulder.parent_interframe.y +
                   self.symbols["T_abduction"] * abduction_axis +
-                  self.symbols["T_rotation"] * shoulder.child_interframe.z)
+                  self.symbols["T_rotation"] * rot_dir * shoulder.child_interframe.z)
         self.parent.system.add_loads(
             Torque(shoulder.child_interframe, torque),
             Torque(shoulder.parent_interframe, -torque)
@@ -144,6 +147,9 @@ class SphericalShoulderSpringDamper(LoadGroupBase):
                           sin(shoulder.coordinates[0]) * shoulder.parent_interframe.z)
         if isinstance(self.parent, RightShoulderBase):
             abduction_axis *= -1
+            rot_dir = -1
+        else:
+            rot_dir = 1
         torques = []
         for i, tp in enumerate(("flexion", "abduction", "rotation")):
             torques.append(-self.symbols[f"k_{tp}"] * (
@@ -151,7 +157,7 @@ class SphericalShoulderSpringDamper(LoadGroupBase):
                            self.symbols[f"c_{tp}"] * shoulder.speeds[i])
         torque = (torques[0] * shoulder.parent_interframe.y +
                   torques[1] * abduction_axis +
-                  torques[2] * shoulder.child_interframe.z)
+                  torques[2] * rot_dir * shoulder.child_interframe.z)
         self.parent.system.add_loads(
             Torque(shoulder.child_interframe, torque),
             Torque(shoulder.parent_interframe, -torque)

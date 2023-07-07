@@ -106,7 +106,7 @@ class TestSphericalRightShoulderJoint:
         assert w.dot(self.torso.x).xreplace(
             {self.shoulder.q[0]: 0, self.shoulder.q[2]: 0}) == -self.shoulder.u[1]
         assert w.dot(self.torso.z).xreplace(
-            {self.shoulder.q[0]: 0, self.shoulder.q[1]: 0}) == self.shoulder.u[2]
+            {self.shoulder.q[0]: 0, self.shoulder.q[1]: 0}) == -self.shoulder.u[2]
 
 class TestSphericalShoulderTorque:
     @pytest.mark.parametrize("load_group_cls", [
