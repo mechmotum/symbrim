@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from abc import ABCMeta
 from functools import wraps
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Any, Callable, Iterable
 
 from sympy import MutableDenseMatrix, Symbol, symbols
 from sympy.physics.mechanics._system import System
@@ -16,7 +16,13 @@ except ImportError:  # pragma: no cover
     Bicycle = None
 
 if TYPE_CHECKING:
+    from sympy.physics.mechanics import Point, ReferenceFrame
+
     from brim.core.requirement import ConnectionRequirement, ModelRequirement
+    try:
+        from symmeplot.plot_base import PlotBase
+    except ImportError:
+        PlotBase = None
 
 __all__ = ["ConnectionBase", "ConnectionMeta", "LoadGroupBase", "LoadGroupMeta",
            "ModelBase", "ModelMeta", "set_default_formulation"]
@@ -198,6 +204,10 @@ class BrimBase:
         if Bicycle is None:
             raise ImportError("The bicycle parameters package is not installed.")
         return {}
+
+    def get_plot_objects(self, inertial_frame: ReferenceFrame, zero_point: Point
+                         ) -> Iterable[PlotBase]:
+        """Get the symmeplot plot objects."""
 
     def _define_objects(self) -> None:
         """Define the objects of the system."""
