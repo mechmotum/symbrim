@@ -8,16 +8,16 @@ class TestRigidFrontFrame:
         front = RigidFrontFrame("front")
         assert isinstance(front, RigidFrontFrameMoore)
 
-    @pytest.mark.parametrize("formulation_name, expected_class", [
+    @pytest.mark.parametrize("convention_name, expected_class", [
         ("moore", RigidFrontFrameMoore),
     ])
-    def test_init(self, formulation_name, expected_class) -> None:
-        front = RigidFrontFrame.from_formulation(formulation_name, "front")
+    def test_init(self, convention_name, expected_class) -> None:
+        front = RigidFrontFrame.from_convention(convention_name, "front")
         assert isinstance(front, expected_class)
 
     def test_init_error(self) -> None:
         with pytest.raises(ValueError):
-            RigidFrontFrame.from_formulation("not_implemented", "front")
+            RigidFrontFrame.from_convention("not_implemented", "front")
 
 
 class TestRigidFrontFrameMoore:

@@ -24,16 +24,16 @@ class TestWhippleBicycle:
         front = WhippleBicycle("bike")
         assert isinstance(front, WhippleBicycleMoore)
 
-    @pytest.mark.parametrize("formulation_name, expected_class", [
+    @pytest.mark.parametrize("convention_name, expected_class", [
         ("moore", WhippleBicycleMoore),
     ])
-    def test_init(self, formulation_name, expected_class) -> None:
-        front = WhippleBicycle.from_formulation(formulation_name, "bike")
+    def test_init(self, convention_name, expected_class) -> None:
+        front = WhippleBicycle.from_convention(convention_name, "bike")
         assert isinstance(front, expected_class)
 
     def test_init_error(self) -> None:
         with pytest.raises(ValueError):
-            WhippleBicycle.from_formulation("not_implemented", "bike")
+            WhippleBicycle.from_convention("not_implemented", "bike")
 
 
 class TestWhippleBicycleMoore:
