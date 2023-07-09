@@ -14,7 +14,7 @@ from brim.bicycle.grounds import GroundBase
 from brim.bicycle.rear_frames import RearFrameBase
 from brim.bicycle.tyre_models import TyreBase
 from brim.bicycle.wheels import WheelBase
-from brim.core import ConnectionRequirement, ModelRequirement, set_default_formulation
+from brim.core import ConnectionRequirement, ModelRequirement, set_default_convention
 
 try:  # pragma: no cover
     import numpy as np
@@ -28,7 +28,7 @@ except ImportError:  # pragma: no cover
 __all__ = ["WhippleBicycle", "WhippleBicycleMoore"]
 
 
-@set_default_formulation("moore")
+@set_default_convention("moore")
 class WhippleBicycle(BicycleBase):
     """Base class for the Whipple bicycle model."""
 
@@ -63,9 +63,9 @@ class WhippleBicycle(BicycleBase):
 
 
 class WhippleBicycleMoore(WhippleBicycle):
-    """Whipple bicycle model based on Moore's formulation."""
+    """Whipple bicycle model based on Moore's convention."""
 
-    formulation: str = "moore"
+    convention: str = "moore"
 
     @property
     def descriptions(self) -> dict[Any, str]:
