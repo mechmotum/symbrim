@@ -1,6 +1,7 @@
 """Module containing models of the arms."""
 from __future__ import annotations
 
+import contextlib
 from abc import abstractmethod
 from typing import TYPE_CHECKING, Any
 
@@ -17,13 +18,15 @@ from sympy.physics.mechanics._system import System
 
 from brim.core import LoadGroupBase, ModelBase
 
-try:  # pragma: no cover
+with contextlib.suppress(ImportError):
     from brim.utilities.parametrize import get_inertia_vals_from_yeadon
 
     if TYPE_CHECKING:
         from bicycleparameters import Bicycle
-except ImportError:  # pragma: no cover
-    pass
+
+if TYPE_CHECKING:
+    with contextlib.suppress(ImportError):
+        from brim.utilities.plotting import PlotModel
 
 __all__ = ["ArmBase", "LeftArmBase", "RightArmBase", "PinElbowStickLeftArm",
            "PinElbowStickRightArm", "PinElbowTorque", "PinElbowSpringDamper"]
@@ -67,6 +70,15 @@ class ArmBase(ModelBase):
     @abstractmethod
     def hand_interframe(self) -> ReferenceFrame:
         """Frame to be used as inteframe between the hand and the steer."""
+
+    def set_plot_objects(self, plot_object: PlotModel) -> None:
+        """Set the symmeplot plot objects."""
+        super().set_plot_objects(plot_object)
+        plot_object.add_line([
+                self.shoulder_interpoint,
+                *(joint.parent_point for joint in self.system.joints),
+                self.hand_interpoint],
+                self.name)
 
 
 class LeftArmBase(ArmBase):
