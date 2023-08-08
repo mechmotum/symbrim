@@ -68,6 +68,11 @@ class RearFrameBase(NewtonianBodyMixin, ModelBase):
                 params[self.body.mass] = bp["mB"]
         return params
 
+    def get_plot_objects(self, inertial_frame: ReferenceFrame, zero_point: Point,
+                         pedals_center_point: Point | None = None) -> list[PlotBase]:
+        """Get the symmeplot plot objects."""
+        return super().get_plot_objects(inertial_frame, zero_point)
+
 
 @set_default_formulation("moore")
 class RigidRearFrame(RearFrameBase):
@@ -208,14 +213,33 @@ class RigidRearFrameMoore(RigidRearFrame):
                         r_rc_sdl[0, 0] * np.cos(lamht) + r_rc_sdl[2, 0] * np.sin(lamht))
         return params
 
-    def get_plot_objects(self, inertial_frame: ReferenceFrame, zero_point: Point
-                         ) -> list[PlotBase]:
+    def get_plot_objects(self, inertial_frame: ReferenceFrame, zero_point: Point,
+                         pedals_center_point: Point | None = None) -> list[PlotBase]:
         """Get the symmeplot plot objects."""
         objects = super().get_plot_objects(inertial_frame, zero_point)
-        s_perp = self.wheel_attachment.locatenew("p", self.symbols["d4"] * self.x)
-        s_low = s_perp.locatenew("p", 0.7 * self.saddle.pos_from(s_perp))
-        objects.append(PlotLine(inertial_frame, zero_point, [
-            self.wheel_attachment, s_perp, s_low, self.wheel_attachment,
-            self.steer_attachment, s_low, self.saddle],
-            self.name))
+        if pedals_center_point is None:
+            s_perp = self.wheel_attachment.locatenew("p", self.symbols["d4"] * self.x)
+            s_low = s_perp.locatenew("p", 0.7 * self.saddle.pos_from(s_perp))
+            points = [self.wheel_attachment, s_perp, s_low, self.wheel_attachment,
+                      self.steer_attachment, s_low, self.saddle]
+        else:
+            ax_l = 0.15 * pedals_center_point.pos_from(
+                self.wheel_attachment).magnitude()
+            saddle_low = self.saddle.locatenew(
+                "P", 0.15 * pedals_center_point.pos_from(self.saddle))
+            points = [
+                pedals_center_point,
+                saddle_low,
+                self.wheel_attachment.locatenew("P", -ax_l / 2 * self.wheel_axis),
+                pedals_center_point,
+                self.wheel_attachment.locatenew("P", ax_l / 2 * self.wheel_axis),
+                saddle_low,
+                self.saddle,
+                saddle_low,
+                self.steer_attachment.locatenew(  # not perfect but close enough
+                    "P", saddle_low.pos_from(self.steer_attachment).dot(
+                        self.steer_axis) / 2 * self.steer_axis),
+                pedals_center_point,
+            ]
+        objects.append(PlotLine(inertial_frame, zero_point, points, self.name))
         return objects

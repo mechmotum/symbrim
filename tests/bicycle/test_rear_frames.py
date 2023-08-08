@@ -1,5 +1,6 @@
 import pytest
 from brim.bicycle.rear_frames import RigidRearFrame, RigidRearFrameMoore
+from sympy import symbols
 from sympy.physics.mechanics import Point
 
 try:
@@ -57,10 +58,16 @@ class TestRigidRearFrameMoore:
             assert rear.descriptions[length] is not None
 
     @pytest.mark.skipif(PlotBody is None, reason="symmeplot not installed")
-    def test_get_plot_objects(self):
+    @pytest.mark.parametrize("pedals_center_point", [None, Point("P")])
+    def test_get_plot_objects(self, pedals_center_point):
+        lx, lz = symbols("lx lz")
         rear = RigidRearFrameMoore("rear")
         rear.define_all()
-        objects = rear.get_plot_objects(rear.system.frame, rear.system.origin)
+        if pedals_center_point is not None:
+            pedals_center_point.set_pos(rear.wheel_attachment,
+                                        lx * rear.x + lz * rear.z)
+        objects = rear.get_plot_objects(rear.system.frame, rear.system.origin,
+                                        pedals_center_point)
         assert len(objects) == 2
         assert any(isinstance(obj, PlotBody) for obj in objects)
         assert any(isinstance(obj, PlotLine) for obj in objects)
