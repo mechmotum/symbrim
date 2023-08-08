@@ -4,6 +4,11 @@ import pytest
 from brim.bicycle.grounds import FlatGround
 from sympy.physics.mechanics._system import System
 
+try:
+    from symmeplot import PlotFrame
+except ImportError:
+    PlotFrame = None
+
 
 class TestFlatGround:
     def test_default(self) -> None:
@@ -37,3 +42,11 @@ class TestFlatGround:
         assert ground.get_normal(ground.origin) == times * vectors[n_idx]
         assert ground.get_tangent_vectors(ground.origin) == (
             vectors[pl_idx1], vectors[pl_idx2])
+
+    @pytest.mark.skipif(PlotFrame is None, reason="symmeplot not installed")
+    def test_get_plot_objects(self):
+        ground = FlatGround("ground")
+        ground.define_all()
+        objects = ground.get_plot_objects(ground.frame, ground.origin)
+        assert len(objects) == 1
+        assert isinstance(objects[0], PlotFrame)
