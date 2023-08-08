@@ -5,6 +5,11 @@ from brim.rider.torso import PlanarTorso, TorsoBase
 from brim.utilities.testing import _test_descriptions
 from sympy.physics.mechanics import Point, RigidBody
 
+try:
+    from brim.utilities.plotting import PlotModel
+except ImportError:
+    PlotModel = None
+
 
 @pytest.mark.parametrize("torso_cls", [PlanarTorso])
 class TestTorsoBase:
@@ -18,6 +23,13 @@ class TestTorsoBase:
 
     def test_descriptions(self, torso_cls) -> None:
         _test_descriptions(torso_cls("torso"))
+
+    @pytest.mark.skipif(PlotModel is None, reason="symmeplot not installed")
+    def test_plotting(self, torso_cls):
+        torso = torso_cls("torso")
+        torso.define_all()
+        plot_model = PlotModel(torso.system.frame, torso.system.origin, torso)
+        assert plot_model.children
 
 
 class TestSimpleRigidTorso:
