@@ -1,11 +1,20 @@
 """Mixin classes providing common properties for models."""
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any, Iterable
 
-from sympy.physics.mechanics import ReferenceFrame, RigidBody, Vector
+from sympy.physics.mechanics import Point, ReferenceFrame, RigidBody, Vector
 from sympy.physics.mechanics._system import System
 
+try:
+    from symmeplot import PlotBody
+except ImportError:
+    PlotBody = None
+if TYPE_CHECKING:
+    try:
+        from symmeplot.plot_base import PlotBase
+    except ImportError:
+        PlotBase = None
 
 class NewtonianBodyMixin:
     """Mixin class adding a Newtonian body to a model."""
@@ -54,3 +63,9 @@ class NewtonianBodyMixin:
     def z(self) -> Vector:
         """Z-axis of model."""
         return self.frame.z
+
+    def get_plot_objects(self, inertial_frame: ReferenceFrame, zero_point: Point
+                         ) -> Iterable[PlotBase]:
+        """Get the symmeplot plot objects."""
+        objects = super().get_plot_objects(inertial_frame, zero_point)
+        return [*objects, PlotBody(inertial_frame, zero_point, self.body)]
