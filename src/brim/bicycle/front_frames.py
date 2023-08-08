@@ -5,7 +5,7 @@ from abc import abstractmethod
 from typing import TYPE_CHECKING, Any
 
 from sympy import Symbol, symbols
-from sympy.physics.mechanics import Point, Vector, inertia
+from sympy.physics.mechanics import Point, ReferenceFrame, Vector, inertia
 
 from brim.core import ModelBase, NewtonianBodyMixin, set_default_formulation
 
@@ -21,6 +21,13 @@ try:  # pragma: no cover
         from bicycleparameters import Bicycle
 except ImportError:  # pragma: no cover
     pass
+
+try:
+    from symmeplot import PlotLine
+    if TYPE_CHECKING:
+        from symmeplot.plot_base import PlotBase
+except ImportError:  # pragma: no cover
+    PlotBase, PlotLine = None, None
 
 __all__ = ["FrontFrameBase", "RigidFrontFrame", "RigidFrontFrameMoore"]
 
@@ -222,3 +229,15 @@ class RigidFrontFrameMoore(RigidFrontFrame):
                 params[self.symbols["d8"]] = -(
                         ay * np.cos(lamht) + az * np.sin(lamht) - d2)
         return params
+
+    def get_plot_objects(self, inertial_frame: ReferenceFrame, zero_point: Point
+                         ) -> list[PlotBase]:
+        """Get the symmeplot plot objects."""
+        objects = super().get_plot_objects(inertial_frame, zero_point)
+        steer_top = self.steer_attachment.locatenew(
+            "P", self.steer_axis * self.left_handgrip.pos_from(
+                self.steer_attachment).dot(self.steer_axis))
+        objects.append(PlotLine(inertial_frame, zero_point, [
+            self.wheel_attachment, self.steer_attachment, steer_top, self.left_handgrip,
+            steer_top, self.right_handgrip], self.name))
+        return objects
