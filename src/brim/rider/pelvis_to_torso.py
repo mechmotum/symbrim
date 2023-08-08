@@ -1,6 +1,7 @@
 """Module containing connections between the pelvis and the torso."""
 from __future__ import annotations
 
+import contextlib
 from typing import TYPE_CHECKING, Any
 
 from sympy import Symbol
@@ -9,13 +10,11 @@ from sympy.physics.mechanics._system import System
 
 from brim.rider.base_connections import PelvisToTorsoBase
 
-try:  # pragma: no cover
+with contextlib.suppress(ImportError):
     import numpy as np
 
     if TYPE_CHECKING:
         from bicycleparameters import Bicycle
-except ImportError:  # pragma: no cover
-    pass
 
 __all__ = ["FixedPelvisToTorso"]
 

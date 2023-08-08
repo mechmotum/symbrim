@@ -8,6 +8,11 @@ from brim.rider.torso import PlanarTorso
 from brim.utilities.testing import _test_descriptions, create_model_of_connection
 from sympy import eye
 
+try:
+    from brim.utilities.plotting import PlotConnection
+except ImportError:
+    PlotConnection = None
+
 
 @pytest.mark.parametrize("pelvis_cls, torso_cls, pelvis_to_torso_cls", [
     (PlanarPelvis, PlanarTorso, FixedPelvisToTorso),
@@ -28,6 +33,12 @@ class TestPelvisToTorsoBase:
 
     def test_descriptions(self) -> None:
         _test_descriptions(self.conn)
+
+    @pytest.mark.skipif(PlotConnection is None, reason="symmeplot not installed")
+    def test_plotting(self):
+        plot_conn = PlotConnection(self.conn.system.frame,
+                                   self.conn.system.origin, self.conn)
+        assert plot_conn.children
 
 
 class TestFixedPelvisToTorso:

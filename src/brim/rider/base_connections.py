@@ -1,11 +1,18 @@
 """Module containing the base connection classes between the rider parts."""
 from __future__ import annotations
 
+import contextlib
+from typing import TYPE_CHECKING
+
 from brim.core import ConnectionBase, ModelRequirement
 from brim.rider.arms import ArmBase, LeftArmBase, RightArmBase
 from brim.rider.legs import LeftLegBase, LegBase, RightLegBase
 from brim.rider.pelvis import PelvisBase
 from brim.rider.torso import TorsoBase
+
+if TYPE_CHECKING:
+    with contextlib.suppress(ImportError):
+        from brim.utilities.plotting import PlotModel
 
 __all__ = ["PelvisToTorsoBase", "ShoulderBase", "LeftShoulderBase", "RightShoulderBase",
            "HipBase", "LeftHipBase", "RightHipBase"]
@@ -20,6 +27,15 @@ class PelvisToTorsoBase(ConnectionBase):
     )
     pelvis: PelvisBase
     torso: TorsoBase
+
+    def set_plot_objects(self, plot_object: PlotModel) -> None:
+        """Set the symmeplot plot objects."""
+        super().set_plot_objects(plot_object)
+        plot_object.add_line([
+            self.pelvis.body.masscenter,
+            *(joint.parent_point for joint in self.system.joints),
+            self.torso.body.masscenter],
+            self.name)
 
 
 class ShoulderBase(ConnectionBase):
