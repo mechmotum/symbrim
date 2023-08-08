@@ -118,14 +118,14 @@ class RigidRearFrameMoore(RigidRearFrame):
             **super().descriptions,
             self.symbols["d1"]: "Perpendicular distance from the steer axis to the "
                                 "center of the rear wheel (rear offset).",
-            self.symbols["l1"]: "Distance in the rear frame x drection from the rear "
+            self.symbols["l1"]: "Distance in the rear frame x direction from the rear "
                                 "wheel center to the center of mass of the rear frame.",
-            self.symbols["l2"]: "Distance in the rear frame z drection from the rear "
+            self.symbols["l2"]: "Distance in the rear frame z direction from the rear "
                                 "wheel center to the center of mass of the rear frame.",
-            self.symbols["d4"]: "Distance in the rear frame x drection from the rear "
+            self.symbols["d4"]: "Distance in the rear frame x direction from the rear "
                                 "wheel center to the point representing the saddle.",
-            self.symbols["d5"]: "Distance in the rear frame z drection from the rear "
-                                "wheel center to the point representng the saddle.",
+            self.symbols["d5"]: "Distance in the rear frame z direction from the rear "
+                                "wheel center to the point representing the saddle.",
         }
 
     def _define_objects(self):
