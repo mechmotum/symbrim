@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from abc import ABCMeta
 from functools import wraps
-from typing import TYPE_CHECKING, Any, Callable, Iterable
+from typing import TYPE_CHECKING, Any, Callable
 
 from sympy import MutableDenseMatrix, Symbol, symbols
 from sympy.physics.mechanics._system import System
@@ -206,7 +206,7 @@ class BrimBase:
         return {}
 
     def get_plot_objects(self, inertial_frame: ReferenceFrame, zero_point: Point
-                         ) -> Iterable[PlotBase]:
+                         ) -> list[PlotBase]:
         """Get the symmeplot plot objects."""
         return []
 
