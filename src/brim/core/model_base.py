@@ -502,7 +502,7 @@ def _merge_systems(*systems: System) -> System:
     """
     system = System(systems[0].origin, systems[0].frame)
     for s in systems:
-        if s is None:
+        if s is None:  # pragma: no cover
             continue
         attributes = [
             ("q_ind", "q", "add_coordinates", {"independent": True}),

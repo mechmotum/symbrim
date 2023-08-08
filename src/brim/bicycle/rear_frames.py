@@ -65,7 +65,8 @@ class RearFrameBase(NewtonianBodyMixin, ModelBase):
         return params
 
     def set_plot_objects(self, plot_object: PlotModel,
-                         pedals_center_point: Point | None = None) -> None:
+                         pedals_center_point: Point | None = None
+                         ) -> None:  # pragma: no cover
         """Set the symmeplot plot objects."""
         super().set_plot_objects(plot_object)
 
@@ -210,7 +211,8 @@ class RigidRearFrameMoore(RigidRearFrame):
         return params
 
     def set_plot_objects(self, plot_object: PlotModel,
-                         pedals_center_point: Point | None = None) -> None:
+                         pedals_center_point: Point | None = None
+                         ) -> None:  # pragma: no cover
         """Set the symmeplot plot objects."""
         super().set_plot_objects(plot_object, pedals_center_point)
         if pedals_center_point is None:
