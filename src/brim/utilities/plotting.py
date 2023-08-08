@@ -8,7 +8,7 @@ mechanics. Therefore, there is no guarantee that the plotter will work in the fu
 """
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Iterable
 
 from symmeplot import SymMePlotter
 from symmeplot.plot_base import PlotBase
@@ -66,7 +66,8 @@ class PlotModel(PlotBrimMixin, PlotBase):
 
     def __init__(self, inertial_frame: ReferenceFrame, zero_point: Point,
                  model: ModelBase, plot_submodels: bool = True,
-                 plot_connections: bool = True, plot_load_groups: bool = True) -> None:
+                 plot_connections: bool = True, plot_load_groups: bool = True,
+                 exclude: Iterable[BrimBase] = ()) -> None:
         """Initialize a plot object of a model.
 
         Parameters
@@ -83,22 +84,28 @@ class PlotModel(PlotBrimMixin, PlotBase):
             Whether to plot the connections, by default True.
         plot_load_groups : bool, optional
             Whether to plot the load groups, by default True.
+        exclude : Iterable[BrimBase], optional
+            BRiM child objects to exclude from plot traversal, by default ().
         """
         super().__init__(inertial_frame, zero_point, model)
         self.model = model
         if plot_submodels:
             for submodel in self.model.submodels:
-                self._children.append(PlotModel(
-                    inertial_frame, zero_point, submodel,
-                    plot_submodels, plot_connections, plot_load_groups))
+                if submodel not in exclude:
+                    self._children.append(PlotModel(
+                        inertial_frame, zero_point, submodel,
+                        plot_submodels, plot_connections, plot_load_groups))
         if plot_connections:
             for connection in self.model.connections:
-                self._children.append(PlotConnection(
-                    inertial_frame, zero_point, connection, False, plot_load_groups))
+                if connection not in exclude:
+                    self._children.append(PlotConnection(
+                        inertial_frame, zero_point, connection, False, plot_load_groups
+                    ))
         if plot_load_groups:
             for load_group in self.model.load_groups:
-                self._children.append(PlotLoadGroup(
-                    inertial_frame, zero_point, load_group))
+                if load_group not in exclude:
+                    self._children.append(PlotLoadGroup(
+                        inertial_frame, zero_point, load_group))
 
     @property
     def model(self) -> ModelBase:
@@ -124,7 +131,8 @@ class PlotConnection(PlotBrimMixin, PlotBase):
 
     def __init__(self, inertial_frame: ReferenceFrame, zero_point: Point,
                  connection: ConnectionBase, plot_submodels: bool = True,
-                 plot_load_groups: bool = True) -> None:
+                 plot_load_groups: bool = True,
+                 exclude: Iterable[BrimBase] = ()) -> None:
         """Initialize a plot object of a connection.
 
         Parameters
@@ -139,17 +147,22 @@ class PlotConnection(PlotBrimMixin, PlotBase):
             Whether to plot the submodels, by default True.
         plot_load_groups : bool, optional
             Whether to plot the load groups, by default True.
+        exclude : Iterable[BrimBase], optional
+            BRiM child objects to exclude from plot traversal, by default ().
         """
         super().__init__(inertial_frame, zero_point, connection)
         self.connection = connection
         if plot_submodels:
             for submodel in self.connection.submodels:
-                self._children.append(PlotModel(inertial_frame, zero_point, submodel,
-                                                True, True, plot_load_groups))
+                if submodel not in exclude:
+                    self._children.append(PlotModel(
+                        inertial_frame, zero_point, submodel, True, True,
+                        plot_load_groups))
         if plot_load_groups:
             for load_group in self.connection.load_groups:
-                self._children.append(PlotLoadGroup(
-                    inertial_frame, zero_point, load_group))
+                if load_group not in exclude:
+                    self._children.append(PlotLoadGroup(
+                        inertial_frame, zero_point, load_group))
 
     @property
     def connection(self) -> ConnectionBase:
