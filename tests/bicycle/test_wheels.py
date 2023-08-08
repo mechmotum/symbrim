@@ -32,7 +32,7 @@ class TestKnifeEdgeWheel:
         assert wheel.descriptions[wheel.radius] is not None
 
     @pytest.mark.skipif(PlotModel is None, reason="symmeplot not installed")
-    def test_set_plot_objects(self):
+    def test_plotting(self):
         wheel = KnifeEdgeWheel("wheel")
         wheel.define_all()
 

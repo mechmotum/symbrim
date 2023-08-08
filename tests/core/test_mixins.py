@@ -30,7 +30,7 @@ class TestNewtonianBodyMixin:
         assert model.body.masscenter.vel(model.frame) == 0
 
     @pytest.mark.skipif(PlotModel is None, reason="symmeplot not installed")
-    def test_set_plot_objects(self) -> None:
+    def test_plotting(self) -> None:
         model = MyModel("name")
         model.define_all()
         plot_model = PlotModel(model.system.frame, model.system.origin, model)

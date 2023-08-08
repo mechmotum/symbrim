@@ -45,7 +45,7 @@ class TestFlatGround:
             vectors[pl_idx1], vectors[pl_idx2])
 
     @pytest.mark.skipif(PlotModel is None, reason="symmeplot not installed")
-    def test_set_plot_objects(self):
+    def test_plotting(self):
         ground = FlatGround("ground")
         ground.define_all()
         plot_model = PlotModel(ground.system.frame, ground.system.origin, ground)

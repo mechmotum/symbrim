@@ -59,7 +59,7 @@ class TestRigidFrontFrameMoore:
             assert front.descriptions[length] is not None
 
     @pytest.mark.skipif(PlotModel is None, reason="symmeplot not installed")
-    def test_set_plot_objects(self):
+    def test_plotting(self):
         front = RigidFrontFrameMoore("front")
         front.define_all()
         plot_model = PlotModel(front.system.frame, front.system.origin, front)

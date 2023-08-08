@@ -60,7 +60,7 @@ class TestRigidRearFrameMoore:
 
     @pytest.mark.skipif(PlotModel is None, reason="symmeplot not installed")
     @pytest.mark.parametrize("pedals_center_point", [None, Point("P")])
-    def test_set_plot_objects(self, pedals_center_point):
+    def test_plotting(self, pedals_center_point):
         lx, lz = symbols("lx lz")
         rear = RigidRearFrameMoore("rear")
         rear.define_all()

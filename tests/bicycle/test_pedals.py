@@ -42,7 +42,7 @@ class TestSimplePedals:
             pedals.frame.x) == 2 * pedals.symbols["radius"]
 
     @pytest.mark.skipif(PlotModel is None, reason="symmeplot not installed")
-    def test_set_plot_objects(self):
+    def test_plotting(self):
         pedals = SimplePedals("pedals")
         pedals.define_all()
         plot_model = PlotModel(pedals.system.frame, pedals.system.origin, pedals)
