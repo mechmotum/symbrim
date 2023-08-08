@@ -9,7 +9,7 @@ try:
     from brim.utilities.plotting import PlotModel
     from symmeplot import PlotLine
 except ImportError:
-    PlotLine = None
+    PlotModel = None
 
 
 @pytest.mark.parametrize("pedal_cls", [SimplePedals])
