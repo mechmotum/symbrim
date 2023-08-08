@@ -5,7 +5,7 @@ from abc import abstractmethod
 from typing import TYPE_CHECKING, Any
 
 from sympy import Symbol, symbols
-from sympy.physics.mechanics import Point, Vector, inertia
+from sympy.physics.mechanics import Point, ReferenceFrame, Vector, inertia
 
 from brim.core import ModelBase, NewtonianBodyMixin
 
@@ -18,6 +18,16 @@ try:  # pragma: no cover
         from bicycleparameters import Bicycle
 except ImportError:  # pragma: no cover
     pass
+
+try:
+    from symmeplot import PlotBody
+except ImportError:
+    PlotBody = None
+if TYPE_CHECKING:
+    try:
+        from symmeplot.plot_base import PlotBase
+    except ImportError:
+        PlotBase = None
 
 __all__ = ["WheelBase", "KnifeEdgeWheel", "ToroidalWheel"]
 
@@ -120,6 +130,14 @@ class KnifeEdgeWheel(WheelBase):
             params[self.radius] = bp["rR"]
             params.update(get_inertia_vals(self.body, bp["IRxx"], bp["IRyy"]))
         return params
+
+    def get_plot_objects(self, inertial_frame: ReferenceFrame, zero_point: Point
+                         ) -> list[PlotBase]:
+        """Get the symmeplot plot objects."""
+        plot_body = super().get_plot_objects(inertial_frame, zero_point)[0]
+        plot_body.attach_circle(self.center, self.radius, self.rotation_axis,
+                                facecolor="none", edgecolor="k")
+        return [plot_body]
 
 
 class ToroidalWheel(WheelBase):
