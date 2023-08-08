@@ -2,6 +2,11 @@ import pytest
 from brim.bicycle.rear_frames import RigidRearFrame, RigidRearFrameMoore
 from sympy.physics.mechanics import Point
 
+try:
+    from symmeplot import PlotBody, PlotLine
+except ImportError:
+    PlotBody, PlotLine = None, None
+
 
 class TestRigidRearFrame:
     def test_default(self) -> None:
@@ -50,3 +55,12 @@ class TestRigidRearFrameMoore:
         rear.define_objects()
         for length in rear.symbols.values():
             assert rear.descriptions[length] is not None
+
+    @pytest.mark.skipif(PlotBody is None, reason="symmeplot not installed")
+    def test_get_plot_objects(self):
+        rear = RigidRearFrameMoore("rear")
+        rear.define_all()
+        objects = rear.get_plot_objects(rear.system.frame, rear.system.origin)
+        assert len(objects) == 2
+        assert any(isinstance(obj, PlotBody) for obj in objects)
+        assert any(isinstance(obj, PlotLine) for obj in objects)
