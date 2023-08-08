@@ -5,9 +5,10 @@ from brim.bicycle.grounds import FlatGround
 from sympy.physics.mechanics._system import System
 
 try:
+    from brim.utilities.plotting import PlotModel
     from symmeplot import PlotFrame
 except ImportError:
-    PlotFrame = None
+    PlotModel = None
 
 
 class TestFlatGround:
@@ -43,10 +44,10 @@ class TestFlatGround:
         assert ground.get_tangent_vectors(ground.origin) == (
             vectors[pl_idx1], vectors[pl_idx2])
 
-    @pytest.mark.skipif(PlotFrame is None, reason="symmeplot not installed")
-    def test_get_plot_objects(self):
+    @pytest.mark.skipif(PlotModel is None, reason="symmeplot not installed")
+    def test_set_plot_objects(self):
         ground = FlatGround("ground")
         ground.define_all()
-        objects = ground.get_plot_objects(ground.frame, ground.origin)
-        assert len(objects) == 1
-        assert isinstance(objects[0], PlotFrame)
+        plot_model = PlotModel(ground.system.frame, ground.system.origin, ground)
+        assert len(plot_model.children) == 1
+        assert isinstance(plot_model.children[0], PlotFrame)

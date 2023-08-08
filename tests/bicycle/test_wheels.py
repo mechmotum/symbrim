@@ -4,10 +4,11 @@ import pytest
 from brim.bicycle.wheels import KnifeEdgeWheel, ToroidalWheel
 
 try:
+    from brim.utilities.plotting import PlotModel
     from symmeplot import PlotBody
     from symmeplot.plot_artists import Circle3D
 except ImportError:
-    PlotBody = None
+    PlotModel = None
 
 
 class TestWheelsGeneral:
@@ -30,14 +31,15 @@ class TestKnifeEdgeWheel:
         wheel.define_objects()
         assert wheel.descriptions[wheel.radius] is not None
 
-    @pytest.mark.skipif(PlotBody is None, reason="symmeplot not installed")
-    def test_get_plot_objects(self):
+    @pytest.mark.skipif(PlotModel is None, reason="symmeplot not installed")
+    def test_set_plot_objects(self):
         wheel = KnifeEdgeWheel("wheel")
         wheel.define_all()
-        objects = wheel.get_plot_objects(wheel.frame, wheel.system.origin)
-        assert len(objects) == 1
-        assert isinstance(objects[0], PlotBody)
-        assert any(isinstance(art, Circle3D) for art in objects[0].artists)
+
+        plot_model = PlotModel(wheel.system.frame, wheel.system.origin, wheel)
+        assert len(plot_model.children) == 1
+        assert isinstance(plot_model.children[0], PlotBody)
+        assert any(isinstance(art, Circle3D) for art in plot_model.artists)
 
 
 class TestToroidalWheel:

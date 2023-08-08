@@ -1,29 +1,26 @@
 """Module containing the wheel models."""
 from __future__ import annotations
 
+import contextlib
 from abc import abstractmethod
 from typing import TYPE_CHECKING, Any
 
 from sympy import Symbol, symbols
-from sympy.physics.mechanics import Point, ReferenceFrame, Vector, inertia
+from sympy.physics.mechanics import Point, Vector, inertia
 
 from brim.core import ModelBase, NewtonianBodyMixin
 
-try:  # pragma: no cover
+with contextlib.suppress(ImportError):
     from bicycleparameters.io import remove_uncertainties
 
     from brim.utilities.parametrize import get_inertia_vals
 
     if TYPE_CHECKING:
         from bicycleparameters import Bicycle
-except ImportError:  # pragma: no cover
-    pass
 
 if TYPE_CHECKING:
-    try:
-        from symmeplot.plot_base import PlotBase
-    except ImportError:  # pragma: no cover
-        PlotBase = None
+    with contextlib.suppress(ImportError):
+        from brim.utilities.plotting import PlotModel
 
 __all__ = ["WheelBase", "KnifeEdgeWheel", "ToroidalWheel"]
 
@@ -127,13 +124,12 @@ class KnifeEdgeWheel(WheelBase):
             params.update(get_inertia_vals(self.body, bp["IRxx"], bp["IRyy"]))
         return params
 
-    def get_plot_objects(self, inertial_frame: ReferenceFrame, zero_point: Point
-                         ) -> list[PlotBase]:
-        """Get the symmeplot plot objects."""
-        plot_body = super().get_plot_objects(inertial_frame, zero_point)[0]
-        plot_body.attach_circle(self.center, self.radius, self.rotation_axis,
-                                facecolor="none", edgecolor="k")
-        return [plot_body]
+    def set_plot_objects(self, plot_object: PlotModel) -> None:
+        """Set the symmeplot plot objects."""
+        super().set_plot_objects(plot_object)
+        plot_object.get_plot_object(self.body).attach_circle(
+            self.center, self.radius, self.rotation_axis, facecolor="none",
+            edgecolor="k")
 
 
 class ToroidalWheel(WheelBase):

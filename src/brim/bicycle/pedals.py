@@ -1,6 +1,7 @@
 """Module containing models of the pedals."""
 from __future__ import annotations
 
+import contextlib
 from abc import abstractmethod
 from typing import TYPE_CHECKING, Any
 
@@ -10,13 +11,9 @@ from sympy.physics.mechanics._system import System
 
 from brim.core import ModelBase
 
-try:
-    from symmeplot import PlotLine
-
-    if TYPE_CHECKING:
-        from symmeplot.plot_base import PlotBase
-except ImportError:  # pragma: no cover
-    PlotBase, PlotLine = None, None
+if TYPE_CHECKING:
+    with contextlib.suppress(ImportError):
+        from brim.utilities.plotting import PlotModel
 
 __all__ = ["PedalsBase"]
 
@@ -64,25 +61,23 @@ class PedalsBase(ModelBase):
     def rotation_axis(self) -> Vector:
         """Rotation axis of the pedals."""
 
-    def get_plot_objects(self, inertial_frame: ReferenceFrame, zero_point: Point
-                         ) -> list[PlotBase]:
-        """Get the symmeplot plot objects."""
-        objects = super().get_plot_objects(inertial_frame, zero_point)
+    def set_plot_objects(self, plot_object: PlotModel) -> None:
+        """Set the symmeplot plot objects."""
+        super().set_plot_objects(plot_object)
         lp, rp, cp = (
             self.left_pedal_point, self.right_pedal_point, self.center_point)
         rot_ax = self.rotation_axis.normalize()
         ax_l = lp.pos_from(cp).dot(rot_ax) * rot_ax
         ax_r = rp.pos_from(cp).dot(rot_ax) * rot_ax
         ax_perc = 0.4
-        objects.append(PlotLine(inertial_frame, zero_point, [
+        plot_object.add_line([
             self.left_pedal_point,
             self.left_pedal_point.locatenew("P", -(1 - ax_perc) * ax_l),
             self.center_point.locatenew("P", ax_perc * ax_l),
             self.center_point.locatenew("P", ax_perc * ax_r),
             self.right_pedal_point.locatenew("P", -(1 - ax_perc) * ax_r),
             self.right_pedal_point,
-        ], self.name))
-        return objects
+        ], self.name)
 
 
 class SimplePedals(PedalsBase):

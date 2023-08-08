@@ -1,6 +1,7 @@
 """Module containing the models of the ground."""
 from __future__ import annotations
 
+import contextlib
 from abc import abstractmethod
 from typing import TYPE_CHECKING
 
@@ -9,15 +10,11 @@ from sympy.physics.mechanics._system import System
 
 from brim.core import ModelBase
 
-try:
-    from symmeplot import PlotFrame
-    if TYPE_CHECKING:
-        from symmeplot.plot_base import PlotBase
-except ImportError:  # pragma: no cover
-    PlotBase, PlotFrame = None, None
-
 if TYPE_CHECKING:
     from sympy import Expr
+
+    with contextlib.suppress(ImportError):
+        from brim.utilities.plotting import PlotModel
 
 __all__ = ["GroundBase", "FlatGround"]
 
@@ -65,12 +62,10 @@ class GroundBase(ModelBase):
     def set_pos_point(self, point: Point, position: tuple[Expr, Expr]) -> None:
         """Set the location of a point on the ground."""
 
-    def get_plot_objects(self, inertial_frame: ReferenceFrame, zero_point: Point
-                         ) -> list[PlotBase]:
-        """Get the symmeplot plot objects."""
-        objects = super().get_plot_objects(inertial_frame, zero_point)
-        objects.append(PlotFrame(inertial_frame, zero_point, self.frame, self.origin))
-        return objects
+    def set_plot_objects(self, plot_object: PlotModel) -> None:
+        """Set the symmeplot plot objects."""
+        super().set_plot_objects(plot_object)
+        plot_object.add_frame(self.frame, self.origin)
 
 
 class FlatGround(GroundBase):

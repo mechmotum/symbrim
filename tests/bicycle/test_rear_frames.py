@@ -4,9 +4,10 @@ from sympy import symbols
 from sympy.physics.mechanics import Point
 
 try:
+    from brim.utilities.plotting import PlotModel
     from symmeplot import PlotBody, PlotLine
 except ImportError:
-    PlotBody, PlotLine = None, None
+    PlotModel = None
 
 
 class TestRigidRearFrame:
@@ -57,17 +58,16 @@ class TestRigidRearFrameMoore:
         for length in rear.symbols.values():
             assert rear.descriptions[length] is not None
 
-    @pytest.mark.skipif(PlotBody is None, reason="symmeplot not installed")
+    @pytest.mark.skipif(PlotModel is None, reason="symmeplot not installed")
     @pytest.mark.parametrize("pedals_center_point", [None, Point("P")])
-    def test_get_plot_objects(self, pedals_center_point):
+    def test_set_plot_objects(self, pedals_center_point):
         lx, lz = symbols("lx lz")
         rear = RigidRearFrameMoore("rear")
         rear.define_all()
         if pedals_center_point is not None:
             pedals_center_point.set_pos(rear.wheel_attachment,
                                         lx * rear.x + lz * rear.z)
-        objects = rear.get_plot_objects(rear.system.frame, rear.system.origin,
-                                        pedals_center_point)
-        assert len(objects) == 2
-        assert any(isinstance(obj, PlotBody) for obj in objects)
-        assert any(isinstance(obj, PlotLine) for obj in objects)
+        plot_model = PlotModel(rear.system.frame, rear.system.origin, rear)
+        assert len(plot_model.children) == 2
+        assert any(isinstance(obj, PlotBody) for obj in plot_model.children)
+        assert any(isinstance(obj, PlotLine) for obj in plot_model.children)

@@ -6,6 +6,7 @@ from brim.utilities.testing import _test_descriptions
 from sympy.physics.mechanics import Point, ReferenceFrame, Vector
 
 try:
+    from brim.utilities.plotting import PlotModel
     from symmeplot import PlotLine
 except ImportError:
     PlotLine = None
@@ -40,10 +41,10 @@ class TestSimplePedals:
         assert pedals.right_pedal_point.pos_from(pedals.left_pedal_point).dot(
             pedals.frame.x) == 2 * pedals.symbols["radius"]
 
-    @pytest.mark.skipif(PlotLine is None, reason="symmeplot not installed")
-    def test_get_plot_objects(self):
+    @pytest.mark.skipif(PlotModel is None, reason="symmeplot not installed")
+    def test_set_plot_objects(self):
         pedals = SimplePedals("pedals")
         pedals.define_all()
-        objects = pedals.get_plot_objects(pedals.system.frame, pedals.system.origin)
-        assert len(objects) == 1
-        assert isinstance(objects[0], PlotLine)
+        plot_model = PlotModel(pedals.system.frame, pedals.system.origin, pedals)
+        assert len(plot_model.children) == 1
+        assert isinstance(plot_model.children[0], PlotLine)

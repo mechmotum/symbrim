@@ -6,9 +6,10 @@ from brim.core.model_base import ModelBase
 from sympy.physics.mechanics import RigidBody
 
 try:
+    from brim.utilities.plotting import PlotModel
     from symmeplot import PlotBody
 except ImportError:
-    PlotBody = None
+    PlotModel = None
 
 
 class MyModel(NewtonianBodyMixin, ModelBase):
@@ -28,10 +29,10 @@ class TestNewtonianBodyMixin:
         assert model.system.origin is model.body.masscenter
         assert model.body.masscenter.vel(model.frame) == 0
 
-    @pytest.mark.skipif(PlotBody is None, reason="symmeplot not installed")
-    def test_get_plot_objects(self) -> None:
+    @pytest.mark.skipif(PlotModel is None, reason="symmeplot not installed")
+    def test_set_plot_objects(self) -> None:
         model = MyModel("name")
         model.define_all()
-        objects = model.get_plot_objects(model.frame, model.system.origin)
-        assert len(objects) == 1
-        assert isinstance(objects[0], PlotBody)
+        plot_model = PlotModel(model.system.frame, model.system.origin, model)
+        assert len(plot_model.children) == 1
+        assert isinstance(plot_model.children[0], PlotBody)

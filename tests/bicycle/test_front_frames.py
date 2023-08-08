@@ -3,9 +3,10 @@ from brim.bicycle.front_frames import RigidFrontFrame, RigidFrontFrameMoore
 from sympy.physics.mechanics import Point
 
 try:
+    from brim.utilities.plotting import PlotModel
     from symmeplot import PlotBody, PlotLine
 except ImportError:
-    PlotBody, PlotLine = None, None
+    PlotModel = None
 
 
 class TestRigidFrontFrame:
@@ -57,11 +58,11 @@ class TestRigidFrontFrameMoore:
         for length in front.symbols.values():
             assert front.descriptions[length] is not None
 
-    @pytest.mark.skipif(PlotBody is None, reason="symmeplot not installed")
-    def test_get_plot_objects(self):
+    @pytest.mark.skipif(PlotModel is None, reason="symmeplot not installed")
+    def test_set_plot_objects(self):
         front = RigidFrontFrameMoore("front")
         front.define_all()
-        objects = front.get_plot_objects(front.system.frame, front.system.origin)
-        assert len(objects) == 2
-        assert any(isinstance(obj, PlotBody) for obj in objects)
-        assert any(isinstance(obj, PlotLine) for obj in objects)
+        plot_model = PlotModel(front.system.frame, front.system.origin, front)
+        assert len(plot_model.children) == 2
+        assert any(isinstance(obj, PlotBody) for obj in plot_model.children)
+        assert any(isinstance(obj, PlotLine) for obj in plot_model.children)
