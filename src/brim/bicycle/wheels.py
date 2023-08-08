@@ -19,14 +19,10 @@ try:  # pragma: no cover
 except ImportError:  # pragma: no cover
     pass
 
-try:
-    from symmeplot import PlotBody
-except ImportError:
-    PlotBody = None
 if TYPE_CHECKING:
     try:
         from symmeplot.plot_base import PlotBase
-    except ImportError:
+    except ImportError:  # pragma: no cover
         PlotBase = None
 
 __all__ = ["WheelBase", "KnifeEdgeWheel", "ToroidalWheel"]

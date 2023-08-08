@@ -21,7 +21,7 @@ if TYPE_CHECKING:
     from brim.core.requirement import ConnectionRequirement, ModelRequirement
     try:
         from symmeplot.plot_base import PlotBase
-    except ImportError:
+    except ImportError:  # pragma: no cover
         PlotBase = None
 
 __all__ = ["ConnectionBase", "ConnectionMeta", "LoadGroupBase", "LoadGroupMeta",

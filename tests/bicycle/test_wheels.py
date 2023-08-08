@@ -9,6 +9,7 @@ try:
 except ImportError:
     PlotBody = None
 
+
 class TestWheelsGeneral:
     @pytest.mark.parametrize("wheel", [KnifeEdgeWheel("wheel"), ToroidalWheel("wheel")])
     def test_default(self, wheel) -> None:
@@ -37,6 +38,7 @@ class TestKnifeEdgeWheel:
         assert len(objects) == 1
         assert isinstance(objects[0], PlotBody)
         assert any(isinstance(art, Circle3D) for art in objects[0].artists)
+
 
 class TestToroidalWheel:
     def test_descriptions(self) -> None:

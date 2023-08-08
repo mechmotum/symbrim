@@ -8,13 +8,12 @@ from sympy.physics.mechanics._system import System
 
 try:
     from symmeplot import PlotBody
-except ImportError:
-    PlotBody = None
-if TYPE_CHECKING:
-    try:
+
+    if TYPE_CHECKING:
         from symmeplot.plot_base import PlotBase
-    except ImportError:
-        PlotBase = None
+except ImportError:  # pragma: no cover
+    PlotBase, PlotBody = None, None
+
 
 class NewtonianBodyMixin:
     """Mixin class adding a Newtonian body to a model."""
