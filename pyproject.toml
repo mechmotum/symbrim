@@ -75,6 +75,7 @@ exclude_also = [
     "if __name__ == .__main__.:",
     "if TYPE_CHECKING:",
     "def get_param_values",
+    "def set_plot_objects"
 ]
 omit = [
     "src/brim/utilities/benchmarking.py",
