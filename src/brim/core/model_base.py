@@ -208,6 +208,7 @@ class BrimBase:
     def get_plot_objects(self, inertial_frame: ReferenceFrame, zero_point: Point
                          ) -> Iterable[PlotBase]:
         """Get the symmeplot plot objects."""
+        return []
 
     def _define_objects(self) -> None:
         """Define the objects of the system."""
