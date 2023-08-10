@@ -11,12 +11,42 @@ from brim.core import ModelBase
 
 if TYPE_CHECKING:
     from sympy import Expr
+    T_position = Point | Vector | tuple[Expr, ...]
 
 __all__ = ["GroundBase", "FlatGround"]
 
 
 class GroundBase(ModelBase):
     """Base class for the ground."""
+
+    def _parse_plane_position(self, position: T_position) -> tuple[Expr, Expr, Expr]:
+        """Parse the position of a point on the ground.
+
+        Explanation
+        -----------
+        This is a utility to be used by subclasses to parse the position of a point
+        passed to get_normal and get_tangent_vectors.
+
+        Parameters
+        ----------
+        position : Point, Vector, tuple
+            The position of the point on the ground.
+
+        Returns
+        -------
+        tuple
+            The position of the point on the ground expressed in the ground frame.
+        """
+        if isinstance(position, Point):
+            position = position.pos_from(self.origin)
+        if isinstance(position, Vector):
+            position = position.to_matrix(self.frame)[:]
+        position = tuple(position)
+        if len(position) == 2:
+            position = (*position, 0)
+        if len(position) != 3:
+            raise ValueError("Position must be a 2D or 3D vector.")
+        return position
 
     def _define_objects(self) -> None:
         """Define the objects of the ground."""
@@ -46,16 +76,15 @@ class GroundBase(ModelBase):
         return self.body.masscenter
 
     @abstractmethod
-    def get_normal(self, position: Point | tuple[Expr, Expr]) -> Vector:
+    def get_normal(self, position: T_position) -> Vector:
         """Get normal vector of the ground."""
 
     @abstractmethod
-    def get_tangent_vectors(self, position: Point | tuple[Expr, Expr]
-                            ) -> tuple[Vector, Vector]:
+    def get_tangent_vectors(self, position: T_position) -> tuple[Vector, Vector]:
         """Get tangent vectors of the ground plane."""
 
     @abstractmethod
-    def set_pos_point(self, point: Point, position: tuple[Expr, Expr]) -> None:
+    def set_pos_point(self, point: Point, position: T_position) -> None:
         """Set the location of a point on the ground."""
 
 
@@ -96,16 +125,16 @@ class FlatGround(GroundBase):
         else:
             self._planar_vectors = (self.frame.x, self.frame.y)
 
-    def get_normal(self, position: Point | tuple[Expr, Expr]) -> Vector:
+    def get_normal(self, position: T_position) -> Vector:
         """Get normal vector of the ground."""
         return self._normal  # type: ignore
 
-    def get_tangent_vectors(self, position: Point | tuple[Expr, Expr]
-                            ) -> tuple[Vector, Vector]:
+    def get_tangent_vectors(self, position: T_position) -> tuple[Vector, Vector]:
         """Get tangent vectors of the ground plane."""
         return self._planar_vectors
 
-    def set_pos_point(self, point: Point, position: tuple[Expr, Expr]) -> None:
+    def set_pos_point(self, point: Point, position: T_position) -> None:
         """Set the location of a point on the ground."""
+        position = self._parse_plane_position(position)
         point.set_pos(self.origin, position[0] * self._planar_vectors[0] +
                       position[1] * self._planar_vectors[1])
