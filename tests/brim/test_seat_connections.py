@@ -4,6 +4,7 @@ import pytest
 from brim.bicycle.rear_frames import RigidRearFrameMoore
 from brim.brim.base_connections import SeatBase
 from brim.brim.seat_connections import (
+    FixedSeat,
     SideLeanSeat,
     SideLeanSeatSpringDamper,
     SideLeanSeatTorque,
@@ -11,11 +12,11 @@ from brim.brim.seat_connections import (
 from brim.rider.pelvis import PlanarPelvis
 from brim.utilities.testing import _test_descriptions, create_model_of_connection
 from brim.utilities.utilities import check_zero
-from sympy import simplify, zeros
+from sympy import Matrix, cos, eye, simplify, sin, zeros
 from sympy.physics.mechanics import ReferenceFrame
 
 
-@pytest.mark.parametrize("seat_cls", [SideLeanSeat])
+@pytest.mark.parametrize("seat_cls", [FixedSeat, SideLeanSeat])
 class TestSeatConnectionBase:
     @pytest.fixture(autouse=True)
     def _setup(self, seat_cls) -> None:
@@ -36,7 +37,7 @@ class TestSeatConnectionBase:
         _test_descriptions(self.model.conn)
 
 
-@pytest.mark.parametrize("seat_cls", [SideLeanSeat])
+@pytest.mark.parametrize("seat_cls", [FixedSeat, SideLeanSeat])
 class TestPelvisInterPointMixin:
     @pytest.fixture(autouse=True)
     def _setup(self, seat_cls) -> None:
@@ -72,6 +73,43 @@ class TestPelvisInterPointMixin:
         self.model.define_kinematics()
         assert self.pelvis.body.masscenter.pos_from(self.rear_frame.saddle) == -v
 
+
+class TestFixedSeatConnection:
+    @pytest.fixture(autouse=True)
+    def _setup(self) -> None:
+        self.model = create_model_of_connection(FixedSeat)("model")
+        self.model.pelvis = PlanarPelvis("pelvis")
+        self.model.rear_frame = RigidRearFrameMoore("rear_frame")
+        self.model.conn = FixedSeat("seat_connection")
+        self.pelvis, self.rear_frame, self.conn = (
+            self.model.pelvis, self.model.rear_frame, self.model.conn)
+
+    def test_default(self) -> None:
+        self.model.define_all()
+        int_frame = ReferenceFrame("int_frame")
+        int_frame.orient_body_fixed(
+            self.rear_frame.frame, (self.conn.symbols["yaw"],
+                                    self.conn.symbols["pitch"],
+                                    self.conn.symbols["roll"]), "zyx")
+        assert simplify(self.pelvis.frame.dcm(int_frame)) == eye(3)
+        assert self.pelvis.body.masscenter.pos_from(
+            self.rear_frame.saddle) == (
+                -self.pelvis.symbols["com_height"] * self.pelvis.z)
+
+    def test_set_rear_interframe(self) -> None:
+        self.model.define_connections()
+        self.model.define_objects()
+        int_frame = ReferenceFrame("int_frame")
+        with pytest.raises(ValueError):
+            self.conn.rear_interframe = int_frame
+        assert self.conn.rear_interframe != int_frame
+        a = self.conn.symbols["pitch"]
+        int_frame.orient_axis(self.rear_frame.frame, a, self.rear_frame.y)
+        self.conn.rear_interframe = int_frame
+        assert self.conn.rear_interframe == int_frame
+        self.model.define_kinematics()
+        assert self.pelvis.frame.dcm(self.rear_frame.frame) == Matrix([
+            [cos(a), 0, -sin(a)], [0, 1, 0], [sin(a), 0, cos(a)]])
 
 class TestSideLeanConnection:
     @pytest.fixture(autouse=True)
