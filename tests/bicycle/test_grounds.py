@@ -8,12 +8,12 @@ from sympy.physics.mechanics._system import System
 
 
 class TestFlatGround:
-    @pytest.fixture(autouse=True)
+    @pytest.fixture()
     def _setup(self) -> None:
         self.ground = FlatGround("ground")
         self.ground.define_objects()
 
-    def test_default(self) -> None:
+    def test_default(self, _setup) -> None:
         assert self.ground.name == "ground"
         assert self.ground.frame == self.ground.body.frame
         assert self.ground.get_normal(self.ground.origin) == -self.ground.frame.z
@@ -35,10 +35,12 @@ class TestFlatGround:
         ("z", 2, 0, 1),
     ])
     def test_normal(self, normal: str, n_idx: int, pl_idx1: int, pl_idx2: int) -> None:
-        vectors = (self.ground.frame.x, self.ground.frame.y, self.ground.frame.z)
+        ground = FlatGround("ground", normal)
+        ground.define_objects()
+        vectors = (ground.frame.x, ground.frame.y, ground.frame.z)
         times = -1 if normal[0] == "-" else 1
-        assert self.ground.get_normal(self.ground.origin) == times * vectors[n_idx]
-        assert self.ground.get_tangent_vectors(self.ground.origin) == (
+        assert ground.get_normal(ground.origin) == times * vectors[n_idx]
+        assert ground.get_tangent_vectors(ground.origin) == (
             vectors[pl_idx1], vectors[pl_idx2])
 
     @pytest.mark.parametrize("tp", ["tuple", "vector", "point"])
@@ -46,13 +48,12 @@ class TestFlatGround:
         ((Symbol("x"), Symbol("y"), Symbol("z")),
          (Symbol("x"), Symbol("y"), Symbol("z"))),
         ((Symbol("x"), Symbol("y")), (Symbol("x"), Symbol("y"), 0))])
-    def test_parse_plane_position(self, tp, position, expected) -> None:
+    def test_parse_plane_position(self, _setup, tp, position, expected) -> None:
         if tp == "vector" or tp == "point":
             position = Vector(0)
-            f = self.ground.frame
-            for i, v in enumerate([f.x, f.y, f.z]):
+            for i, v in enumerate("xyz"):
                 if i < len(expected):
-                    position += expected[i] * v
+                    position += expected[i] * self.ground.frame[v]
         if tp == "point":
             position = self.ground.origin.locatenew("p", position)
         assert self.ground._parse_plane_position(position) == expected
@@ -60,6 +61,6 @@ class TestFlatGround:
     @pytest.mark.parametrize("position", [
         (Symbol("x"), Symbol("y"), Symbol("z"), Symbol("w")),
         (Symbol("x"), )])
-    def test_parse_plane_position_error(self, position) -> None:
+    def test_parse_plane_position_error(self, _setup, position) -> None:
         with pytest.raises(ValueError):
             self.ground._parse_plane_position(position)
