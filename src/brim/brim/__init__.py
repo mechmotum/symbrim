@@ -7,7 +7,8 @@ __all__ = [
 
     "HolonomicPedalsToFeet", "SpringDamperPedalsToFeet",
 
-    "SideLeanSeat", "SideLeanSeatTorque", "SideLeanSeatSpringDamper",
+    "PelvisInterPointMixin",
+    "FixedSeat", "SideLeanSeat", "SideLeanSeatTorque", "SideLeanSeatSpringDamper",
 
     "HolonomicHandGrip", "SpringDamperHandGrip",
 ]
@@ -20,6 +21,8 @@ from brim.brim.base_connections import (
 from brim.brim.bicycle_rider import BicycleRider
 from brim.brim.pedal_connections import HolonomicPedalsToFeet, SpringDamperPedalsToFeet
 from brim.brim.seat_connections import (
+    FixedSeat,
+    PelvisInterPointMixin,
     SideLeanSeat,
     SideLeanSeatSpringDamper,
     SideLeanSeatTorque,
