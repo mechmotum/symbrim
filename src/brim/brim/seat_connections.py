@@ -14,7 +14,49 @@ from brim.core import LoadGroupBase
 __all__ = ["SideLeanSeat", "SideLeanSeatTorque", "SideLeanSeatSpringDamper"]
 
 
-class SideLeanSeat(SeatBase):
+class PelvisInterPointMixin:
+    """Mixin class for the pelvis interpoint."""
+
+    def _define_objects(self) -> None:
+        """Define the objects."""
+        super()._define_objects()
+        self._pelvis_interpoint = None
+
+    def _define_kinematics(self) -> None:
+        """Define the kinematics."""
+        super()._define_kinematics()
+        if self._pelvis_interpoint is None:
+            self._pelvis_interpoint = (self.pelvis.left_hip_point.pos_from(
+                self.pelvis.body.masscenter) + self.pelvis.right_hip_point.pos_from(
+                self.pelvis.body.masscenter)) / 2
+
+    @property
+    def pelvis_interpoint(self) -> Vector | Point | None:
+        """Return the rotation point w.r.t. the pelvis.
+
+        Explanation
+        -----------
+        The pelvis interpoint can either be a vector w.r.t. the the center of mass of
+        the pelvis or a point fixed on the pelvis body. This point will also get a
+        zero velocity with respect to the saddle.
+        """
+        return self._pelvis_interpoint
+
+    @pelvis_interpoint.setter
+    def pelvis_interpoint(self, value: Vector | Point) -> None:
+        try:
+            if isinstance(value, Vector):
+                value.express(self.pelvis.frame)
+            else:
+                value.pos_from(self.pelvis.body.masscenter).express(self.pelvis.frame)
+        except ValueError as e:
+            raise ValueError(
+                "Pelvis interpoint must be expressable w.r.t. the center of mass in the"
+                " pelvis frame.") from e
+        self._pelvis_interpoint = value
+
+
+class SideLeanSeat(PelvisInterPointMixin, SeatBase):
     """Rider lean connection between the rear frame and the pelvis."""
 
     @property
@@ -37,16 +79,11 @@ class SideLeanSeat(SeatBase):
         self._frame_lean_axis = (cos(alpha) * self.rear_frame.x -
                                  sin(alpha) * self.rear_frame.z)
         self._pelvis_lean_axis = self.pelvis.x
-        self._pelvis_interpoint = None
         self._system = System.from_newtonian(self.rear_frame.body)
 
     def _define_kinematics(self) -> None:
         """Define the kinematics."""
         super()._define_kinematics()
-        if self._pelvis_interpoint is None:
-            self._pelvis_interpoint = (self.pelvis.left_hip_point.pos_from(
-                self.pelvis.body.masscenter) + self.pelvis.right_hip_point.pos_from(
-                self.pelvis.body.masscenter)) / 2
         self.system.add_joints(
             PinJoint(
                 self._add_prefix("lean_joint"), self.rear_frame.body, self.pelvis.body,
@@ -82,31 +119,6 @@ class SideLeanSeat(SeatBase):
             raise ValueError(
                 "Lean axis must be expressable in the pelvis frame.") from e
         self._pelvis_lean_axis = value
-
-    @property
-    def pelvis_interpoint(self) -> Vector | Point | None:
-        """Return the rotation point w.r.t. the pelvis.
-
-        Explanation
-        -----------
-        The pelvis interpoint can either be a vector w.r.t. the the center of mass of
-        the pelvis or a point fixed on the pelvis body. This point will also get a
-        zero velocity with respect to the saddle.
-        """
-        return self._pelvis_interpoint
-
-    @pelvis_interpoint.setter
-    def pelvis_interpoint(self, value: Vector | Point) -> None:
-        try:
-            if isinstance(value, Vector):
-                value.express(self.pelvis.frame)
-            else:
-                value.pos_from(self.pelvis.body.masscenter).express(self.pelvis.frame)
-        except ValueError as e:
-            raise ValueError(
-                "Pelvis interpoint must be expressable w.r.t. the center of mass in the"
-                " pelvis frame.") from e
-        self._pelvis_interpoint = value
 
 
 class SideLeanSeatTorque(LoadGroupBase):
