@@ -164,6 +164,22 @@ class TestSideLeanConnection:
     def test_side_lean_torque_descriptions(self, load_cls) -> None:
         _test_descriptions(load_cls("side_lean"))
 
+    def test_side_lean_torque(self) -> None:
+        load_group = SideLeanSeatTorque("seat_torque")
+        self.conn.add_load_groups(load_group)
+        self.model.define_all()
+        assert len(load_group.system.actuators) == 1
+        torque = load_group.symbols["T"]
+        loads = load_group.system.actuators[0].to_loads()
+        # Carefully check the signs of the torques.
+        rot_axis = self.pelvis.frame.ang_vel_in(self.rear_frame.frame).normalize()
+        for load in loads:
+            if load.frame == self.pelvis.frame:
+                assert check_zero(load.torque.dot(rot_axis) - torque)
+            else:
+                assert load.frame == self.rear_frame.frame
+                assert check_zero(load.torque.dot(rot_axis) - -torque)
+
     def test_side_lean_spring_damper(self) -> None:
         load_group = SideLeanSeatSpringDamper("seat_torque")
         self.conn.add_load_groups(load_group)
