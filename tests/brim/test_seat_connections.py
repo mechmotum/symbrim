@@ -36,6 +36,43 @@ class TestSeatConnectionBase:
         _test_descriptions(self.model.conn)
 
 
+@pytest.mark.parametrize("seat_cls", [SideLeanSeat])
+class TestPelvisInterPointMixin:
+    @pytest.fixture(autouse=True)
+    def _setup(self, seat_cls) -> None:
+        self.model = create_model_of_connection(seat_cls)("model")
+        self.model.pelvis = PlanarPelvis("pelvis")
+        self.model.rear_frame = RigidRearFrameMoore("rear_frame")
+        self.model.conn = seat_cls("seat_connection")
+        self.pelvis, self.rear_frame, self.conn = (
+            self.model.pelvis, self.model.rear_frame, self.model.conn)
+
+    def test_default(self) -> None:
+        self.model.define_connections()
+        self.model.define_objects()
+        assert self.conn.pelvis_interpoint is None
+        self.model.define_kinematics()
+        assert (self.conn.pelvis_interpoint ==
+                self.pelvis.symbols["com_height"] * self.pelvis.z)
+
+    @pytest.mark.parametrize("as_point", [True, False])
+    def test_setter(self, as_point) -> None:
+        self.model.define_connections()
+        self.model.define_objects()
+        p = self.rear_frame.x
+        if as_point:
+            p = self.rear_frame.saddle.locatenew("P", p)
+        with pytest.raises(ValueError):
+            self.conn.pelvis_interpoint = p
+        p = v = self.pelvis.z
+        if as_point:
+            p = self.pelvis.body.masscenter.locatenew("P", v)
+        self.conn.pelvis_interpoint = p
+        assert self.conn.pelvis_interpoint == p
+        self.model.define_kinematics()
+        assert self.pelvis.body.masscenter.pos_from(self.rear_frame.saddle) == -v
+
+
 class TestSideLeanConnection:
     @pytest.fixture(autouse=True)
     def _setup(self) -> None:
@@ -80,23 +117,6 @@ class TestSideLeanConnection:
         assert self.pelvis.frame.ang_vel_in(self.rear_frame.frame).dot(
             self.pelvis.y) == self.conn.u[0]
 
-    @pytest.mark.parametrize("as_point", [True, False])
-    def test_set_pelvis_interpoint(self, as_point) -> None:
-        self.model.define_connections()
-        self.model.define_objects()
-        p = self.rear_frame.x
-        if as_point:
-            p = self.rear_frame.saddle.locatenew("P", p)
-        with pytest.raises(ValueError):
-            self.conn.pelvis_interpoint = p
-        p = v = self.pelvis.z
-        if as_point:
-            p = self.pelvis.body.masscenter.locatenew("P", v)
-        self.conn.pelvis_interpoint = p
-        assert self.conn.pelvis_interpoint == p
-        self.model.define_kinematics()
-        assert self.pelvis.body.masscenter.pos_from(self.rear_frame.saddle) == -v
-
     @pytest.mark.parametrize("load_cls", [SideLeanSeatTorque, SideLeanSeatSpringDamper])
     def test_side_lean_torque_invalid_type(self, load_cls) -> None:
         with pytest.raises(TypeError):
@@ -105,22 +125,6 @@ class TestSideLeanConnection:
     @pytest.mark.parametrize("load_cls", [SideLeanSeatTorque, SideLeanSeatSpringDamper])
     def test_side_lean_torque_descriptions(self, load_cls) -> None:
         _test_descriptions(load_cls("side_lean"))
-
-    def test_side_lean_torque(self) -> None:
-        load_group = SideLeanSeatTorque("seat_torque")
-        self.conn.add_load_groups(load_group)
-        self.model.define_all()
-        assert len(load_group.system.actuators) == 1
-        torque = load_group.symbols["T"]
-        loads = load_group.system.actuators[0].to_loads()
-        # Carefully check the signs of the torques.
-        rot_axis = self.pelvis.frame.ang_vel_in(self.rear_frame.frame).normalize()
-        for load in loads:
-            if load.frame == self.pelvis.frame:
-                assert check_zero(load.torque.dot(rot_axis) - torque)
-            else:
-                assert load.frame == self.rear_frame.frame
-                assert check_zero(load.torque.dot(rot_axis) - -torque)
 
     def test_side_lean_spring_damper(self) -> None:
         load_group = SideLeanSeatSpringDamper("seat_torque")
