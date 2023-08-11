@@ -113,6 +113,32 @@ class TestComputeContactPoint:
             self.tyre.upward_radial_axis = cross(
                 self.tyre.wheel.rotation_axis, normal).normalize()
 
+    @pytest.mark.parametrize("with_wheel", [True, False])
+    def test_on_ground_default(self, _setup_flat_ground, with_wheel):
+        if with_wheel:
+            self.tyre.wheel = KnifeEdgeWheel("wheel")
+        assert not self.tyre.on_ground
+
+    def test_on_ground_unconnected(self, _setup_flat_ground):
+        self.tyre.wheel = KnifeEdgeWheel("wheel")
+        self.tyre.wheel.define_objects()
+        self.tyre.wheel.define_kinematics()
+        self.tyre.wheel.frame.orient_axis(self.int_frame, self.q[2], self.int_frame.y)
+        self.tyre._set_pos_contact_point()
+        assert not self.tyre.on_ground
+
+    @pytest.mark.parametrize("off_ground", [True, False])
+    def test_on_ground_computation(self, _setup_flat_ground, off_ground):
+        self.tyre.wheel = KnifeEdgeWheel("wheel")
+        self.tyre.wheel.define_objects()
+        self.tyre.wheel.define_kinematics()
+        self.tyre.wheel.frame.orient_axis(self.int_frame, self.q[2], self.int_frame.y)
+        self.tyre._set_pos_contact_point()
+        self.tyre.contact_point.set_pos(
+            self.ground.origin,
+            int(off_ground) * dynamicsymbols("q3") * self.ground.frame.z)
+        assert self.tyre.on_ground != off_ground
+
 
 class TestNonHolonomicTyreModel:
     @pytest.fixture(autouse=True)
