@@ -1559,7 +1559,7 @@ mpmath = ">=0.19"
 type = "git"
 url = "https://github.com/sympy/sympy.git"
 reference = "HEAD"
-resolved_reference = "15d8fe925bf63f0a66845fcfd7b039d562667a97"
+resolved_reference = "25309dd71c2df4e4e4da5e747ea2ed7dd4b350bd"
 
 [[package]]
 name = "tenacity"
