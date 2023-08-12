@@ -96,6 +96,7 @@ class WhippleBicycleMoore(WhippleBicycle):
     def _define_objects(self) -> None:
         """Define the objects of the Whipple bicycle."""
         super()._define_objects()
+        self._system = System(self.ground.system.origin, self.ground.frame)
         self.rear_tyre.define_objects()
         self.rear_tyre.on_ground = True
         self.front_tyre.define_objects()
@@ -103,7 +104,6 @@ class WhippleBicycleMoore(WhippleBicycle):
         self.u = Matrix(dynamicsymbols(self._add_prefix("u1:9")))
         self.symbols.update({name: Symbol(
             self._add_prefix(name)) for name in ("gear_ratio", "l_px", "l_pz")})
-        self._system = System.from_newtonian(self.ground.body)
 
     def _define_kinematics(self) -> None:
         """Define the kinematics of the Whipple bicycle."""
