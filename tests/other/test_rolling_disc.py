@@ -1,13 +1,9 @@
-from typing import TYPE_CHECKING
-
+import numpy as np
 import pytest
 from brim.bicycle import FlatGround, KnifeEdgeWheel, NonHolonomicTyre
 from brim.other.rolling_disc import RollingDisc, rolling_disc_manual
 from sympy import Symbol, lambdify
 from sympy.physics.mechanics import dynamicsymbols
-
-if TYPE_CHECKING:
-    pass
 
 
 class TestRollingDisc:
@@ -29,6 +25,8 @@ class TestRollingDisc:
         self.rolling_disc.ground = FlatGround("ground")
         self.rolling_disc.define_all()
         self.system = self.rolling_disc.to_system()
+        self.system.apply_gravity(-Symbol("g") * self.rolling_disc.ground.get_normal(
+            self.rolling_disc.ground.origin))
         str_vals = self._arbitrary_values()
         inertia = self.rolling_disc.disc.body.central_inertia.to_matrix(
             self.rolling_disc.disc.frame)
@@ -104,6 +102,21 @@ class TestRollingDisc:
             self.system.eom_method.kindiffdict())[:]
         eval_fnh = lambdify((self.system.q, self.system.u, self.p), fnh, cse=True)
         assert all(abs(val) < 1E-8 for val in eval_fnh(self.q0, self.u0, self.p_vals))
+
+    def test_rolling_disc_eoms(self, request) -> None:
+        request.getfixturevalue("_rolling_disc_manual")
+        self.system.form_eoms()
+        ud_man = np.linalg.solve(*lambdify(
+            (self.system.q, self.system.u, self.p), (
+                self.system.mass_matrix_full, self.system.forcing_full), cse=True)(
+            self.q0, self.u0, self.p_vals))
+        request.getfixturevalue("_rolling_disc_brim")
+        self.system.form_eoms()
+        ud_brim = np.linalg.solve(*lambdify(
+            (self.system.q, self.system.u, self.p), (
+                self.system.mass_matrix_full, self.system.forcing_full), cse=True)(
+            self.q0, self.u0, self.p_vals))
+        assert all(abs(val) < 1E-8 for val in (ud_brim - ud_man).flatten())
 
     def test_rolling_disc_description(self, _rolling_disc_brim) -> None:
         for qi in self.rolling_disc.q:
