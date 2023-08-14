@@ -52,14 +52,25 @@ class WheelBase(NewtonianBodyMixin, ModelBase):
             return params
         elif position not in ["front", "rear"]:
             raise ValueError("Position must be 'front' or 'rear'.")
-        bp = remove_uncertainties(bicycle_parameters.parameters.get(
-            "Measured", bicycle_parameters.parameters.get("Benchmark")))
-        if bp is not None:
-            m = bp["mF"] if position == "front" else bp["mR"]
-            if hasattr(m, "nominal_value"):
-                params[self.body.mass] = m.nominal_value
-            else:
-                params[self.body.mass] = m
+        if "Benchmark" in bicycle_parameters.parameters:
+            bp = remove_uncertainties(bicycle_parameters.parameters["Benchmark"])
+            if position == "front":
+                if "mF" in bp:
+                    params[self.body.mass] = bp["mF"]
+                if "IFxx" in bp and "IFyy" in bp:
+                    params.update(get_inertia_vals(self.body, bp["IFxx"], bp["IFyy"]))
+            elif position == "rear":
+                if "mR" in bp:
+                    params[self.body.mass] = bp["mR"]
+                if "IRxx" in bp and "IRyy" in bp:
+                    params.update(get_inertia_vals(self.body, bp["IRxx"], bp["IRyy"]))
+        if "Measured" in bicycle_parameters.parameters:
+            bp = remove_uncertainties(bicycle_parameters.parameters["Measured"])
+            if position == "front":
+                if "mF" in bp:
+                    params[self.body.mass] = bp["mF"]
+            elif position == "rear" and "mR" in bp:
+                params[self.body.mass] = bp["mR"]
         return params
 
 
@@ -115,10 +126,8 @@ class KnifeEdgeWheel(WheelBase):
             "Benchmark", bicycle_parameters.parameters.get("Measured")))
         if position == "front":
             params[self.radius] = bp["rF"]
-            params.update(get_inertia_vals(self.body, bp["IFxx"], bp["IFyy"]))
         elif position == "rear":
             params[self.radius] = bp["rR"]
-            params.update(get_inertia_vals(self.body, bp["IRxx"], bp["IRyy"]))
         return params
 
 
