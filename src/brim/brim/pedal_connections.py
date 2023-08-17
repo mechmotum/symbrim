@@ -87,7 +87,7 @@ class SpringDamperPedalsToFeet(PedalsToFeetBase):
                 self.pedals.left_pedal_point, self.left_leg.foot_interpoint)
             self.system.add_actuators(
                 LinearSpring(self.symbols["k"], path_left),
-                LinearDamper(self.symbols["c"], path_left),
+                LinearDamper(self.symbols["c"], path_left)
             )
         if self.right_leg:
             path_right = LinearPathway(
