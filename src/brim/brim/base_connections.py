@@ -40,8 +40,9 @@ class PedalsToFeetBase(ConnectionBase):
     """Base class for the connection between the pedals and the legs."""
 
     required_models: tuple[ModelRequirement, ...] = (
-        ModelRequirement("left_leg", LeftLegBase, "Left leg of the rider."),
-        ModelRequirement("right_leg", RightLegBase, "Right leg of the rider."),
+        ModelRequirement("left_leg", LeftLegBase, "Left leg of the rider.", hard=False),
+        ModelRequirement("right_leg", RightLegBase, "Right leg of the rider.",
+                         hard=False),
         ModelRequirement("pedals", PedalsBase, "Pedals of the bicycle."),
     )
     left_leg: LeftLegBase

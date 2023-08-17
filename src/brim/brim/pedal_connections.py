@@ -34,13 +34,11 @@ class HolonomicPedalsToFeet(PedalsToFeetBase):
 
     def _define_constraints(self) -> None:
         """Define the constraints."""
-        super()._define_constraints()
-        error_msg, constrs = [], []
-        for fp, pp in (
-                (self.left_leg.foot_interpoint, self.pedals.left_pedal_point),
-                (self.right_leg.foot_interpoint, self.pedals.right_pedal_point)):
+
+        def attach_foot(foot_point, pedal_point):
+            """Attach the foot to the pedal."""
             for direction in self.pedals.frame:
-                constr = fp.pos_from(pp).dot(direction)
+                constr = foot_point.pos_from(pedal_point).dot(direction)
                 if not check_zero(constr):
                     if check_zero(constr.diff(dynamicsymbols._t)):
                         error_msg.append(
@@ -50,6 +48,13 @@ class HolonomicPedalsToFeet(PedalsToFeetBase):
                             f"equations should be set to zero by redefining symbols "
                             f"before the define_kinematics stage: {constr}")
                     constrs.append(constr)
+
+        super()._define_constraints()
+        error_msg, constrs = [], []
+        if self.left_leg:
+            attach_foot(self.left_leg.foot_interpoint, self.pedals.left_pedal_point)
+        if self.right_leg:
+            attach_foot(self.right_leg.foot_interpoint, self.pedals.right_pedal_point)
         if error_msg:
             raise ValueError(error_msg)
         self.system.add_holonomic_constraints(*constrs)
@@ -77,13 +82,17 @@ class SpringDamperPedalsToFeet(PedalsToFeetBase):
     def _define_loads(self) -> None:
         """Define the loads."""
         super()._define_loads()
-        path_left = LinearPathway(
-            self.pedals.left_pedal_point, self.left_leg.foot_interpoint)
-        path_right = LinearPathway(
-            self.pedals.right_pedal_point, self.right_leg.foot_interpoint)
-        self.system.add_actuators(
-            LinearSpring(self.symbols["k"], path_left),
-            LinearDamper(self.symbols["c"], path_left),
-            LinearSpring(self.symbols["k"], path_right),
-            LinearDamper(self.symbols["c"], path_right)
-        )
+        if self.left_leg:
+            path_left = LinearPathway(
+                self.pedals.left_pedal_point, self.left_leg.foot_interpoint)
+            self.system.add_actuators(
+                LinearSpring(self.symbols["k"], path_left),
+                LinearDamper(self.symbols["c"], path_left),
+            )
+        if self.right_leg:
+            path_right = LinearPathway(
+                self.pedals.right_pedal_point, self.right_leg.foot_interpoint)
+            self.system.add_actuators(
+                LinearSpring(self.symbols["k"], path_right),
+                LinearDamper(self.symbols["c"], path_right)
+            )

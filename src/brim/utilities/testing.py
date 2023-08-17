@@ -32,7 +32,9 @@ def create_model_of_connection(connection_cls: type[ConnectionBase]) -> type[Mod
     def _define_connections(self):
         ModelBase._define_connections(self)
         for req in self.conn.required_models:
-            setattr(self.conn, req.attribute_name, getattr(self, req.attribute_name))
+            model = getattr(self, req.attribute_name)
+            if model is not None:
+                setattr(self.conn, req.attribute_name, model)
 
     def _define_objects(self):
         ModelBase._define_objects(self)
