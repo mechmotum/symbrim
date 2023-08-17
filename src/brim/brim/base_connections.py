@@ -28,8 +28,9 @@ class HandGripBase(ConnectionBase):
 
     required_models: tuple[ModelRequirement, ...] = (
         ModelRequirement("steer", FrontFrameBase, "Front frame of the bicycle."),
-        ModelRequirement("left_arm", LeftArmBase, "Left arm of the rider."),
-        ModelRequirement("right_arm", RightArmBase, "Right arm of the rider."),
+        ModelRequirement("left_arm", LeftArmBase, "Left arm of the rider.", hard=False),
+        ModelRequirement("right_arm", RightArmBase, "Right arm of the rider.",
+                         hard=False),
     )
     steer: FrontFrameBase
     left_arm: LeftArmBase
@@ -40,8 +41,9 @@ class PedalsToFeetBase(ConnectionBase):
     """Base class for the connection between the pedals and the legs."""
 
     required_models: tuple[ModelRequirement, ...] = (
-        ModelRequirement("left_leg", LeftLegBase, "Left leg of the rider."),
-        ModelRequirement("right_leg", RightLegBase, "Right leg of the rider."),
+        ModelRequirement("left_leg", LeftLegBase, "Left leg of the rider.", hard=False),
+        ModelRequirement("right_leg", RightLegBase, "Right leg of the rider.",
+                         hard=False),
         ModelRequirement("pedals", PedalsBase, "Pedals of the bicycle."),
     )
     left_leg: LeftLegBase

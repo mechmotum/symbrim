@@ -12,7 +12,7 @@ from sympy.physics.mechanics import Vector, dynamicsymbols
 
 @pytest.mark.parametrize("steer_cls", [HolonomicHandGrip, SpringDamperHandGrip])
 class TestSteerConnectionBase:
-    @pytest.fixture(autouse=True)
+    @pytest.fixture()
     def _setup(self, steer_cls) -> None:
         self.model = create_model_of_connection(steer_cls)("model")
         self.model.steer = RigidFrontFrameMoore("front_frame")
@@ -35,11 +35,30 @@ class TestSteerConnectionBase:
         self.model.define_loads()
         self.model.define_constraints()
 
-    def test_types(self) -> None:
+    def test_types(self, _setup) -> None:
         assert isinstance(self.model.conn, HandGripBase)
 
-    def test_descriptions(self) -> None:
+    def test_descriptions(self, _setup) -> None:
         _test_descriptions(self.model.conn)
+
+    @pytest.mark.parametrize("side, arm_cls", [
+        ("left", PinElbowStickLeftArm), ("right", PinElbowStickRightArm)])
+    def test_single_arm(self, steer_cls, side, arm_cls) -> None:
+        self.model = create_model_of_connection(steer_cls)("model")
+        self.model.steer = RigidFrontFrameMoore("front_frame")
+        setattr(self.model, side + "_arm", arm_cls(side + "_arm"))
+        self.model.conn = steer_cls("steer_connection")
+        self.model.define_connections()
+        self.model.define_objects()
+        # Define kinematics with enough degrees of freedom
+        self.q = dynamicsymbols("q1:3")
+        getattr(self.model, side + "_arm").hand_interframe.orient_axis(
+            self.model.steer.frame, self.model.steer.steer_axis, self.q[0])
+        getattr(self.model, side + "_arm").shoulder_interpoint.set_pos(
+            self.model.steer.left_handgrip, self.q[1] * self.model.steer.steer_axis)
+        self.model.define_kinematics()
+        self.model.define_loads()
+        self.model.define_constraints()
 
 
 class TestHolonomicHandGrip:
