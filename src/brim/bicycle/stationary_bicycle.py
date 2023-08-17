@@ -29,9 +29,9 @@ class StationaryBicycle(BicycleBase):
         """Dictionary of descriptions of the Whipple bicycle's attributes."""
         desc = {
             **super().descriptions,
-            self.q[0]: f"Front wheel rotation angle of {self.name}.",
+            self.q[0]: f"Rear wheel rotation angle of {self.name}.",
             self.q[1]: f"Steering rotation angle of {self.name}.",
-            self.q[2]: f"Rear wheel rotation angle of {self.name}.",
+            self.q[2]: f"Front wheel rotation angle of {self.name}.",
             self.symbols["gear_ratio"]: "Ratio between the angle of the rear wheel and"
                                         " the pedals.",
             self.symbols["l_px"]: f"Distance between the rear wheel and the pedals "
@@ -68,27 +68,31 @@ class StationaryBicycle(BicycleBase):
         if self.rear_wheel:
             self.system.add_joints(
                 PinJoint(self._add_prefix("rear_wheel_joint"), self.rear_frame.body,
-                         self.rear_wheel.body, self.q[2], self.u[2],
+                         self.rear_wheel.body, self.q[0], self.u[0],
                          self.rear_frame.wheel_attachment, self.rear_wheel.center,
                          self.rear_frame.wheel_axis, self.rear_wheel.rotation_axis)
             )
         if self.front_wheel:
             self.system.add_joints(
                 PinJoint(self._add_prefix("front_wheel_joint"), self.front_frame.body,
-                         self.front_wheel.body, self.q[0], self.u[0],
+                         self.front_wheel.body, self.q[2], self.u[2],
                          self.front_frame.wheel_attachment, self.front_wheel.center,
                          self.front_frame.wheel_axis, self.front_wheel.rotation_axis),
             )
         if self.pedals:
-            self.pedals.center_point.set_pos(self.rear_wheel.center,
+            self.pedals.center_point.set_pos(self.rear_frame.wheel_attachment,
                                              self.symbols["l_px"] * self.rear_frame.x +
                                              self.symbols["l_pz"] * self.rear_frame.z)
             self.pedals.frame.orient_axis(
                 self.rear_frame.frame, self.rear_frame.wheel_axis,
-                self.q[2] / self.symbols["gear_ratio"])
+                self.q[0] / self.symbols["gear_ratio"])
             self.pedals.frame.set_ang_vel(
                 self.rear_frame.frame,
-                self.u[2] / self.symbols["gear_ratio"] * self.rear_frame.wheel_axis)
+                self.u[0] / self.symbols["gear_ratio"] * self.rear_frame.wheel_axis)
+            if self.q[0] not in self.system.q:
+                self.system.add_coordinates(self.q[0])
+                self.system.add_speeds(self.u[0])
+                self.system.add_kdes(-self.q[0].diff(dynamicsymbols._t) + self.u[0])
 
     def get_param_values(self, bicycle_parameters: Bicycle) -> dict[Symbol, float]:
         """Get a parameters mapping of a model based on a bicycle parameters object."""

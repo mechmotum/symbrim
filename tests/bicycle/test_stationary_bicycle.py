@@ -27,20 +27,37 @@ class TestStationaryBicycle:
     def test_only_rear_frame_hard(self, _setup_default):
         self.bike.define_all()
 
-    @pytest.mark.parametrize("name, model_cls", [
-        ("front_frame", RigidFrontFrame),
-        ("rear_wheel", KnifeEdgeWheel),
-        ("Pedals", SimplePedals),
-        ("rear_wheel", ToroidalWheel),
+    @pytest.mark.parametrize("name, model_cls, coord_idx", [
+        ("front_frame", RigidFrontFrame, (1,)),
+        ("rear_wheel", KnifeEdgeWheel, (0,)),
+        ("pedals", SimplePedals, (0,)),
+        ("rear_wheel", ToroidalWheel, (0,)),
     ])
-    def test_optional_models(self, _setup_default, name, model_cls):
+    def test_optional_models(self, _setup_default, name, model_cls, coord_idx):
         setattr(self.bike, name, model_cls(name))
         self.bike.define_all()
+        for idx in coord_idx:
+            assert self.bike.q[idx] in self.bike.system.q
+            assert self.bike.u[idx] in self.bike.system.u
+            assert len(self.bike.system.kdes) == len(coord_idx)
 
     def test_front_wheel(self, _setup_default):
         self.bike.front_frame = RigidFrontFrame("front_frame")
         self.bike.front_wheel = KnifeEdgeWheel("front_wheel")
         self.bike.define_all()
+
+    def test_all(self, _setup_default):
+        self.bike.rear_wheel = KnifeEdgeWheel("rear_wheel")
+        self.bike.pedals = SimplePedals("pedals")
+        self.bike.front_frame = RigidFrontFrame("front_frame")
+        self.bike.front_wheel = KnifeEdgeWheel("front_wheel")
+        self.bike.pedals = SimplePedals("pedals")
+        self.bike.define_all()
+        for qi in self.bike.q:
+            assert qi in self.bike.system.q
+        for ui in self.bike.u:
+            assert ui in self.bike.system.u
+        assert len(self.bike.system.kdes) == 3
 
     def test_descriptions(self, _setup_default) -> None:
         self.bike.define_connections()
