@@ -15,15 +15,6 @@ class RiderLean(NewtonianBodyMixin, ModelBase):
     """Rider lean model."""
 
     @property
-    def actuator(self):  # pragma: no cover
-        """Actuator between the rear frame and the rider."""
-        return self._actuator
-
-    @actuator.setter
-    def actuator(self, actuator) -> None:  # pragma: no cover
-        raise NotImplementedError("Support for ActuatorBase is needed.")
-
-    @property
     def lean_point(self):
         """Point about which the rider leans defined w.r.t. the rider."""
         return self._lean_point
@@ -54,7 +45,6 @@ class RiderLean(NewtonianBodyMixin, ModelBase):
     def _define_objects(self) -> None:
         """Define the objects of the rider lean."""
         super()._define_objects()
-        self._actuator = None
         self._lean_axis = self.x
         self._lean_point = Point(self._add_prefix("lean_point"))
         self.symbols["d_lp"] = Symbol(self._add_prefix("d_lp"))
@@ -63,8 +53,3 @@ class RiderLean(NewtonianBodyMixin, ModelBase):
         """Define the kinematics of the rider lean."""
         super()._define_kinematics()
         self._lean_point.set_pos(self.body.masscenter, self.symbols["d_lp"] * self.z)
-
-    def _define_loads(self) -> None:
-        """Define the loads of the rider lean."""
-        super()._define_loads()
-        # TODO: Add actuator loads.
