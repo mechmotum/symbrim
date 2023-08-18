@@ -54,6 +54,7 @@ class TestModelBase:
         disc = RollingDisc("model")
         assert isinstance(disc, ModelBase)
         assert str(disc) == "model"
+        assert repr(disc) == "RollingDisc('model')"
         assert disc.name == "model"
         assert disc.disc is None
         assert disc.ground is None
