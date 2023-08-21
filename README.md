@@ -1,30 +1,23 @@
 # BRiM
 A Modular and Extensible Open-Source Framework for Creating Bicycle-Rider Models.
 
-This package is still under development, therefore there is no guarantee on backwards
+This package is still under development, therefore there is no guarantee on backward
 compatibility.
 
 ## Installation
-`brim` can either be installed from `PyPI` or from the development version on `GitHub`.
-If one installs from `PyPI` then one needs to install some (optional) dependencies
-manually.
+`BRiM` is currently not available on `PyPI`. Therefore, you'll need to install the
+development version from GitHub using:
 ```bash
-pip install git+https://github.com/sympy/sympy.git
-pip install brim
+pip install git+https://github.com/TJStienstra/brim.git
 ```
-Optionally one can also install:
+The optional dependencies can be installed with:
 ```bash
 pip install git+https://github.com/moorepants/BicycleParameters.git
 pip install git+https://github.com/TJStienstra/symmeplot.git
 ```
-The development version can easily be installed using:
-```bash
-pip install git+https://github.com/TJStienstra/brim.git
-```
-In the last case the dependencies should be correctly handled by `poetry`.
 
 ## Contributing
-One of the aims when developing this package make it more easy for researchers to also
+One of the aims when developing this package make it easier for researchers to also
 share their bicycle-rider models for research dissemination and academic
 reproducibility. This goal is aided as follows. [`poetry`](https://python-poetry.org/)
 is used to manage the dependencies. After installing `poetry` one can install the
