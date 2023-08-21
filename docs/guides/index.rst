@@ -7,4 +7,5 @@ User Guide
 .. toctree::
     :titlesonly:
 
+    installation
     introduction
