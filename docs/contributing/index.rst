@@ -85,4 +85,3 @@ can use: ::
 .. _sphinx.ext.autosummary: https://www.sphinx-doc.org/en/master/usage/extensions/autosummary.html
 .. _Hypermodern Python: https://cjolowicz.github.io/posts/hypermodern-python-01-setup/
 .. _Setting up Python Projects: https://johschmidt42.medium.com/setting-up-python-projects-part-i-408603868c08
-: https://www.aahilm.com/blog/documenting-large-projects-with-sphinx
