@@ -8,6 +8,6 @@ Models.
     :maxdepth: 2
     :titlesonly:
 
-    user_guide/index
+    guides/index
     contributing/index
     api_reference
