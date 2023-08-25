@@ -23,7 +23,7 @@ if TYPE_CHECKING:
     from brim.core.requirement import ConnectionRequirement, ModelRequirement
 
 __all__ = ["ConnectionBase", "ConnectionMeta", "LoadGroupBase", "LoadGroupMeta",
-           "ModelBase", "ModelMeta", "set_default_formulation"]
+           "ModelBase", "ModelMeta", "set_default_convention"]
 
 
 def _get_requirements(bases, namespace, req_attr_name):
@@ -158,6 +158,9 @@ class BrimBase:
     def __str__(self) -> str:
         return self.name
 
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}({self.name!r})"
+
     @property
     def descriptions(self) -> dict[Any, str]:
         """Descriptions of the attributes of the object."""
@@ -242,7 +245,7 @@ class ModelBase(BrimBase, metaclass=ModelMeta):
 
     required_models: tuple[ModelRequirement, ...] = ()
     required_connections: tuple[ConnectionRequirement, ...] = ()
-    formulation: str = ""
+    convention: str = ""
 
     def __init__(self, name: str) -> None:
         """Create a new instance of the model.
@@ -287,18 +290,18 @@ class ModelBase(BrimBase, metaclass=ModelMeta):
         self._load_groups.extend(load_groups)
 
     @classmethod
-    def from_formulation(cls, formulation: str, name: str, *args, **kwargs
+    def from_convention(cls, convention: str, name: str, *args, **kwargs
                          ) -> ModelBase:
-        """Create a model from a formulation."""
+        """Create a model from a convention."""
         possible_models = []
         for model in Registry().models:
-            if issubclass(model, cls) and model.formulation == formulation:
+            if issubclass(model, cls) and model.convention == convention:
                 possible_models.append(model)
         if len(possible_models) == 0:
-            raise ValueError(f"No model found for formulation {formulation!r} of type "
+            raise ValueError(f"No model found for convention {convention!r} of type "
                              f"{cls}.")
         if len(possible_models) > 1:
-            raise ValueError(f"Multiple models found for formulation {formulation!r} "
+            raise ValueError(f"Multiple models found for convention {convention!r} "
                              f"of type {cls}: {set(possible_models)}.")
         return possible_models[0](name, *args, **kwargs)
 
@@ -471,9 +474,9 @@ class LoadGroupBase(BrimBase, metaclass=LoadGroupMeta):
         return self.parent.system if self.parent is not None else None
 
 
-def set_default_formulation(formulation: str
+def set_default_convention(convention: str
                             ) -> Callable[[type[ModelBase]], type[ModelBase]]:
-    """Set the default formulation for a model."""
+    """Set the default convention for a model."""
 
     def decorator(model: type[ModelBase]) -> type[ModelBase]:
         old_new = model.__new__
@@ -481,7 +484,7 @@ def set_default_formulation(formulation: str
         @wraps(old_new)
         def new_new(cls, *args, **kwargs) -> ModelBase:
             if cls is model:
-                return cls.from_formulation(formulation, *args, **kwargs)
+                return cls.from_convention(convention, *args, **kwargs)
             return old_new(cls)
 
         if not issubclass(model, ModelBase):
@@ -500,7 +503,7 @@ def _merge_systems(*systems: System) -> System:
     This function is not used in the current implementation of brim.
     However, it should in the end be moved to sympy mechanics.
     """
-    system = System(systems[0].origin, systems[0].frame)
+    system = System(systems[0].frame, systems[0].origin)
     for s in systems:
         if s is None:  # pragma: no cover
             continue

@@ -2,13 +2,16 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="220.4536mm"
-   height="87.128685mm"
-   viewBox="0 0 220.45359 87.128688"
+   width="231.03951mm"
+   height="70.457901mm"
+   viewBox="0 0 231.0395 70.457903"
    version="1.1"
    id="svg4841"
    inkscape:version="1.1 (c68e22c387, 2021-05-23)"
-   sodipodi:docname="modular_bicycle_model_explanation.svg"
+   sodipodi:docname="modular_whipple_bicycle_overview.svg"
+   inkscape:export-filename="C:\Users\Timo\Downloads\modular_bicycle_model_explanation.png"
+   inkscape:export-xdpi="300"
+   inkscape:export-ydpi="300"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -24,15 +27,15 @@
      inkscape:pagecheckerboard="0"
      inkscape:document-units="mm"
      showgrid="false"
-     inkscape:zoom="1.1003319"
-     inkscape:cx="279.91554"
-     inkscape:cy="257.64953"
+     inkscape:zoom="1.5561043"
+     inkscape:cx="301.07236"
+     inkscape:cy="135.27371"
      inkscape:window-width="2560"
      inkscape:window-height="1351"
      inkscape:window-x="1911"
      inkscape:window-y="-3"
      inkscape:window-maximized="1"
-     inkscape:current-layer="layer4" />
+     inkscape:current-layer="layer2" />
   <defs
      id="defs4838">
     <marker
@@ -119,13 +122,54 @@
          d="M 5.77,0 -2.88,5 V -5 Z"
          id="path111358-5-4-3" />
     </marker>
+    <marker
+       style="overflow:visible"
+       id="EmptyTriangleLend-5"
+       refX="0"
+       refY="0"
+       orient="auto"
+       inkscape:stockid="EmptyTriangleOutL"
+       inkscape:isstock="true">
+      <path
+         transform="matrix(0.8,0,0,0.8,-4.8,0)"
+         style="fill:#ffffff;fill-rule:evenodd;stroke:context-stroke;stroke-width:1pt"
+         d="M 5.77,0 -2.88,5 V -5 Z"
+         id="path111358-5-7" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="EmptyDiamondLend-6"
+       refX="0"
+       refY="0"
+       orient="auto"
+       inkscape:stockid="EmptyDiamondLend"
+       inkscape:isstock="true">
+      <path
+         transform="matrix(0.8,0,0,0.8,-5.6,0)"
+         style="fill:#ffffff;fill-rule:evenodd;stroke:context-stroke;stroke-width:1pt"
+         d="M 0,-7.0710768 -7.0710894,0 0,7.0710589 7.0710462,0 Z"
+         id="path36622-3" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="EmptyTriangleLend-70"
+       refX="0"
+       refY="0"
+       orient="auto"
+       inkscape:stockid="EmptyTriangleOutL"
+       inkscape:isstock="true">
+      <path
+         transform="matrix(0.8,0,0,0.8,-4.8,0)"
+         style="fill:#ffffff;fill-rule:evenodd;stroke:context-stroke;stroke-width:1pt"
+         d="M 5.77,0 -2.88,5 V -5 Z"
+         id="path111358-5-2" />
+    </marker>
   </defs>
   <g
      inkscape:label="bicycle"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(-27.69204,-104.46082)"
-     sodipodi:insensitive="true">
+     transform="translate(-17.10613,-121.1316)">
     <path
        style="fill:none;stroke:#000000;stroke-width:0.5;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="path3564"
@@ -363,38 +407,9 @@
   </g>
   <g
      inkscape:groupmode="layer"
-     id="layer3"
-     inkscape:label="rider"
-     sodipodi:insensitive="true"
-     transform="translate(-27.69204,-104.46082)">
-    <path
-       style="fill:none;stroke:#ff0000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m 117.182,162.841 2.144,-22.56165 -23.626072,-3.80487 19.563722,-20.5461 3.52305,14.29162 9.05594,4.71102"
-       id="path37205"
-       sodipodi:nodetypes="cccccc" />
-    <path
-       style="fill:none;stroke:#ff0000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers"
-       id="path37328"
-       sodipodi:type="arc"
-       sodipodi:cx="120.44852"
-       sodipodi:cy="110.21172"
-       sodipodi:rx="5.5"
-       sodipodi:ry="5.5"
-       sodipodi:start="0.22213853"
-       sodipodi:end="0.22199715"
-       sodipodi:open="true"
-       sodipodi:arc-type="arc"
-       d="m 125.81337,111.42346 a 5.5,5.5 0 0 1 -6.5764,4.15316 5.5,5.5 0 0 1 -4.1534,-6.57626 5.5,5.5 0 0 1 6.57612,-4.15362 5.5,5.5 0 0 1 4.15386,6.57596" />
-    <path
-       style="fill:none;stroke:#ff0000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m 115.26365,115.92838 1.46943,-1.53103"
-       id="path37762"
-       sodipodi:nodetypes="cc" />
-  </g>
-  <g
-     inkscape:groupmode="layer"
      id="layer5"
-     inkscape:label="connections">
+     inkscape:label="connections"
+     transform="translate(10.585911,-16.670778)">
     <path
        style="fill:#0000ff;fill-opacity:1;stroke:none;stroke-width:1.88976;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;paint-order:markers stroke fill"
        id="path13196"
@@ -408,21 +423,10 @@
        sodipodi:open="true"
        sodipodi:arc-type="arc"
        d="m 87.069245,183.67427 a 1.5,1.5 0 0 1 -1.793565,1.13268 1.5,1.5 0 0 1 -1.132744,-1.79352 1.5,1.5 0 0 1 1.793485,-1.13281 1.5,1.5 0 0 1 1.13287,1.79344"
-       transform="translate(-27.69204,-104.46082)" />
-    <path
-       style="fill:#0000ff;fill-opacity:1;stroke:none;stroke-width:1.88976;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;paint-order:markers stroke fill"
-       id="path13196-6"
-       sodipodi:type="arc"
-       sodipodi:cx="117.10104"
-       sodipodi:cy="162.87482"
-       sodipodi:rx="1.5"
-       sodipodi:ry="1.5"
-       sodipodi:start="0.22213853"
-       sodipodi:end="0.22199715"
-       sodipodi:open="true"
-       sodipodi:arc-type="arc"
-       d="m 118.56419,163.20529 a 1.5,1.5 0 0 1 -1.79357,1.13268 1.5,1.5 0 0 1 -1.13274,-1.79352 1.5,1.5 0 0 1 1.79348,-1.13281 1.5,1.5 0 0 1 1.13287,1.79344"
-       transform="translate(-27.69204,-104.46082)" />
+       transform="translate(-27.69204,-104.46082)"
+       inkscape:export-filename="C:\Users\Timo\Downloads\path13196.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
     <path
        style="fill:#0000ff;fill-opacity:1;stroke:none;stroke-width:1.88976;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;paint-order:markers stroke fill"
        id="path13196-9"
@@ -436,45 +440,23 @@
        sodipodi:open="true"
        sodipodi:arc-type="arc"
        d="m 153.11796,183.34483 a 1.5,1.5 0 0 1 -1.79357,1.13268 1.5,1.5 0 0 1 -1.13274,-1.79352 1.5,1.5 0 0 1 1.79348,-1.13281 1.5,1.5 0 0 1 1.13288,1.79345"
-       transform="translate(-27.69204,-104.46082)" />
-    <path
-       style="fill:#0000ff;fill-opacity:1;stroke:none;stroke-width:1.88976;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;paint-order:markers stroke fill"
-       id="path13196-0"
-       sodipodi:type="arc"
-       sodipodi:cx="95.770042"
-       sodipodi:cy="136.43681"
-       sodipodi:rx="1.5"
-       sodipodi:ry="1.5"
-       sodipodi:start="0.22213853"
-       sodipodi:end="0.22199715"
-       sodipodi:open="true"
-       sodipodi:arc-type="arc"
-       d="m 97.233185,136.76729 a 1.5,1.5 0 0 1 -1.793565,1.13268 1.5,1.5 0 0 1 -1.132744,-1.79353 1.5,1.5 0 0 1 1.793485,-1.1328 1.5,1.5 0 0 1 1.132871,1.79344"
-       transform="translate(-27.69204,-104.46082)" />
-    <path
-       style="fill:#0000ff;fill-opacity:1;stroke:none;stroke-width:1.88976;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;paint-order:markers stroke fill"
-       id="path13196-95"
-       sodipodi:type="arc"
-       sodipodi:cx="127.86204"
-       sodipodi:cy="134.94582"
-       sodipodi:rx="1.5"
-       sodipodi:ry="1.5"
-       sodipodi:start="0.22213853"
-       sodipodi:end="0.22199715"
-       sodipodi:open="true"
-       sodipodi:arc-type="arc"
-       d="m 129.32518,135.27629 a 1.5,1.5 0 0 1 -1.79356,1.13268 1.5,1.5 0 0 1 -1.13275,-1.79352 1.5,1.5 0 0 1 1.79349,-1.13281 1.5,1.5 0 0 1 1.13287,1.79344"
-       transform="translate(-27.69204,-104.46082)" />
+       transform="translate(-27.69204,-104.46082)"
+       inkscape:export-filename="C:\Users\Timo\Downloads\path13196.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
   </g>
   <g
      inkscape:groupmode="layer"
      id="layer2"
      inkscape:label="classes"
-     transform="translate(-27.69204,-104.46082)"
+     transform="translate(-17.10613,-121.1316)"
      style="display:inline">
     <g
        id="g18375"
-       transform="translate(15.177566,2.4560123)">
+       transform="translate(62.32456,-14.616488)"
+       inkscape:export-filename="C:\Users\Timo\Downloads\path13196.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300">
       <text
          xml:space="preserve"
          style="font-size:3.88056px;line-height:1.25;font-family:sans-serif;text-align:center;text-anchor:middle;stroke-width:0.264583"
@@ -495,32 +477,6 @@
          y="136.21553" />
     </g>
     <g
-       id="g18375-4"
-       transform="translate(14.196646,-60.971787)">
-      <g
-         id="g113621"
-         transform="translate(29.925157,31.79548)">
-        <text
-           xml:space="preserve"
-           style="font-size:3.88056px;line-height:1.25;font-family:sans-serif;text-align:center;text-anchor:middle;stroke-width:0.264583"
-           x="45.707638"
-           y="142.16032"
-           id="text12578-10"><tspan
-             sodipodi:role="line"
-             id="tspan12576-5"
-             style="text-align:center;text-anchor:middle;stroke-width:0.264583"
-             x="45.707638"
-             y="142.16032">Rider</tspan></text>
-        <rect
-           style="fill:none;stroke:#000000;stroke-width:0.499999;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers"
-           id="rect18156-1"
-           width="15"
-           height="9"
-           x="38.336506"
-           y="136.21553" />
-      </g>
-    </g>
-    <g
        id="g18375-6"
        transform="translate(-5.6967825,24.722982)">
       <g
@@ -529,7 +485,10 @@
     </g>
     <g
        id="g36447"
-       transform="translate(117.57228,2.4560123)">
+       transform="translate(117.93297,1.734639)"
+       inkscape:export-filename="C:\Users\Timo\Downloads\path13196.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300">
       <text
          xml:space="preserve"
          style="font-size:3.88056px;line-height:1.25;font-family:sans-serif;text-align:center;text-anchor:middle;stroke-width:0.264583"
@@ -551,7 +510,10 @@
     </g>
     <g
        id="g18375-7"
-       transform="translate(117.74178,-13.414199)">
+       transform="translate(71.453663,-30.486699)"
+       inkscape:export-filename="C:\Users\Timo\Downloads\path13196.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300">
       <g
          id="g36452"
          transform="translate(46.648803,15.870211)">
@@ -580,7 +542,10 @@
        transform="translate(170.73029,-10.962729)" />
     <g
        id="g21116"
-       transform="translate(15.908685,1.2575969)">
+       transform="translate(17.668789,0.00124882)"
+       inkscape:export-filename="C:\Users\Timo\Downloads\path13196.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300">
       <text
          xml:space="preserve"
          style="font-size:3.88056px;line-height:1.25;font-family:sans-serif;text-align:center;text-anchor:middle;stroke-width:0.264583"
@@ -601,33 +566,11 @@
          y="121.59779" />
     </g>
     <g
-       id="g21116-6"
-       transform="translate(15.738685,-14.55857)">
-      <g
-         id="g40360">
-        <text
-           xml:space="preserve"
-           style="font-size:3.88056px;line-height:1.25;font-family:sans-serif;text-align:center;text-anchor:middle;stroke-width:0.264583"
-           x="41.940086"
-           y="127.54258"
-           id="text12578-1-0"><tspan
-             sodipodi:role="line"
-             id="tspan12576-2-35"
-             style="text-align:center;text-anchor:middle;stroke-width:0.264583"
-             x="41.940086"
-             y="127.54258">RiderBase</tspan></text>
-        <rect
-           style="fill:none;stroke:#000000;stroke-width:0.499999;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:2.99999, 0.999998;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers"
-           id="rect18156-3-9"
-           width="23.903999"
-           height="9"
-           x="30.367048"
-           y="121.59779" />
-      </g>
-    </g>
-    <g
        id="g28184"
-       transform="translate(145.56087,31.629735)">
+       transform="translate(145.56087,31.629735)"
+       inkscape:export-filename="C:\Users\Timo\Downloads\path13196.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300">
       <text
          xml:space="preserve"
          style="font-size:3.88056px;line-height:1.25;font-family:sans-serif;text-align:center;text-anchor:middle;stroke-width:0.264583"
@@ -648,8 +591,37 @@
          y="121.59779" />
     </g>
     <g
+       id="g28184-6"
+       transform="translate(23.230906,15.12464)"
+       inkscape:export-filename="C:\Users\Timo\Downloads\path13196.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300"
+       style="display:inline">
+      <text
+         xml:space="preserve"
+         style="font-size:3.88056px;line-height:1.25;font-family:sans-serif;text-align:center;text-anchor:middle;stroke-width:0.264583"
+         x="47.840614"
+         y="127.18067"
+         id="text12578-1-6-8"><tspan
+           sodipodi:role="line"
+           id="tspan12576-2-3-8"
+           style="text-align:center;text-anchor:middle;stroke-width:0.264583"
+           x="47.840614"
+           y="127.18067">KnifeEdgeWheel</tspan></text>
+      <rect
+         style="fill:none;stroke:#000000;stroke-width:0.499999;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers"
+         id="rect18156-3-6-1"
+         width="35.723999"
+         height="9"
+         x="30.367048"
+         y="121.59779" />
+    </g>
+    <g
        id="g28184-4"
-       transform="translate(154.29875,60.74171)">
+       transform="translate(154.29875,60.74171)"
+       inkscape:export-filename="C:\Users\Timo\Downloads\path13196.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300">
       <text
          xml:space="preserve"
          style="font-size:3.88056px;line-height:1.25;font-family:sans-serif;text-align:center;text-anchor:middle;stroke-width:0.264583"
@@ -671,7 +643,10 @@
     </g>
     <g
        id="g29486"
-       transform="translate(0.52749193,32.889917)">
+       transform="translate(-13.010919,15.12464)"
+       inkscape:export-filename="C:\Users\Timo\Downloads\path13196.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300">
       <text
          xml:space="preserve"
          style="font-size:3.88056px;line-height:1.25;font-family:sans-serif;text-align:center;text-anchor:middle;stroke-width:0.264583"
@@ -693,7 +668,10 @@
     </g>
     <g
        id="g29486-0"
-       transform="translate(150.45237,16.659215)">
+       transform="translate(150.45237,16.659215)"
+       inkscape:export-filename="C:\Users\Timo\Downloads\path13196.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300">
       <text
          xml:space="preserve"
          style="font-size:3.88056px;line-height:1.25;font-family:sans-serif;text-align:center;text-anchor:middle;stroke-width:0.264583"
@@ -715,7 +693,10 @@
     </g>
     <g
        id="g29486-0-4"
-       transform="translate(149.17133,45.099025)">
+       transform="translate(149.17133,45.099025)"
+       inkscape:export-filename="C:\Users\Timo\Downloads\path13196.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300">
       <text
          xml:space="preserve"
          style="font-size:3.88056px;line-height:1.25;font-family:sans-serif;text-align:center;text-anchor:middle;stroke-width:0.264583"
@@ -735,80 +716,92 @@
          x="71.502266"
          y="137.24048" />
     </g>
-    <g
-       id="g29486-9"
-       transform="translate(-1.2348032,66.389125)">
-      <g
-         id="g32228"
-         transform="translate(-1.1902052,-17.683048)">
-        <text
-           xml:space="preserve"
-           style="font-size:3.88056px;line-height:1.25;font-family:sans-serif;text-align:center;text-anchor:middle;stroke-width:0.264583"
-           x="46.290047"
-           y="127.54258"
-           id="text12578-1-6-7-1"><tspan
-             sodipodi:role="line"
-             id="tspan12576-2-3-7-7"
-             style="text-align:center;text-anchor:middle;stroke-width:0.264583"
-             x="46.290047"
-             y="127.54258">ToroidalWheel</tspan></text>
-        <rect
-           style="fill:none;stroke:#000000;stroke-width:0.499999;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers"
-           id="rect18156-3-6-6-6"
-           width="31.846001"
-           height="9"
-           x="30.367048"
-           y="121.59779" />
-      </g>
-    </g>
     <path
        style="fill:none;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#EmptyTriangleLend)"
-       d="m 43.86504,170.31352 v -6.60218"
+       d="m 47.305828,168.05904 v -6.60218"
        id="path36496-1"
-       sodipodi:nodetypes="cc" />
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="C:\Users\Timo\Downloads\path13196.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
+    <path
+       style="display:inline;fill:none;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#EmptyTriangleLend-5)"
+       d="m 167.13913,137.57509 v -6.60218"
+       id="path36496-1-0"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="C:\Users\Timo\Downloads\path13196.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
     <path
        style="fill:none;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#EmptyTriangleLend)"
        d="m 211.81287,158.39968 h 10"
        id="path36496-1-2"
-       sodipodi:nodetypes="cc" />
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="C:\Users\Timo\Downloads\path13196.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
     <path
        style="fill:none;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#EmptyTriangleLend)"
-       d="m 185.11335,143.13937 9.82871,0.0405"
-       id="path36496-1-45"
-       sodipodi:nodetypes="cc" />
-    <path
-       style="fill:none;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#EmptyTriangleLend)"
-       d="m 63.721733,138.6812 v -6.60218"
+       d="m 93.218631,126.09904 h -9.829"
        id="path36496-1-4"
-       sodipodi:nodetypes="cc" />
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="C:\Users\Timo\Downloads\path13196.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
     <path
-       style="fill:none;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#EmptyTriangleLend)"
-       d="M 82.429406,111.53922 H 70.248573"
-       id="path36496-1-4-0"
-       sodipodi:nodetypes="cc" />
+       style="display:inline;fill:none;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#EmptyTriangleLend-70)"
+       d="m 53.367581,141.22243 h -9.829"
+       id="path36496-1-4-9"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="C:\Users\Timo\Downloads\path13196.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
     <path
        style="fill:none;stroke:#000000;stroke-width:0.265;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#EmptyDiamondLend)"
-       d="M 95.942641,150.64678 81.935975,143.31282"
+       d="M 110.86873,130.80488 V 144.4116"
        id="path86471"
-       sodipodi:nodetypes="cc" />
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="C:\Users\Timo\Downloads\path13196.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
     <path
        style="fill:none;stroke:#000000;stroke-width:0.265;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#EmptyDiamondLend)"
-       d="m 70.295862,171.9063 -9.902315,3.26119"
+       d="m 71.240441,145.88008 5.240469,8.87448"
        id="path86471-5"
-       sodipodi:nodetypes="cc" />
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="C:\Users\Timo\Downloads\path13196.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
+    <path
+       style="display:inline;fill:none;stroke:#000000;stroke-width:0.265;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#EmptyDiamondLend-6)"
+       d="m 66.874063,172.61888 17.280035,9.68681"
+       id="path86471-5-7"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="C:\Users\Timo\Downloads\path13196.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
     <path
        style="fill:none;stroke:#000000;stroke-width:0.265;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#EmptyDiamondLend)"
-       d="m 166.3547,161.67124 9.10034,-3.41526"
+       d="m 175.7557,157.92497 -9.34046,4.39286"
        id="path86471-5-4"
-       sodipodi:nodetypes="cc" />
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="C:\Users\Timo\Downloads\path13196.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
     <path
        style="fill:none;stroke:#000000;stroke-width:0.265;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#EmptyDiamondLend-7)"
-       d="m 174.10206,186.88111 10.06217,-0.0488"
+       d="m 184.90769,186.88111 -10.56256,-0.0488"
        id="path86471-5-4-9"
-       sodipodi:nodetypes="cc" />
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="C:\Users\Timo\Downloads\path13196.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
     <g
        id="g28184-5"
-       transform="translate(145.56087,46.185722)">
+       transform="translate(145.56087,46.185722)"
+       inkscape:export-filename="C:\Users\Timo\Downloads\path13196.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300">
       <text
          xml:space="preserve"
          style="font-size:3.88056px;line-height:1.25;font-family:sans-serif;text-align:center;text-anchor:middle;stroke-width:0.264583"
@@ -829,8 +822,37 @@
          y="121.59779" />
     </g>
     <g
+       id="g28184-5-8"
+       transform="translate(-2.5612205,46.58396)"
+       inkscape:export-filename="C:\Users\Timo\Downloads\path13196.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300"
+       style="display:inline">
+      <text
+         xml:space="preserve"
+         style="font-size:3.88056px;line-height:1.25;font-family:sans-serif;text-align:center;text-anchor:middle;stroke-width:0.264583"
+         x="49.957283"
+         y="127.18067"
+         id="text12578-1-6-5-8"><tspan
+           sodipodi:role="line"
+           id="tspan12576-2-3-5-0"
+           style="text-align:center;text-anchor:middle;stroke-width:0.264583"
+           x="49.957283"
+           y="127.18067">NonHolonomicTyre</tspan></text>
+      <rect
+         style="fill:none;stroke:#000000;stroke-width:0.499999;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers"
+         id="rect18156-3-6-8-6"
+         width="39"
+         height="9"
+         x="30.367048"
+         y="121.59779" />
+    </g>
+    <g
        id="g29486-0-2"
-       transform="translate(150.77992,30.543037)">
+       transform="translate(150.77992,30.543037)"
+       inkscape:export-filename="C:\Users\Timo\Downloads\path13196.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300">
       <text
          xml:space="preserve"
          style="font-size:3.88056px;line-height:1.25;font-family:sans-serif;text-align:center;text-anchor:middle;stroke-width:0.264583"
@@ -850,31 +872,64 @@
          x="74.677269"
          y="137.24048" />
     </g>
+    <g
+       id="g29486-0-2-1"
+       transform="translate(-37.371441,14.860386)"
+       inkscape:export-filename="C:\Users\Timo\Downloads\path13196.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300"
+       style="display:inline">
+      <text
+         xml:space="preserve"
+         style="font-size:3.88056px;line-height:1.25;font-family:sans-serif;text-align:center;text-anchor:middle;stroke-width:0.264583"
+         x="84.480347"
+         y="143.18527"
+         id="text12578-1-6-7-9-8-6"><tspan
+           sodipodi:role="line"
+           id="tspan12576-2-3-7-4-6-2"
+           style="text-align:center;text-anchor:middle;stroke-width:0.264583"
+           x="84.480347"
+           y="143.18527">TyreBase</tspan></text>
+      <rect
+         style="fill:none;stroke:#000000;stroke-width:0.499999;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:2.99999, 0.999998;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers"
+         id="rect18156-3-6-6-4-9-0"
+         width="20"
+         height="9"
+         x="74.677269"
+         y="137.24048" />
+    </g>
     <path
        style="fill:none;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#EmptyTriangleLend-7)"
        d="m 215.12633,172.28352 h 10"
        id="path36496-1-2-4"
-       sodipodi:nodetypes="cc" />
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="C:\Users\Timo\Downloads\path13196.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
     <path
        style="fill:none;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#EmptyTriangleLend-7-2)"
        d="m 210.73359,186.8395 h 10"
        id="path36496-1-2-4-2"
-       sodipodi:nodetypes="cc" />
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="C:\Users\Timo\Downloads\path13196.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
     <path
        style="fill:none;stroke:#000000;stroke-width:0.265;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#EmptyDiamondLend-1)"
-       d="m 153.30679,182.16156 22.11512,-9.94519"
+       d="m 175.79465,172.22715 -22.61683,9.9974"
        id="path86471-5-4-8"
-       sodipodi:nodetypes="cc" />
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="C:\Users\Timo\Downloads\path13196.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
     <path
        style="fill:none;stroke:#000000;stroke-width:0.265;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#EmptyDiamondLend)"
-       d="M 113.68727,116.83113 97.569307,111.46915"
-       id="path86471-5-9"
-       sodipodi:nodetypes="cc" />
-    <path
-       style="fill:none;stroke:#000000;stroke-width:0.265;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#EmptyDiamondLend)"
-       d="m 138.11535,147.61367 9.90023,-4.60775"
+       d="m 148.8469,142.30331 -10.76183,5.61086"
        id="path86471-5-8"
-       sodipodi:nodetypes="cc" />
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="C:\Users\Timo\Downloads\path13196.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
     <g
        id="g111035"
        transform="matrix(0.26458333,0,0,0.26458333,-11.236858,203.49803)">
@@ -905,11 +960,11 @@
      id="layer4"
      inkscape:label="legend"
      style="display:inline"
-     sodipodi:insensitive="true">
+     transform="translate(10.585911,-16.670778)">
     <g
        id="g41003"
        style="display:inline"
-       transform="translate(-27.69204,-104.46082)">
+       transform="translate(-27.69204,-88.585786)">
       <path
          style="fill:#0000ff;fill-opacity:1;stroke:none;stroke-width:1.88976;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;paint-order:markers stroke fill"
          id="path13196-95-4"

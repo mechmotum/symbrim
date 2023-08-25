@@ -45,7 +45,7 @@ class TyreBase(ConnectionBase):
         super()._define_objects()
         self._system = System.from_newtonian(self.ground.body)
         self._contact_point = Point(self._add_prefix("contact_point"))
-        self._on_ground = False
+        self._on_ground = None
         self._upward_radial_axis = None
 
     @property
@@ -92,6 +92,13 @@ class TyreBase(ConnectionBase):
     @property
     def on_ground(self) -> bool:
         """Boolean whether the wheel is already defined as touching the ground."""
+        if self._on_ground is None:
+            try:
+                normal = self.ground.get_normal(self.contact_point)
+                distance = self.contact_point.pos_from(self.ground.origin).dot(normal)
+                self._on_ground = check_zero(distance)
+            except (AttributeError, ValueError):
+                self._on_ground = False
         return self._on_ground
 
     @on_ground.setter

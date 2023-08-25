@@ -12,7 +12,7 @@ from sympy.physics.mechanics import Vector, dynamicsymbols
 
 @pytest.mark.parametrize("pedal_cls", [HolonomicPedalsToFeet, SpringDamperPedalsToFeet])
 class TestPedalConnectionBase:
-    @pytest.fixture(autouse=True)
+    @pytest.fixture()
     def _setup(self, pedal_cls) -> None:
         self.model = create_model_of_connection(pedal_cls)("model")
         self.model.pedals = SimplePedals("pedals")
@@ -37,11 +37,31 @@ class TestPedalConnectionBase:
         self.model.define_loads()
         self.model.define_constraints()
 
-    def test_types(self) -> None:
+    def test_types(self, _setup) -> None:
         assert isinstance(self.model.conn, PedalsToFeetBase)
 
-    def test_descriptions(self) -> None:
+    def test_descriptions(self, _setup) -> None:
         _test_descriptions(self.model.conn)
+
+    @pytest.mark.parametrize("side, leg_cls", [
+        ("left", TwoPinStickLeftLeg), ("right", TwoPinStickRightLeg)])
+    def test_single_leg(self, pedal_cls, side, leg_cls) -> None:
+        self.model = create_model_of_connection(pedal_cls)("model")
+        self.model.pedals = SimplePedals("pedals")
+        self.model.conn = pedal_cls("pedals")
+        setattr(self.model, f"{side}_leg", leg_cls(f"{side}_leg"))
+        self.model.define_connections()
+        self.model.define_objects()
+        # Define kinematics with enough degrees of freedom
+        self.q = dynamicsymbols("q1:3")
+        getattr(self.model, f"{side}_leg").hip_interframe.orient_axis(
+            self.model.pedals.frame, self.model.pedals.rotation_axis, self.q[0])
+        getattr(self.model, f"{side}_leg").hip_interpoint.set_pos(
+            self.model.pedals.left_pedal_point,
+            self.q[1] * self.model.pedals.rotation_axis)
+        self.model.define_kinematics()
+        self.model.define_loads()
+        self.model.define_constraints()
 
 
 class TestHolonomicPedalsConnection:

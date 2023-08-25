@@ -4,7 +4,7 @@ import pytest
 from brim.bicycle.grounds import FlatGround, GroundBase
 from brim.bicycle.tyre_models import NonHolonomicTyre, TyreBase
 from brim.bicycle.wheels import KnifeEdgeWheel, ToroidalWheel, WheelBase
-from brim.core import ConnectionRequirement, ModelBase, ModelRequirement
+from brim.utilities.testing import create_model_of_connection
 from sympy import cos, sin
 from sympy.physics.mechanics import ReferenceFrame, cross, dynamicsymbols
 from sympy.physics.mechanics._system import System
@@ -113,62 +113,54 @@ class TestComputeContactPoint:
             self.tyre.upward_radial_axis = cross(
                 self.tyre.wheel.rotation_axis, normal).normalize()
 
+    @pytest.mark.parametrize("with_wheel", [True, False])
+    def test_on_ground_default(self, _setup_flat_ground, with_wheel):
+        if with_wheel:
+            self.tyre.wheel = KnifeEdgeWheel("wheel")
+        assert not self.tyre.on_ground
+
+    def test_on_ground_unconnected(self, _setup_flat_ground):
+        self.tyre.wheel = KnifeEdgeWheel("wheel")
+        self.tyre.wheel.define_objects()
+        self.tyre.wheel.define_kinematics()
+        self.tyre.wheel.frame.orient_axis(self.int_frame, self.q[2], self.int_frame.y)
+        self.tyre._set_pos_contact_point()
+        assert not self.tyre.on_ground
+
+    @pytest.mark.parametrize("off_ground", [True, False])
+    def test_on_ground_computation(self, _setup_flat_ground, off_ground):
+        self.tyre.wheel = KnifeEdgeWheel("wheel")
+        self.tyre.wheel.define_objects()
+        self.tyre.wheel.define_kinematics()
+        self.tyre.wheel.frame.orient_axis(self.int_frame, self.q[2], self.int_frame.y)
+        self.tyre._set_pos_contact_point()
+        self.tyre.contact_point.set_pos(
+            self.ground.origin,
+            int(off_ground) * dynamicsymbols("q3") * self.ground.frame.z)
+        assert self.tyre.on_ground != off_ground
+
 
 class TestNonHolonomicTyreModel:
     @pytest.fixture(autouse=True)
     def _setup(self) -> None:
-        class Model(ModelBase):
-            required_models: tuple[ModelRequirement, ...] = (
-                ModelRequirement("ground", FlatGround, "Submodel of the ground."),
-                ModelRequirement("wheel", KnifeEdgeWheel, "Submodel of the wheel."),
-            )
-            required_connections: tuple[ConnectionRequirement, ...] = (
-                ConnectionRequirement("tyre_model", NonHolonomicTyre,
-                                      "Tyre model for the wheel."),
-            )
-            ground: FlatGround
-            wheel: KnifeEdgeWheel
-            tyre_model: NonHolonomicTyre
-
-            def define_connections(self) -> None:
-                super().define_connections()
-                self.tyre_model.ground = self.ground
-                self.tyre_model.wheel = self.wheel
-
-            def define_objects(self) -> None:
-                super().define_objects()
-                self.tyre_model.define_objects()
-
-            def define_kinematics(self) -> None:
-                super().define_kinematics()
-                self.tyre_model.define_kinematics()
-
-            def define_loads(self) -> None:
-                super().define_loads()
-                self.tyre_model.define_loads()
-
-            def define_constraints(self) -> None:
-                super().define_constraints()
-                self.tyre_model.define_constraints()
-
-        self.model = Model("model")
+        self.model = create_model_of_connection(NonHolonomicTyre)("model")
         self.model.ground = FlatGround("ground")
         self.model.wheel = KnifeEdgeWheel("wheel")
-        self.model.tyre_model = NonHolonomicTyre("tyre_model")
+        self.model.conn = NonHolonomicTyre("tyre_model")
 
     def test_default(self) -> None:
         self.model.define_connections()
         self.model.define_objects()
-        assert self.model.tyre_model.name == "tyre_model"
-        assert isinstance(self.model.tyre_model.system, System)
+        assert self.model.conn.name == "tyre_model"
+        assert isinstance(self.model.conn.system, System)
 
     @pytest.mark.parametrize("on_ground", [True, False])
     def test_compute_on_ground(self, on_ground: bool) -> None:
         self.model.define_connections()
         self.model.define_objects()
-        self.model.tyre_model.on_ground = on_ground
+        self.model.conn.on_ground = on_ground
         ground, wheel, tyre_model = (
-            self.model.ground, self.model.wheel, self.model.tyre_model)
+            self.model.ground, self.model.wheel, self.model.conn)
         t = dynamicsymbols._t
         q1, q2, x, y, z = dynamicsymbols("q1 q2 x y z")
         wheel.frame.orient_body_fixed(ground.frame, (q1, q2, 0), "zyx")

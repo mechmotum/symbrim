@@ -4,7 +4,7 @@ from typing import Any
 
 import pytest
 from brim.bicycle import FlatGround, KnifeEdgeWheel, NonHolonomicTyre
-from brim.core import LoadGroupBase, ModelBase, Registry, set_default_formulation
+from brim.core import LoadGroupBase, ModelBase, Registry, set_default_convention
 from brim.other.rolling_disc import RollingDisc
 from sympy import Symbol
 from sympy.physics.mechanics import Torque
@@ -54,6 +54,7 @@ class TestModelBase:
         disc = RollingDisc("model")
         assert isinstance(disc, ModelBase)
         assert str(disc) == "model"
+        assert repr(disc) == "RollingDisc('model')"
         assert disc.name == "model"
         assert disc.disc is None
         assert disc.ground is None
@@ -165,7 +166,7 @@ class TestModelBase:
                    self.load_group.symbols["T"] * self.disc.disc.rotation_axis),)
 
 
-class TestFromFormulation:
+class TestFromConvention:
     @pytest.fixture(autouse=True)
     def _setup_registry(self, request) -> None:
         def activate_registry():
@@ -175,55 +176,55 @@ class TestFromFormulation:
         old_reg.deactivate()
         request.addfinalizer(activate_registry)
 
-        @set_default_formulation("default_formulation")
+        @set_default_convention("default_convention")
         class MyModel(ModelBase):
             pass
 
         class MyModel2(MyModel):
-            formulation = "default_formulation"
+            convention = "default_convention"
 
         class MyModel3(MyModel):
-            formulation = "other_formulation"
+            convention = "other_convention"
 
         class MyModel4(MyModel):
-            formulation = "double_formulation"
+            convention = "double_convention"
 
         class MyModel5(MyModel):
-            formulation = "double_formulation"
+            convention = "double_convention"
 
         self.MyModel, self.MyModel2, self.MyModel3, self.MyModel4, self.MyModel5 = (
             MyModel, MyModel2, MyModel3, MyModel4, MyModel5)
 
-    def test_formulation_string(self) -> None:
-        assert self.MyModel.formulation == ""
-        assert self.MyModel2.formulation == "default_formulation"
-        assert self.MyModel3.formulation == "other_formulation"
+    def test_convention_string(self) -> None:
+        assert self.MyModel.convention == ""
+        assert self.MyModel2.convention == "default_convention"
+        assert self.MyModel3.convention == "other_convention"
 
-    def test_default_formulation(self) -> None:
+    def test_default_convention(self) -> None:
         model = self.MyModel("model")
-        assert model.formulation == "default_formulation"
+        assert model.convention == "default_convention"
         assert isinstance(model, self.MyModel2)
 
-    def test_formulation_argument(self) -> None:
-        model = self.MyModel.from_formulation("other_formulation", "model")
-        assert model.formulation == "other_formulation"
+    def test_convention_argument(self) -> None:
+        model = self.MyModel.from_convention("other_convention", "model")
+        assert model.convention == "other_convention"
         assert isinstance(model, self.MyModel3)
 
-    def test_not_existing_formulation(self) -> None:
+    def test_not_existing_convention(self) -> None:
         with pytest.raises(ValueError):
-            self.MyModel.from_formulation("not existing formulation", "model")
+            self.MyModel.from_convention("not existing convention", "model")
 
-    def test_double_formulation(self) -> None:
+    def test_double_convention(self) -> None:
         with pytest.raises(ValueError):
-            self.MyModel.from_formulation("double_formulation", "model")
+            self.MyModel.from_convention("double_convention", "model")
 
     def test_direct_instantiation(self) -> None:
         model = self.MyModel4("model")
-        assert model.formulation == "double_formulation"
+        assert model.convention == "double_convention"
         assert isinstance(model, self.MyModel4)
 
-    def test_set_default_formulation_invalid_type(self) -> None:
+    def test_set_default_convention_invalid_type(self) -> None:
         with pytest.raises(TypeError):
-            @set_default_formulation("my_formulation")
+            @set_default_convention("my_convention")
             class A:
                 pass

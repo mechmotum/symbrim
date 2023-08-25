@@ -61,6 +61,7 @@ class RollingDisc(ModelBase):
     def _define_objects(self) -> None:
         """Define the objects of the rolling disc."""
         super()._define_objects()
+        self._system = System(self.ground.frame, self.ground.system.origin)
         self.tyre.define_objects()
         self.tyre.on_ground = True
         self.q = Matrix([dynamicsymbols(self._add_prefix("q1:6"))])
@@ -70,7 +71,6 @@ class RollingDisc(ModelBase):
         """Define the kinematics of the rolling disc."""
         super()._define_kinematics()
         qd_repl = dict(zip(self.q.diff(dynamicsymbols._t), self.u))
-        self._system = System.from_newtonian(self.ground.body)
         int_frame = ReferenceFrame("int_frame")
         int_frame.orient_body_fixed(self.ground.frame, (*self.q[2:-1], 0), "zxy")
         self.disc.frame.orient_axis(int_frame, int_frame.y, self.q[-1])

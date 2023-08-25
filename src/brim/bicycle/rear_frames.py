@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Any
 from sympy import Symbol, symbols
 from sympy.physics.mechanics import Point, Vector, inertia
 
-from brim.core import ModelBase, NewtonianBodyMixin, set_default_formulation
+from brim.core import ModelBase, NewtonianBodyMixin, set_default_convention
 
 with contextlib.suppress(ImportError):
     import numpy as np
@@ -71,7 +71,7 @@ class RearFrameBase(NewtonianBodyMixin, ModelBase):
         super().set_plot_objects(plot_object)
 
 
-@set_default_formulation("moore")
+@set_default_convention("moore")
 class RigidRearFrame(RearFrameBase):
     """Rigid rear frame."""
 
@@ -116,9 +116,9 @@ class RigidRearFrame(RearFrameBase):
 
 
 class RigidRearFrameMoore(RigidRearFrame):
-    """Rigid rear frame model based on Moore's formulation."""
+    """Rigid rear frame model based on Moore's convention."""
 
-    formulation: str = "moore"
+    convention: str = "moore"
 
     @property
     def descriptions(self) -> dict[Any, str]:
@@ -169,7 +169,7 @@ class RigidRearFrameMoore(RigidRearFrame):
 
         Explanation
         -----------
-        In Moore's formulation an attachment point between the rear and the front frame
+        In Moore's convention an attachment point between the rear and the front frame
         is defined. This point is defined as the intersection of the steer axis a
         perpendicular line, which passes through the attachment of the rear wheel to the
         rear frame.

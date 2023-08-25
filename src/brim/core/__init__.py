@@ -6,7 +6,7 @@ __all__ = [
     "ConnectionRequirement", "ModelRequirement",
     "ConnectionMeta", "LoadGroupMeta", "ModelMeta",
     "ConnectionBase", "LoadGroupBase", "ModelBase",
-    "set_default_formulation",
+    "set_default_convention",
     "NewtonianBodyMixin",
 ]
 
@@ -18,7 +18,7 @@ from brim.core.model_base import (
     LoadGroupMeta,
     ModelBase,
     ModelMeta,
-    set_default_formulation,
+    set_default_convention,
 )
 from brim.core.registry import Registry
 from brim.core.requirement import ConnectionRequirement, ModelRequirement

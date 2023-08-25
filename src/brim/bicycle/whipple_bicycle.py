@@ -14,7 +14,7 @@ from brim.bicycle.grounds import GroundBase
 from brim.bicycle.rear_frames import RearFrameBase
 from brim.bicycle.tyre_models import TyreBase
 from brim.bicycle.wheels import WheelBase
-from brim.core import ConnectionRequirement, ModelRequirement, set_default_formulation
+from brim.core import ConnectionRequirement, ModelRequirement, set_default_convention
 
 try:  # pragma: no cover
     import numpy as np
@@ -28,7 +28,7 @@ except ImportError:  # pragma: no cover
 __all__ = ["WhippleBicycle", "WhippleBicycleMoore"]
 
 
-@set_default_formulation("moore")
+@set_default_convention("moore")
 class WhippleBicycle(BicycleBase):
     """Base class for the Whipple bicycle model."""
 
@@ -63,9 +63,9 @@ class WhippleBicycle(BicycleBase):
 
 
 class WhippleBicycleMoore(WhippleBicycle):
-    """Whipple bicycle model based on Moore's formulation."""
+    """Whipple bicycle model based on Moore's convention."""
 
-    formulation: str = "moore"
+    convention: str = "moore"
 
     @property
     def descriptions(self) -> dict[Any, str]:
@@ -96,6 +96,7 @@ class WhippleBicycleMoore(WhippleBicycle):
     def _define_objects(self) -> None:
         """Define the objects of the Whipple bicycle."""
         super()._define_objects()
+        self._system = System(self.ground.frame, self.ground.system.origin)
         self.rear_tyre.define_objects()
         self.rear_tyre.on_ground = True
         self.front_tyre.define_objects()
@@ -103,7 +104,6 @@ class WhippleBicycleMoore(WhippleBicycle):
         self.u = Matrix(dynamicsymbols(self._add_prefix("u1:9")))
         self.symbols.update({name: Symbol(
             self._add_prefix(name)) for name in ("gear_ratio", "l_px", "l_pz")})
-        self._system = System.from_newtonian(self.ground.body)
 
     def _define_kinematics(self) -> None:
         """Define the kinematics of the Whipple bicycle."""
