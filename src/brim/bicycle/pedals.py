@@ -28,7 +28,7 @@ class PedalsBase(ModelBase):
         self._left_pedal_point = Point(self._add_prefix("LPP"))
         self._right_pedal_point = Point(self._add_prefix("RPP"))
         self._center_point = Point(self._add_prefix("CP"))
-        self._system = System(self._center_point, self._frame)
+        self._system = System(self._frame, self._center_point)
 
     def _define_kinematics(self) -> None:
         """Define the kinematics."""
