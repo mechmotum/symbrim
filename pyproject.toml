@@ -74,7 +74,7 @@ fail_under = 100
 exclude_also = [
     "if __name__ == .__main__.:",
     "if TYPE_CHECKING:",
-    "with contextlib.suppress(ImportError):",
+    "with contextlib.suppress.ImportError.:",
     "def get_param_values",
     "def set_plot_objects"
 ]
