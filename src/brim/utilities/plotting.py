@@ -78,7 +78,6 @@ class PlotBrimMixin:
         """Initialize a plot object of the BRiM model."""
         origin = None if brim_object.system is None else brim_object.system.origin
         super().__init__(inertial_frame, zero_point, origin, brim_object.name)
-        self.exclude_from_init_traversal = []
         brim_object.set_plot_objects(self)
         self._expressions_self = ()
 
@@ -123,21 +122,18 @@ class PlotModel(PlotBrimMixin, PlotBase):
         self.model = model
         if plot_submodels:
             for submodel in self.model.submodels:
-                if submodel not in self.exclude_from_init_traversal:
-                    self._children.append(PlotModel(
-                        inertial_frame, zero_point, submodel,
-                        plot_submodels, plot_connections, plot_load_groups))
+                self._children.append(PlotModel(
+                    inertial_frame, zero_point, submodel,
+                    plot_submodels, plot_connections, plot_load_groups))
         if plot_connections:
             for connection in self.model.connections:
-                if connection not in self.exclude_from_init_traversal:
-                    self._children.append(PlotConnection(
-                        inertial_frame, zero_point, connection, False, plot_load_groups
-                    ))
+                self._children.append(PlotConnection(
+                    inertial_frame, zero_point, connection, False, plot_load_groups
+                ))
         if plot_load_groups:
             for load_group in self.model.load_groups:
-                if load_group not in self.exclude_from_init_traversal:
-                    self._children.append(PlotLoadGroup(
-                        inertial_frame, zero_point, load_group))
+                self._children.append(PlotLoadGroup(
+                    inertial_frame, zero_point, load_group))
 
     @property
     def model(self) -> ModelBase:
@@ -183,15 +179,13 @@ class PlotConnection(PlotBrimMixin, PlotBase):
         self.connection = connection
         if plot_submodels:
             for submodel in self.connection.submodels:
-                if submodel not in self.exclude_from_init_traversal:
-                    self._children.append(PlotModel(
-                        inertial_frame, zero_point, submodel, True, True,
-                        plot_load_groups))
+                self._children.append(PlotModel(
+                    inertial_frame, zero_point, submodel, True, True,
+                    plot_load_groups))
         if plot_load_groups:
             for load_group in self.connection.load_groups:
-                if load_group not in self.exclude_from_init_traversal:
-                    self._children.append(PlotLoadGroup(
-                        inertial_frame, zero_point, load_group))
+                self._children.append(PlotLoadGroup(
+                    inertial_frame, zero_point, load_group))
 
     @property
     def connection(self) -> ConnectionBase:
