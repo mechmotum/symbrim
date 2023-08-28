@@ -20,19 +20,58 @@ if TYPE_CHECKING:
     from mpl_toolkits.mplot3d.axes3d import Axes3D
     from sympy.physics.mechanics import Point, ReferenceFrame
 
-__all__ = ["Plotter"]
+__all__ = ["Plotter", "PlotBrimMixin", "PlotModel", "PlotConnection", "PlotLoadGroup"]
+
+
+class Plotter(SymMePlotter):
+    """Plotter for models created by BRiM using SymMePlot."""
+
+    @classmethod
+    def from_model(cls, ax: Axes3D, model: ModelBase, **inertial_frame_properties):
+        """Initialize the plotter.
+
+        Parameters
+        ----------
+        ax : mpl_toolkits.mplot3d.axes3d.Axes3D
+            Axes to plot on.
+        model : ModelBase
+            Model to plot.
+        **inertial_frame_properties
+            Keyword arguments are parsed to
+            :class:`symmeplot.plot_objects.PlotFrame` representing the inertial
+            reference frame.
+        """
+        plotter = cls(ax, model.system.frame, model.system.origin,
+                      **inertial_frame_properties)
+        plotter._model = model
+        plotter.add_model(model)
+        return plotter
+
+    def add_model(self, model: ModelBase, **kwargs):
+        """Add a model to the plotter.
+
+        Parameters
+        ----------
+        model : ModelBase
+            Model to add.
+        **kwargs : dict, optional
+            Kwargs are passed to :class:`brim.utilities.plotting.PlotModel`.
+        """
+        self._children.append(
+            PlotModel(self.inertial_frame, self.zero_point, model, **kwargs))
+        return self._children[-1]
 
 
 class PlotBrimMixin:
     """Mixin class for plotting BRiM objects."""
 
-    add_point = SymMePlotter.add_point
-    add_line = SymMePlotter.add_line
-    add_vector = SymMePlotter.add_vector
-    add_frame = SymMePlotter.add_frame
-    add_body = SymMePlotter.add_body
-    plot_objects = SymMePlotter.plot_objects
-    get_plot_object = SymMePlotter.get_plot_object
+    add_point = Plotter.add_point
+    add_line = Plotter.add_line
+    add_vector = Plotter.add_vector
+    add_frame = Plotter.add_frame
+    add_body = Plotter.add_body
+    plot_objects = Plotter.plot_objects
+    get_plot_object = Plotter.get_plot_object
 
     def __init__(self, inertial_frame: ReferenceFrame, zero_point: Point,
                  brim_object: BrimBase) -> None:
@@ -206,41 +245,3 @@ class PlotLoadGroup(PlotBrimMixin, PlotBase):
         else:
             self._load_group = load_group
             self._values = []
-
-class Plotter(SymMePlotter):
-    """Plotter for models created by BRiM using symmeplot."""
-
-    @classmethod
-    def from_model(cls, ax: Axes3D, model: ModelBase, **inertial_frame_properties):
-        """Initialize the plotter.
-
-        Parameters
-        ----------
-        ax : mpl_toolkits.mplot3d.axes3d.Axes3D
-            Axes to plot on.
-        model : ModelBase
-            Model to plot.
-        **inertial_frame_properties
-            Keyword arguments are parsed to
-            :class:`symmeplot.plot_objects.PlotFrame` representing the inertial
-            reference frame.
-        """
-        plotter = cls(ax, model.system.frame, model.system.origin,
-                      **inertial_frame_properties)
-        plotter._model = model
-        plotter.add_model(model)
-        return plotter
-
-    def add_model(self, model: ModelBase, **kwargs):
-        """Add a model to the plotter.
-
-        Parameters
-        ----------
-        model : ModelBase
-            Model to add.
-        **kwargs : dict, optional
-            Kwargs are passed to :class:`brim.utilities.plotting.PlotModel`.
-        """
-        self._children.append(
-            PlotModel(self.inertial_frame, self.zero_point, model, **kwargs))
-        return self._children[-1]
