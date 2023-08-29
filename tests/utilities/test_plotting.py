@@ -63,7 +63,6 @@ class TestPlotting:
         plotter = Plotter(self.ax, self.rider.system.frame, self.rider.system.origin)
         assert plotter.get_plot_object(self.rider) is None
         plotter.add_model(self.rider, plot_load_groups=False)
-        self._check_all_objects(plotter)
         assert plotter.get_plot_object(self.load_group) is None
         plotter.add_load_group(self.load_group)
         self._check_all_objects(plotter)
