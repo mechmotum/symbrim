@@ -1480,7 +1480,7 @@ sympy = "^1.11.1"
 type = "git"
 url = "https://github.com/TJStienstra/symmeplot.git"
 reference = "HEAD"
-resolved_reference = "fda9c1777ffa2e30373d1fa22a8566e8b2731c3d"
+resolved_reference = "2c2b2d31104db63cb9863d685fa355e280ce328f"
 
 [[package]]
 name = "sympy"
