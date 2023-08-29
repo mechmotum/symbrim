@@ -130,7 +130,8 @@ class Plotter(SymMePlotter):
                             return child
                         queue.append(child)
         try:
-            return super().get_plot_object(sympy_object)
+            # SymMePlotter instead of super() to allow copying to PlotModel.
+            return SymMePlotter.get_plot_object(self, sympy_object)
         except NotImplementedError as e:
             if not known_type:
                 raise e
