@@ -5,6 +5,10 @@ from brim.rider.pelvis import PelvisBase, PlanarPelvis
 from brim.utilities.testing import _test_descriptions
 from sympy.physics.mechanics import Point, RigidBody
 
+try:
+    from brim.utilities.plotting import PlotModel
+except ImportError:
+    PlotModel = None
 
 @pytest.mark.parametrize("pelvis_cls", [PlanarPelvis])
 class TestPelvisBase:
@@ -18,6 +22,13 @@ class TestPelvisBase:
 
     def test_descriptions(self, pelvis_cls) -> None:
         _test_descriptions(pelvis_cls("pelvis"))
+
+    @pytest.mark.skipif(PlotModel is None, reason="symmeplot not installed")
+    def test_plotting(self, pelvis_cls):
+        pelvis = pelvis_cls("pelvis")
+        pelvis.define_all()
+        plot_model = PlotModel(pelvis.system.frame, pelvis.system.origin, pelvis)
+        assert plot_model.children
 
 
 class TestSimpleRigidPelvis:

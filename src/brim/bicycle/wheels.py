@@ -1,6 +1,7 @@
 """Module containing the wheel models."""
 from __future__ import annotations
 
+import contextlib
 from abc import abstractmethod
 from typing import TYPE_CHECKING, Any
 
@@ -9,15 +10,17 @@ from sympy.physics.mechanics import Point, Vector, inertia
 
 from brim.core import ModelBase, NewtonianBodyMixin
 
-try:  # pragma: no cover
+with contextlib.suppress(ImportError):
     from bicycleparameters.io import remove_uncertainties
 
     from brim.utilities.parametrize import get_inertia_vals
 
     if TYPE_CHECKING:
         from bicycleparameters import Bicycle
-except ImportError:  # pragma: no cover
-    pass
+
+if TYPE_CHECKING:
+    with contextlib.suppress(ImportError):
+        from brim.utilities.plotting import PlotModel
 
 __all__ = ["WheelBase", "KnifeEdgeWheel", "ToroidalWheel"]
 
@@ -129,6 +132,13 @@ class KnifeEdgeWheel(WheelBase):
         elif position == "rear":
             params[self.radius] = bp["rR"]
         return params
+
+    def set_plot_objects(self, plot_object: PlotModel) -> None:
+        """Set the symmeplot plot objects."""
+        super().set_plot_objects(plot_object)
+        plot_object.get_plot_object(self.body).attach_circle(
+            self.center, self.radius, self.rotation_axis, facecolor="none",
+            edgecolor="k")
 
 
 class ToroidalWheel(WheelBase):

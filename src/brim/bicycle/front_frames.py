@@ -1,6 +1,7 @@
 """Module containing the models of the front frame of a bicycle."""
 from __future__ import annotations
 
+import contextlib
 from abc import abstractmethod
 from typing import TYPE_CHECKING, Any
 
@@ -9,7 +10,7 @@ from sympy.physics.mechanics import Point, Vector, inertia
 
 from brim.core import ModelBase, NewtonianBodyMixin, set_default_convention
 
-try:  # pragma: no cover
+with contextlib.suppress(ImportError):
     import numpy as np
     from bicycleparameters.io import remove_uncertainties
     from dtk.bicycle import benchmark_to_moore
@@ -19,8 +20,10 @@ try:  # pragma: no cover
 
     if TYPE_CHECKING:
         from bicycleparameters import Bicycle
-except ImportError:  # pragma: no cover
-    pass
+
+if TYPE_CHECKING:
+    with contextlib.suppress(ImportError):
+        from brim.utilities.plotting import PlotModel
 
 __all__ = ["FrontFrameBase", "RigidFrontFrame", "RigidFrontFrameMoore"]
 
@@ -222,3 +225,13 @@ class RigidFrontFrameMoore(RigidFrontFrame):
                 params[self.symbols["d8"]] = -(
                         ay * np.cos(lamht) + az * np.sin(lamht) - d2)
         return params
+
+    def set_plot_objects(self, plot_object: PlotModel) -> None:
+        """Set the symmeplot plot objects."""
+        super().set_plot_objects(plot_object)
+        steer_top = self.steer_attachment.locatenew(
+            "P", self.steer_axis * self.left_handgrip.pos_from(
+                self.steer_attachment).dot(self.steer_axis))
+        plot_object.add_line([
+            self.wheel_attachment, self.steer_attachment, steer_top, self.left_handgrip,
+            steer_top, self.right_handgrip], self.name)

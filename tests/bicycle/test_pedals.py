@@ -5,6 +5,12 @@ from brim.bicycle import PedalsBase, SimplePedals
 from brim.utilities.testing import _test_descriptions
 from sympy.physics.mechanics import Point, ReferenceFrame, Vector
 
+try:
+    from brim.utilities.plotting import PlotModel
+    from symmeplot import PlotLine
+except ImportError:
+    PlotModel = None
+
 
 @pytest.mark.parametrize("pedal_cls", [SimplePedals])
 class TestPedalsBase:
@@ -34,3 +40,11 @@ class TestSimplePedals:
             pedals.rotation_axis) == 2 * pedals.symbols["offset"]
         assert pedals.right_pedal_point.pos_from(pedals.left_pedal_point).dot(
             pedals.frame.x) == 2 * pedals.symbols["radius"]
+
+    @pytest.mark.skipif(PlotModel is None, reason="symmeplot not installed")
+    def test_plotting(self):
+        pedals = SimplePedals("pedals")
+        pedals.define_all()
+        plot_model = PlotModel(pedals.system.frame, pedals.system.origin, pedals)
+        assert len(plot_model.children) == 1
+        assert isinstance(plot_model.children[0], PlotLine)

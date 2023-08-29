@@ -1,10 +1,15 @@
 """Mixin classes providing common properties for models."""
 from __future__ import annotations
 
-from typing import Any
+import contextlib
+from typing import TYPE_CHECKING, Any
 
 from sympy.physics.mechanics import ReferenceFrame, RigidBody, Vector
 from sympy.physics.mechanics._system import System
+
+if TYPE_CHECKING:
+    with contextlib.suppress(ImportError):
+        from brim.utilities.plotting import PlotModel
 
 
 class NewtonianBodyMixin:
@@ -54,3 +59,8 @@ class NewtonianBodyMixin:
     def z(self) -> Vector:
         """Z-axis of model."""
         return self.frame.z
+
+    def set_plot_objects(self, plot_object: PlotModel) -> None:
+        """Set the symmeplot plot objects."""
+        super().set_plot_objects(plot_object)
+        plot_object.add_body(self.body)

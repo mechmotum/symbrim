@@ -2,6 +2,12 @@ import pytest
 from brim.bicycle.front_frames import RigidFrontFrame, RigidFrontFrameMoore
 from sympy.physics.mechanics import Point
 
+try:
+    from brim.utilities.plotting import PlotModel
+    from symmeplot import PlotBody, PlotLine
+except ImportError:
+    PlotModel = None
+
 
 class TestRigidFrontFrame:
     def test_default(self) -> None:
@@ -51,3 +57,12 @@ class TestRigidFrontFrameMoore:
         front.define_objects()
         for length in front.symbols.values():
             assert front.descriptions[length] is not None
+
+    @pytest.mark.skipif(PlotModel is None, reason="symmeplot not installed")
+    def test_plotting(self):
+        front = RigidFrontFrameMoore("front")
+        front.define_all()
+        plot_model = PlotModel(front.system.frame, front.system.origin, front)
+        assert len(plot_model.children) == 2
+        assert any(isinstance(obj, PlotBody) for obj in plot_model.children)
+        assert any(isinstance(obj, PlotLine) for obj in plot_model.children)

@@ -1,6 +1,7 @@
 """Module containing pelvis models."""
 from __future__ import annotations
 
+import contextlib
 from typing import TYPE_CHECKING, Any
 
 from sympy import Symbol
@@ -8,15 +9,17 @@ from sympy.physics.mechanics import Point
 
 from brim.core import ModelBase, NewtonianBodyMixin
 
-try:  # pragma: no cover
+with contextlib.suppress(ImportError):
     import numpy as np
 
     from brim.utilities.parametrize import get_inertia_vals_from_yeadon
 
     if TYPE_CHECKING:
         from bicycleparameters import Bicycle
-except ImportError:  # pragma: no cover
-    pass
+
+if TYPE_CHECKING:
+    with contextlib.suppress(ImportError):
+        from brim.utilities.plotting import PlotModel
 
 __all__ = ["PelvisBase", "PlanarPelvis"]
 
@@ -61,6 +64,13 @@ class PelvisBase(NewtonianBodyMixin, ModelBase):
             return params
         params[self.body.mass] = human.P.mass
         return params
+
+    def set_plot_objects(self, plot_object: PlotModel) -> None:
+        """Set the symmeplot plot objects."""
+        super().set_plot_objects(plot_object)
+        plot_object.add_line([
+            self.left_hip_point, self.body.masscenter, self.right_hip_point,
+            self.left_hip_point], self.name)
 
 
 class PlanarPelvis(PelvisBase):

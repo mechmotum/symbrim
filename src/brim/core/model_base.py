@@ -14,6 +14,10 @@ try:  # pragma: no cover
     from bicycleparameters import Bicycle
 except ImportError:  # pragma: no cover
     Bicycle = None
+try:
+    from symmeplot.plot_base import PlotBase
+except ImportError:  # pragma: no cover
+    PlotBase = None
 
 if TYPE_CHECKING:
     from brim.core.requirement import ConnectionRequirement, ModelRequirement
@@ -201,6 +205,11 @@ class BrimBase:
         if Bicycle is None:
             raise ImportError("The bicycle parameters package is not installed.")
         return {}
+
+    def set_plot_objects(self, plot_object: PlotBase) -> None:
+        """Set the symmeplot plot objects."""
+        if PlotBase is None:
+            raise ImportError("The symmeplot package is not installed.")
 
     def _define_objects(self) -> None:
         """Define the objects of the system."""
@@ -496,7 +505,7 @@ def _merge_systems(*systems: System) -> System:
     """
     system = System(systems[0].frame, systems[0].origin)
     for s in systems:
-        if s is None:
+        if s is None:  # pragma: no cover
             continue
         attributes = [
             ("q_ind", "q", "add_coordinates", {"independent": True}),

@@ -6,6 +6,12 @@ from sympy import Symbol
 from sympy.physics.mechanics import Vector
 from sympy.physics.mechanics._system import System
 
+try:
+    from brim.utilities.plotting import PlotModel
+    from symmeplot import PlotFrame
+except ImportError:
+    PlotModel = None
+
 
 class TestFlatGround:
     @pytest.fixture()
@@ -64,3 +70,11 @@ class TestFlatGround:
     def test_parse_plane_position_error(self, _setup, position) -> None:
         with pytest.raises(ValueError):
             self.ground._parse_plane_position(position)
+
+    @pytest.mark.skipif(PlotModel is None, reason="symmeplot not installed")
+    def test_plotting(self):
+        ground = FlatGround("ground")
+        ground.define_all()
+        plot_model = PlotModel(ground.system.frame, ground.system.origin, ground)
+        assert len(plot_model.children) == 1
+        assert isinstance(plot_model.children[0], PlotFrame)

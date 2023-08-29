@@ -1,6 +1,7 @@
 """Module containing torso models."""
 from __future__ import annotations
 
+import contextlib
 from abc import abstractmethod
 from typing import TYPE_CHECKING, Any
 
@@ -9,7 +10,7 @@ from sympy.physics.mechanics import Point, ReferenceFrame
 
 from brim.core import ModelBase, NewtonianBodyMixin
 
-try:  # pragma: no cover
+with contextlib.suppress(ImportError):
     import numpy as np
     from yeadon.inertia import rotate_inertia
 
@@ -17,8 +18,10 @@ try:  # pragma: no cover
 
     if TYPE_CHECKING:
         from bicycleparameters import Bicycle
-except ImportError:  # pragma: no cover
-    pass
+
+if TYPE_CHECKING:
+    with contextlib.suppress(ImportError):
+        from brim.utilities.plotting import PlotModel
 
 __all__ = ["TorsoBase", "PlanarTorso"]
 
@@ -88,6 +91,13 @@ class TorsoBase(NewtonianBodyMixin, ModelBase):
             return params
         params[self.body.mass] = human.T.mass + human.C.mass
         return params
+
+    def set_plot_objects(self, plot_object: PlotModel) -> None:
+        """Set the symmeplot plot objects."""
+        super().set_plot_objects(plot_object)
+        plot_object.add_line([
+            self.body.masscenter, self.left_shoulder_point, self.right_shoulder_point,
+            self.body.masscenter], self.name)
 
 
 class PlanarTorso(TorsoBase):

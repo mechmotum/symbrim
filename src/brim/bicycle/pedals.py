@@ -1,13 +1,19 @@
 """Module containing models of the pedals."""
 from __future__ import annotations
 
+import contextlib
 from abc import abstractmethod
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from sympy import Symbol
 from sympy.physics.mechanics import Point, ReferenceFrame, Vector
+from sympy.physics.mechanics._system import System
 
 from brim.core import ModelBase
+
+if TYPE_CHECKING:
+    with contextlib.suppress(ImportError):
+        from brim.utilities.plotting import PlotModel
 
 __all__ = ["PedalsBase"]
 
@@ -22,6 +28,7 @@ class PedalsBase(ModelBase):
         self._left_pedal_point = Point(self._add_prefix("LPP"))
         self._right_pedal_point = Point(self._add_prefix("RPP"))
         self._center_point = Point(self._add_prefix("CP"))
+        self._system = System(self._frame, self._center_point)
 
     def _define_kinematics(self) -> None:
         """Define the kinematics."""
@@ -53,6 +60,24 @@ class PedalsBase(ModelBase):
     @abstractmethod
     def rotation_axis(self) -> Vector:
         """Rotation axis of the pedals."""
+
+    def set_plot_objects(self, plot_object: PlotModel) -> None:
+        """Set the symmeplot plot objects."""
+        super().set_plot_objects(plot_object)
+        lp, rp, cp = (
+            self.left_pedal_point, self.right_pedal_point, self.center_point)
+        rot_ax = self.rotation_axis.normalize()
+        ax_l = lp.pos_from(cp).dot(rot_ax) * rot_ax
+        ax_r = rp.pos_from(cp).dot(rot_ax) * rot_ax
+        ax_perc = 0.4
+        plot_object.add_line([
+            self.left_pedal_point,
+            self.left_pedal_point.locatenew("P", -(1 - ax_perc) * ax_l),
+            self.center_point.locatenew("P", ax_perc * ax_l),
+            self.center_point.locatenew("P", ax_perc * ax_r),
+            self.right_pedal_point.locatenew("P", -(1 - ax_perc) * ax_r),
+            self.right_pedal_point,
+        ], self.name)
 
 
 class SimplePedals(PedalsBase):

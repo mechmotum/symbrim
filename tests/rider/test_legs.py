@@ -15,6 +15,10 @@ from brim.utilities.utilities import check_zero
 from sympy import simplify, zeros
 from sympy.physics.mechanics import Point, ReferenceFrame, RigidBody
 
+try:
+    from brim.utilities.plotting import PlotModel
+except ImportError:
+    PlotModel = None
 
 @pytest.mark.parametrize("leg_cls, base", [
     (TwoPinStickLeftLeg, LeftLegBase),
@@ -33,6 +37,13 @@ class TestLegBase:
 
     def test_descriptions(self, leg_cls, base) -> None:
         _test_descriptions(leg_cls("leg"))
+
+    @pytest.mark.skipif(PlotModel is None, reason="symmeplot not installed")
+    def test_plotting(self, leg_cls, base):
+        leg = leg_cls("leg")
+        leg.define_all()
+        plot_model = PlotModel(leg.system.frame, leg.system.origin, leg)
+        assert plot_model.children
 
 
 @pytest.mark.parametrize("leg_cls", [TwoPinStickLeftLeg, TwoPinStickRightLeg])
