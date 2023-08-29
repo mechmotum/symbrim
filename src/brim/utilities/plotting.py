@@ -99,8 +99,7 @@ class PlotModel(PlotBrimMixin, PlotBase):
     """Plot object of a BRiM model."""
 
     def __init__(self, inertial_frame: ReferenceFrame, zero_point: Point,
-                 model: ModelBase, plot_submodels: bool = True,
-                 plot_connections: bool = True, plot_load_groups: bool = True) -> None:
+                 model: ModelBase, plot_load_groups: bool = True) -> None:
         """Initialize a plot object of a model.
 
         Parameters
@@ -111,25 +110,18 @@ class PlotModel(PlotBrimMixin, PlotBase):
             The absolute origin with respect to which all objects will be positioned.
         model : ModelBase
             The BRiM model, which is being plotted.
-        plot_submodels : bool, optional
-            Whether to plot the submodels, by default True.
-        plot_connections : bool, optional
-            Whether to plot the connections, by default True.
         plot_load_groups : bool, optional
             Whether to plot the load groups, by default True.
         """
         super().__init__(inertial_frame, zero_point, model)
         self.model = model
-        if plot_submodels:
-            for submodel in self.model.submodels:
-                self._children.append(PlotModel(
-                    inertial_frame, zero_point, submodel,
-                    plot_submodels, plot_connections, plot_load_groups))
-        if plot_connections:
-            for connection in self.model.connections:
-                self._children.append(PlotConnection(
-                    inertial_frame, zero_point, connection, False, plot_load_groups
-                ))
+        for submodel in self.model.submodels:
+            self._children.append(PlotModel(
+                inertial_frame, zero_point, submodel, plot_load_groups))
+        for connection in self.model.connections:
+            self._children.append(PlotConnection(
+                inertial_frame, zero_point, connection, False, plot_load_groups
+            ))
         if plot_load_groups:
             for load_group in self.model.load_groups:
                 self._children.append(PlotLoadGroup(
@@ -180,8 +172,7 @@ class PlotConnection(PlotBrimMixin, PlotBase):
         if plot_submodels:
             for submodel in self.connection.submodels:
                 self._children.append(PlotModel(
-                    inertial_frame, zero_point, submodel, True, True,
-                    plot_load_groups))
+                    inertial_frame, zero_point, submodel, plot_load_groups))
         if plot_load_groups:
             for load_group in self.connection.load_groups:
                 self._children.append(PlotLoadGroup(
