@@ -45,7 +45,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
-        run: poetry install --with test --extras parametrize
+        run: poetry install --with test --all-extras
       - name: Run tests
         run: poetry run pytest
 
@@ -69,7 +69,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
-        run: poetry install --with docs --extras plotting
+        run: poetry install --with docs --all-extras
       - name: make the sphinx docs
         run: |
           poetry run make -C docs clean
@@ -110,7 +110,7 @@ jobs:
         with:
           python-version: 3.11
       - name: Install dependencies
-        run: poetry install --with test
+        run: poetry install --with test --all-extras
       - name: Run tests with code coverage
         run: |
           poetry run pytest --cov
