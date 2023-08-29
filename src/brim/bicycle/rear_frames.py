@@ -8,11 +8,7 @@ from typing import TYPE_CHECKING, Any
 from sympy import Symbol, symbols
 from sympy.physics.mechanics import Point, Vector, inertia
 
-from brim.core import (
-    ModelBase,
-    NewtonianBodyMixin,
-    set_default_convention,
-)
+from brim.core import ModelBase, NewtonianBodyMixin, set_default_convention
 
 with contextlib.suppress(ImportError):
     import numpy as np
