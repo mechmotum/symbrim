@@ -8,7 +8,11 @@ from typing import TYPE_CHECKING, Any
 from sympy import Symbol, symbols
 from sympy.physics.mechanics import Point, Vector, inertia
 
-from brim.core import ModelBase, NewtonianBodyMixin, set_default_convention
+from brim.core import (
+    ModelBase,
+    NewtonianBodyMixin,
+    set_default_convention,
+)
 
 with contextlib.suppress(ImportError):
     import numpy as np
@@ -49,6 +53,11 @@ class RearFrameBase(NewtonianBodyMixin, ModelBase):
 
     @property
     @abstractmethod
+    def bottom_bracket(self) -> Point:
+        """Point representing the center of the bottom bracket."""
+
+    @property
+    @abstractmethod
     def wheel_attachment(self) -> Point:
         """Point representing attachment of the rear wheel."""
 
@@ -64,16 +73,21 @@ class RearFrameBase(NewtonianBodyMixin, ModelBase):
                 params[self.body.mass] = bp["mB"]
         return params
 
-    def set_plot_objects(self, plot_object: PlotModel,
-                         pedals_center_point: Point | None = None
-                         ) -> None:  # pragma: no cover
-        """Set the symmeplot plot objects."""
-        super().set_plot_objects(plot_object)
-
 
 @set_default_convention("moore")
 class RigidRearFrame(RearFrameBase):
     """Rigid rear frame."""
+
+    @property
+    def descriptions(self) -> dict[Any, str]:
+        """Dictionary of descriptions of the rear frame's symbols."""
+        return {
+            **super().descriptions,
+            self.symbols["l_bbx"]: f"Distance between the rear hub and the bottom "
+                                   f"bracket along {self.x}.",
+            self.symbols["l_bbz"]: f"Distance between the rear hub and the bottom "
+                                   f"bracket along {self.z}.",
+        }
 
     def _define_objects(self):
         """Define the objects of the rear frame."""
@@ -83,12 +97,19 @@ class RigidRearFrame(RearFrameBase):
                                             izx=Symbol(self._add_prefix("izx")))
         self._wheel_attachment = Point(self._add_prefix("wheel_attachment"))
         self._saddle = Point(self._add_prefix("saddle"))
+        self._bottom_bracket = Point(self._add_prefix("bottom_bracket"))
+        self.symbols.update({name: Symbol(self._add_prefix(name))
+                             for name in ("l_bbx", "l_bbz")})
 
     def _define_kinematics(self):
         """Define the kinematics of the rear frame."""
         super()._define_kinematics()
         self.wheel_attachment.set_vel(self.frame, 0)
         self.saddle.set_vel(self.frame, 0)
+        self.bottom_bracket.set_pos(self.wheel_attachment,
+                                    self.symbols["l_bbx"] * self.x +
+                                    self.symbols["l_bbz"] * self.z)
+        self.bottom_bracket.set_vel(self.frame, 0)
 
     def _define_loads(self):
         """Define the loads acting upon the rear frame."""
@@ -113,6 +134,33 @@ class RigidRearFrame(RearFrameBase):
     def saddle(self) -> Point:
         """Point representing the saddle."""
         return self._saddle
+
+    @property
+    def bottom_bracket(self) -> Point:
+        """Point representing the center of the bottom bracket."""
+        return self._bottom_bracket
+
+    def get_param_values(self, bicycle_parameters: Bicycle) -> dict[Symbol, float]:
+        """Get a parameters mapping of a model based on a bicycle parameters object."""
+        params = super().get_param_values(bicycle_parameters)
+        if "Benchmark" in bicycle_parameters.parameters:
+            bp = remove_uncertainties(bicycle_parameters.parameters["Benchmark"])
+        if "Measured" in bicycle_parameters.parameters:
+            mep = remove_uncertainties(bicycle_parameters.parameters["Measured"])
+            rr, lcs, hbb, lamht = (mep.get(name) for name in (
+                "rR", "lcs", "hbb", "lamht"))
+            if rr is None and "Benchmark" in bicycle_parameters.parameters:
+                rr = bp["rR"]
+            if lamht is None and "Benchmark" in bicycle_parameters.parameters:
+                lamht = np.pi / 2 - bp["lam"]
+            if not any(value is None for value in (rr, lcs, hbb, lamht)):
+                glob_z = rr - hbb
+                glob_x = np.sqrt(lcs ** 2 - glob_z ** 2)
+                params[self.symbols["l_bbx"]] = (
+                        glob_x * np.sin(lamht) - glob_z * np.cos(lamht))
+                params[self.symbols["l_bbz"]] = (
+                        glob_x * np.cos(lamht) + glob_z * np.sin(lamht))
+        return params
 
 
 class RigidRearFrameMoore(RigidRearFrame):
@@ -210,33 +258,25 @@ class RigidRearFrameMoore(RigidRearFrame):
                         r_rc_sdl[0, 0] * np.cos(lamht) + r_rc_sdl[2, 0] * np.sin(lamht))
         return params
 
-    def set_plot_objects(self, plot_object: PlotModel,
-                         pedals_center_point: Point | None = None
-                         ) -> None:  # pragma: no cover
+    def set_plot_objects(self, plot_object: PlotModel) -> None:
         """Set the symmeplot plot objects."""
-        super().set_plot_objects(plot_object, pedals_center_point)
-        if pedals_center_point is None:
-            s_perp = self.wheel_attachment.locatenew("p", self.symbols["d4"] * self.x)
-            s_low = s_perp.locatenew("p", 0.7 * self.saddle.pos_from(s_perp))
-            points = [self.wheel_attachment, s_perp, s_low, self.wheel_attachment,
-                      self.steer_attachment, s_low, self.saddle]
-        else:
-            ax_l = 0.15 * pedals_center_point.pos_from(
-                self.wheel_attachment).magnitude()
-            saddle_low = self.saddle.locatenew(
-                "P", 0.15 * pedals_center_point.pos_from(self.saddle))
-            points = [
-                pedals_center_point,
-                saddle_low,
-                self.wheel_attachment.locatenew("P", -ax_l / 2 * self.wheel_axis),
-                pedals_center_point,
-                self.wheel_attachment.locatenew("P", ax_l / 2 * self.wheel_axis),
-                saddle_low,
-                self.saddle,
-                saddle_low,
-                self.steer_attachment.locatenew(  # not perfect but close enough
-                    "P", saddle_low.pos_from(self.steer_attachment).dot(
-                        self.steer_axis) / 2 * self.steer_axis),
-                pedals_center_point,
-            ]
+        super().set_plot_objects(plot_object)
+        ax_l = 0.15 * self.bottom_bracket.pos_from(
+            self.wheel_attachment).magnitude()
+        saddle_low = self.saddle.locatenew(
+            "P", 0.15 * self.bottom_bracket.pos_from(self.saddle))
+        points = [
+            self.bottom_bracket,
+            saddle_low,
+            self.wheel_attachment.locatenew("P", -ax_l / 2 * self.wheel_axis),
+            self.bottom_bracket,
+            self.wheel_attachment.locatenew("P", ax_l / 2 * self.wheel_axis),
+            saddle_low,
+            self.saddle,
+            saddle_low,
+            self.steer_attachment.locatenew(  # not perfect but close enough
+                "P", saddle_low.pos_from(self.steer_attachment).dot(
+                    self.steer_axis) / 2 * self.steer_axis),
+            self.bottom_bracket,
+        ]
         plot_object.add_line(points, self.name)

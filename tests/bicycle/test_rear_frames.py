@@ -1,6 +1,5 @@
 import pytest
 from brim.bicycle.rear_frames import RigidRearFrame, RigidRearFrameMoore
-from sympy import symbols
 from sympy.physics.mechanics import Point
 
 try:
@@ -36,6 +35,7 @@ class TestRigidRearFrameMoore:
         assert isinstance(rear.steer_attachment, Point)
         assert isinstance(rear.wheel_attachment, Point)
         assert isinstance(rear.saddle, Point)
+        assert isinstance(rear.bottom_bracket, Point)
         assert rear.wheel_axis == rear.y
 
     def test_kinematics(self):
@@ -51,6 +51,7 @@ class TestRigidRearFrameMoore:
         assert rear.steer_attachment.vel(rear.frame) == 0
         assert rear.wheel_attachment.vel(rear.frame) == 0
         assert rear.saddle.vel(rear.frame) == 0
+        assert rear.bottom_bracket.vel(rear.frame) == 0
 
     def test_descriptions(self):
         rear = RigidRearFrameMoore("rear")
@@ -59,14 +60,9 @@ class TestRigidRearFrameMoore:
             assert rear.descriptions[length] is not None
 
     @pytest.mark.skipif(PlotModel is None, reason="symmeplot not installed")
-    @pytest.mark.parametrize("pedals_center_point", [None, Point("P")])
-    def test_plotting(self, pedals_center_point):
-        lx, lz = symbols("lx lz")
+    def test_plotting(self):
         rear = RigidRearFrameMoore("rear")
         rear.define_all()
-        if pedals_center_point is not None:
-            pedals_center_point.set_pos(rear.wheel_attachment,
-                                        lx * rear.x + lz * rear.z)
         plot_model = PlotModel(rear.system.frame, rear.system.origin, rear)
         assert len(plot_model.children) == 2
         assert any(isinstance(obj, PlotBody) for obj in plot_model.children)
