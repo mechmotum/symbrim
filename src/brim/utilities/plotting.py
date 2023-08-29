@@ -61,6 +61,34 @@ class Plotter(SymMePlotter):
             PlotModel(self.inertial_frame, self.zero_point, model, **kwargs))
         return self._children[-1]
 
+    def add_connection(self, connection: ConnectionBase, **kwargs):
+        """Add a connection to the plotter.
+
+        Parameters
+        ----------
+        connection : ConnectionBase
+            Connection to add.
+        **kwargs : dict, optional
+            Kwargs are passed to :class:`brim.utilities.plotting.PlotConnection`.
+        """
+        self._children.append(
+            PlotConnection(self.inertial_frame, self.zero_point, connection, **kwargs))
+        return self._children[-1]
+
+    def add_load_group(self, load_group: LoadGroupBase, **kwargs):
+        """Add a load group to the plotter.
+
+        Parameters
+        ----------
+        load_group : LoadGroupBase
+            Load group to add.
+        **kwargs : dict, optional
+            Kwargs are passed to :class:`brim.utilities.plotting.PlotLoadGroup`.
+        """
+        self._children.append(
+            PlotLoadGroup(self.inertial_frame, self.zero_point, load_group, **kwargs))
+        return self._children[-1]
+
 
 class PlotBrimMixin:
     """Mixin class for plotting BRiM objects."""
