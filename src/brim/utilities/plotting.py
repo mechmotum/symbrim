@@ -54,8 +54,8 @@ class Plotter(SymMePlotter):
         ----------
         model : ModelBase
             Model to add.
-        **kwargs : dict, optional
-            Kwargs are passed to :class:`brim.utilities.plotting.PlotModel`.
+        **kwargs
+            Keyword arguments are passed to :class:`brim.utilities.plotting.PlotModel`.
         """
         self._children.append(
             PlotModel(self.inertial_frame, self.zero_point, model, **kwargs))
@@ -68,8 +68,9 @@ class Plotter(SymMePlotter):
         ----------
         connection : ConnectionBase
             Connection to add.
-        **kwargs : dict, optional
-            Kwargs are passed to :class:`brim.utilities.plotting.PlotConnection`.
+        **kwargs
+            Keyword arguments are passed to
+            :class:`brim.utilities.plotting.PlotConnection`.
         """
         self._children.append(
             PlotConnection(self.inertial_frame, self.zero_point, connection, **kwargs))
@@ -82,8 +83,9 @@ class Plotter(SymMePlotter):
         ----------
         load_group : LoadGroupBase
             Load group to add.
-        **kwargs : dict, optional
-            Kwargs are passed to :class:`brim.utilities.plotting.PlotLoadGroup`.
+        **kwargs :
+            Keyword arguments are passed to
+            :class:`brim.utilities.plotting.PlotLoadGroup`.
         """
         self._children.append(
             PlotLoadGroup(self.inertial_frame, self.zero_point, load_group, **kwargs))
