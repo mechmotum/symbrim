@@ -8,7 +8,7 @@ mechanics. Therefore, there is no guarantee that the plotter will work in the fu
 """
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from symmeplot import SymMePlotter
 from symmeplot.plot_base import PlotBase
@@ -88,6 +88,50 @@ class Plotter(SymMePlotter):
         self._children.append(
             PlotLoadGroup(self.inertial_frame, self.zero_point, load_group, **kwargs))
         return self._children[-1]
+
+    def get_plot_object(self, sympy_object: Any) -> PlotBase:
+        """Return the `plot_object` based on a sympy object.
+
+        Explanation
+        -----------
+        Return the ``plot_object`` based on a provided sympy object. For example
+        ``ReferenceFrame('N')`` will give the ``PlotFrame`` of that reference frame. If
+        the ``plot_object`` has not been added it will return `None`.
+
+        Parameters
+        ----------
+        sympy_object : Any
+            SymPy object to search for. If it is a string it will search for the name.
+
+        Returns
+        -------
+        PlotBase or None
+            Retrieved plot object.
+
+        """
+        mapping = [
+            (ModelBase, lambda obj:
+                isinstance(obj, PlotModel) and obj.model is sympy_object),
+            (ConnectionBase, lambda obj:
+                isinstance(obj, PlotConnection) and obj.connection is sympy_object),
+            (LoadGroupBase, lambda obj:
+                isinstance(obj, PlotLoadGroup) and obj.load_group is sympy_object),
+        ]
+        known_type = False
+        for sympy_type, is_plot_object in mapping:
+            if isinstance(sympy_object, sympy_type):
+                known_type = True
+                queue = [self]
+                while queue:
+                    for child in queue.pop().children:
+                        if is_plot_object(child):
+                            return child
+                        queue.append(child)
+        try:
+            return super().get_plot_object(sympy_object)
+        except NotImplementedError as e:
+            if not known_type:
+                raise e
 
 
 class PlotBrimMixin:
@@ -169,9 +213,21 @@ class PlotModel(PlotBrimMixin, PlotBase):
             self._values = []
 
     @property
-    def plot_submodels(self) -> tuple[PlotModel, ...]:
-        """Whether to plot the submodels."""
-        return tuple(self._children[:len(self.model.submodels)])
+    def submodels(self) -> tuple[PlotModel, ...]:
+        """Plot objects of the submodels."""
+        return tuple(child for child in self._children if isinstance(child, PlotModel))
+
+    @property
+    def connections(self) -> tuple[PlotConnection, ...]:
+        """Plot objects of the connections."""
+        return tuple(child for child in self._children
+                     if isinstance(child, PlotConnection))
+
+    @property
+    def load_groups(self) -> tuple[PlotLoadGroup, ...]:
+        """Plot objects of the load groups."""
+        return tuple(child for child in self._children
+                     if isinstance(child, PlotLoadGroup))
 
 
 class PlotConnection(PlotBrimMixin, PlotBase):
@@ -220,11 +276,15 @@ class PlotConnection(PlotBrimMixin, PlotBase):
             self._values = []
 
     @property
-    def plot_submodels(self) -> tuple[PlotModel, ...]:
-        """Whether to plot the submodels."""
-        if self._children and isinstance(self._children[0], PlotModel):
-            return tuple(self._children[:len(self.connection.submodels)])
-        return ()
+    def submodels(self) -> tuple[PlotModel, ...]:
+        """Plot objects of the submodels."""
+        return tuple(child for child in self._children if isinstance(child, PlotModel))
+
+    @property
+    def load_groups(self) -> tuple[PlotLoadGroup, ...]:
+        """Plot objects of the load groups."""
+        return tuple(child for child in self._children
+                        if isinstance(child, PlotLoadGroup))
 
 
 class PlotLoadGroup(PlotBrimMixin, PlotBase):
