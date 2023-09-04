@@ -28,7 +28,7 @@ class BicycleRider(ModelBase):
             "Connection between the pelvis and the rear frame.", False),
         ConnectionRequirement(
             "pedal_connection", PedalsToFeetBase,
-            "Connection between the pedals and the legs.", False),
+            "Connection between the cranks and the legs.", False),
         ConnectionRequirement(
             "steer_connection", HandGripBase,
             "Connection between the steer and the arms.", False),
@@ -48,7 +48,7 @@ class BicycleRider(ModelBase):
         if self.pedal_connection is not None:
             self.pedal_connection.left_leg = self.rider.left_leg
             self.pedal_connection.right_leg = self.rider.right_leg
-            self.pedal_connection.pedals = self.bicycle.pedals
+            self.pedal_connection.cranks = self.bicycle.cranks
         if self.steer_connection is not None:
             self.steer_connection.steer = self.bicycle.front_frame
             self.steer_connection.left_arm = self.rider.left_arm

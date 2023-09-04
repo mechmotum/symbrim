@@ -4,8 +4,8 @@ from __future__ import annotations
 import contextlib
 from typing import TYPE_CHECKING
 
+from brim.bicycle.cranks import CranksBase
 from brim.bicycle.front_frames import FrontFrameBase
-from brim.bicycle.pedals import PedalsBase
 from brim.bicycle.rear_frames import RearFrameBase
 from brim.bicycle.wheels import WheelBase
 from brim.core import ModelBase, ModelRequirement
@@ -29,13 +29,13 @@ class BicycleBase(ModelBase):
         ModelRequirement("rear_wheel", WheelBase, "Submodel of the rear wheel.", False),
         ModelRequirement("front_wheel", WheelBase, "Submodel of the front wheel.",
                          False),
-        ModelRequirement("pedals", PedalsBase, "Submodel of the pedals.", False),
+        ModelRequirement("cranks", CranksBase, "Submodel of the cranks.", False),
     )
     rear_frame: RearFrameBase
     front_frame: FrontFrameBase
     rear_wheel: WheelBase
     front_wheel: WheelBase
-    pedals: PedalsBase
+    cranks: CranksBase
 
     def get_param_values(self, bicycle_parameters: Bicycle) -> dict[Symbol, float]:
         """Get a parameters mapping of a model based on a bicycle parameters object."""

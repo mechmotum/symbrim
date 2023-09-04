@@ -33,11 +33,11 @@ class StationaryBicycle(BicycleBase):
             self.q[1]: f"Steering rotation angle of {self.name}.",
             self.q[2]: f"Front wheel rotation angle of {self.name}.",
             self.symbols["gear_ratio"]: "Ratio between the angle of the rear wheel and"
-                                        " the pedals.",
-            self.symbols["l_px"]: f"Distance between the rear wheel and the pedals "
-                                  f"along {self.rear_frame.x}.",
-            self.symbols["l_pz"]: f"Distance between the rear wheel and the pedals "
-                                  f"along {self.rear_frame.z}.",
+                                        " the cranks.",
+            self.symbols["l_px"]: f"Distance between the rear wheel and the center of "
+                                  f"the cranks along {self.rear_frame.x}.",
+            self.symbols["l_pz"]: f"Distance between the rear wheel and the center of "
+                                  f"the cranks along {self.rear_frame.z}.",
         }
         desc.update({ui: f"Generalized speed of the {desc[qi].lower()}"
                      for qi, ui in zip(self.q, self.u)})
@@ -79,14 +79,14 @@ class StationaryBicycle(BicycleBase):
                          self.front_frame.wheel_attachment, self.front_wheel.center,
                          self.front_frame.wheel_axis, self.front_wheel.rotation_axis),
             )
-        if self.pedals:
-            self.pedals.center_point.set_pos(self.rear_frame.wheel_attachment,
+        if self.cranks:
+            self.cranks.center_point.set_pos(self.rear_frame.wheel_attachment,
                                              self.symbols["l_px"] * self.rear_frame.x +
                                              self.symbols["l_pz"] * self.rear_frame.z)
-            self.pedals.frame.orient_axis(
+            self.cranks.frame.orient_axis(
                 self.rear_frame.frame, self.rear_frame.wheel_axis,
                 self.q[0] / self.symbols["gear_ratio"])
-            self.pedals.frame.set_ang_vel(
+            self.cranks.frame.set_ang_vel(
                 self.rear_frame.frame,
                 self.u[0] / self.symbols["gear_ratio"] * self.rear_frame.wheel_axis)
             if self.q[0] not in self.system.q:

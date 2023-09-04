@@ -1,8 +1,8 @@
 """Module containing the base connection classes between the rider and bicycle."""
 from __future__ import annotations
 
+from brim.bicycle.cranks import CranksBase
 from brim.bicycle.front_frames import FrontFrameBase
-from brim.bicycle.pedals import PedalsBase
 from brim.bicycle.rear_frames import RearFrameBase
 from brim.core import ConnectionBase, ModelRequirement
 from brim.rider.arms import LeftArmBase, RightArmBase
@@ -38,14 +38,14 @@ class HandGripBase(ConnectionBase):
 
 
 class PedalsToFeetBase(ConnectionBase):
-    """Base class for the connection between the pedals and the legs."""
+    """Base class for the connection between the cranks and the legs."""
 
     required_models: tuple[ModelRequirement, ...] = (
         ModelRequirement("left_leg", LeftLegBase, "Left leg of the rider.", hard=False),
         ModelRequirement("right_leg", RightLegBase, "Right leg of the rider.",
                          hard=False),
-        ModelRequirement("pedals", PedalsBase, "Pedals of the bicycle."),
+        ModelRequirement("cranks", CranksBase, "Cranks of the bicycle."),
     )
     left_leg: LeftLegBase
     right_leg: RightLegBase
-    pedals: PedalsBase
+    cranks: CranksBase

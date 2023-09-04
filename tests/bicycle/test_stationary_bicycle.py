@@ -1,9 +1,9 @@
 import pytest
 from brim.bicycle import (
     KnifeEdgeWheel,
+    MasslessCranks,
     RigidFrontFrame,
     RigidRearFrame,
-    SimplePedals,
     StationaryBicycle,
     ToroidalWheel,
 )
@@ -22,7 +22,7 @@ class TestStationaryBicycle:
         assert bicycle.rear_frame is None
         assert bicycle.front_wheel is None
         assert bicycle.rear_wheel is None
-        assert bicycle.pedals is None
+        assert bicycle.cranks is None
 
     def test_only_rear_frame_hard(self, _setup_default):
         self.bike.define_all()
@@ -30,7 +30,7 @@ class TestStationaryBicycle:
     @pytest.mark.parametrize("name, model_cls, coord_idx", [
         ("front_frame", RigidFrontFrame, (1,)),
         ("rear_wheel", KnifeEdgeWheel, (0,)),
-        ("pedals", SimplePedals, (0,)),
+        ("cranks", MasslessCranks, (0,)),
         ("rear_wheel", ToroidalWheel, (0,)),
     ])
     def test_optional_models(self, _setup_default, name, model_cls, coord_idx):
@@ -48,10 +48,10 @@ class TestStationaryBicycle:
 
     def test_all(self, _setup_default):
         self.bike.rear_wheel = KnifeEdgeWheel("rear_wheel")
-        self.bike.pedals = SimplePedals("pedals")
+        self.bike.cranks = MasslessCranks("cranks")
         self.bike.front_frame = RigidFrontFrame("front_frame")
         self.bike.front_wheel = KnifeEdgeWheel("front_wheel")
-        self.bike.pedals = SimplePedals("pedals")
+        self.bike.cranks = MasslessCranks("cranks")
         self.bike.define_all()
         for qi in self.bike.q:
             assert qi in self.bike.system.q

@@ -4,10 +4,10 @@ import pytest
 from brim.bicycle import (
     FlatGround,
     KnifeEdgeWheel,
+    MasslessCranks,
     NonHolonomicTyre,
     RigidFrontFrame,
     RigidRearFrame,
-    SimplePedals,
     StationaryBicycle,
     WhippleBicycle,
 )
@@ -43,7 +43,7 @@ class TestCompleteBicycleRider:
         self.bicycle.rear_wheel = KnifeEdgeWheel("rear_wheel")
         self.bicycle.front_tyre = NonHolonomicTyre("front_tyre")
         self.bicycle.rear_tyre = NonHolonomicTyre("rear_tyre")
-        self.bicycle.pedals = SimplePedals("pedals")
+        self.bicycle.cranks = MasslessCranks("pedals")
         self.bicycle.ground = FlatGround("ground")
 
     @pytest.fixture()
@@ -53,7 +53,7 @@ class TestCompleteBicycleRider:
         self.bicycle.rear_frame = RigidRearFrame("rear_frame")
         self.bicycle.front_wheel = KnifeEdgeWheel("front_wheel")
         self.bicycle.rear_wheel = KnifeEdgeWheel("rear_wheel")
-        self.bicycle.pedals = SimplePedals("pedals")
+        self.bicycle.cranks = MasslessCranks("pedals")
 
     @pytest.fixture()
     def _rider_setup(self) -> None:

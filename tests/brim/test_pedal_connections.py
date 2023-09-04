@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import pytest
-from brim.bicycle.pedals import SimplePedals
+from brim.bicycle.cranks import MasslessCranks
 from brim.brim.base_connections import PedalsToFeetBase
 from brim.brim.pedal_connections import HolonomicPedalsToFeet, SpringDamperPedalsToFeet
 from brim.rider.legs import TwoPinStickLeftLeg, TwoPinStickRightLeg
@@ -15,7 +15,7 @@ class TestPedalConnectionBase:
     @pytest.fixture()
     def _setup(self, pedal_cls) -> None:
         self.model = create_model_of_connection(pedal_cls)("model")
-        self.model.pedals = SimplePedals("pedals")
+        self.model.cranks = MasslessCranks("cranks")
         self.model.left_leg = TwoPinStickLeftLeg("left_leg")
         self.model.right_leg = TwoPinStickRightLeg("right_leg")
         self.model.conn = pedal_cls("pedal_connection")
@@ -24,15 +24,15 @@ class TestPedalConnectionBase:
         # Define kinematics with enough degrees of freedom
         self.q = dynamicsymbols("q1:5")
         self.model.left_leg.hip_interframe.orient_axis(
-            self.model.pedals.frame, self.model.pedals.rotation_axis, self.q[0])
+            self.model.cranks.frame, self.model.cranks.rotation_axis, self.q[0])
         self.model.left_leg.hip_interpoint.set_pos(
-            self.model.pedals.left_pedal_point,
-            self.q[1] * self.model.pedals.rotation_axis)
+            self.model.cranks.left_pedal_point,
+            self.q[1] * self.model.cranks.rotation_axis)
         self.model.right_leg.hip_interframe.orient_axis(
-            self.model.pedals.frame, self.model.pedals.rotation_axis, self.q[2])
+            self.model.cranks.frame, self.model.cranks.rotation_axis, self.q[2])
         self.model.right_leg.hip_interpoint.set_pos(
-            self.model.pedals.right_pedal_point,
-            self.q[3] * self.model.pedals.rotation_axis)
+            self.model.cranks.right_pedal_point,
+            self.q[3] * self.model.cranks.rotation_axis)
         self.model.define_kinematics()
         self.model.define_loads()
         self.model.define_constraints()
@@ -47,7 +47,7 @@ class TestPedalConnectionBase:
         ("left", TwoPinStickLeftLeg), ("right", TwoPinStickRightLeg)])
     def test_single_leg(self, pedal_cls, side, leg_cls) -> None:
         self.model = create_model_of_connection(pedal_cls)("model")
-        self.model.pedals = SimplePedals("pedals")
+        self.model.cranks = MasslessCranks("cranks")
         self.model.conn = pedal_cls("pedals")
         setattr(self.model, f"{side}_leg", leg_cls(f"{side}_leg"))
         self.model.define_connections()
@@ -55,10 +55,10 @@ class TestPedalConnectionBase:
         # Define kinematics with enough degrees of freedom
         self.q = dynamicsymbols("q1:3")
         getattr(self.model, f"{side}_leg").hip_interframe.orient_axis(
-            self.model.pedals.frame, self.model.pedals.rotation_axis, self.q[0])
+            self.model.cranks.frame, self.model.cranks.rotation_axis, self.q[0])
         getattr(self.model, f"{side}_leg").hip_interpoint.set_pos(
-            self.model.pedals.left_pedal_point,
-            self.q[1] * self.model.pedals.rotation_axis)
+            self.model.cranks.left_pedal_point,
+            self.q[1] * self.model.cranks.rotation_axis)
         self.model.define_kinematics()
         self.model.define_loads()
         self.model.define_constraints()
@@ -68,28 +68,28 @@ class TestHolonomicPedalsConnection:
     @pytest.fixture(autouse=True)
     def _setup(self) -> None:
         self.model = create_model_of_connection(HolonomicPedalsToFeet)("model")
-        self.model.pedals = SimplePedals("pedals")
+        self.model.cranks = MasslessCranks("cranks")
         self.model.left_leg = TwoPinStickLeftLeg("left_leg")
         self.model.right_leg = TwoPinStickRightLeg("right_leg")
         self.model.conn = HolonomicPedalsToFeet("pedal_connection")
         self.model.define_connections()
         self.model.define_objects()
         self.model.left_leg.foot_interframe.orient_axis(
-            self.model.pedals.frame, self.model.pedals.rotation_axis, 0)
+            self.model.cranks.frame, self.model.cranks.rotation_axis, 0)
         self.model.right_leg.foot_interframe.orient_axis(
-            self.model.pedals.frame, self.model.pedals.rotation_axis, 0)
-        self.pedals, self.left_leg, self.right_leg, self.conn = (
-            self.model.pedals, self.model.left_leg, self.model.right_leg,
+            self.model.cranks.frame, self.model.cranks.rotation_axis, 0)
+        self.cranks, self.left_leg, self.right_leg, self.conn = (
+            self.model.cranks, self.model.left_leg, self.model.right_leg,
             self.model.conn)
 
     def test_all_constraints(self) -> None:
         q = dynamicsymbols("q1:7")
         self.left_leg.foot_interpoint.set_pos(
-            self.pedals.left_pedal_point,
-            sum(qi * v for qi, v in zip(q[:3], self.pedals.frame)))
+            self.cranks.left_pedal_point,
+            sum(qi * v for qi, v in zip(q[:3], self.cranks.frame)))
         self.right_leg.foot_interpoint.set_pos(
-            self.pedals.right_pedal_point,
-            sum(qi * v for qi, v in zip(q[3:], self.pedals.frame)))
+            self.cranks.right_pedal_point,
+            sum(qi * v for qi, v in zip(q[3:], self.cranks.frame)))
         self.model.define_kinematics()
         self.model.define_loads()
         self.model.define_constraints()
@@ -103,10 +103,10 @@ class TestHolonomicPedalsConnection:
 
     def test_not_fully_constraint(self) -> None:
         q, d = dynamicsymbols("q"), Symbol("d")
-        self.left_leg.foot_interpoint.set_pos(self.pedals.left_pedal_point, 0)
+        self.left_leg.foot_interpoint.set_pos(self.cranks.left_pedal_point, 0)
         self.right_leg.foot_interpoint.set_pos(
-            self.pedals.right_pedal_point,
-            q * self.pedals.frame.x + 2 * d * self.pedals.frame.x)
+            self.cranks.right_pedal_point,
+            q * self.cranks.frame.x + 2 * d * self.cranks.frame.x)
         self.model.define_kinematics()
         self.model.define_loads()
         self.model.define_constraints()
@@ -116,10 +116,10 @@ class TestHolonomicPedalsConnection:
 
     def test_constant_constraint(self) -> None:
         q, d = dynamicsymbols("q"), Symbol("d")
-        self.left_leg.foot_interpoint.set_pos(self.pedals.left_pedal_point, 0)
+        self.left_leg.foot_interpoint.set_pos(self.cranks.left_pedal_point, 0)
         self.right_leg.foot_interpoint.set_pos(
-            self.pedals.right_pedal_point,
-            q * self.pedals.frame.x + d * self.pedals.frame.y)
+            self.cranks.right_pedal_point,
+            q * self.cranks.frame.x + d * self.cranks.frame.y)
         self.model.define_kinematics()
         self.model.define_loads()
         with pytest.raises(ValueError):
@@ -130,26 +130,26 @@ class TestSpringDamperPedalsConnection:
     @pytest.fixture(autouse=True)
     def _setup(self) -> None:
         self.model = create_model_of_connection(SpringDamperPedalsToFeet)("model")
-        self.model.pedals = SimplePedals("pedals")
+        self.model.cranks = MasslessCranks("cranks")
         self.model.left_leg = TwoPinStickLeftLeg("left_leg")
         self.model.right_leg = TwoPinStickRightLeg("right_leg")
         self.model.conn = SpringDamperPedalsToFeet("pedal_connection")
         self.model.define_connections()
         self.model.define_objects()
         self.model.left_leg.foot_interframe.orient_axis(
-            self.model.pedals.frame, self.model.pedals.rotation_axis, 0)
+            self.model.cranks.frame, self.model.cranks.rotation_axis, 0)
         self.model.right_leg.foot_interframe.orient_axis(
-            self.model.pedals.frame, self.model.pedals.rotation_axis, 0)
-        self.pedals, self.left_leg, self.right_leg, self.conn = (
-            self.model.pedals, self.model.left_leg, self.model.right_leg,
+            self.model.cranks.frame, self.model.cranks.rotation_axis, 0)
+        self.cranks, self.left_leg, self.right_leg, self.conn = (
+            self.model.cranks, self.model.left_leg, self.model.right_leg,
             self.model.conn)
 
     def test_loads(self) -> None:
         q1, q2 = dynamicsymbols("q1:3")
         self.left_leg.foot_interpoint.set_pos(
-            self.pedals.left_pedal_point, q1 * self.pedals.frame.x)
+            self.cranks.left_pedal_point, q1 * self.cranks.frame.x)
         self.right_leg.foot_interpoint.set_pos(
-            self.pedals.right_pedal_point, -q2 * self.pedals.frame.y)
+            self.cranks.right_pedal_point, -q2 * self.cranks.frame.y)
         self.model.define_kinematics()
         self.model.define_loads()
         self.model.define_constraints()
@@ -165,16 +165,16 @@ class TestSpringDamperPedalsConnection:
         assert len(loads) == 4
         k, c = self.conn.symbols["k"], self.conn.symbols["c"]
         for ld in loads:
-            if ld.location == self.pedals.left_pedal_point:
-                assert (ld.vector - (k * q1 + c * q1.diff()) * self.pedals.frame.x
+            if ld.location == self.cranks.left_pedal_point:
+                assert (ld.vector - (k * q1 + c * q1.diff()) * self.cranks.frame.x
                         ).simplify() == Vector(0)
             elif ld.location == self.left_leg.foot_interpoint:
-                assert (ld.vector + (k * q1 + c * q1.diff()) * self.pedals.frame.x
+                assert (ld.vector + (k * q1 + c * q1.diff()) * self.cranks.frame.x
                         ).simplify() == Vector(0)
-            elif ld.location == self.pedals.right_pedal_point:
-                assert (ld.vector - (-k * q2 - c * q2.diff()) * self.pedals.frame.y
+            elif ld.location == self.cranks.right_pedal_point:
+                assert (ld.vector - (-k * q2 - c * q2.diff()) * self.cranks.frame.y
                         ).simplify() == Vector(0)
             else:
                 assert ld.location == self.right_leg.foot_interpoint
-                assert (ld.vector + (-k * q2 - c * q2.diff()) * self.pedals.frame.y
+                assert (ld.vector + (-k * q2 - c * q2.diff()) * self.cranks.frame.y
                         ).simplify() == Vector(0)

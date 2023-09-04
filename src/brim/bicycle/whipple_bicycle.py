@@ -74,7 +74,7 @@ class WhippleBicycleMoore(WhippleBicycle):
             self.q[6]: f"Steering rotation angle of {self.name}.",
             self.q[7]: f"Rear wheel rotation angle of {self.name}.",
             self.symbols["gear_ratio"]: "Ratio between the angle of the rear wheel and"
-                                        " the pedals.",
+                                        " the cranks.",
         }
         desc.update({ui: f"Generalized speed of the {desc[qi].lower()}"
                      for qi, ui in zip(self.q, self.u)})
@@ -135,12 +135,12 @@ class WhippleBicycleMoore(WhippleBicycle):
         self.system.add_speeds(*self.u[:5])
         self.system.add_kdes(*(
             ui - qi.diff(dynamicsymbols._t) for qi, ui in zip(self.q[:5], self.u[:5])))
-        if self.pedals:
-            self.pedals.center_point.set_pos(self.rear_frame.bottom_bracket, 0)
-            self.pedals.frame.orient_axis(
+        if self.cranks:
+            self.cranks.center_point.set_pos(self.rear_frame.bottom_bracket, 0)
+            self.cranks.frame.orient_axis(
                 self.rear_frame.frame, self.rear_frame.wheel_axis,
                 self.q[7] / self.symbols["gear_ratio"])
-            self.pedals.frame.set_ang_vel(
+            self.cranks.frame.set_ang_vel(
                 self.rear_frame.frame,
                 self.u[7] / self.symbols["gear_ratio"] * self.rear_frame.wheel_axis)
 

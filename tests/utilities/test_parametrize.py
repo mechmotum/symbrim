@@ -2,9 +2,9 @@ import os
 
 import numpy as np
 import pytest
+from brim.bicycle.cranks import MasslessCranks
 from brim.bicycle.front_frames import RigidFrontFrameMoore
 from brim.bicycle.grounds import FlatGround
-from brim.bicycle.pedals import SimplePedals
 from brim.bicycle.rear_frames import RigidRearFrameMoore
 from brim.bicycle.tyre_models import NonHolonomicTyre
 from brim.bicycle.wheels import KnifeEdgeWheel
@@ -83,7 +83,7 @@ class TestParametrize:
         self.bike.rear_wheel = KnifeEdgeWheel("rear_wheel")
         self.bike.front_tyre = NonHolonomicTyre("front_tyre")
         self.bike.rear_tyre = NonHolonomicTyre("rear_tyre")
-        self.bike.pedals = SimplePedals("pedals")
+        self.bike.cranks = MasslessCranks("cranks")
         self.bike.ground = FlatGround("ground")
 
         self.rider = Rider("rider")
@@ -173,8 +173,8 @@ class TestParametrize:
         constants = self.br.get_param_values(bike_params)
         constants.update({
             self.br.seat_connection.symbols["alpha"]: -0.7,
-            self.bike.pedals.symbols["radius"]: 0.15,
-            self.bike.pedals.symbols["offset"]: constants[self.rider.pelvis.symbols[
+            self.bike.cranks.symbols["radius"]: 0.15,
+            self.bike.cranks.symbols["offset"]: constants[self.rider.pelvis.symbols[
                 "hip_width"]] / 2,
             self.bike.symbols["gear_ratio"]: 2.0
         })
@@ -191,14 +191,14 @@ class TestParametrize:
         assert msubs(self.bike.rear_tyre.contact_point.pos_from(
             self.bike.front_tyre.contact_point).magnitude(), params
                      ) == pytest.approx(bp["w"], abs=1e-10)
-        assert msubs(self.bike.pedals.center_point.pos_from(
+        assert msubs(self.bike.cranks.center_point.pos_from(
             self.bike.rear_wheel.center).magnitude(), params
                      ) == pytest.approx(mp["lcs"], abs=1e-10)
-        assert msubs(self.bike.pedals.center_point.pos_from(
+        assert msubs(self.bike.cranks.center_point.pos_from(
             self.bike.front_tyre.contact_point).dot(
             self.bike.ground.get_normal(self.bike.front_tyre.contact_point)), params
                      ) == pytest.approx(mp["hbb"], abs=1e-10)
-        assert msubs(self.bike.pedals.center_point.pos_from(
+        assert msubs(self.bike.cranks.center_point.pos_from(
             self.bike.rear_frame.saddle).magnitude(), params
                      ) == pytest.approx(mp["lst"] + mp["lsp"], abs=1e-10)
         assert msubs(self.bike.front_frame.left_handgrip.pos_from(

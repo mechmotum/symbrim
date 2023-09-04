@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import pytest
-from brim.bicycle import PedalsBase, SimplePedals
+from brim.bicycle import CranksBase, MasslessCranks
 from brim.utilities.testing import _test_descriptions
 from sympy.physics.mechanics import Point, ReferenceFrame, Vector
 
@@ -12,39 +12,39 @@ except ImportError:
     PlotModel = None
 
 
-@pytest.mark.parametrize("pedal_cls", [SimplePedals])
-class TestPedalsBase:
+@pytest.mark.parametrize("cranks_cls", [MasslessCranks])
+class TestCranksBase:
     @pytest.fixture(autouse=True)
-    def _setup(self, pedal_cls) -> None:
-        self.pedals = pedal_cls("pedals")
-        self.pedals.define_all()
+    def _setup(self, cranks_cls) -> None:
+        self.cranks = cranks_cls("cranks")
+        self.cranks.define_all()
 
     def test_types(self) -> None:
-        assert isinstance(self.pedals, PedalsBase)
-        assert isinstance(self.pedals.frame, ReferenceFrame)
-        assert isinstance(self.pedals.center_point, Point)
-        assert isinstance(self.pedals.left_pedal_point, Point)
-        assert isinstance(self.pedals.right_pedal_point, Point)
-        assert isinstance(self.pedals.rotation_axis, Vector)
+        assert isinstance(self.cranks, CranksBase)
+        assert isinstance(self.cranks.frame, ReferenceFrame)
+        assert isinstance(self.cranks.center_point, Point)
+        assert isinstance(self.cranks.left_pedal_point, Point)
+        assert isinstance(self.cranks.right_pedal_point, Point)
+        assert isinstance(self.cranks.rotation_axis, Vector)
 
     def test_descriptions(self) -> None:
-        _test_descriptions(self.pedals)
+        _test_descriptions(self.cranks)
 
 
-class TestSimplePedals:
+class TestMasslessCranks:
     def test_kinematics(self) -> None:
-        pedals = SimplePedals("pedals")
-        pedals.define_all()
-        assert pedals.rotation_axis == pedals.frame.y
-        assert pedals.right_pedal_point.pos_from(pedals.left_pedal_point).dot(
-            pedals.rotation_axis) == 2 * pedals.symbols["offset"]
-        assert pedals.right_pedal_point.pos_from(pedals.left_pedal_point).dot(
-            pedals.frame.x) == 2 * pedals.symbols["radius"]
+        cranks = MasslessCranks("cranks")
+        cranks.define_all()
+        assert cranks.rotation_axis == cranks.frame.y
+        assert cranks.right_pedal_point.pos_from(cranks.left_pedal_point).dot(
+            cranks.rotation_axis) == 2 * cranks.symbols["offset"]
+        assert cranks.right_pedal_point.pos_from(cranks.left_pedal_point).dot(
+            cranks.frame.x) == 2 * cranks.symbols["radius"]
 
     @pytest.mark.skipif(PlotModel is None, reason="symmeplot not installed")
     def test_plotting(self):
-        pedals = SimplePedals("pedals")
-        pedals.define_all()
-        plot_model = PlotModel(pedals.system.frame, pedals.system.origin, pedals)
+        cranks = MasslessCranks("cranks")
+        cranks.define_all()
+        plot_model = PlotModel(cranks.system.frame, cranks.system.origin, cranks)
         assert len(plot_model.children) == 1
         assert isinstance(plot_model.children[0], PlotLine)
