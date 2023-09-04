@@ -20,7 +20,7 @@ from brim.brim.base_connections import (
 )
 from brim.brim.bicycle_rider import BicycleRider
 from brim.brim.pedals import HolonomicPedals, SpringDamperPedals
-from brim.brim.seat_connections import (
+from brim.brim.seats import (
     FixedSeat,
     PelvisInterPointMixin,
     SideLeanSeat,

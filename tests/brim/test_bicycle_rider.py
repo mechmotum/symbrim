@@ -75,8 +75,8 @@ class TestCompleteBicycleRider:
         self.br = BicycleRider("bicycle_rider")
         self.br.bicycle = self.bicycle
         self.br.rider = self.rider
-        self.br.seat_connection = SideLeanSeat("seat_conn")
-        self.br.pedals = HolonomicPedals("pedals_conn")
+        self.br.seat = SideLeanSeat("seat")
+        self.br.pedals = HolonomicPedals("pedals")
         self.br.steer_connection = HolonomicHandGrip("steer_conn")
 
     @pytest.fixture()
@@ -84,14 +84,14 @@ class TestCompleteBicycleRider:
         self.br = BicycleRider("bicycle_rider")
         self.br.bicycle = self.bicycle
         self.br.rider = self.rider
-        self.br.seat_connection = SideLeanSeat("seat_conn")
-        self.br.pedals = HolonomicPedals("pedals_conn")
+        self.br.seat = SideLeanSeat("seat")
+        self.br.pedals = HolonomicPedals("pedals")
         self.br.steer_connection = HolonomicHandGrip("steer_conn")
 
     def test_stationary_setup(self, _stationary_rider_setup) -> None:
         assert self.br.bicycle == self.bicycle
         assert self.br.rider == self.rider
-        assert self.br.seat_connection is not None
+        assert self.br.seat is not None
         assert self.br.pedals is not None
         assert self.br.steer_connection is not None
         self.br.define_all()
@@ -99,7 +99,7 @@ class TestCompleteBicycleRider:
     def test_whipple_setup(self, _whipple_rider_setup) -> None:
         assert self.br.bicycle == self.bicycle
         assert self.br.rider == self.rider
-        assert self.br.seat_connection is not None
+        assert self.br.seat is not None
         assert self.br.pedals is not None
         assert self.br.steer_connection is not None
         self.br.define_all()
@@ -117,7 +117,7 @@ class TestCompleteBicycleRider:
                         self.rider.left_hip.q[0], self.rider.left_leg.q[0],
                         self.rider.right_hip.q[0], self.rider.right_leg.q[0],
                         *self.rider.left_arm.q, *self.rider.right_arm.q,
-                        *self.br.seat_connection.q]
+                        *self.br.seat.q]
         system.q_dep = [self.bicycle.q[4],
                         *self.rider.left_hip.q[1:], self.rider.left_leg.q[1],
                         *self.rider.right_hip.q[1:], self.rider.right_leg.q[1],
@@ -126,7 +126,7 @@ class TestCompleteBicycleRider:
                         self.rider.left_hip.u[0], self.rider.left_leg.u[0],
                         self.rider.right_hip.u[0], self.rider.right_leg.u[0],
                         *self.rider.left_arm.u, *self.rider.right_arm.u,
-                        *self.br.seat_connection.u]
+                        *self.br.seat.u]
         system.u_dep = [*self.bicycle.u[:3], self.bicycle.u[4], self.bicycle.u[7],
                         *self.rider.left_hip.u[1:], self.rider.left_leg.u[1],
                         *self.rider.right_hip.u[1:], self.rider.right_leg.u[1],

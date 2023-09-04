@@ -24,7 +24,7 @@ class BicycleRider(ModelBase):
     )
     required_connections: tuple[ConnectionRequirement] = (
         ConnectionRequirement(
-            "seat_connection", SeatBase,
+            "seat", SeatBase,
             "Connection between the pelvis and the rear frame.", False),
         ConnectionRequirement(
             "pedals", PedalsBase,
@@ -35,16 +35,16 @@ class BicycleRider(ModelBase):
     )
     bicycle: BicycleBase
     rider: Rider
-    seat_connection: SeatBase
+    seat: SeatBase
     pedals: PedalsBase
     steer_connection: HandGripBase
 
     def _define_connections(self) -> None:
         """Define the connections."""
         super()._define_connections()
-        if self.seat_connection is not None:
-            self.seat_connection.rear_frame = self.bicycle.rear_frame
-            self.seat_connection.pelvis = self.rider.pelvis
+        if self.seat is not None:
+            self.seat.rear_frame = self.bicycle.rear_frame
+            self.seat.pelvis = self.rider.pelvis
         if self.pedals is not None:
             self.pedals.left_leg = self.rider.left_leg
             self.pedals.right_leg = self.rider.right_leg
@@ -58,8 +58,8 @@ class BicycleRider(ModelBase):
         """Define the objects."""
         super()._define_objects()
         self._system = System(self.bicycle.system.frame, self.bicycle.system.origin)
-        if self.seat_connection is not None:
-            self.seat_connection.define_objects()
+        if self.seat is not None:
+            self.seat.define_objects()
         if self.pedals is not None:
             self.pedals.define_objects()
         if self.steer_connection is not None:
@@ -68,8 +68,8 @@ class BicycleRider(ModelBase):
     def _define_kinematics(self) -> None:
         """Define the kinematics."""
         super()._define_kinematics()
-        if self.seat_connection is not None:
-            self.seat_connection.define_kinematics()
+        if self.seat is not None:
+            self.seat.define_kinematics()
         if self.pedals is not None:
             self.pedals.define_kinematics()
         if self.steer_connection is not None:
@@ -78,8 +78,8 @@ class BicycleRider(ModelBase):
     def _define_loads(self) -> None:
         """Define the loads."""
         super()._define_loads()
-        if self.seat_connection is not None:
-            self.seat_connection.define_loads()
+        if self.seat is not None:
+            self.seat.define_loads()
         if self.pedals is not None:
             self.pedals.define_loads()
         if self.steer_connection is not None:
@@ -88,8 +88,8 @@ class BicycleRider(ModelBase):
     def _define_constraints(self) -> None:
         """Define the constraints."""
         super()._define_constraints()
-        if self.seat_connection is not None:
-            self.seat_connection.define_constraints()
+        if self.seat is not None:
+            self.seat.define_constraints()
         if self.pedals is not None:
             self.pedals.define_constraints()
         if self.steer_connection is not None:

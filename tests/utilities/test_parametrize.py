@@ -11,7 +11,7 @@ from brim.bicycle.wheels import KnifeEdgeWheel
 from brim.bicycle.whipple_bicycle import WhippleBicycleMoore
 from brim.brim.bicycle_rider import BicycleRider
 from brim.brim.pedals import HolonomicPedals
-from brim.brim.seat_connections import SideLeanSeat
+from brim.brim.seats import SideLeanSeat
 from brim.brim.steer_connections import HolonomicHandGrip
 from brim.rider.arms import PinElbowStickLeftArm, PinElbowStickRightArm
 from brim.rider.hip_joints import SphericalLeftHip, SphericalRightHip
@@ -101,8 +101,8 @@ class TestParametrize:
         self.br = BicycleRider("br")
         self.br.bicycle = self.bike
         self.br.rider = self.rider
-        self.br.seat_connection = SideLeanSeat("seat_conn")
-        self.br.pedals = HolonomicPedals("pedals_conn")
+        self.br.seat = SideLeanSeat("seat")
+        self.br.pedals = HolonomicPedals("pedals")
         self.br.steer_connection = HolonomicHandGrip("steer_conn")
 
         self.br.define_all()
@@ -172,7 +172,7 @@ class TestParametrize:
         mp = remove_uncertainties(bike_params.parameters["Measured"])
         constants = self.br.get_param_values(bike_params)
         constants.update({
-            self.br.seat_connection.symbols["alpha"]: -0.7,
+            self.br.seat.symbols["alpha"]: -0.7,
             self.bike.cranks.symbols["radius"]: 0.15,
             self.bike.cranks.symbols["offset"]: constants[self.rider.pelvis.symbols[
                 "hip_width"]] / 2,
