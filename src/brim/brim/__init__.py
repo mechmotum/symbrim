@@ -19,7 +19,7 @@ from brim.brim.base_connections import (
     SeatBase,
 )
 from brim.brim.bicycle_rider import BicycleRider
-from brim.brim.handgrips import HolonomicHandGrips, SpringDamperHandGrips
+from brim.brim.hand_grips import HolonomicHandGrips, SpringDamperHandGrips
 from brim.brim.pedals import HolonomicPedals, SpringDamperPedals
 from brim.brim.seats import (
     FixedSeat,

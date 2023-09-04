@@ -10,7 +10,7 @@ from brim.bicycle.tyres import NonHolonomicTyre
 from brim.bicycle.wheels import KnifeEdgeWheel
 from brim.bicycle.whipple_bicycle import WhippleBicycleMoore
 from brim.brim.bicycle_rider import BicycleRider
-from brim.brim.handgrips import HolonomicHandGrips
+from brim.brim.hand_grips import HolonomicHandGrips
 from brim.brim.pedals import HolonomicPedals
 from brim.brim.seats import SideLeanSeat
 from brim.rider.arms import PinElbowStickLeftArm, PinElbowStickRightArm
