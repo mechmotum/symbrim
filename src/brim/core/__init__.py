@@ -10,8 +10,7 @@ __all__ = [
     "NewtonianBodyMixin",
 ]
 
-from brim.core.mixins import NewtonianBodyMixin
-from brim.core.model_base import (
+from brim.core.base_classes import (
     ConnectionBase,
     ConnectionMeta,
     LoadGroupBase,
@@ -20,6 +19,7 @@ from brim.core.model_base import (
     ModelMeta,
     set_default_convention,
 )
+from brim.core.mixins import NewtonianBodyMixin
 from brim.core.registry import Registry
 from brim.core.requirement import ConnectionRequirement, ModelRequirement
 from brim.core.singleton import Singleton

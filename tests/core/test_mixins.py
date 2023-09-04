@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import pytest
+from brim.core.base_classes import ModelBase
 from brim.core.mixins import NewtonianBodyMixin
-from brim.core.model_base import ModelBase
 from sympy.physics.mechanics import RigidBody
 
 try:
