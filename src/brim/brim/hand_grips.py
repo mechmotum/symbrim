@@ -1,4 +1,4 @@
-"""Module containing the steer connections."""
+"""Module containing the hand grip connections."""
 from __future__ import annotations
 
 from typing import Any
@@ -8,13 +8,13 @@ from sympy.physics.mechanics import LinearPathway, dynamicsymbols
 from sympy.physics.mechanics._actuator import LinearDamper, LinearSpring
 from sympy.physics.mechanics._system import System
 
-from brim.brim.base_connections import HandGripBase
+from brim.brim.base_connections import HandGripsBase
 from brim.utilities.utilities import check_zero
 
-__all__ = ["HolonomicHandGrip", "SpringDamperHandGrip"]
+__all__ = ["HolonomicHandGrips", "SpringDamperHandGrips"]
 
 
-class HolonomicHandGrip(HandGripBase):
+class HolonomicHandGrips(HandGripsBase):
     """Constrain the hands to the steer using holonomic constraints.
 
     Explanation
@@ -37,7 +37,7 @@ class HolonomicHandGrip(HandGripBase):
 
         def attach_hand(hand_point, steer_point):
             """Attach the hand to the steer."""
-            for direction in self.steer.frame:
+            for direction in self.front_frame.frame:
                 constr = hand_point.pos_from(steer_point).dot(direction)
                 if not check_zero(constr):
                     if check_zero(constr.diff(dynamicsymbols._t)):
@@ -52,15 +52,15 @@ class HolonomicHandGrip(HandGripBase):
         super()._define_constraints()
         error_msg, constrs = [], []
         if self.left_arm:
-            attach_hand(self.left_arm.hand_interpoint, self.steer.left_handgrip)
+            attach_hand(self.left_arm.hand_interpoint, self.front_frame.left_handgrip)
         if self.right_arm:
-            attach_hand(self.right_arm.hand_interpoint, self.steer.right_handgrip)
+            attach_hand(self.right_arm.hand_interpoint, self.front_frame.right_handgrip)
         if error_msg:
             raise ValueError(error_msg)
         self.system.add_holonomic_constraints(*constrs)
 
 
-class SpringDamperHandGrip(HandGripBase):
+class SpringDamperHandGrips(HandGripsBase):
     """Constrain the hands to the steer using spring-dampers."""
 
     @property
@@ -84,14 +84,14 @@ class SpringDamperHandGrip(HandGripBase):
         super()._define_loads()
         if self.left_arm:
             path_left = LinearPathway(
-                self.steer.left_handgrip, self.left_arm.hand_interpoint)
+                self.front_frame.left_handgrip, self.left_arm.hand_interpoint)
             self.system.add_actuators(
                 LinearSpring(self.symbols["k"], path_left),
                 LinearDamper(self.symbols["c"], path_left)
             )
         if self.right_arm:
             path_right = LinearPathway(
-                self.steer.right_handgrip, self.right_arm.hand_interpoint)
+                self.front_frame.right_handgrip, self.right_arm.hand_interpoint)
             self.system.add_actuators(
                 LinearSpring(self.symbols["k"], path_right),
                 LinearDamper(self.symbols["c"], path_right)

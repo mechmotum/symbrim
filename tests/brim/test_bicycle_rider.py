@@ -4,21 +4,21 @@ import pytest
 from brim.bicycle import (
     FlatGround,
     KnifeEdgeWheel,
+    MasslessCranks,
     NonHolonomicTyre,
     RigidFrontFrame,
     RigidRearFrame,
-    SimplePedals,
     StationaryBicycle,
     WhippleBicycle,
 )
 from brim.brim import (
     BicycleRider,
-    HolonomicHandGrip,
-    HolonomicPedalsToFeet,
+    HolonomicHandGrips,
+    HolonomicPedals,
     SideLeanSeat,
 )
 from brim.rider import (
-    FixedPelvisToTorso,
+    FixedSacrum,
     PinElbowStickLeftArm,
     PinElbowStickRightArm,
     PlanarPelvis,
@@ -43,7 +43,7 @@ class TestCompleteBicycleRider:
         self.bicycle.rear_wheel = KnifeEdgeWheel("rear_wheel")
         self.bicycle.front_tyre = NonHolonomicTyre("front_tyre")
         self.bicycle.rear_tyre = NonHolonomicTyre("rear_tyre")
-        self.bicycle.pedals = SimplePedals("pedals")
+        self.bicycle.cranks = MasslessCranks("pedals")
         self.bicycle.ground = FlatGround("ground")
 
     @pytest.fixture()
@@ -53,7 +53,7 @@ class TestCompleteBicycleRider:
         self.bicycle.rear_frame = RigidRearFrame("rear_frame")
         self.bicycle.front_wheel = KnifeEdgeWheel("front_wheel")
         self.bicycle.rear_wheel = KnifeEdgeWheel("rear_wheel")
-        self.bicycle.pedals = SimplePedals("pedals")
+        self.bicycle.cranks = MasslessCranks("pedals")
 
     @pytest.fixture()
     def _rider_setup(self) -> None:
@@ -64,7 +64,7 @@ class TestCompleteBicycleRider:
         self.rider.right_arm = PinElbowStickRightArm("right_arm")
         self.rider.left_leg = TwoPinStickLeftLeg("left_leg")
         self.rider.right_leg = TwoPinStickRightLeg("right_leg")
-        self.rider.pelvis_to_torso = FixedPelvisToTorso("pelvis_to_torso")
+        self.rider.sacrum = FixedSacrum("sacrum")
         self.rider.left_hip = SphericalLeftHip("left_hip")
         self.rider.right_hip = SphericalRightHip("right_hip")
         self.rider.left_shoulder = SphericalLeftShoulder("left_shoulder")
@@ -75,33 +75,33 @@ class TestCompleteBicycleRider:
         self.br = BicycleRider("bicycle_rider")
         self.br.bicycle = self.bicycle
         self.br.rider = self.rider
-        self.br.seat_connection = SideLeanSeat("seat_conn")
-        self.br.pedal_connection = HolonomicPedalsToFeet("pedals_conn")
-        self.br.steer_connection = HolonomicHandGrip("steer_conn")
+        self.br.seat = SideLeanSeat("seat")
+        self.br.pedals = HolonomicPedals("pedals")
+        self.br.hand_grips = HolonomicHandGrips("steer_conn")
 
     @pytest.fixture()
     def _stationary_rider_setup(self, _stationary_setup, _rider_setup) -> None:
         self.br = BicycleRider("bicycle_rider")
         self.br.bicycle = self.bicycle
         self.br.rider = self.rider
-        self.br.seat_connection = SideLeanSeat("seat_conn")
-        self.br.pedal_connection = HolonomicPedalsToFeet("pedals_conn")
-        self.br.steer_connection = HolonomicHandGrip("steer_conn")
+        self.br.seat = SideLeanSeat("seat")
+        self.br.pedals = HolonomicPedals("pedals")
+        self.br.hand_grips = HolonomicHandGrips("steer_conn")
 
     def test_stationary_setup(self, _stationary_rider_setup) -> None:
         assert self.br.bicycle == self.bicycle
         assert self.br.rider == self.rider
-        assert self.br.seat_connection is not None
-        assert self.br.pedal_connection is not None
-        assert self.br.steer_connection is not None
+        assert self.br.seat is not None
+        assert self.br.pedals is not None
+        assert self.br.hand_grips is not None
         self.br.define_all()
 
     def test_whipple_setup(self, _whipple_rider_setup) -> None:
         assert self.br.bicycle == self.bicycle
         assert self.br.rider == self.rider
-        assert self.br.seat_connection is not None
-        assert self.br.pedal_connection is not None
-        assert self.br.steer_connection is not None
+        assert self.br.seat is not None
+        assert self.br.pedals is not None
+        assert self.br.hand_grips is not None
         self.br.define_all()
 
     def test_no_connections(self, _whipple_setup, _rider_setup) -> None:
@@ -117,7 +117,7 @@ class TestCompleteBicycleRider:
                         self.rider.left_hip.q[0], self.rider.left_leg.q[0],
                         self.rider.right_hip.q[0], self.rider.right_leg.q[0],
                         *self.rider.left_arm.q, *self.rider.right_arm.q,
-                        *self.br.seat_connection.q]
+                        *self.br.seat.q]
         system.q_dep = [self.bicycle.q[4],
                         *self.rider.left_hip.q[1:], self.rider.left_leg.q[1],
                         *self.rider.right_hip.q[1:], self.rider.right_leg.q[1],
@@ -126,7 +126,7 @@ class TestCompleteBicycleRider:
                         self.rider.left_hip.u[0], self.rider.left_leg.u[0],
                         self.rider.right_hip.u[0], self.rider.right_leg.u[0],
                         *self.rider.left_arm.u, *self.rider.right_arm.u,
-                        *self.br.seat_connection.u]
+                        *self.br.seat.u]
         system.u_dep = [*self.bicycle.u[:3], self.bicycle.u[4], self.bicycle.u[7],
                         *self.rider.left_hip.u[1:], self.rider.left_leg.u[1],
                         *self.rider.right_hip.u[1:], self.rider.right_leg.u[1],

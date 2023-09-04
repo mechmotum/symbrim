@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 import pytest
-from brim.rider.base_connections import PelvisToTorsoBase
+from brim.rider.base_connections import SacrumBase
 from brim.rider.pelvis import PlanarPelvis
-from brim.rider.pelvis_to_torso import FixedPelvisToTorso
+from brim.rider.sacrums import FixedSacrum
 from brim.rider.torso import PlanarTorso
 from brim.utilities.testing import _test_descriptions, create_model_of_connection
 from sympy import eye
@@ -14,22 +14,22 @@ except ImportError:
     PlotConnection = None
 
 
-@pytest.mark.parametrize("pelvis_cls, torso_cls, pelvis_to_torso_cls", [
-    (PlanarPelvis, PlanarTorso, FixedPelvisToTorso),
+@pytest.mark.parametrize("pelvis_cls, torso_cls, sacrum_cls", [
+    (PlanarPelvis, PlanarTorso, FixedSacrum),
 ])
-class TestPelvisToTorsoBase:
+class TestSacrumBase:
     @pytest.fixture(autouse=True)
-    def _setup(self, pelvis_cls, torso_cls, pelvis_to_torso_cls) -> None:
-        self.model = create_model_of_connection(pelvis_to_torso_cls)("model")
+    def _setup(self, pelvis_cls, torso_cls, sacrum_cls) -> None:
+        self.model = create_model_of_connection(sacrum_cls)("model")
         self.model.pelvis = pelvis_cls("pelvis")
         self.model.torso = torso_cls("torso")
-        self.model.conn = pelvis_to_torso_cls("pelvis_to_torso")
+        self.model.conn = sacrum_cls("sacrum")
         self.pelvis, self.torso, self.conn = (
             self.model.pelvis, self.model.torso, self.model.conn)
         self.model.define_all()
 
     def test_types(self) -> None:
-        assert isinstance(self.conn, PelvisToTorsoBase)
+        assert isinstance(self.conn, SacrumBase)
 
     def test_descriptions(self) -> None:
         _test_descriptions(self.conn)
@@ -41,13 +41,13 @@ class TestPelvisToTorsoBase:
         assert plot_conn.children
 
 
-class TestFixedPelvisToTorso:
+class TestFixedSacrum:
     @pytest.fixture(autouse=True)
     def _setup(self) -> None:
-        self.model = create_model_of_connection(FixedPelvisToTorso)("model")
+        self.model = create_model_of_connection(FixedSacrum)("model")
         self.model.pelvis = PlanarPelvis("pelvis")
         self.model.torso = PlanarTorso("torso")
-        self.model.conn = FixedPelvisToTorso("pelvis_to_torso")
+        self.model.conn = FixedSacrum("sacrum")
         self.pelvis, self.torso, self.conn = (
             self.model.pelvis, self.model.torso, self.model.conn)
         self.model.define_connections()

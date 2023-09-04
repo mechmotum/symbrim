@@ -14,11 +14,11 @@ if TYPE_CHECKING:
     with contextlib.suppress(ImportError):
         from brim.utilities.plotting import PlotModel
 
-__all__ = ["PelvisToTorsoBase", "ShoulderBase", "LeftShoulderBase", "RightShoulderBase",
+__all__ = ["SacrumBase", "ShoulderBase", "LeftShoulderBase", "RightShoulderBase",
            "HipBase", "LeftHipBase", "RightHipBase"]
 
 
-class PelvisToTorsoBase(ConnectionBase):
+class SacrumBase(ConnectionBase):
     """Base class for the connection between the pelvis and the torso."""
 
     required_models: tuple[ModelRequirement, ...] = (

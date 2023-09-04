@@ -1,4 +1,4 @@
-"""Module containing models of the pedals."""
+"""Module containing models of the cranks."""
 from __future__ import annotations
 
 import contextlib
@@ -15,11 +15,11 @@ if TYPE_CHECKING:
     with contextlib.suppress(ImportError):
         from brim.utilities.plotting import PlotModel
 
-__all__ = ["PedalsBase"]
+__all__ = ["CranksBase"]
 
 
-class PedalsBase(ModelBase):
-    """Base class for the pedals."""
+class CranksBase(ModelBase):
+    """Base class for the cranks."""
 
     def _define_objects(self) -> None:
         """Define the objects."""
@@ -38,12 +38,12 @@ class PedalsBase(ModelBase):
 
     @property
     def frame(self) -> ReferenceFrame:
-        """Frame of the pedals."""
+        """Frame of the cranks."""
         return self._frame
 
     @property
     def center_point(self) -> Point:
-        """Center point of the pedals."""
+        """Center point of the cranks."""
         return self._center_point
 
     @property
@@ -59,7 +59,7 @@ class PedalsBase(ModelBase):
     @property
     @abstractmethod
     def rotation_axis(self) -> Vector:
-        """Rotation axis of the pedals."""
+        """Rotation axis of the cranks."""
 
     def set_plot_objects(self, plot_object: PlotModel) -> None:
         """Set the symmeplot plot objects."""
@@ -80,22 +80,22 @@ class PedalsBase(ModelBase):
         ], self.name)
 
 
-class SimplePedals(PedalsBase):
-    """Simplified pedal model."""
+class MasslessCranks(CranksBase):
+    """Simplified cranks model."""
 
     @property
     def descriptions(self) -> dict[Any, str]:
         """Descriptions of the objects."""
         return {
             **super().descriptions,
-            self.symbols["radius"]: "Pedal radius.",
+            self.symbols["radius"]: "Length of the cranks in the radial direction.",
             self.symbols["offset"]: "Distance of the pedal point from the center point "
-                                    "of the pedals along the rotation axis.",
+                                    "of the cranks along the rotation axis.",
         }
 
     @property
     def rotation_axis(self) -> Vector:
-        """Rotation axis of the pedals."""
+        """Rotation axis of the cranks."""
         return self.frame.y
 
     def _define_objects(self) -> None:

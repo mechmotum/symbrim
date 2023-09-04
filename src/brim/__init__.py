@@ -15,7 +15,7 @@ __all__ = [
 
     "NonHolonomicTyre",
 
-    "SimplePedals",
+    "MasslessCranks",
 
     "Rider",
 
@@ -31,36 +31,36 @@ __all__ = [
 
     "SphericalLeftShoulder", "SphericalRightShoulder",
 
-    "FixedPelvisToTorso",
+    "FixedSacrum",
 
     "BicycleRider",
 
     "SideLeanSeat",
 
-    "HolonomicHandGrip",
+    "HolonomicHandGrips",
 
-    "HolonomicPedalsToFeet",
+    "HolonomicPedals",
 ]
 
 from brim.bicycle import (
     FlatGround,
     KnifeEdgeWheel,
+    MasslessCranks,
     NonHolonomicTyre,
     RigidFrontFrame,
     RigidRearFrame,
-    SimplePedals,
     StationaryBicycle,
     ToroidalWheel,
     WhippleBicycle,
 )
 from brim.brim import (
     BicycleRider,
-    HolonomicHandGrip,
-    HolonomicPedalsToFeet,
+    HolonomicHandGrips,
+    HolonomicPedals,
     SideLeanSeat,
 )
 from brim.rider import (
-    FixedPelvisToTorso,
+    FixedSacrum,
     PinElbowStickLeftArm,
     PinElbowStickRightArm,
     PinLeftHip,

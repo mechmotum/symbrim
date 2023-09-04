@@ -14,7 +14,7 @@ from symmeplot import SymMePlotter
 from symmeplot.plot_base import PlotBase
 
 from brim.core import ConnectionBase, LoadGroupBase, ModelBase
-from brim.core.model_base import BrimBase
+from brim.core.base_classes import BrimBase
 
 if TYPE_CHECKING:
     from mpl_toolkits.mplot3d.axes3d import Axes3D

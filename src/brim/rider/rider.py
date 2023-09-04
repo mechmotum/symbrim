@@ -8,9 +8,9 @@ from brim.rider.arms import LeftArmBase, RightArmBase
 from brim.rider.base_connections import (
     LeftHipBase,
     LeftShoulderBase,
-    PelvisToTorsoBase,
     RightHipBase,
     RightShoulderBase,
+    SacrumBase,
 )
 from brim.rider.legs import LeftLegBase, RightLegBase
 from brim.rider.pelvis import PelvisBase
@@ -31,7 +31,7 @@ class Rider(ModelBase):
         ModelRequirement("right_leg", RightLegBase, "Right leg of the rider.", False),
     )
     required_connections: tuple[ConnectionRequirement] = (
-        ConnectionRequirement("pelvis_to_torso", PelvisToTorsoBase,
+        ConnectionRequirement("sacrum", SacrumBase,
                               "Connection between the pelvis and the torso.", False),
         ConnectionRequirement("left_shoulder", LeftShoulderBase,
                               "Connection between the torso and the left arm.", False),
@@ -48,7 +48,7 @@ class Rider(ModelBase):
     right_arm: RightArmBase
     left_leg: LeftLegBase
     right_leg: RightLegBase
-    pelvis_to_torso: PelvisToTorsoBase
+    sacrum: SacrumBase
     left_shoulder: LeftShoulderBase
     right_shoulder: RightShoulderBase
     left_hip: LeftHipBase
@@ -57,9 +57,9 @@ class Rider(ModelBase):
     def _define_connections(self) -> None:
         """Define the connections."""
         super()._define_connections()
-        if self.pelvis_to_torso:
-            self.pelvis_to_torso.pelvis = self.pelvis
-            self.pelvis_to_torso.torso = self.torso
+        if self.sacrum:
+            self.sacrum.pelvis = self.pelvis
+            self.sacrum.torso = self.torso
         if self.left_shoulder:
             self.left_shoulder.torso = self.torso
             self.left_shoulder.arm = self.left_arm

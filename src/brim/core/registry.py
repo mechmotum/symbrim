@@ -7,7 +7,7 @@ from brim.core.requirement import ConnectionRequirement, ModelRequirement
 from brim.core.singleton import Singleton
 
 if TYPE_CHECKING:
-    from brim.core.model_base import ConnectionBase, ModelBase
+    from brim.core.base_classes import ConnectionBase, ModelBase
 
 __all__ = ["Registry"]
 

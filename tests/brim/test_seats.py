@@ -3,7 +3,7 @@ from __future__ import annotations
 import pytest
 from brim.bicycle.rear_frames import RigidRearFrameMoore
 from brim.brim.base_connections import SeatBase
-from brim.brim.seat_connections import (
+from brim.brim.seats import (
     FixedSeat,
     SideLeanSeat,
     SideLeanSeatSpringDamper,
@@ -23,7 +23,7 @@ class TestSeatConnectionBase:
         self.model = create_model_of_connection(seat_cls)("model")
         self.model.pelvis = PlanarPelvis("pelvis")
         self.model.rear_frame = RigidRearFrameMoore("rear_frame")
-        self.model.conn = seat_cls("seat_connection")
+        self.model.conn = seat_cls("seat")
         self.model.define_connections()
         self.model.define_objects()
         self.model.define_kinematics()
@@ -44,7 +44,7 @@ class TestPelvisInterPointMixin:
         self.model = create_model_of_connection(seat_cls)("model")
         self.model.pelvis = PlanarPelvis("pelvis")
         self.model.rear_frame = RigidRearFrameMoore("rear_frame")
-        self.model.conn = seat_cls("seat_connection")
+        self.model.conn = seat_cls("seat")
         self.pelvis, self.rear_frame, self.conn = (
             self.model.pelvis, self.model.rear_frame, self.model.conn)
 
@@ -80,7 +80,7 @@ class TestFixedSeatConnection:
         self.model = create_model_of_connection(FixedSeat)("model")
         self.model.pelvis = PlanarPelvis("pelvis")
         self.model.rear_frame = RigidRearFrameMoore("rear_frame")
-        self.model.conn = FixedSeat("seat_connection")
+        self.model.conn = FixedSeat("seat")
         self.pelvis, self.rear_frame, self.conn = (
             self.model.pelvis, self.model.rear_frame, self.model.conn)
 
@@ -117,7 +117,7 @@ class TestSideLeanConnection:
         self.model = create_model_of_connection(SideLeanSeat)("model")
         self.model.pelvis = PlanarPelvis("pelvis")
         self.model.rear_frame = RigidRearFrameMoore("rear_frame")
-        self.model.conn = SideLeanSeat("seat_connection")
+        self.model.conn = SideLeanSeat("seat")
         self.pelvis, self.rear_frame, self.conn = (
             self.model.pelvis, self.model.rear_frame, self.model.conn)
 

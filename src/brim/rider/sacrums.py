@@ -8,7 +8,7 @@ from sympy import Symbol
 from sympy.physics.mechanics import Vector, WeldJoint
 from sympy.physics.mechanics._system import System
 
-from brim.rider.base_connections import PelvisToTorsoBase
+from brim.rider.base_connections import SacrumBase
 
 with contextlib.suppress(ImportError):
     import numpy as np
@@ -16,11 +16,11 @@ with contextlib.suppress(ImportError):
     if TYPE_CHECKING:
         from bicycleparameters import Bicycle
 
-__all__ = ["FixedPelvisToTorso"]
+__all__ = ["FixedSacrum"]
 
 
-class FixedPelvisToTorso(PelvisToTorsoBase):
-    """Connection between the pelvis and the torso with a fixed connection."""
+class FixedSacrum(SacrumBase):
+    """Connection to fixate the torso to the pelvis."""
 
     @property
     def descriptions(self) -> dict[Any, str]:
