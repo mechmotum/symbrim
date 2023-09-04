@@ -43,14 +43,14 @@ class TestRigidFrontFrameMoore:
         # Test if kinematics is defined
         front.steer_attachment.pos_from(front.body.masscenter)
         front.wheel_attachment.pos_from(front.body.masscenter)
-        front.left_handgrip.pos_from(front.body.masscenter)
-        front.right_handgrip.pos_from(front.body.masscenter)
+        front.left_hand_grip.pos_from(front.body.masscenter)
+        front.right_hand_grip.pos_from(front.body.masscenter)
         # Test velocities
         assert front.body.masscenter.vel(front.frame) == 0
         assert front.steer_attachment.vel(front.frame) == 0
         assert front.wheel_attachment.vel(front.frame) == 0
-        assert front.left_handgrip.vel(front.frame) == 0
-        assert front.right_handgrip.vel(front.frame) == 0
+        assert front.left_hand_grip.vel(front.frame) == 0
+        assert front.right_hand_grip.vel(front.frame) == 0
 
     def test_descriptions(self) -> None:
         front = RigidFrontFrameMoore("front")

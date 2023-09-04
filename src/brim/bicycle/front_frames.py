@@ -43,13 +43,13 @@ class FrontFrameBase(NewtonianBodyMixin, ModelBase):
 
     @property
     @abstractmethod
-    def left_handgrip(self) -> Point:
-        """Point representing the left handgrip."""
+    def left_hand_grip(self) -> Point:
+        """Point representing the left hand grip."""
 
     @property
     @abstractmethod
-    def right_handgrip(self) -> Point:
-        """Point representing the right handgrip."""
+    def right_hand_grip(self) -> Point:
+        """Point representing the right hand grip."""
 
     def get_param_values(self, bicycle_parameters: Bicycle) -> dict[Symbol, float]:
         """Get the parameter values of the front frame."""
@@ -75,8 +75,8 @@ class RigidFrontFrame(FrontFrameBase):
                                             *symbols(self._add_prefix("ixx iyy izz")),
                                             izx=Symbol(self._add_prefix("izx")))
         self._wheel_attachment = Point(self._add_prefix("wheel_attachment"))
-        self._left_handgrip = Point(self._add_prefix("left_handgrip"))
-        self._right_handgrip = Point(self._add_prefix("right_handgrip"))
+        self._left_hand_grip = Point(self._add_prefix("left_hand_grip"))
+        self._right_hand_grip = Point(self._add_prefix("right_hand_grip"))
 
     def _define_kinematics(self):
         """Define the kinematics of the front frame."""
@@ -94,14 +94,14 @@ class RigidFrontFrame(FrontFrameBase):
         return self._wheel_attachment
 
     @property
-    def left_handgrip(self) -> Point:
-        """Point representing the left handgrip."""
-        return self._left_handgrip
+    def left_hand_grip(self) -> Point:
+        """Point representing the left hand grip."""
+        return self._left_hand_grip
 
     @property
-    def right_handgrip(self) -> Point:
-        """Point representing the right handgrip."""
-        return self._right_handgrip
+    def right_hand_grip(self) -> Point:
+        """Point representing the right hand grip."""
+        return self._right_hand_grip
 
 
 class RigidFrontFrameMoore(RigidFrontFrame):
@@ -124,11 +124,11 @@ class RigidFrontFrameMoore(RigidFrontFrame):
                                 "wheel center to the center of mass of the front "
                                 "frame.",
             self.symbols["d6"]: "Perpendicular distance from the steer axis to the "
-                                "handgrips. The handgrips are in front of the steer "
+                                "hand grips. The hand grips are in front of the steer "
                                 "axis if d6 is positive.",
-            self.symbols["d7"]: "Half of the distance between the handgrips.",
-            self.symbols["d8"]: "Distance of the handgrips from the steer point along "
-                                "the steer axis. The hangrips are below the steer "
+            self.symbols["d7"]: "Half of the distance between the hand grips.",
+            self.symbols["d8"]: "Distance of the hand grips from the steer point along "
+                                "the steer axis. The hand grips are below the steer "
                                 "attachment if d8 is positive.",
         }
 
@@ -147,15 +147,15 @@ class RigidFrontFrameMoore(RigidFrontFrame):
             "d2", "d3", "l3", "l4", "d6", "d7", "d8"))
         self.wheel_attachment.set_pos(self.steer_attachment, d3 * self.x + d2 * self.z)
         self.body.masscenter.set_pos(self.wheel_attachment, l3 * self.x + l4 * self.z)
-        self.left_handgrip.set_pos(self.steer_attachment,
-                                   d6 * self.x - d7 * self.y + d8 * self.z)
-        self.right_handgrip.set_pos(self.steer_attachment,
-                                    d6 * self.x + d7 * self.y + d8 * self.z)
+        self.left_hand_grip.set_pos(self.steer_attachment,
+                                    d6 * self.x - d7 * self.y + d8 * self.z)
+        self.right_hand_grip.set_pos(self.steer_attachment,
+                                     d6 * self.x + d7 * self.y + d8 * self.z)
         self.body.masscenter.set_vel(self.frame, 0)
         self.steer_attachment.set_vel(self.frame, 0)
         self.wheel_attachment.set_vel(self.frame, 0)
-        self.left_handgrip.set_vel(self.frame, 0)
-        self.right_handgrip.set_vel(self.frame, 0)
+        self.left_hand_grip.set_vel(self.frame, 0)
+        self.right_hand_grip.set_vel(self.frame, 0)
 
     @property
     def steer_axis(self) -> Vector:
@@ -230,8 +230,8 @@ class RigidFrontFrameMoore(RigidFrontFrame):
         """Set the symmeplot plot objects."""
         super().set_plot_objects(plot_object)
         steer_top = self.steer_attachment.locatenew(
-            "P", self.steer_axis * self.left_handgrip.pos_from(
+            "P", self.steer_axis * self.left_hand_grip.pos_from(
                 self.steer_attachment).dot(self.steer_axis))
         plot_object.add_line([
-            self.wheel_attachment, self.steer_attachment, steer_top, self.left_handgrip,
-            steer_top, self.right_handgrip], self.name)
+            self.wheel_attachment, self.steer_attachment, steer_top,
+            self.left_hand_grip, steer_top, self.right_hand_grip], self.name)
