@@ -1,4 +1,4 @@
-"""Module containing the steer connections."""
+"""Module containing the hand grip connections."""
 from __future__ import annotations
 
 from typing import Any
@@ -37,7 +37,7 @@ class HolonomicHandGrips(HandGripsBase):
 
         def attach_hand(hand_point, steer_point):
             """Attach the hand to the steer."""
-            for direction in self.steer.frame:
+            for direction in self.front_frame.frame:
                 constr = hand_point.pos_from(steer_point).dot(direction)
                 if not check_zero(constr):
                     if check_zero(constr.diff(dynamicsymbols._t)):
@@ -52,9 +52,9 @@ class HolonomicHandGrips(HandGripsBase):
         super()._define_constraints()
         error_msg, constrs = [], []
         if self.left_arm:
-            attach_hand(self.left_arm.hand_interpoint, self.steer.left_handgrip)
+            attach_hand(self.left_arm.hand_interpoint, self.front_frame.left_handgrip)
         if self.right_arm:
-            attach_hand(self.right_arm.hand_interpoint, self.steer.right_handgrip)
+            attach_hand(self.right_arm.hand_interpoint, self.front_frame.right_handgrip)
         if error_msg:
             raise ValueError(error_msg)
         self.system.add_holonomic_constraints(*constrs)
@@ -84,14 +84,14 @@ class SpringDamperHandGrips(HandGripsBase):
         super()._define_loads()
         if self.left_arm:
             path_left = LinearPathway(
-                self.steer.left_handgrip, self.left_arm.hand_interpoint)
+                self.front_frame.left_handgrip, self.left_arm.hand_interpoint)
             self.system.add_actuators(
                 LinearSpring(self.symbols["k"], path_left),
                 LinearDamper(self.symbols["c"], path_left)
             )
         if self.right_arm:
             path_right = LinearPathway(
-                self.steer.right_handgrip, self.right_arm.hand_interpoint)
+                self.front_frame.right_handgrip, self.right_arm.hand_interpoint)
             self.system.add_actuators(
                 LinearSpring(self.symbols["k"], path_right),
                 LinearDamper(self.symbols["c"], path_right)

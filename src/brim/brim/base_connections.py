@@ -27,12 +27,12 @@ class HandGripsBase(ConnectionBase):
     """Base class for the connection between the handlebar and the arms."""
 
     required_models: tuple[ModelRequirement, ...] = (
-        ModelRequirement("steer", FrontFrameBase, "Front frame of the bicycle."),
+        ModelRequirement("front_frame", FrontFrameBase, "Front frame of the bicycle."),
         ModelRequirement("left_arm", LeftArmBase, "Left arm of the rider.", hard=False),
         ModelRequirement("right_arm", RightArmBase, "Right arm of the rider.",
                          hard=False),
     )
-    steer: FrontFrameBase
+    front_frame: FrontFrameBase
     left_arm: LeftArmBase
     right_arm: RightArmBase
 

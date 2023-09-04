@@ -31,7 +31,7 @@ class BicycleRider(ModelBase):
             "Connection between the cranks and the legs.", False),
         ConnectionRequirement(
             "hand_grips", HandGripsBase,
-            "Connection between the steer and the arms.", False),
+            "Connection between the front frame and the arms.", False),
     )
     bicycle: BicycleBase
     rider: Rider
@@ -50,7 +50,7 @@ class BicycleRider(ModelBase):
             self.pedals.right_leg = self.rider.right_leg
             self.pedals.cranks = self.bicycle.cranks
         if self.hand_grips is not None:
-            self.hand_grips.steer = self.bicycle.front_frame
+            self.hand_grips.front_frame = self.bicycle.front_frame
             self.hand_grips.left_arm = self.rider.left_arm
             self.hand_grips.right_arm = self.rider.right_arm
 
