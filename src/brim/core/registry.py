@@ -105,7 +105,7 @@ class Registry(Singleton):
         return options
 
     def get_matching_load_groups(self, obj: ConnectionBase | ModelBase,
-                                   drop_abstract: bool = True) -> list[type]:
+                                 drop_abstract: bool = True) -> list[type]:
         """Return all load groups that could be applied to the given object.
 
         Parameters

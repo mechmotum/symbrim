@@ -113,11 +113,11 @@ class Plotter(SymMePlotter):
         """
         mapping = [
             (ModelBase, lambda obj:
-                isinstance(obj, PlotModel) and obj.model is sympy_object),
+            isinstance(obj, PlotModel) and obj.model is sympy_object),
             (ConnectionBase, lambda obj:
-                isinstance(obj, PlotConnection) and obj.connection is sympy_object),
+            isinstance(obj, PlotConnection) and obj.connection is sympy_object),
             (LoadGroupBase, lambda obj:
-                isinstance(obj, PlotLoadGroup) and obj.load_group is sympy_object),
+            isinstance(obj, PlotLoadGroup) and obj.load_group is sympy_object),
         ]
         known_type = False
         for sympy_type, is_plot_object in mapping:
@@ -287,7 +287,7 @@ class PlotConnection(PlotBrimMixin, PlotBase):
     def load_groups(self) -> tuple[PlotLoadGroup, ...]:
         """Plot objects of the load groups."""
         return tuple(child for child in self._children
-                        if isinstance(child, PlotLoadGroup))
+                     if isinstance(child, PlotLoadGroup))
 
 
 class PlotLoadGroup(PlotBrimMixin, PlotBase):

@@ -45,6 +45,7 @@ def benchmark(rounds: int = 3, group: Optional[str] = None, **kwargs) -> callabl
                     data["eoms"] = data["system"].form_eoms(**kwargs)
                 else:
                     data["eoms"] = data["system"]._form_eoms()
+
             benchmark.pedantic(form_eoms, setup=setup, rounds=rounds)
             benchmark.extra_info["operation_eoms"] = count_ops(data["eoms"])
             benchmark.extra_info["operation_eoms_csed"] = count_ops(cse(data["eoms"]))
