@@ -30,14 +30,14 @@ class BicycleRider(ModelBase):
             "pedals", PedalsBase,
             "Connection between the cranks and the legs.", False),
         ConnectionRequirement(
-            "handgrips", HandGripsBase,
+            "hand_grips", HandGripsBase,
             "Connection between the steer and the arms.", False),
     )
     bicycle: BicycleBase
     rider: Rider
     seat: SeatBase
     pedals: PedalsBase
-    handgrips: HandGripsBase
+    hand_grips: HandGripsBase
 
     def _define_connections(self) -> None:
         """Define the connections."""
@@ -49,10 +49,10 @@ class BicycleRider(ModelBase):
             self.pedals.left_leg = self.rider.left_leg
             self.pedals.right_leg = self.rider.right_leg
             self.pedals.cranks = self.bicycle.cranks
-        if self.handgrips is not None:
-            self.handgrips.steer = self.bicycle.front_frame
-            self.handgrips.left_arm = self.rider.left_arm
-            self.handgrips.right_arm = self.rider.right_arm
+        if self.hand_grips is not None:
+            self.hand_grips.steer = self.bicycle.front_frame
+            self.hand_grips.left_arm = self.rider.left_arm
+            self.hand_grips.right_arm = self.rider.right_arm
 
     def _define_objects(self) -> None:
         """Define the objects."""
@@ -62,8 +62,8 @@ class BicycleRider(ModelBase):
             self.seat.define_objects()
         if self.pedals is not None:
             self.pedals.define_objects()
-        if self.handgrips is not None:
-            self.handgrips.define_objects()
+        if self.hand_grips is not None:
+            self.hand_grips.define_objects()
 
     def _define_kinematics(self) -> None:
         """Define the kinematics."""
@@ -72,8 +72,8 @@ class BicycleRider(ModelBase):
             self.seat.define_kinematics()
         if self.pedals is not None:
             self.pedals.define_kinematics()
-        if self.handgrips is not None:
-            self.handgrips.define_kinematics()
+        if self.hand_grips is not None:
+            self.hand_grips.define_kinematics()
 
     def _define_loads(self) -> None:
         """Define the loads."""
@@ -82,8 +82,8 @@ class BicycleRider(ModelBase):
             self.seat.define_loads()
         if self.pedals is not None:
             self.pedals.define_loads()
-        if self.handgrips is not None:
-            self.handgrips.define_loads()
+        if self.hand_grips is not None:
+            self.hand_grips.define_loads()
 
     def _define_constraints(self) -> None:
         """Define the constraints."""
@@ -92,5 +92,5 @@ class BicycleRider(ModelBase):
             self.seat.define_constraints()
         if self.pedals is not None:
             self.pedals.define_constraints()
-        if self.handgrips is not None:
-            self.handgrips.define_constraints()
+        if self.hand_grips is not None:
+            self.hand_grips.define_constraints()
