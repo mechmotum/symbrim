@@ -5,7 +5,7 @@ __all__ = [
 
     "Rider",
 
-    "HipBase", "LeftHipBase", "RightHipBase", "PelvisToTorsoBase",
+    "HipBase", "LeftHipBase", "RightHipBase", "SacrumBase",
     "LeftShoulderBase", "RightShoulderBase", "ShoulderBase",
 
     "PelvisBase", "PlanarPelvis",
@@ -22,7 +22,7 @@ __all__ = [
 
     "TwoPinLegTorque", "TwoPinLegSpringDamper",
 
-    "FixedPelvisToTorso",
+    "FixedSacrum",
 
     "SphericalLeftHip", "SphericalRightHip", "PinLeftHip", "PinRightHip",
 
@@ -46,9 +46,9 @@ from brim.rider.base_connections import (
     HipBase,
     LeftHipBase,
     LeftShoulderBase,
-    PelvisToTorsoBase,
     RightHipBase,
     RightShoulderBase,
+    SacrumBase,
     ShoulderBase,
 )
 from brim.rider.connections import RiderLeanConnection
@@ -70,9 +70,9 @@ from brim.rider.legs import (
     TwoPinStickRightLeg,
 )
 from brim.rider.pelvis import PelvisBase, PlanarPelvis
-from brim.rider.pelvis_to_torso import FixedPelvisToTorso
 from brim.rider.rider import Rider
 from brim.rider.rider_lean import RiderLean
+from brim.rider.sacrums import FixedSacrum
 from brim.rider.shoulder_joints import (
     SphericalLeftShoulder,
     SphericalRightShoulder,

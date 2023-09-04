@@ -17,8 +17,8 @@ from brim.rider.arms import PinElbowStickLeftArm, PinElbowStickRightArm
 from brim.rider.hip_joints import SphericalLeftHip, SphericalRightHip
 from brim.rider.legs import TwoPinStickLeftLeg, TwoPinStickRightLeg
 from brim.rider.pelvis import PlanarPelvis
-from brim.rider.pelvis_to_torso import FixedPelvisToTorso
 from brim.rider.rider import Rider
+from brim.rider.sacrums import FixedSacrum
 from brim.rider.shoulder_joints import SphericalLeftShoulder, SphericalRightShoulder
 from brim.rider.torso import PlanarTorso
 from sympy import diag
@@ -93,7 +93,7 @@ class TestParametrize:
         self.rider.right_arm = PinElbowStickRightArm("right_arm")
         self.rider.left_leg = TwoPinStickLeftLeg("left_leg")
         self.rider.right_leg = TwoPinStickRightLeg("right_leg")
-        self.rider.pelvis_to_torso = FixedPelvisToTorso("pelvis_to_torso")
+        self.rider.sacrum = FixedSacrum("sacrum")
         self.rider.left_hip = SphericalLeftHip("left_hip")
         self.rider.right_hip = SphericalRightHip("right_hip")
         self.rider.left_shoulder = SphericalLeftShoulder("left_shoulder")

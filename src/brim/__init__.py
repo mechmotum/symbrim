@@ -31,7 +31,7 @@ __all__ = [
 
     "SphericalLeftShoulder", "SphericalRightShoulder",
 
-    "FixedPelvisToTorso",
+    "FixedSacrum",
 
     "BicycleRider",
 
@@ -60,7 +60,7 @@ from brim.brim import (
     SideLeanSeat,
 )
 from brim.rider import (
-    FixedPelvisToTorso,
+    FixedSacrum,
     PinElbowStickLeftArm,
     PinElbowStickRightArm,
     PinLeftHip,

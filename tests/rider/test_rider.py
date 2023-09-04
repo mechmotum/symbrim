@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 from brim.rider import (
-    FixedPelvisToTorso,
+    FixedSacrum,
     PinElbowStickLeftArm,
     PinElbowStickRightArm,
     PlanarPelvis,
@@ -27,7 +27,7 @@ class TestCompleteRider:
         self.rider.right_arm = PinElbowStickRightArm("right_arm")
         self.rider.left_leg = TwoPinStickLeftLeg("left_leg")
         self.rider.right_leg = TwoPinStickRightLeg("right_leg")
-        self.rider.pelvis_to_torso = FixedPelvisToTorso("pelvis_to_torso")
+        self.rider.sacrum = FixedSacrum("sacrum")
         self.rider.left_hip = SphericalLeftHip("left_hip")
         self.rider.right_hip = SphericalRightHip("right_hip")
         self.rider.left_shoulder = SphericalLeftShoulder("left_shoulder")
@@ -40,7 +40,7 @@ class TestCompleteRider:
         assert self.rider.right_arm is not None
         assert self.rider.left_leg is not None
         assert self.rider.right_leg is not None
-        assert self.rider.pelvis_to_torso is not None
+        assert self.rider.sacrum is not None
         assert self.rider.left_hip is not None
         assert self.rider.right_hip is not None
         assert self.rider.left_shoulder is not None
