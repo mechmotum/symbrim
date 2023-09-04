@@ -12,7 +12,7 @@ from brim.bicycle.bicycle_base import BicycleBase
 from brim.bicycle.front_frames import FrontFrameBase
 from brim.bicycle.grounds import GroundBase
 from brim.bicycle.rear_frames import RearFrameBase
-from brim.bicycle.tyre_models import TyreBase
+from brim.bicycle.tyres import TyreBase
 from brim.bicycle.wheels import WheelBase
 from brim.core import ConnectionRequirement, ModelRequirement, set_default_convention
 

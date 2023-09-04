@@ -16,7 +16,7 @@ from sympy.physics.mechanics import (
 from sympy.physics.mechanics._system import System
 
 from brim.bicycle.grounds import GroundBase
-from brim.bicycle.tyre_models import TyreBase
+from brim.bicycle.tyres import TyreBase
 from brim.bicycle.wheels import WheelBase
 from brim.core import ConnectionRequirement, ModelBase, ModelRequirement
 

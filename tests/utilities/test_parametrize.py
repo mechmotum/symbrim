@@ -6,7 +6,7 @@ from brim.bicycle.cranks import MasslessCranks
 from brim.bicycle.front_frames import RigidFrontFrameMoore
 from brim.bicycle.grounds import FlatGround
 from brim.bicycle.rear_frames import RigidRearFrameMoore
-from brim.bicycle.tyre_models import NonHolonomicTyre
+from brim.bicycle.tyres import NonHolonomicTyre
 from brim.bicycle.wheels import KnifeEdgeWheel
 from brim.bicycle.whipple_bicycle import WhippleBicycleMoore
 from brim.brim.bicycle_rider import BicycleRider

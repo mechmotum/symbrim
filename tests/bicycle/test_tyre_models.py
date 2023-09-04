@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 from brim.bicycle.grounds import FlatGround, GroundBase
-from brim.bicycle.tyre_models import NonHolonomicTyre, TyreBase
+from brim.bicycle.tyres import NonHolonomicTyre, TyreBase
 from brim.bicycle.wheels import KnifeEdgeWheel, ToroidalWheel, WheelBase
 from brim.utilities.testing import create_model_of_connection
 from sympy import cos, sin
