@@ -3,7 +3,7 @@ from __future__ import annotations
 import pytest
 from brim.bicycle.front_frames import RigidFrontFrameMoore
 from brim.brim.base_connections import HandGripsBase
-from brim.brim.steer_connections import HolonomicHandGrips, SpringDamperHandGrips
+from brim.brim.handgrips import HolonomicHandGrips, SpringDamperHandGrips
 from brim.rider.arms import PinElbowStickLeftArm, PinElbowStickRightArm
 from brim.utilities.testing import _test_descriptions, create_model_of_connection
 from sympy import Symbol
