@@ -77,7 +77,7 @@ class TestCompleteBicycleRider:
         self.br.rider = self.rider
         self.br.seat = SideLeanSeat("seat")
         self.br.pedals = HolonomicPedals("pedals")
-        self.br.steer_connection = HolonomicHandGrips("steer_conn")
+        self.br.handgrips = HolonomicHandGrips("steer_conn")
 
     @pytest.fixture()
     def _stationary_rider_setup(self, _stationary_setup, _rider_setup) -> None:
@@ -86,14 +86,14 @@ class TestCompleteBicycleRider:
         self.br.rider = self.rider
         self.br.seat = SideLeanSeat("seat")
         self.br.pedals = HolonomicPedals("pedals")
-        self.br.steer_connection = HolonomicHandGrips("steer_conn")
+        self.br.handgrips = HolonomicHandGrips("steer_conn")
 
     def test_stationary_setup(self, _stationary_rider_setup) -> None:
         assert self.br.bicycle == self.bicycle
         assert self.br.rider == self.rider
         assert self.br.seat is not None
         assert self.br.pedals is not None
-        assert self.br.steer_connection is not None
+        assert self.br.handgrips is not None
         self.br.define_all()
 
     def test_whipple_setup(self, _whipple_rider_setup) -> None:
@@ -101,7 +101,7 @@ class TestCompleteBicycleRider:
         assert self.br.rider == self.rider
         assert self.br.seat is not None
         assert self.br.pedals is not None
-        assert self.br.steer_connection is not None
+        assert self.br.handgrips is not None
         self.br.define_all()
 
     def test_no_connections(self, _whipple_setup, _rider_setup) -> None:

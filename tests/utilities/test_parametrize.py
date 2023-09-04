@@ -103,7 +103,7 @@ class TestParametrize:
         self.br.rider = self.rider
         self.br.seat = SideLeanSeat("seat")
         self.br.pedals = HolonomicPedals("pedals")
-        self.br.steer_connection = HolonomicHandGrips("steer_conn")
+        self.br.handgrips = HolonomicHandGrips("steer_conn")
 
         self.br.define_all()
         self.system = self.br.to_system()
