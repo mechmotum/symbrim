@@ -2,15 +2,15 @@ from __future__ import annotations
 
 import pytest
 from brim.bicycle.cranks import MasslessCranks
-from brim.brim.base_connections import PedalsToFeetBase
-from brim.brim.pedal_connections import HolonomicPedalsToFeet, SpringDamperPedalsToFeet
+from brim.brim.base_connections import PedalsBase
+from brim.brim.pedals import HolonomicPedals, SpringDamperPedals
 from brim.rider.legs import TwoPinStickLeftLeg, TwoPinStickRightLeg
 from brim.utilities.testing import _test_descriptions, create_model_of_connection
 from sympy import Symbol
 from sympy.physics.mechanics import Vector, dynamicsymbols
 
 
-@pytest.mark.parametrize("pedal_cls", [HolonomicPedalsToFeet, SpringDamperPedalsToFeet])
+@pytest.mark.parametrize("pedal_cls", [HolonomicPedals, SpringDamperPedals])
 class TestPedalConnectionBase:
     @pytest.fixture()
     def _setup(self, pedal_cls) -> None:
@@ -38,7 +38,7 @@ class TestPedalConnectionBase:
         self.model.define_constraints()
 
     def test_types(self, _setup) -> None:
-        assert isinstance(self.model.conn, PedalsToFeetBase)
+        assert isinstance(self.model.conn, PedalsBase)
 
     def test_descriptions(self, _setup) -> None:
         _test_descriptions(self.model.conn)
@@ -67,11 +67,11 @@ class TestPedalConnectionBase:
 class TestHolonomicPedalsConnection:
     @pytest.fixture(autouse=True)
     def _setup(self) -> None:
-        self.model = create_model_of_connection(HolonomicPedalsToFeet)("model")
+        self.model = create_model_of_connection(HolonomicPedals)("model")
         self.model.cranks = MasslessCranks("cranks")
         self.model.left_leg = TwoPinStickLeftLeg("left_leg")
         self.model.right_leg = TwoPinStickRightLeg("right_leg")
-        self.model.conn = HolonomicPedalsToFeet("pedal_connection")
+        self.model.conn = HolonomicPedals("pedal_connection")
         self.model.define_connections()
         self.model.define_objects()
         self.model.left_leg.foot_interframe.orient_axis(
@@ -129,11 +129,11 @@ class TestHolonomicPedalsConnection:
 class TestSpringDamperPedalsConnection:
     @pytest.fixture(autouse=True)
     def _setup(self) -> None:
-        self.model = create_model_of_connection(SpringDamperPedalsToFeet)("model")
+        self.model = create_model_of_connection(SpringDamperPedals)("model")
         self.model.cranks = MasslessCranks("cranks")
         self.model.left_leg = TwoPinStickLeftLeg("left_leg")
         self.model.right_leg = TwoPinStickRightLeg("right_leg")
-        self.model.conn = SpringDamperPedalsToFeet("pedal_connection")
+        self.model.conn = SpringDamperPedals("pedal_connection")
         self.model.define_connections()
         self.model.define_objects()
         self.model.left_leg.foot_interframe.orient_axis(

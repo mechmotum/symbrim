@@ -6,7 +6,7 @@ from sympy.physics.mechanics._system import System
 from brim.bicycle import BicycleBase
 from brim.brim.base_connections import (
     HandGripBase,
-    PedalsToFeetBase,
+    PedalsBase,
     SeatBase,
 )
 from brim.core import ConnectionRequirement, ModelBase, ModelRequirement
@@ -27,7 +27,7 @@ class BicycleRider(ModelBase):
             "seat_connection", SeatBase,
             "Connection between the pelvis and the rear frame.", False),
         ConnectionRequirement(
-            "pedal_connection", PedalsToFeetBase,
+            "pedals", PedalsBase,
             "Connection between the cranks and the legs.", False),
         ConnectionRequirement(
             "steer_connection", HandGripBase,
@@ -36,7 +36,7 @@ class BicycleRider(ModelBase):
     bicycle: BicycleBase
     rider: Rider
     seat_connection: SeatBase
-    pedal_connection: PedalsToFeetBase
+    pedals: PedalsBase
     steer_connection: HandGripBase
 
     def _define_connections(self) -> None:
@@ -45,10 +45,10 @@ class BicycleRider(ModelBase):
         if self.seat_connection is not None:
             self.seat_connection.rear_frame = self.bicycle.rear_frame
             self.seat_connection.pelvis = self.rider.pelvis
-        if self.pedal_connection is not None:
-            self.pedal_connection.left_leg = self.rider.left_leg
-            self.pedal_connection.right_leg = self.rider.right_leg
-            self.pedal_connection.cranks = self.bicycle.cranks
+        if self.pedals is not None:
+            self.pedals.left_leg = self.rider.left_leg
+            self.pedals.right_leg = self.rider.right_leg
+            self.pedals.cranks = self.bicycle.cranks
         if self.steer_connection is not None:
             self.steer_connection.steer = self.bicycle.front_frame
             self.steer_connection.left_arm = self.rider.left_arm
@@ -60,8 +60,8 @@ class BicycleRider(ModelBase):
         self._system = System(self.bicycle.system.frame, self.bicycle.system.origin)
         if self.seat_connection is not None:
             self.seat_connection.define_objects()
-        if self.pedal_connection is not None:
-            self.pedal_connection.define_objects()
+        if self.pedals is not None:
+            self.pedals.define_objects()
         if self.steer_connection is not None:
             self.steer_connection.define_objects()
 
@@ -70,8 +70,8 @@ class BicycleRider(ModelBase):
         super()._define_kinematics()
         if self.seat_connection is not None:
             self.seat_connection.define_kinematics()
-        if self.pedal_connection is not None:
-            self.pedal_connection.define_kinematics()
+        if self.pedals is not None:
+            self.pedals.define_kinematics()
         if self.steer_connection is not None:
             self.steer_connection.define_kinematics()
 
@@ -80,8 +80,8 @@ class BicycleRider(ModelBase):
         super()._define_loads()
         if self.seat_connection is not None:
             self.seat_connection.define_loads()
-        if self.pedal_connection is not None:
-            self.pedal_connection.define_loads()
+        if self.pedals is not None:
+            self.pedals.define_loads()
         if self.steer_connection is not None:
             self.steer_connection.define_loads()
 
@@ -90,7 +90,7 @@ class BicycleRider(ModelBase):
         super()._define_constraints()
         if self.seat_connection is not None:
             self.seat_connection.define_constraints()
-        if self.pedal_connection is not None:
-            self.pedal_connection.define_constraints()
+        if self.pedals is not None:
+            self.pedals.define_constraints()
         if self.steer_connection is not None:
             self.steer_connection.define_constraints()

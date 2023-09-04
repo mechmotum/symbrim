@@ -8,13 +8,13 @@ from sympy.physics.mechanics import LinearPathway, dynamicsymbols
 from sympy.physics.mechanics._actuator import LinearDamper, LinearSpring
 from sympy.physics.mechanics._system import System
 
-from brim.brim.base_connections import PedalsToFeetBase
+from brim.brim.base_connections import PedalsBase
 from brim.utilities.utilities import check_zero
 
-__all__ = ["HolonomicPedalsToFeet", "SpringDamperPedalsToFeet"]
+__all__ = ["HolonomicPedals", "SpringDamperPedals"]
 
 
-class HolonomicPedalsToFeet(PedalsToFeetBase):
+class HolonomicPedals(PedalsBase):
     """Constrain the feet to the pedals using holonomic constraints.
 
     Explanation
@@ -60,7 +60,7 @@ class HolonomicPedalsToFeet(PedalsToFeetBase):
         self.system.add_holonomic_constraints(*constrs)
 
 
-class SpringDamperPedalsToFeet(PedalsToFeetBase):
+class SpringDamperPedals(PedalsBase):
     """Constrain the feet to the pedals using spring-damper."""
 
     @property

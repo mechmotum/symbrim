@@ -9,7 +9,7 @@ from brim.rider.arms import LeftArmBase, RightArmBase
 from brim.rider.legs import LeftLegBase, RightLegBase
 from brim.rider.pelvis import PelvisBase
 
-__all__ = ["HandGripBase", "PedalsToFeetBase", "SeatBase"]
+__all__ = ["HandGripBase", "PedalsBase", "SeatBase"]
 
 
 class SeatBase(ConnectionBase):
@@ -37,7 +37,7 @@ class HandGripBase(ConnectionBase):
     right_arm: RightArmBase
 
 
-class PedalsToFeetBase(ConnectionBase):
+class PedalsBase(ConnectionBase):
     """Base class for the connection between the cranks and the legs."""
 
     required_models: tuple[ModelRequirement, ...] = (
