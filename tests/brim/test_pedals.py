@@ -11,7 +11,7 @@ from sympy.physics.mechanics import Vector, dynamicsymbols
 
 
 @pytest.mark.parametrize("pedal_cls", [HolonomicPedals, SpringDamperPedals])
-class TestPedalConnectionBase:
+class TestPedalsBase:
     @pytest.fixture()
     def _setup(self, pedal_cls) -> None:
         self.model = create_model_of_connection(pedal_cls)("model")
@@ -64,7 +64,7 @@ class TestPedalConnectionBase:
         self.model.define_constraints()
 
 
-class TestHolonomicPedalsConnection:
+class TestHolonomicPedals:
     @pytest.fixture(autouse=True)
     def _setup(self) -> None:
         self.model = create_model_of_connection(HolonomicPedals)("model")
@@ -126,7 +126,7 @@ class TestHolonomicPedalsConnection:
             self.model.define_constraints()
 
 
-class TestSpringDamperPedalsConnection:
+class TestSpringDamperPedals:
     @pytest.fixture(autouse=True)
     def _setup(self) -> None:
         self.model = create_model_of_connection(SpringDamperPedals)("model")
