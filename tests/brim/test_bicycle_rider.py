@@ -13,7 +13,7 @@ from brim.bicycle import (
 )
 from brim.brim import (
     BicycleRider,
-    HolonomicHandGrip,
+    HolonomicHandGrips,
     HolonomicPedals,
     SideLeanSeat,
 )
@@ -77,7 +77,7 @@ class TestCompleteBicycleRider:
         self.br.rider = self.rider
         self.br.seat = SideLeanSeat("seat")
         self.br.pedals = HolonomicPedals("pedals")
-        self.br.steer_connection = HolonomicHandGrip("steer_conn")
+        self.br.steer_connection = HolonomicHandGrips("steer_conn")
 
     @pytest.fixture()
     def _stationary_rider_setup(self, _stationary_setup, _rider_setup) -> None:
@@ -86,7 +86,7 @@ class TestCompleteBicycleRider:
         self.br.rider = self.rider
         self.br.seat = SideLeanSeat("seat")
         self.br.pedals = HolonomicPedals("pedals")
-        self.br.steer_connection = HolonomicHandGrip("steer_conn")
+        self.br.steer_connection = HolonomicHandGrips("steer_conn")
 
     def test_stationary_setup(self, _stationary_rider_setup) -> None:
         assert self.br.bicycle == self.bicycle

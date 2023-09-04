@@ -1,7 +1,7 @@
 """Module containing the bicycle rider model."""
 
 __all__ = [
-    "PedalsBase", "SeatBase", "HandGripBase",
+    "PedalsBase", "SeatBase", "HandGripsBase",
 
     "BicycleRider",
 
@@ -10,11 +10,11 @@ __all__ = [
     "PelvisInterPointMixin",
     "FixedSeat", "SideLeanSeat", "SideLeanSeatTorque", "SideLeanSeatSpringDamper",
 
-    "HolonomicHandGrip", "SpringDamperHandGrip",
+    "HolonomicHandGrips", "SpringDamperHandGrips",
 ]
 
 from brim.brim.base_connections import (
-    HandGripBase,
+    HandGripsBase,
     PedalsBase,
     SeatBase,
 )
@@ -27,4 +27,4 @@ from brim.brim.seats import (
     SideLeanSeatSpringDamper,
     SideLeanSeatTorque,
 )
-from brim.brim.steer_connections import HolonomicHandGrip, SpringDamperHandGrip
+from brim.brim.steer_connections import HolonomicHandGrips, SpringDamperHandGrips

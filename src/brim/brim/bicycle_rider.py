@@ -5,7 +5,7 @@ from sympy.physics.mechanics._system import System
 
 from brim.bicycle import BicycleBase
 from brim.brim.base_connections import (
-    HandGripBase,
+    HandGripsBase,
     PedalsBase,
     SeatBase,
 )
@@ -30,14 +30,14 @@ class BicycleRider(ModelBase):
             "pedals", PedalsBase,
             "Connection between the cranks and the legs.", False),
         ConnectionRequirement(
-            "steer_connection", HandGripBase,
+            "steer_connection", HandGripsBase,
             "Connection between the steer and the arms.", False),
     )
     bicycle: BicycleBase
     rider: Rider
     seat: SeatBase
     pedals: PedalsBase
-    steer_connection: HandGripBase
+    steer_connection: HandGripsBase
 
     def _define_connections(self) -> None:
         """Define the connections."""

@@ -8,13 +8,13 @@ from sympy.physics.mechanics import LinearPathway, dynamicsymbols
 from sympy.physics.mechanics._actuator import LinearDamper, LinearSpring
 from sympy.physics.mechanics._system import System
 
-from brim.brim.base_connections import HandGripBase
+from brim.brim.base_connections import HandGripsBase
 from brim.utilities.utilities import check_zero
 
-__all__ = ["HolonomicHandGrip", "SpringDamperHandGrip"]
+__all__ = ["HolonomicHandGrips", "SpringDamperHandGrips"]
 
 
-class HolonomicHandGrip(HandGripBase):
+class HolonomicHandGrips(HandGripsBase):
     """Constrain the hands to the steer using holonomic constraints.
 
     Explanation
@@ -60,7 +60,7 @@ class HolonomicHandGrip(HandGripBase):
         self.system.add_holonomic_constraints(*constrs)
 
 
-class SpringDamperHandGrip(HandGripBase):
+class SpringDamperHandGrips(HandGripsBase):
     """Constrain the hands to the steer using spring-dampers."""
 
     @property

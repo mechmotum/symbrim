@@ -12,7 +12,7 @@ from brim.bicycle.whipple_bicycle import WhippleBicycleMoore
 from brim.brim.bicycle_rider import BicycleRider
 from brim.brim.pedals import HolonomicPedals
 from brim.brim.seats import SideLeanSeat
-from brim.brim.steer_connections import HolonomicHandGrip
+from brim.brim.steer_connections import HolonomicHandGrips
 from brim.rider.arms import PinElbowStickLeftArm, PinElbowStickRightArm
 from brim.rider.hip_joints import SphericalLeftHip, SphericalRightHip
 from brim.rider.legs import TwoPinStickLeftLeg, TwoPinStickRightLeg
@@ -103,7 +103,7 @@ class TestParametrize:
         self.br.rider = self.rider
         self.br.seat = SideLeanSeat("seat")
         self.br.pedals = HolonomicPedals("pedals")
-        self.br.steer_connection = HolonomicHandGrip("steer_conn")
+        self.br.steer_connection = HolonomicHandGrips("steer_conn")
 
         self.br.define_all()
         self.system = self.br.to_system()
