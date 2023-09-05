@@ -249,9 +249,9 @@ class RigidRearFrameMoore(RigidRearFrame):
                 r_rc_sdl = (yeadon_vec_to_bicycle_vec(
                     np.matrix([[0], [0], [0]]), mep, bp) + np.matrix([[0], [0], [rr]]))
                 params[self.symbols["d4"]] = (
-                        r_rc_sdl[0, 0] * np.sin(lamst) - r_rc_sdl[2, 0] * np.cos(lamst))
+                        r_rc_sdl[0, 0] * np.sin(lamht) - r_rc_sdl[2, 0] * np.cos(lamht))
                 params[self.symbols["d5"]] = (
-                        r_rc_sdl[0, 0] * np.cos(lamst) + r_rc_sdl[2, 0] * np.sin(lamst))
+                        r_rc_sdl[0, 0] * np.cos(lamht) + r_rc_sdl[2, 0] * np.sin(lamht))
         return params
 
     def set_plot_objects(self, plot_object: PlotModel) -> None:
