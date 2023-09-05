@@ -201,14 +201,14 @@ class TestParametrize:
         assert msubs(self.bike.cranks.center_point.pos_from(
             self.bike.rear_frame.saddle).magnitude(), params
                      ) == pytest.approx(mp["lst"] + mp["lsp"], abs=1e-10)
-        assert msubs(self.bike.front_frame.left_hand_grip.pos_from(
-            self.bike.front_frame.right_hand_grip).magnitude(), params
+        assert msubs(self.bike.front_frame.left_hand_grip.point.pos_from(
+            self.bike.front_frame.right_hand_grip.point).magnitude(), params
                      ) == pytest.approx(mp["whb"], abs=1e-10)
         for hand_grip in (self.bike.front_frame.left_hand_grip,
                           self.bike.front_frame.right_hand_grip):
-            assert msubs(hand_grip.pos_from(
+            assert msubs(hand_grip.point.pos_from(
                 self.bike.rear_wheel.center).magnitude(), params
                          ) == pytest.approx(mp["LhbR"], abs=1e-10)
-            assert msubs(hand_grip.pos_from(
+            assert msubs(hand_grip.point.pos_from(
                 self.bike.front_wheel.center).magnitude(), params
                          ) == pytest.approx(mp["LhbF"], abs=1e-10)

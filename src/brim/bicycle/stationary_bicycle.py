@@ -59,10 +59,10 @@ class StationaryBicycle(BicycleBase):
         if self.front_frame:
             self.system.add_joints(
                 PinJoint(self._add_prefix("steer_joint"), self.rear_frame.body,
-                         self.front_frame.body, self.q[1], self.u[1],
-                         self.rear_frame.steer_attachment,
-                         self.front_frame.steer_attachment, self.rear_frame.steer_axis,
-                         self.front_frame.steer_axis)
+                         self.front_frame.steer_hub.to_valid_joint_arg(), self.q[1],
+                         self.u[1], self.rear_frame.steer_attachment,
+                         self.front_frame.steer_hub.point, self.rear_frame.steer_axis,
+                         self.front_frame.steer_hub.axis)
 
             )
         if self.rear_wheel:
@@ -74,10 +74,12 @@ class StationaryBicycle(BicycleBase):
             )
         if self.front_wheel:
             self.system.add_joints(
-                PinJoint(self._add_prefix("front_wheel_joint"), self.front_frame.body,
+                PinJoint(self._add_prefix("front_wheel_joint"),
+                         self.front_frame.wheel_hub.to_valid_joint_arg(),
                          self.front_wheel.body, self.q[2], self.u[2],
-                         self.front_frame.wheel_attachment, self.front_wheel.center,
-                         self.front_frame.wheel_axis, self.front_wheel.rotation_axis),
+                         self.front_frame.wheel_hub.point, self.front_wheel.center,
+                         self.front_frame.wheel_hub.axis,
+                         self.front_wheel.rotation_axis),
             )
         if self.cranks:
             self.cranks.center_point.set_pos(self.rear_frame.wheel_attachment,

@@ -1,15 +1,18 @@
 """Module containing the hand grip connections."""
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from sympy import symbols
-from sympy.physics.mechanics import LinearPathway, dynamicsymbols
+from sympy.physics.mechanics import LinearPathway, Point, dynamicsymbols
 from sympy.physics.mechanics._actuator import LinearDamper, LinearSpring
 from sympy.physics.mechanics._system import System
 
 from brim.brim.base_connections import HandGripsBase
 from brim.utilities.utilities import check_zero
+
+if TYPE_CHECKING:
+    from brim.core import Attachment
 
 __all__ = ["HolonomicHandGrips", "SpringDamperHandGrips"]
 
@@ -35,10 +38,10 @@ class HolonomicHandGrips(HandGripsBase):
     def _define_constraints(self) -> None:
         """Define the constraints."""
 
-        def attach_hand(hand_point, steer_point):
+        def attach_hand(hand_point: Point, hand_grip: Attachment):
             """Attach the hand to the steer."""
-            for direction in self.front_frame.frame:
-                constr = hand_point.pos_from(steer_point).dot(direction)
+            for direction in hand_grip.frame:
+                constr = hand_point.pos_from(hand_grip.point).dot(direction)
                 if not check_zero(constr):
                     if check_zero(constr.diff(dynamicsymbols._t)):
                         error_msg.append(
@@ -85,14 +88,14 @@ class SpringDamperHandGrips(HandGripsBase):
         super()._define_loads()
         if self.left_arm:
             path_left = LinearPathway(
-                self.front_frame.left_hand_grip, self.left_arm.hand_interpoint)
+                self.front_frame.left_hand_grip.point, self.left_arm.hand_interpoint)
             self.system.add_actuators(
                 LinearSpring(self.symbols["k"], path_left),
                 LinearDamper(self.symbols["c"], path_left)
             )
         if self.right_arm:
             path_right = LinearPathway(
-                self.front_frame.right_hand_grip, self.right_arm.hand_interpoint)
+                self.front_frame.right_hand_grip.point, self.right_arm.hand_interpoint)
             self.system.add_actuators(
                 LinearSpring(self.symbols["k"], path_right),
                 LinearDamper(self.symbols["c"], path_right)

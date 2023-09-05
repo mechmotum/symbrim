@@ -114,14 +114,16 @@ class WhippleBicycleMoore(WhippleBicycle):
                      self.rear_frame.wheel_attachment, self.rear_wheel.center,
                      self.rear_frame.wheel_axis, self.rear_wheel.rotation_axis),
             PinJoint(self._add_prefix("steer_joint"), self.rear_frame.body,
-                     self.front_frame.body, self.q[6], self.u[6],
-                     self.rear_frame.steer_attachment,
-                     self.front_frame.steer_attachment, self.rear_frame.steer_axis,
-                     self.front_frame.steer_axis),
-            PinJoint(self._add_prefix("front_wheel_joint"), self.front_frame.body,
+                     self.front_frame.steer_hub.to_valid_joint_arg(), self.q[6],
+                     self.u[6], self.rear_frame.steer_attachment,
+                     self.front_frame.steer_hub.point, self.rear_frame.steer_axis,
+                     self.front_frame.steer_hub.axis),
+            PinJoint(self._add_prefix("front_wheel_joint"),
+                     self.front_frame.wheel_hub.to_valid_joint_arg(),
                      self.front_wheel.body, self.q[7], self.u[7],
-                     self.front_frame.wheel_attachment, self.front_wheel.center,
-                     self.front_frame.wheel_axis, self.front_wheel.rotation_axis),
+                     self.front_frame.wheel_hub.point, self.front_wheel.center,
+                     self.front_frame.wheel_hub.axis,
+                     self.front_wheel.rotation_axis),
         )
         # Define contact points.
         with contextlib.suppress(ValueError):
