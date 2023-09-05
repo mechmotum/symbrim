@@ -41,19 +41,15 @@ class FrontFrameBase(ModelBase):
     by the subclasses.
     """
 
-    def _define_objects(self):
-        """Define the objects of the front frame."""
-        super()._define_objects()
-
     @property
     @abstractmethod
     def steer_hub(self) -> Hub:
-        """Steer axis expressed in the front frame."""
+        """Steer hub expressed in the front frame."""
 
     @property
     @abstractmethod
     def wheel_hub(self) -> Hub:
-        """Wheel axis expressed in the front frame."""
+        """Wheel hub expressed in the front frame."""
 
     @property
     @abstractmethod
@@ -122,13 +118,11 @@ class RigidFrontFrame(FrontFrameBase):
     def get_param_values(self, bicycle_parameters: Bicycle) -> dict[Symbol, float]:
         """Get the parameter values of the front frame."""
         params = super().get_param_values(bicycle_parameters)
-        bp = remove_uncertainties(bicycle_parameters.parameters.get(
-            "Benchmark", bicycle_parameters.parameters.get("Measured")))
-        if bp is not None:
-            if hasattr(bp["mH"], "nominal_value"):
-                params[self.body.mass] = bp["mH"].nominal_value
-            else:
-                params[self.body.mass] = bp["mH"]
+        str_params = _get_front_frame_moore_params(bicycle_parameters)
+        if "mass" in str_params:
+            params[self.body.mass] = str_params["mass"]
+        if "inertia_vals" in str_params:
+            params.update(get_inertia_vals(self.body, *str_params["inertia_vals"]))
         return params
 
 
@@ -203,10 +197,6 @@ class RigidFrontFrameMoore(RigidFrontFrame):
         """Get the parameter values of the front frame."""
         params = super().get_param_values(bicycle_parameters)
         str_params = _get_front_frame_moore_params(bicycle_parameters)
-        if "mass" in str_params:
-            params[self.body.mass] = str_params["mass"]
-        if "inertia_vals" in str_params:
-            params.update(get_inertia_vals(self.body, *str_params["inertia_vals"]))
         for name in ("d2", "d3", "l3", "l4", "d6", "d7", "d8"):
             if name in str_params:
                 params[self.symbols[name]] = str_params[name]
@@ -380,7 +370,7 @@ class SuspensionRigidFrontFrameMoore(SuspensionRigidFrontFrame):
 
 
 def _get_front_frame_moore_params(bicycle_parameters: Bicycle
-                                  ) -> dict[str, float]:  # pragma: no cover
+                                  ) -> dict[str, Any]:  # pragma: no cover
     params = {}
     if "Benchmark" in bicycle_parameters.parameters:
         bp = remove_uncertainties(bicycle_parameters.parameters["Benchmark"])
