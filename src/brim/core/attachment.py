@@ -84,8 +84,9 @@ class Attachment:
     @classmethod
     def from_name(cls, name: str) -> "Attachment":
         """Create an attachment based on a name."""
-        if not isinstance(name, str):
-            raise TypeError("Name must be a string.")
+        name = str(name)
+        if not name.isidentifier():
+            raise ValueError("Name must be a valid identifier.")
         return cls(ReferenceFrame(f"{name}_frame"), Point(f"{name}_point"))
 
     @property
@@ -145,6 +146,9 @@ class Hub(Attachment):
     @classmethod
     def from_name(cls, name: str, axis: str) -> "Hub":
         """Create a hub based on a name and an axis."""
+        name = str(name)
+        if not name.isidentifier():
+            raise ValueError("Name must be a valid identifier.")
         return cls(ReferenceFrame(f"{name}_frame"), Point(f"{name}_point"), axis)
 
     @property

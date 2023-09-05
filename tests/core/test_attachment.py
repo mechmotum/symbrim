@@ -74,6 +74,17 @@ class TestAttachment:
         with pytest.raises(AttributeError):
             self.attachment.point = Point("point2")
 
+    @pytest.mark.parametrize("point, frame", [
+        (Point("point1"), Point("point2")),
+        (ReferenceFrame("frame1"), ReferenceFrame("frame2")),
+    ])
+    def test_invalid_init_args(self, cls, kwargs, point, frame):
+        with pytest.raises(TypeError):
+            cls(frame, point, **kwargs)
+
+    def test_invalid_name(self, cls, kwargs) -> None:
+        with pytest.raises(ValueError):
+            cls.from_name(2.2, **kwargs)
 
 class TestHub:
 
