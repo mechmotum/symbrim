@@ -1,6 +1,7 @@
 """Module containing the core elements of BRiM."""
 
 __all__ = [
+    "Attachment", "Hub",
     "Singleton",
     "Registry",
     "ConnectionRequirement", "ModelRequirement",
@@ -10,6 +11,7 @@ __all__ = [
     "NewtonianBodyMixin",
 ]
 
+from brim.core.attachment import Attachment, Hub
 from brim.core.base_classes import (
     ConnectionBase,
     ConnectionMeta,
