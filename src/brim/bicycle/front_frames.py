@@ -350,8 +350,8 @@ class SuspensionRigidFrontFrameMoore(SuspensionRigidFrontFrame):
             self.left_hand_grip, steer_top, self.right_hand_grip], self.name)
 
 
-def _get_front_frame_moore_params(bicycle_parameters: Bicycle  # pragma: no cover
-                                  ) -> dict[str, float]:
+def _get_front_frame_moore_params(bicycle_parameters: Bicycle
+                                  ) -> dict[str, float]:  # pragma: no cover
     params = {}
     if "Benchmark" in bicycle_parameters.parameters:
         bp = remove_uncertainties(bicycle_parameters.parameters["Benchmark"])
