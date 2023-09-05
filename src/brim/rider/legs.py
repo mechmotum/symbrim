@@ -83,10 +83,10 @@ class LegBase(ModelBase):
         """Set the symmeplot plot objects."""
         super().set_plot_objects(plot_object)
         plot_object.add_line([
-                self.hip_interpoint,
-                *(joint.parent_point for joint in self.system.joints),
-                self.foot_interpoint],
-                self.name)
+            self.hip_interpoint,
+            *(joint.parent_point for joint in self.system.joints),
+            self.foot_interpoint],
+            self.name)
 
 
 class LeftLegBase(LegBase):

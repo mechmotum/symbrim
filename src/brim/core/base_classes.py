@@ -290,8 +290,7 @@ class ModelBase(BrimBase, metaclass=ModelMeta):
         self._load_groups.extend(load_groups)
 
     @classmethod
-    def from_convention(cls, convention: str, name: str, *args, **kwargs
-                         ) -> ModelBase:
+    def from_convention(cls, convention: str, name: str, *args, **kwargs) -> ModelBase:
         """Create a model from a convention."""
         possible_models = []
         for model in Registry().models:
@@ -474,8 +473,8 @@ class LoadGroupBase(BrimBase, metaclass=LoadGroupMeta):
         return self.parent.system if self.parent is not None else None
 
 
-def set_default_convention(convention: str
-                            ) -> Callable[[type[ModelBase]], type[ModelBase]]:
+def set_default_convention(
+        convention: str) -> Callable[[type[ModelBase]], type[ModelBase]]:
     """Set the default convention for a model."""
 
     def decorator(model: type[ModelBase]) -> type[ModelBase]:

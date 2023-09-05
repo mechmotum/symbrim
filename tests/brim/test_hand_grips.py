@@ -26,12 +26,12 @@ class TestSteerConnectionBase:
         self.model.left_arm.hand_interframe.orient_axis(
             self.model.front_frame.frame, self.model.front_frame.steer_axis, self.q[0])
         self.model.left_arm.shoulder_interpoint.set_pos(
-            self.model.front_frame.left_handgrip,
+            self.model.front_frame.left_hand_grip,
             self.q[1] * self.model.front_frame.steer_axis)
         self.model.right_arm.hand_interframe.orient_axis(
             self.model.front_frame.frame, self.model.front_frame.steer_axis, self.q[2])
         self.model.right_arm.shoulder_interpoint.set_pos(
-            self.model.front_frame.right_handgrip,
+            self.model.front_frame.right_hand_grip,
             self.q[3] * self.model.front_frame.steer_axis)
         self.model.define_kinematics()
         self.model.define_loads()
@@ -57,7 +57,7 @@ class TestSteerConnectionBase:
         getattr(self.model, side + "_arm").hand_interframe.orient_axis(
             self.model.front_frame.frame, self.model.front_frame.steer_axis, self.q[0])
         getattr(self.model, side + "_arm").shoulder_interpoint.set_pos(
-            self.model.front_frame.left_handgrip,
+            self.model.front_frame.left_hand_grip,
             self.q[1] * self.model.front_frame.steer_axis)
         self.model.define_kinematics()
         self.model.define_loads()
@@ -85,10 +85,10 @@ class TestHolonomicHandGrip:
     def test_all_constraints(self) -> None:
         q = dynamicsymbols("q1:7")
         self.left_arm.hand_interpoint.set_pos(
-            self.front_frame.left_handgrip,
+            self.front_frame.left_hand_grip,
             sum(qi * v for qi, v in zip(q[:3], self.front_frame.frame)))
         self.right_arm.hand_interpoint.set_pos(
-            self.front_frame.right_handgrip,
+            self.front_frame.right_hand_grip,
             sum(qi * v for qi, v in zip(q[3:], self.front_frame.frame)))
         self.model.define_kinematics()
         self.model.define_loads()
@@ -103,9 +103,9 @@ class TestHolonomicHandGrip:
 
     def test_not_fully_constraint(self) -> None:
         q, d = dynamicsymbols("q"), Symbol("d")
-        self.left_arm.hand_interpoint.set_pos(self.front_frame.left_handgrip, 0)
+        self.left_arm.hand_interpoint.set_pos(self.front_frame.left_hand_grip, 0)
         self.right_arm.hand_interpoint.set_pos(
-            self.front_frame.right_handgrip,
+            self.front_frame.right_hand_grip,
             q * self.front_frame.frame.x + 2 * d * self.front_frame.frame.x)
         self.model.define_kinematics()
         self.model.define_loads()
@@ -116,9 +116,9 @@ class TestHolonomicHandGrip:
 
     def test_constant_constraint(self) -> None:
         q, d = dynamicsymbols("q"), Symbol("d")
-        self.left_arm.hand_interpoint.set_pos(self.front_frame.left_handgrip, 0)
+        self.left_arm.hand_interpoint.set_pos(self.front_frame.left_hand_grip, 0)
         self.right_arm.hand_interpoint.set_pos(
-            self.front_frame.right_handgrip,
+            self.front_frame.right_hand_grip,
             q * self.front_frame.frame.x + d * self.front_frame.frame.y)
         self.model.define_kinematics()
         self.model.define_loads()
@@ -147,9 +147,9 @@ class TestSpringDamperHandGrip:
     def test_loads(self) -> None:
         q1, q2 = dynamicsymbols("q1:3")
         self.left_arm.hand_interpoint.set_pos(
-            self.front_frame.left_handgrip, q1 * self.front_frame.frame.x)
+            self.front_frame.left_hand_grip, q1 * self.front_frame.frame.x)
         self.right_arm.hand_interpoint.set_pos(
-            self.front_frame.right_handgrip, -q2 * self.front_frame.frame.y)
+            self.front_frame.right_hand_grip, -q2 * self.front_frame.frame.y)
         self.model.define_kinematics()
         self.model.define_loads()
         self.model.define_constraints()
@@ -165,13 +165,13 @@ class TestSpringDamperHandGrip:
         assert len(loads) == 4
         k, c = self.conn.symbols["k"], self.conn.symbols["c"]
         for ld in loads:
-            if ld.location == self.front_frame.left_handgrip:
+            if ld.location == self.front_frame.left_hand_grip:
                 assert (ld.vector - (k * q1 + c * q1.diff()) * self.front_frame.frame.x
                         ).simplify() == Vector(0)
             elif ld.location == self.left_arm.hand_interpoint:
                 assert (ld.vector + (k * q1 + c * q1.diff()) * self.front_frame.frame.x
                         ).simplify() == Vector(0)
-            elif ld.location == self.front_frame.right_handgrip:
+            elif ld.location == self.front_frame.right_hand_grip:
                 assert (ld.vector - (-k * q2 - c * q2.diff()) * self.front_frame.frame.y
                         ).simplify() == Vector(0)
             else:

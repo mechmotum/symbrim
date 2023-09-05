@@ -52,9 +52,10 @@ class HolonomicHandGrips(HandGripsBase):
         super()._define_constraints()
         error_msg, constrs = [], []
         if self.left_arm:
-            attach_hand(self.left_arm.hand_interpoint, self.front_frame.left_handgrip)
+            attach_hand(self.left_arm.hand_interpoint, self.front_frame.left_hand_grip)
         if self.right_arm:
-            attach_hand(self.right_arm.hand_interpoint, self.front_frame.right_handgrip)
+            attach_hand(self.right_arm.hand_interpoint,
+                        self.front_frame.right_hand_grip)
         if error_msg:
             raise ValueError(error_msg)
         self.system.add_holonomic_constraints(*constrs)
@@ -84,14 +85,14 @@ class SpringDamperHandGrips(HandGripsBase):
         super()._define_loads()
         if self.left_arm:
             path_left = LinearPathway(
-                self.front_frame.left_handgrip, self.left_arm.hand_interpoint)
+                self.front_frame.left_hand_grip, self.left_arm.hand_interpoint)
             self.system.add_actuators(
                 LinearSpring(self.symbols["k"], path_left),
                 LinearDamper(self.symbols["c"], path_left)
             )
         if self.right_arm:
             path_right = LinearPathway(
-                self.front_frame.right_handgrip, self.right_arm.hand_interpoint)
+                self.front_frame.right_hand_grip, self.right_arm.hand_interpoint)
             self.system.add_actuators(
                 LinearSpring(self.symbols["k"], path_right),
                 LinearDamper(self.symbols["c"], path_right)

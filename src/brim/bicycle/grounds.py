@@ -12,6 +12,7 @@ from brim.core import ModelBase
 
 if TYPE_CHECKING:
     from sympy import Expr
+
     T_position = Point | Vector | tuple[Expr, ...]
 
     with contextlib.suppress(ImportError):

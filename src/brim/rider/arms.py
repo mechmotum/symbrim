@@ -75,10 +75,10 @@ class ArmBase(ModelBase):
         """Set the symmeplot plot objects."""
         super().set_plot_objects(plot_object)
         plot_object.add_line([
-                self.shoulder_interpoint,
-                *(joint.parent_point for joint in self.system.joints),
-                self.hand_interpoint],
-                self.name)
+            self.shoulder_interpoint,
+            *(joint.parent_point for joint in self.system.joints),
+            self.hand_interpoint],
+            self.name)
 
 
 class LeftArmBase(ArmBase):
