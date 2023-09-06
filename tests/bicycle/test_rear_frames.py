@@ -1,6 +1,9 @@
 import pytest
 from brim.bicycle.rear_frames import RigidRearFrame, RigidRearFrameMoore
+from brim.core import Attachment, Hub
+from brim.utilities.testing import _test_descriptions
 from sympy.physics.mechanics import Point
+from sympy.physics.mechanics._system import System
 
 try:
     from brim.utilities.plotting import PlotModel
@@ -10,60 +13,72 @@ except ImportError:
 
 
 class TestRigidRearFrame:
-    def test_default(self) -> None:
-        front = RigidRearFrame("rear")
-        assert isinstance(front, RigidRearFrameMoore)
-
-    @pytest.mark.parametrize("convention_name, expected_class", [
-        ("moore", RigidRearFrameMoore),
+    @pytest.mark.parametrize("base_cls, expected_cls", [
+        (RigidRearFrame, RigidRearFrameMoore),
     ])
-    def test_init(self, convention_name, expected_class) -> None:
-        front = RigidRearFrame.from_convention(convention_name, "rear")
-        assert isinstance(front, expected_class)
+    def test_default(self, base_cls, expected_cls) -> None:
+        rear = base_cls("rear")
+        assert rear.name == "rear"
+        assert isinstance(rear, expected_cls)
 
-    def test_init_error(self) -> None:
+    @pytest.mark.parametrize("convention_name, base_cls, expected_cls", [
+        ("moore", RigidRearFrame, RigidRearFrameMoore),
+    ])
+    def test_init(self, convention_name, base_cls, expected_cls) -> None:
+        rear = base_cls.from_convention(convention_name, "rear")
+        assert isinstance(rear, expected_cls)
+
+    @pytest.mark.parametrize("base_cls", [RigidRearFrame])
+    def test_init_error(self, base_cls) -> None:
         with pytest.raises(ValueError):
-            RigidRearFrame.from_convention("not_implemented", "rear")
+            base_cls.from_convention("not_implemented", "rear")
+
+    @pytest.mark.parametrize("frame_cls", [RigidRearFrameMoore])
+    def test_descriptions(self, frame_cls) -> None:
+        _test_descriptions(frame_cls("front"))
+
+    @pytest.mark.parametrize("cls", [RigidRearFrameMoore])
+    def test_define_all(self, cls) -> None:
+        rear = cls("rear")
+        rear.define_all()
+        assert isinstance(rear.system, System)
+        assert len(rear.system.bodies) >= 1
+        assert isinstance(rear.steer_hub, Hub)
+        assert isinstance(rear.wheel_hub, Hub)
+        assert isinstance(rear.saddle, Attachment)
+        assert isinstance(rear.bottom_bracket, Point)
+        for body in rear.system.bodies:
+            body.masscenter.pos_from(rear.system.origin)
+        for attachment in (rear.steer_hub, rear.wheel_hub, rear.saddle):
+            attachment.frame.dcm(rear.system.frame)
+            attachment.point.pos_from(rear.system.origin)
+        rear.bottom_bracket.pos_from(rear.system.origin)
+
+    @pytest.mark.skipif(PlotModel is None, reason="symmeplot not installed")
+    @pytest.mark.parametrize("cls, n_children", [(RigidRearFrameMoore, 2)])
+    def test_plotting(self, cls, n_children):
+        rear = cls("rear")
+        rear.define_all()
+        plot_model = PlotModel(rear.system.frame, rear.system.origin, rear)
+        assert len(plot_model.children) == n_children
+        assert any(isinstance(obj, PlotBody) for obj in plot_model.children)
+        assert any(isinstance(obj, PlotLine) for obj in plot_model.children)
 
 
 class TestRigidRearFrameMoore:
     def test_default(self):
         rear = RigidRearFrameMoore("rear")
         rear.define_objects()
-        assert rear.name == "rear"
-        assert rear.frame == rear.body.frame
-        assert isinstance(rear.steer_attachment, Point)
-        assert isinstance(rear.wheel_attachment, Point)
-        assert isinstance(rear.saddle, Point)
-        assert isinstance(rear.bottom_bracket, Point)
-        assert rear.wheel_axis == rear.y
+        rear.define_kinematics()
+        assert rear.wheel_hub.axis == rear.body.y
 
     def test_kinematics(self):
         rear = RigidRearFrameMoore("rear")
         rear.define_objects()
         rear.define_kinematics()
-        # Test if kinematics is defined
-        rear.steer_attachment.pos_from(rear.body.masscenter)
-        rear.wheel_attachment.pos_from(rear.body.masscenter)
-        rear.saddle.pos_from(rear.body.masscenter)
         # Test velocities
-        assert rear.body.masscenter.vel(rear.frame) == 0
-        assert rear.steer_attachment.vel(rear.frame) == 0
-        assert rear.wheel_attachment.vel(rear.frame) == 0
-        assert rear.saddle.vel(rear.frame) == 0
-        assert rear.bottom_bracket.vel(rear.frame) == 0
-
-    def test_descriptions(self):
-        rear = RigidRearFrameMoore("rear")
-        rear.define_objects()
-        for length in rear.symbols.values():
-            assert rear.descriptions[length] is not None
-
-    @pytest.mark.skipif(PlotModel is None, reason="symmeplot not installed")
-    def test_plotting(self):
-        rear = RigidRearFrameMoore("rear")
-        rear.define_all()
-        plot_model = PlotModel(rear.system.frame, rear.system.origin, rear)
-        assert len(plot_model.children) == 2
-        assert any(isinstance(obj, PlotBody) for obj in plot_model.children)
-        assert any(isinstance(obj, PlotLine) for obj in plot_model.children)
+        assert rear.body.masscenter.vel(rear.body.frame) == 0
+        assert rear.steer_hub.point.vel(rear.body.frame) == 0
+        assert rear.wheel_hub.point.vel(rear.body.frame) == 0
+        assert rear.saddle.point.vel(rear.body.frame) == 0
+        assert rear.bottom_bracket.vel(rear.body.frame) == 0

@@ -32,7 +32,7 @@ class RiderLeanConnection(ConnectionBase):
     @lean_axis.setter
     def lean_axis(self, lean_axis: Vector) -> None:
         try:
-            lean_axis.express(self.rear_frame.frame)
+            lean_axis.express(self.rear_frame.saddle.frame)
         except (AttributeError, ValueError) as e:
             raise ValueError(f"The lean axis {lean_axis!r} must be a Vector expressable"
                              f" in the rear frame {self.rear_frame!r}.") from e
@@ -61,8 +61,9 @@ class RiderLeanConnection(ConnectionBase):
     def _define_objects(self):
         """Define the objects of the rider lean connection for the rear frame."""
         super()._define_objects()
-        self._system = System()
-        self._lean_axis = self.rear_frame.x
+        self._system = System(self.rear_frame.system.frame,
+                              self.rear_frame.system.origin)
+        self._lean_axis = self.rear_frame.saddle.frame.x
         self._lean_point = Point(self._add_prefix("lean_point"))
         self.symbols["d_lp_x"] = Symbol(self._add_prefix("d_lp_x"))
         self.symbols["d_lp_z"] = Symbol(self._add_prefix("d_lp_z"))
@@ -72,11 +73,12 @@ class RiderLeanConnection(ConnectionBase):
     def _define_kinematics(self):
         """Define the kinematics of the rider lean connection for the rear frame."""
         super()._define_kinematics()
-        self.lean_point.set_pos(self.rear_frame.body.masscenter,
-                                self.symbols["d_lp_x"] * self.rear_frame.x +
-                                self.symbols["d_lp_z"] * self.rear_frame.z)
+        saddle = self.rear_frame.saddle
+        self.lean_point.set_pos(saddle.point,
+                                self.symbols["d_lp_x"] * saddle.frame.x +
+                                self.symbols["d_lp_z"] * saddle.frame.z)
         self.system.add_joints(
-            PinJoint("rider_lean_joint", self.rear_frame.body, self.rider.body,
+            PinJoint("rider_lean_joint", saddle.to_valid_joint_arg(), self.rider.body,
                      self.q[0], self.u[0], self.lean_point, self.rider.lean_point,
                      self.lean_axis, self.rider.lean_axis)
         )

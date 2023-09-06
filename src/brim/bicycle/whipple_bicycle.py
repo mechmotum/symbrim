@@ -103,25 +103,30 @@ class WhippleBicycleMoore(WhippleBicycle):
         # Define the orientation of the rear frame.
         int_frame = ReferenceFrame("int_frame")
         int_frame.orient_body_fixed(self.ground.frame, (*self.q[2:4], 0), "zxy")
-        self.rear_frame.frame.orient_axis(int_frame, int_frame.y, self.q[4])
-        self.rear_frame.frame.set_ang_vel(
+        self.rear_frame.wheel_hub.frame.orient_axis(int_frame, int_frame.y, self.q[4])
+        self.rear_frame.wheel_hub.frame.set_ang_vel(
             self.ground.frame,
-            self.rear_frame.frame.ang_vel_in(self.ground.frame).xreplace(qd_repl))
+            self.rear_frame.wheel_hub.frame.ang_vel_in(
+                self.ground.frame).xreplace(qd_repl))
         # Define the joints
         self.system.add_joints(
-            PinJoint(self._add_prefix("rear_wheel_joint"), self.rear_frame.body,
+            PinJoint(self._add_prefix("rear_wheel_joint"),
+                     self.rear_frame.wheel_hub.to_valid_joint_arg(),
                      self.rear_wheel.body, self.q[5], self.u[5],
-                     self.rear_frame.wheel_attachment, self.rear_wheel.center,
-                     self.rear_frame.wheel_axis, self.rear_wheel.rotation_axis),
-            PinJoint(self._add_prefix("steer_joint"), self.rear_frame.body,
-                     self.front_frame.body, self.q[6], self.u[6],
-                     self.rear_frame.steer_attachment,
-                     self.front_frame.steer_attachment, self.rear_frame.steer_axis,
-                     self.front_frame.steer_axis),
-            PinJoint(self._add_prefix("front_wheel_joint"), self.front_frame.body,
+                     self.rear_frame.wheel_hub.point, self.rear_wheel.center,
+                     self.rear_frame.wheel_hub.axis, self.rear_wheel.rotation_axis),
+            PinJoint(self._add_prefix("steer_joint"),
+                     self.rear_frame.steer_hub.to_valid_joint_arg(),
+                     self.front_frame.steer_hub.to_valid_joint_arg(),
+                     self.q[6], self.u[6],
+                     self.rear_frame.steer_hub.point, self.front_frame.steer_hub.point,
+                     self.rear_frame.steer_hub.axis, self.front_frame.steer_hub.axis),
+            PinJoint(self._add_prefix("front_wheel_joint"),
+                     self.front_frame.wheel_hub.to_valid_joint_arg(),
                      self.front_wheel.body, self.q[7], self.u[7],
-                     self.front_frame.wheel_attachment, self.front_wheel.center,
-                     self.front_frame.wheel_axis, self.front_wheel.rotation_axis),
+                     self.front_frame.wheel_hub.point, self.front_wheel.center,
+                     self.front_frame.wheel_hub.axis,
+                     self.front_wheel.rotation_axis),
         )
         # Define contact points.
         with contextlib.suppress(ValueError):
@@ -138,11 +143,11 @@ class WhippleBicycleMoore(WhippleBicycle):
         if self.cranks:
             self.cranks.center_point.set_pos(self.rear_frame.bottom_bracket, 0)
             self.cranks.frame.orient_axis(
-                self.rear_frame.frame, self.rear_frame.wheel_axis,
+                self.rear_frame.wheel_hub.frame, self.rear_frame.wheel_hub.axis,
                 self.q[7] / self.symbols["gear_ratio"])
             self.cranks.frame.set_ang_vel(
-                self.rear_frame.frame,
-                self.u[7] / self.symbols["gear_ratio"] * self.rear_frame.wheel_axis)
+                self.rear_frame.wheel_hub.frame,
+                self.u[7] / self.symbols["gear_ratio"] * self.rear_frame.wheel_hub.axis)
 
     def _define_loads(self) -> None:
         """Define the loads of the Whipple bicycle."""

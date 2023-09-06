@@ -1,6 +1,8 @@
 """Module containing utilities for testing."""
 from __future__ import annotations
 
+from sympy.physics.mechanics._system import System
+
 from brim.core import ConnectionBase, ConnectionRequirement, LoadGroupBase, ModelBase
 
 
@@ -40,6 +42,7 @@ def create_model_of_connection(connection_cls: type[ConnectionBase]) -> type[Mod
         ModelBase._define_objects(self)
         for conn in self.connections:
             conn.define_objects()
+        self._system = System(self.conn.system.frame, self.conn.system.origin)
 
     def _define_kinematics(self):
         ModelBase._define_kinematics(self)

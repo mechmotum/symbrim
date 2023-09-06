@@ -21,18 +21,19 @@ class TestSteerConnectionBase:
         self.model.conn = hand_grip_cls("steer_connection")
         self.model.define_connections()
         self.model.define_objects()
+        self.steer_frame = self.model.front_frame.steer_hub.frame
         # Define kinematics with enough degrees of freedom
         self.q = dynamicsymbols("q1:5")
         self.model.left_arm.hand_interframe.orient_axis(
-            self.model.front_frame.frame, self.model.front_frame.steer_axis, self.q[0])
+            self.steer_frame, self.model.front_frame.steer_hub.axis, self.q[0])
         self.model.left_arm.shoulder_interpoint.set_pos(
-            self.model.front_frame.left_hand_grip,
-            self.q[1] * self.model.front_frame.steer_axis)
+            self.model.front_frame.left_hand_grip.point,
+            self.q[1] * self.model.front_frame.steer_hub.axis)
         self.model.right_arm.hand_interframe.orient_axis(
-            self.model.front_frame.frame, self.model.front_frame.steer_axis, self.q[2])
+            self.steer_frame, self.model.front_frame.steer_hub.axis, self.q[2])
         self.model.right_arm.shoulder_interpoint.set_pos(
-            self.model.front_frame.right_hand_grip,
-            self.q[3] * self.model.front_frame.steer_axis)
+            self.model.front_frame.right_hand_grip.point,
+            self.q[3] * self.model.front_frame.steer_hub.axis)
         self.model.define_kinematics()
         self.model.define_loads()
         self.model.define_constraints()
@@ -46,22 +47,22 @@ class TestSteerConnectionBase:
     @pytest.mark.parametrize("side, arm_cls", [
         ("left", PinElbowStickLeftArm), ("right", PinElbowStickRightArm)])
     def test_single_arm(self, hand_grip_cls, side, arm_cls) -> None:
-        self.model = create_model_of_connection(hand_grip_cls)("model")
-        self.model.front_frame = RigidFrontFrameMoore("front_frame")
-        setattr(self.model, side + "_arm", arm_cls(side + "_arm"))
-        self.model.conn = hand_grip_cls("steer_connection")
-        self.model.define_connections()
-        self.model.define_objects()
+        model = create_model_of_connection(hand_grip_cls)("model")
+        model.front_frame = RigidFrontFrameMoore("front_frame")
+        setattr(model, side + "_arm", arm_cls(side + "_arm"))
+        model.conn = hand_grip_cls("steer_connection")
+        model.define_connections()
+        model.define_objects()
         # Define kinematics with enough degrees of freedom
-        self.q = dynamicsymbols("q1:3")
-        getattr(self.model, side + "_arm").hand_interframe.orient_axis(
-            self.model.front_frame.frame, self.model.front_frame.steer_axis, self.q[0])
-        getattr(self.model, side + "_arm").shoulder_interpoint.set_pos(
-            self.model.front_frame.left_hand_grip,
-            self.q[1] * self.model.front_frame.steer_axis)
-        self.model.define_kinematics()
-        self.model.define_loads()
-        self.model.define_constraints()
+        q = dynamicsymbols("q1:3")
+        getattr(model, side + "_arm").hand_interframe.orient_axis(
+            model.front_frame.steer_hub.frame, model.front_frame.steer_hub.axis, q[0])
+        getattr(model, side + "_arm").shoulder_interpoint.set_pos(
+            model.front_frame.left_hand_grip.point,
+            q[1] * model.front_frame.steer_hub.axis)
+        model.define_kinematics()
+        model.define_loads()
+        model.define_constraints()
 
 
 class TestHolonomicHandGrip:
@@ -74,10 +75,11 @@ class TestHolonomicHandGrip:
         self.model.conn = HolonomicHandGrips("steer_connection")
         self.model.define_connections()
         self.model.define_objects()
+        self.steer_frame = self.model.front_frame.steer_hub.frame
         self.model.left_arm.hand_interframe.orient_axis(
-            self.model.front_frame.frame, self.model.front_frame.steer_axis, 0)
+            self.steer_frame, self.model.front_frame.steer_hub.axis, 0)
         self.model.right_arm.hand_interframe.orient_axis(
-            self.model.front_frame.frame, self.model.front_frame.steer_axis, 0)
+            self.steer_frame, self.model.front_frame.steer_hub.axis, 0)
         self.front_frame, self.left_arm, self.right_arm, self.conn = (
             self.model.front_frame, self.model.left_arm, self.model.right_arm,
             self.model.conn)
@@ -85,11 +87,11 @@ class TestHolonomicHandGrip:
     def test_all_constraints(self) -> None:
         q = dynamicsymbols("q1:7")
         self.left_arm.hand_interpoint.set_pos(
-            self.front_frame.left_hand_grip,
-            sum(qi * v for qi, v in zip(q[:3], self.front_frame.frame)))
+            self.front_frame.left_hand_grip.point,
+            sum(qi * v for qi, v in zip(q[:3], self.steer_frame)))
         self.right_arm.hand_interpoint.set_pos(
-            self.front_frame.right_hand_grip,
-            sum(qi * v for qi, v in zip(q[3:], self.front_frame.frame)))
+            self.front_frame.right_hand_grip.point,
+            sum(qi * v for qi, v in zip(q[3:], self.steer_frame)))
         self.model.define_kinematics()
         self.model.define_loads()
         self.model.define_constraints()
@@ -103,10 +105,10 @@ class TestHolonomicHandGrip:
 
     def test_not_fully_constraint(self) -> None:
         q, d = dynamicsymbols("q"), Symbol("d")
-        self.left_arm.hand_interpoint.set_pos(self.front_frame.left_hand_grip, 0)
+        self.left_arm.hand_interpoint.set_pos(self.front_frame.left_hand_grip.point, 0)
         self.right_arm.hand_interpoint.set_pos(
-            self.front_frame.right_hand_grip,
-            q * self.front_frame.frame.x + 2 * d * self.front_frame.frame.x)
+            self.front_frame.right_hand_grip.point,
+            q * self.steer_frame.x + 2 * d * self.steer_frame.x)
         self.model.define_kinematics()
         self.model.define_loads()
         self.model.define_constraints()
@@ -116,10 +118,10 @@ class TestHolonomicHandGrip:
 
     def test_constant_constraint(self) -> None:
         q, d = dynamicsymbols("q"), Symbol("d")
-        self.left_arm.hand_interpoint.set_pos(self.front_frame.left_hand_grip, 0)
+        self.left_arm.hand_interpoint.set_pos(self.front_frame.left_hand_grip.point, 0)
         self.right_arm.hand_interpoint.set_pos(
-            self.front_frame.right_hand_grip,
-            q * self.front_frame.frame.x + d * self.front_frame.frame.y)
+            self.front_frame.right_hand_grip.point,
+            q * self.steer_frame.x + d * self.steer_frame.y)
         self.model.define_kinematics()
         self.model.define_loads()
         with pytest.raises(ValueError):
@@ -136,10 +138,11 @@ class TestSpringDamperHandGrip:
         self.model.conn = SpringDamperHandGrips("steer_connection")
         self.model.define_connections()
         self.model.define_objects()
+        self.steer_frame = self.model.front_frame.steer_hub.frame
         self.model.left_arm.hand_interframe.orient_axis(
-            self.model.front_frame.frame, self.model.front_frame.steer_axis, 0)
+            self.steer_frame, self.model.front_frame.steer_hub.axis, 0)
         self.model.right_arm.hand_interframe.orient_axis(
-            self.model.front_frame.frame, self.model.front_frame.steer_axis, 0)
+            self.steer_frame, self.model.front_frame.steer_hub.axis, 0)
         self.front_frame, self.left_arm, self.right_arm, self.conn = (
             self.model.front_frame, self.model.left_arm, self.model.right_arm,
             self.model.conn)
@@ -147,9 +150,9 @@ class TestSpringDamperHandGrip:
     def test_loads(self) -> None:
         q1, q2 = dynamicsymbols("q1:3")
         self.left_arm.hand_interpoint.set_pos(
-            self.front_frame.left_hand_grip, q1 * self.front_frame.frame.x)
+            self.front_frame.left_hand_grip.point, q1 * self.steer_frame.x)
         self.right_arm.hand_interpoint.set_pos(
-            self.front_frame.right_hand_grip, -q2 * self.front_frame.frame.y)
+            self.front_frame.right_hand_grip.point, -q2 * self.steer_frame.y)
         self.model.define_kinematics()
         self.model.define_loads()
         self.model.define_constraints()
@@ -165,16 +168,16 @@ class TestSpringDamperHandGrip:
         assert len(loads) == 4
         k, c = self.conn.symbols["k"], self.conn.symbols["c"]
         for ld in loads:
-            if ld.location == self.front_frame.left_hand_grip:
-                assert (ld.vector - (k * q1 + c * q1.diff()) * self.front_frame.frame.x
+            if ld.location == self.front_frame.left_hand_grip.point:
+                assert (ld.vector - (k * q1 + c * q1.diff()) * self.steer_frame.x
                         ).simplify() == Vector(0)
             elif ld.location == self.left_arm.hand_interpoint:
-                assert (ld.vector + (k * q1 + c * q1.diff()) * self.front_frame.frame.x
+                assert (ld.vector + (k * q1 + c * q1.diff()) * self.steer_frame.x
                         ).simplify() == Vector(0)
-            elif ld.location == self.front_frame.right_hand_grip:
-                assert (ld.vector - (-k * q2 - c * q2.diff()) * self.front_frame.frame.y
+            elif ld.location == self.front_frame.right_hand_grip.point:
+                assert (ld.vector - (-k * q2 - c * q2.diff()) * self.steer_frame.y
                         ).simplify() == Vector(0)
             else:
                 assert ld.location == self.right_arm.hand_interpoint
-                assert (ld.vector + (-k * q2 - c * q2.diff()) * self.front_frame.frame.y
+                assert (ld.vector + (-k * q2 - c * q2.diff()) * self.steer_frame.y
                         ).simplify() == Vector(0)

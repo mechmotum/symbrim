@@ -7,9 +7,10 @@ from typing import TYPE_CHECKING, Any
 
 from sympy import ImmutableMatrix as Matrix
 from sympy import Symbol, symbols
-from sympy.physics.mechanics import Force, Point, Vector, dynamicsymbols, inertia
+from sympy.physics.mechanics import Force, Point, RigidBody, dynamicsymbols, inertia
+from sympy.physics.mechanics._system import System
 
-from brim.core import ModelBase, NewtonianBodyMixin, set_default_convention
+from brim.core import Attachment, Hub, ModelBase, set_default_convention
 
 with contextlib.suppress(ImportError):
     import numpy as np
@@ -30,52 +31,48 @@ __all__ = ["FrontFrameBase", "RigidFrontFrame", "RigidFrontFrameMoore",
            "SuspensionRigidFrontFrame", "SuspensionRigidFrontFrameMoore"]
 
 
-class FrontFrameBase(NewtonianBodyMixin, ModelBase):
-    """Base class for the front frame of a bicycle."""
+class FrontFrameBase(ModelBase):
+    """Base class for the front frame of a bicycle.
 
-    def _define_objects(self):
-        """Define the objects of the front frame."""
-        super()._define_objects()
-        self._wheel_attachment = Point(self._add_prefix("wheel_attachment"))
-        self._left_hand_grip = Point(self._add_prefix("left_hand_grip"))
-        self._right_hand_grip = Point(self._add_prefix("right_hand_grip"))
-
-    @property
-    @abstractmethod
-    def steer_axis(self) -> Vector:
-        """Steer axis expressed in the front frame."""
+    Explanation
+    -----------
+    This class in a abstract base class for the front frame of a bicycle. It defines
+    the common attributes of the front frame and the methods that must be implemented
+    by the subclasses.
+    """
 
     @property
     @abstractmethod
-    def wheel_axis(self) -> Vector:
-        """Wheel axis expressed in the front frame."""
+    def steer_hub(self) -> Hub:
+        """Steer hub expressed in the front frame."""
 
     @property
-    def wheel_attachment(self) -> Point:
-        """Point representing the attachment of the front wheel."""
-        return self._wheel_attachment
+    @abstractmethod
+    def wheel_hub(self) -> Hub:
+        """Wheel hub expressed in the front frame."""
 
     @property
-    def left_hand_grip(self) -> Point:
-        """Point representing the left hand grip."""
-        return self._left_hand_grip
+    @abstractmethod
+    def left_hand_grip(self) -> Attachment:
+        """Attachment representing the left hand grip."""
 
     @property
-    def right_hand_grip(self) -> Point:
-        """Point representing the right hand grip."""
-        return self._right_hand_grip
+    @abstractmethod
+    def right_hand_grip(self) -> Attachment:
+        """Attachment representing the right hand grip."""
 
-    def get_param_values(self, bicycle_parameters: Bicycle) -> dict[Symbol, float]:
-        """Get the parameter values of the front frame."""
-        params = super().get_param_values(bicycle_parameters)
-        bp = remove_uncertainties(bicycle_parameters.parameters.get(
-            "Benchmark", bicycle_parameters.parameters.get("Measured")))
-        if bp is not None:
-            if hasattr(bp["mH"], "nominal_value"):
-                params[self.body.mass] = bp["mH"].nominal_value
-            else:
-                params[self.body.mass] = bp["mH"]
-        return params
+    def set_plot_objects(self, plot_object: PlotModel) -> None:
+        """Set the symmeplot plot objects."""
+        super().set_plot_objects(plot_object)
+        steer_top = self.steer_hub.point.locatenew(
+            "P", self.steer_hub.axis * self.left_hand_grip.point.pos_from(
+                self.steer_hub.point).dot(self.steer_hub.axis))
+        plot_object.add_line([
+            self.wheel_hub.point, self.steer_hub.point, steer_top,
+            self.left_hand_grip.point, steer_top, self.right_hand_grip.point],
+            self.name)
+        for body in self.system.bodies:
+            plot_object.add_body(body)
 
 
 @set_default_convention("moore")
@@ -85,16 +82,48 @@ class RigidFrontFrame(FrontFrameBase):
     def _define_objects(self):
         """Define the objects of the front frame."""
         super()._define_objects()
+        self._body = RigidBody(self._add_prefix("body"))
         self.body.central_inertia = inertia(self.body.frame,
                                             *symbols(self._add_prefix("ixx iyy izz")),
                                             izx=Symbol(self._add_prefix("izx")))
+        self._system = System.from_newtonian(self.body)
+        self._left_hand_grip = Attachment(
+            self.body.frame, Point(self._add_prefix("left_hand_grip")))
+        self._right_hand_grip = Attachment(
+            self.body.frame, Point(self._add_prefix("right_hand_grip")))
 
     def _define_kinematics(self) -> None:
         """Define the kinematics of the front frame."""
-        self.body.masscenter.set_vel(self.frame, 0)
-        self.wheel_attachment.set_vel(self.frame, 0)
-        self.left_hand_grip.set_vel(self.frame, 0)
-        self.right_hand_grip.set_vel(self.frame, 0)
+        self.body.masscenter.set_vel(self.body.frame, 0)
+        self.wheel_hub.point.set_vel(self.body.frame, 0)
+        self.steer_hub.point.set_vel(self.body.frame, 0)
+        self.left_hand_grip.point.set_vel(self.body.frame, 0)
+        self.right_hand_grip.point.set_vel(self.body.frame, 0)
+
+    @property
+    def body(self) -> RigidBody:
+        """Rigid body representing the front frame."""
+        return self._body
+
+    @property
+    def left_hand_grip(self) -> Attachment:
+        """Attachment representing the left hand grip."""
+        return self._left_hand_grip
+
+    @property
+    def right_hand_grip(self) -> Attachment:
+        """Attachment representing the right hand grip."""
+        return self._right_hand_grip
+
+    def get_param_values(self, bicycle_parameters: Bicycle) -> dict[Symbol, float]:
+        """Get the parameter values of the front frame."""
+        params = super().get_param_values(bicycle_parameters)
+        str_params = _get_front_frame_moore_params(bicycle_parameters)
+        if "mass" in str_params:
+            params[self.body.mass] = str_params["mass"]
+        if "inertia_vals" in str_params:
+            params.update(get_inertia_vals(self.body, *str_params["inertia_vals"]))
+        return params
 
 
 class RigidFrontFrameMoore(RigidFrontFrame):
@@ -128,69 +157,50 @@ class RigidFrontFrameMoore(RigidFrontFrame):
     def _define_objects(self):
         """Define the objects of the front frame."""
         super()._define_objects()
+        self._left_hand_grip = Attachment(
+            self.body.frame, Point(self._add_prefix("left_hand_grip")))
+        self._right_hand_grip = Attachment(
+            self.body.frame, Point(self._add_prefix("right_hand_grip")))
         self.symbols.update({
-            name: Symbol(self._add_prefix(name)) for name in ("d2", "d3", "l3", "l4",
-                                                              "d6", "d7", "d8")})
-        self._steer_attachment = Point(self._add_prefix("steer_attachment"))
+            name: Symbol(self._add_prefix(name)) for name in (
+                "d2", "d3", "l3", "l4", "d6", "d7", "d8")})
+        self._wheel_hub = Hub(self.body.frame,
+                              Point(self._add_prefix("wheel_hub_point")), "y")
+        self._steer_hub = Hub(self.body.frame,
+                              Point(self._add_prefix("steer_hub_point")), "z")
 
     def _define_kinematics(self):
         """Define the kinematics of the front frame."""
         super()._define_kinematics()
         d2, d3, l3, l4, d6, d7, d8 = (self.symbols[name] for name in (
             "d2", "d3", "l3", "l4", "d6", "d7", "d8"))
-        self.wheel_attachment.set_pos(self.steer_attachment, d3 * self.x + d2 * self.z)
-        self.body.masscenter.set_pos(self.wheel_attachment, l3 * self.x + l4 * self.z)
-        self.left_hand_grip.set_pos(self.steer_attachment,
-                                    d6 * self.x - d7 * self.y + d8 * self.z)
-        self.right_hand_grip.set_pos(self.steer_attachment,
-                                     d6 * self.x + d7 * self.y + d8 * self.z)
-        self.steer_attachment.set_vel(self.frame, 0)
+        x, y, z = self.body.x, self.body.y, self.body.z
+        self.wheel_hub.point.set_pos(self.steer_hub.point, d3 * x + d2 * z)
+        self.body.masscenter.set_pos(self.wheel_hub.point, l3 * x + l4 * z)
+        self.left_hand_grip.point.set_pos(
+            self.steer_hub.point, d6 * x - d7 * y + d8 * z)
+        self.right_hand_grip.point.set_pos(
+            self.steer_hub.point, d6 * x + d7 * y + d8 * z)
+        self.steer_hub.point.set_vel(self.body.frame, 0)
 
     @property
-    def steer_axis(self) -> Vector:
+    def steer_hub(self) -> Hub:
         """Steer axis expressed in the front frame."""
-        return self.body.z
+        return self._steer_hub
 
     @property
-    def wheel_axis(self) -> Vector:
+    def wheel_hub(self) -> Hub:
         """Wheel axis expressed in the front frame."""
-        return self.body.y
-
-    @property
-    def steer_attachment(self) -> Point:
-        """Attachment point between the rear frame and the front frame.
-
-        Explanation
-        -----------
-        In Moore's convention an attachment point between the rear and the front frame
-        is defined. This point is defined as the intersection of the steer axis a
-        perpendicular line, which passes through the attachment of the rear wheel to the
-        rear frame.
-        """
-        return self._steer_attachment
+        return self._wheel_hub
 
     def get_param_values(self, bicycle_parameters: Bicycle) -> dict[Symbol, float]:
         """Get the parameter values of the front frame."""
         params = super().get_param_values(bicycle_parameters)
         str_params = _get_front_frame_moore_params(bicycle_parameters)
-        if "mass" in str_params:
-            params[self.body.mass] = str_params["mass"]
-        if "inertia_vals" in str_params:
-            params.update(get_inertia_vals(self.body, *str_params["inertia_vals"]))
         for name in ("d2", "d3", "l3", "l4", "d6", "d7", "d8"):
             if name in str_params:
                 params[self.symbols[name]] = str_params[name]
         return params
-
-    def set_plot_objects(self, plot_object: PlotModel) -> None:
-        """Set the symmeplot plot objects."""
-        super().set_plot_objects(plot_object)
-        steer_top = self.steer_attachment.locatenew(
-            "P", self.steer_axis * self.left_hand_grip.pos_from(
-                self.steer_attachment).dot(self.steer_axis))
-        plot_object.add_line([
-            self.wheel_attachment, self.steer_attachment, steer_top,
-            self.left_hand_grip, steer_top, self.right_hand_grip], self.name)
 
 
 @set_default_convention("moore")
@@ -258,36 +268,45 @@ class SuspensionRigidFrontFrameMoore(SuspensionRigidFrontFrame):
     def _define_objects(self):
         """Define the objects of the front frame."""
         super()._define_objects()
+        self._body = RigidBody(self._add_prefix("body"))
+        self.body.central_inertia = inertia(self.body.frame,
+                                            *symbols(self._add_prefix("ixx iyy izz")),
+                                            izx=Symbol(self._add_prefix("izx")))
+        self._system = System.from_newtonian(self.body)
         self.symbols.update({
-            name: Symbol(self._add_prefix(name)) for name in ("d2", "d3", "l3", "l4",
-                                                              "d6", "d7", "d8", "d9")})
-        self._steer_attachment = Point(self._add_prefix("steer_attachment"))
+            name: Symbol(self._add_prefix(name)) for name in (
+                "d2", "d3", "l3", "l4", "d6", "d7", "d8", "d9")})
+        self._wheel_hub = Hub.from_name(self._add_prefix("wheel"), "y")
+        self._steer_hub = Hub(
+            self.body.frame, Point(self._add_prefix("steer_hub_point")), "z")
+        self._left_hand_grip = Attachment(
+            self.body.frame, Point(self._add_prefix("left_hand_grip")))
+        self._right_hand_grip = Attachment(
+            self.body.frame, Point(self._add_prefix("right_hand_grip")))
         self._suspension_stanchions = Point(self._add_prefix("suspension_stanchions"))
-        self._suspension_slider = Point(self._add_prefix("suspension_slider"))
+        self._suspension_lowers = Point(self._add_prefix("suspension_lowers"))
 
     def _define_kinematics(self):
         """Define the kinematics of the front frame."""
         super()._define_kinematics()
         d2, d3, l3, l4, d6, d7, d8, d9 = (self.symbols[name] for name in (
             "d2", "d3", "l3", "l4", "d6", "d7", "d8", "d9"))
-        self.wheel_attachment.set_pos(self.steer_attachment, d3 * self.x +
-                                      (d2 + self.q[0]) * self.z)
-        self.body.masscenter.set_pos(self.wheel_attachment, l3 * self.x +
-                                     (l4 - self.q[0]) * self.z)
-        self.left_hand_grip.set_pos(self.steer_attachment,
-                                    d6 * self.x - d7 * self.y + d8 * self.z)
-        self.right_hand_grip.set_pos(self.steer_attachment,
-                                     d6 * self.x + d7 * self.y + d8 * self.z)
-        self.suspension_stanchions.set_pos(self.steer_attachment, d9 * self.x)
-        self.suspension_slider.set_pos(self.suspension_stanchions,
-                                       self.q[0] * self.z)
-        self.body.masscenter.set_vel(self.frame, 0)
-        self.steer_attachment.set_vel(self.frame, 0)
-        self.wheel_attachment.set_vel(self.frame, self.u[0] * self.z)
-        self.left_hand_grip.set_vel(self.frame, 0)
-        self.right_hand_grip.set_vel(self.frame, 0)
-        self.suspension_stanchions.set_vel(self.frame, 0)
-        self.suspension_slider.set_vel(self.frame, self.u[0] * self.z)
+        x, y, z = self.body.x, self.body.y, self.body.z
+        self.wheel_hub.frame.orient_axis(self.body.frame, self.body.z, 0)
+        self.wheel_hub.point.set_pos(
+            self.steer_hub.point, d3 * x + (d2 + self.q[0]) * z)
+        self.body.masscenter.set_pos(
+            self.wheel_hub.point, l3 * x + (l4 - self.q[0]) * z)
+        self.left_hand_grip.point.set_pos(
+            self.steer_hub.point, d6 * x - d7 * y + d8 * z)
+        self.right_hand_grip.point.set_pos(
+            self.steer_hub.point, d6 * x + d7 * y + d8 * z)
+        self.suspension_stanchions.set_pos(self.steer_hub.point, d9 * x)
+        self.suspension_lowers.set_pos(self.suspension_stanchions, self.q[0] * z)
+        self.body.masscenter.set_vel(self.body.frame, 0)
+        self.wheel_hub.point.set_vel(self.body.frame, self.u[0] * z)
+        self.suspension_stanchions.set_vel(self.body.frame, 0)
+        self.suspension_lowers.set_vel(self.body.frame, self.u[0] * z)
         self.system.add_coordinates(*self.q)
         self.system.add_speeds(*self.u)
         self.system.add_kdes(*(self.q.diff(dynamicsymbols._t) - self.u))
@@ -297,24 +316,34 @@ class SuspensionRigidFrontFrameMoore(SuspensionRigidFrontFrame):
         super()._define_loads()
         force = -self.symbols["k"] * self.q[0] - self.symbols["c"] * self.u[0]
         self.system.add_loads(
-            Force(self.suspension_stanchions, force * self.z),
-            Force(self.suspension_slider, -force * self.z)
+            Force(self.suspension_stanchions, force * self.body.z),
+            Force(self.suspension_lowers, -force * self.body.z)
         )
 
     @property
-    def steer_axis(self) -> Vector:
+    def body(self) -> RigidBody:
+        """Rigid body representing the front frame."""
+        return self._body
+
+    @property
+    def left_hand_grip(self) -> Attachment:
+        """Attachment representing the left hand grip."""
+        return self._left_hand_grip
+
+    @property
+    def right_hand_grip(self) -> Attachment:
+        """Attachment representing the right hand grip."""
+        return self._right_hand_grip
+
+    @property
+    def steer_hub(self) -> Hub:
         """Steer axis expressed in the front frame."""
-        return self.z
+        return self._steer_hub
 
     @property
-    def wheel_axis(self) -> Vector:
+    def wheel_hub(self) -> Hub:
         """Wheel axis expressed in the front frame."""
-        return self.y
-
-    @property
-    def steer_attachment(self) -> Point:
-        """Attachment point between the rear frame and the front frame."""
-        return self._steer_attachment
+        return self._wheel_hub
 
     @property
     def suspension_stanchions(self) -> Point:
@@ -322,9 +351,9 @@ class SuspensionRigidFrontFrameMoore(SuspensionRigidFrontFrame):
         return self._suspension_stanchions
 
     @property
-    def suspension_slider(self) -> Point:
+    def suspension_lowers(self) -> Point:
         """Point representing the suspension slider, where the force is applied."""
-        return self._suspension_slider
+        return self._suspension_lowers
 
     def get_param_values(self, bicycle_parameters: Bicycle) -> dict[Symbol, float]:
         """Get the parameter values of the front frame."""
@@ -339,19 +368,9 @@ class SuspensionRigidFrontFrameMoore(SuspensionRigidFrontFrame):
                 params[self.symbols[name]] = str_params[name]
         return params
 
-    def set_plot_objects(self, plot_object: PlotModel) -> None:
-        """Set the symmeplot plot objects."""
-        super().set_plot_objects(plot_object)
-        steer_top = self.steer_attachment.locatenew(
-            "P", self.steer_axis * self.left_hand_grip.pos_from(
-                self.steer_attachment).dot(self.steer_axis))
-        plot_object.add_line([
-            self.wheel_attachment, self.steer_attachment, steer_top,
-            self.left_hand_grip, steer_top, self.right_hand_grip], self.name)
-
 
 def _get_front_frame_moore_params(bicycle_parameters: Bicycle
-                                  ) -> dict[str, float]:  # pragma: no cover
+                                  ) -> dict[str, Any]:  # pragma: no cover
     params = {}
     if "Benchmark" in bicycle_parameters.parameters:
         bp = remove_uncertainties(bicycle_parameters.parameters["Benchmark"])

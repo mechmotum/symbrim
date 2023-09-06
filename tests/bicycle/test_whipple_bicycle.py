@@ -133,8 +133,8 @@ class TestWhippleBicycleMoore:
     def test_cranks(self, _setup_default) -> None:
         self.bike.cranks = MasslessCranks("cranks")
         self.bike.define_all()
+        rf = self.bike.rear_frame.wheel_hub.frame
         assert self.bike.cranks.center_point.pos_from(self.bike.rear_wheel.center).diff(
-            dynamicsymbols._t, self.bike.rear_frame.frame) == 0
-        assert self.bike.cranks.frame.ang_vel_in(self.bike.rear_frame.frame).dot(
-            self.bike.rear_frame.frame.y) == self.bike.u[7] / self.bike.symbols[
-            "gear_ratio"]
+            dynamicsymbols._t, rf) == 0
+        assert (self.bike.cranks.frame.ang_vel_in(rf).dot(rf.y) ==
+                self.bike.u[7] / self.bike.symbols["gear_ratio"])
