@@ -1,4 +1,5 @@
 """Module for joint attachments."""
+from __future__ import annotations
 
 from sympy import Expr, S
 from sympy.physics.mechanics import (
@@ -82,7 +83,7 @@ class Attachment:
         self.point.set_vel(self.frame, 0)
 
     @classmethod
-    def from_name(cls, name: str) -> "Attachment":
+    def from_name(cls, name: str) -> Attachment:
         """Create an attachment based on a name."""
         name = str(name)
         if not name.isidentifier():
@@ -144,7 +145,7 @@ class Hub(Attachment):
         self._axis = axis
 
     @classmethod
-    def from_name(cls, name: str, axis: str) -> "Hub":
+    def from_name(cls, name: str, axis: str) -> Hub:
         """Create a hub based on a name and an axis."""
         name = str(name)
         if not name.isidentifier():

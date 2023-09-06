@@ -294,19 +294,19 @@ class SuspensionRigidFrontFrameMoore(SuspensionRigidFrontFrame):
         x, y, z = self.body.x, self.body.y, self.body.z
         self.wheel_hub.frame.orient_axis(self.body.frame, self.body.z, 0)
         self.wheel_hub.point.set_pos(
-            self.steer_hub.point, d3 * x + (d2 + self.q[0]) * z)
+            self.steer_hub.point, d3 * x + (d2 - self.q[0]) * z)
         self.body.masscenter.set_pos(
-            self.wheel_hub.point, l3 * x + (l4 - self.q[0]) * z)
+            self.wheel_hub.point, l3 * x + (l4 + self.q[0]) * z)
         self.left_hand_grip.point.set_pos(
             self.steer_hub.point, d6 * x - d7 * y + d8 * z)
         self.right_hand_grip.point.set_pos(
             self.steer_hub.point, d6 * x + d7 * y + d8 * z)
         self.suspension_stanchions.set_pos(self.steer_hub.point, d9 * x)
-        self.suspension_lowers.set_pos(self.suspension_stanchions, self.q[0] * z)
+        self.suspension_lowers.set_pos(self.suspension_stanchions, -self.q[0] * z)
         self.body.masscenter.set_vel(self.body.frame, 0)
-        self.wheel_hub.point.set_vel(self.body.frame, self.u[0] * z)
+        self.wheel_hub.point.set_vel(self.body.frame, -self.u[0] * z)
         self.suspension_stanchions.set_vel(self.body.frame, 0)
-        self.suspension_lowers.set_vel(self.body.frame, self.u[0] * z)
+        self.suspension_lowers.set_vel(self.body.frame, -self.u[0] * z)
         self.system.add_coordinates(*self.q)
         self.system.add_speeds(*self.u)
         self.system.add_kdes(*(self.q.diff(dynamicsymbols._t) - self.u))

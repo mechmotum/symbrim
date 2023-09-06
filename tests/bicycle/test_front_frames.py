@@ -110,9 +110,9 @@ class TestSuspensionRigidFrontFrameMoore:
         assert front.body.masscenter.vel(front.body.frame) == 0
         assert front.steer_hub.point.vel(front.body.frame) == 0
         assert front.suspension_stanchions.vel(front.body.frame) == 0
-        assert front.wheel_hub.point.vel(front.body.frame) == front.u[0] * front.body.z
+        assert front.wheel_hub.point.vel(front.body.frame) == -front.u[0] * front.body.z
         assert (front.suspension_lowers.vel(front.body.frame) ==
-                front.u[0] * front.body.z)
+                -front.u[0] * front.body.z)
         assert front.left_hand_grip.point.vel(front.body.frame) == 0
         assert front.right_hand_grip.point.vel(front.body.frame) == 0
         assert front.wheel_hub.frame.ang_vel_in(front.steer_hub.frame) == Vector(0)
@@ -133,8 +133,8 @@ class TestSuspensionRigidFrontFrameMoore:
         q, u, k, c = front.q[0], front.u[0], front.symbols["k"], front.symbols["c"]
         stanchion_force = stanchion_force.xreplace({k: 1000, c: 50})
         slider_force = slider_force.xreplace({k: 1000, c: 50})
-        steer_axis = front.steer_hub.axis
-        assert stanchion_force.dot(steer_axis).xreplace({q: 0.02, u: -0.1}) == -15
-        assert slider_force.dot(steer_axis).xreplace({q: 0.02, u: -0.1}) == 15
-        assert stanchion_force.dot(steer_axis).xreplace({q: 0.02, u: 0.1}) == -25
-        assert slider_force.dot(steer_axis).xreplace({q: 0.02, u: 0.1}) == 25
+        steer_axis_up = -front.steer_hub.axis
+        assert stanchion_force.dot(steer_axis_up).xreplace({q: 0.02, u: -0.1}) == 15
+        assert slider_force.dot(steer_axis_up).xreplace({q: 0.02, u: -0.1}) == -15
+        assert stanchion_force.dot(steer_axis_up).xreplace({q: 0.02, u: 0.1}) == 25
+        assert slider_force.dot(steer_axis_up).xreplace({q: 0.02, u: 0.1}) == -25
