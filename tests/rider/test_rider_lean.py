@@ -26,8 +26,11 @@ class TestRiderLean:
         assert self.conn.lean_axis == self.rear.saddle.frame.x
         assert isinstance(self.conn.lean_point, Point)
 
-    def test_descriptions(self) -> None:
+    def test_connection_descriptions(self) -> None:
         _test_descriptions(self.conn)
+
+    def test_model_descriptions(self) -> None:
+        _test_descriptions(self.rider)
 
     def test_dynamics(self):
         g = Symbol("g")
