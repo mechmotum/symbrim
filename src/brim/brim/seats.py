@@ -94,15 +94,16 @@ class FixedSeat(PelvisInterPointMixin, SeatBase):
             name: Symbol(self._add_prefix(name)) for name in ("yaw", "pitch", "roll")})
         self._rear_interframe = ReferenceFrame(self._add_prefix("rear_interframe"))
         self._rear_interframe.orient_body_fixed(
-            self.rear_frame.frame, (self.symbols[a] for a in ("yaw", "pitch", "roll")),
-            "zyx")
+            self.rear_frame.saddle.frame,
+            (self.symbols[a] for a in ("yaw", "pitch", "roll")), "zyx")
 
     def _define_kinematics(self) -> None:
         """Define the kinematics."""
         super()._define_kinematics()
         self.system.add_joints(WeldJoint(
-            self._add_prefix("weld_joint"), self.rear_frame.body, self.pelvis.body,
-            self.rear_frame.saddle, self.pelvis_interpoint, self.rear_interframe))
+            self._add_prefix("weld_joint"), self.rear_frame.saddle.to_valid_joint_arg(),
+            self.pelvis.body, self.rear_frame.saddle.point, self.pelvis_interpoint,
+            self.rear_interframe))
 
     @property
     def rear_interframe(self) -> ReferenceFrame:
@@ -112,7 +113,7 @@ class FixedSeat(PelvisInterPointMixin, SeatBase):
     @rear_interframe.setter
     def rear_interframe(self, rear_interframe: ReferenceFrame) -> None:
         try:
-            rear_interframe.dcm(self.rear_frame.frame)
+            rear_interframe.dcm(self.rear_frame.saddle.frame)
         except ValueError as e:
             raise ValueError(
                 "Intermediate rear frame must be oriented w.r.t the rear frame.") from e
@@ -139,18 +140,20 @@ class SideLeanSeat(PelvisInterPointMixin, SeatBase):
         self.u = Matrix([dynamicsymbols(self._add_prefix("u"))])
         alpha = Symbol(self._add_prefix("alpha"))
         self.symbols["alpha"] = alpha
-        self._frame_lean_axis = (cos(alpha) * self.rear_frame.x -
-                                 sin(alpha) * self.rear_frame.z)
+        self._frame_lean_axis = (cos(alpha) * self.rear_frame.saddle.frame.x -
+                                 sin(alpha) * self.rear_frame.saddle.frame.z)
         self._pelvis_lean_axis = self.pelvis.x
-        self._system = System.from_newtonian(self.rear_frame.body)
+        self._system = System(self.rear_frame.system.frame,
+                              self.rear_frame.system.origin)
 
     def _define_kinematics(self) -> None:
         """Define the kinematics."""
         super()._define_kinematics()
         self.system.add_joints(
             PinJoint(
-                self._add_prefix("lean_joint"), self.rear_frame.body, self.pelvis.body,
-                self.q, self.u, self.rear_frame.saddle, self.pelvis_interpoint,
+                self._add_prefix("lean_joint"),
+                self.rear_frame.saddle.to_valid_joint_arg(), self.pelvis.body,
+                self.q, self.u, self.rear_frame.saddle.point, self.pelvis_interpoint,
                 self.frame_lean_axis, self.pelvis_lean_axis)
         )
 
@@ -163,7 +166,7 @@ class SideLeanSeat(PelvisInterPointMixin, SeatBase):
     def frame_lean_axis(self, value: Vector) -> None:
         """Set the lean axis of the rear frame."""
         try:
-            value.express(self.rear_frame.frame)
+            value.express(self.rear_frame.saddle.frame)
         except ValueError as e:
             raise ValueError("Lean axis must be expressable in the rear frame.") from e
         self._frame_lean_axis = value
@@ -204,8 +207,9 @@ class SideLeanSeatTorque(LoadGroupBase):
     def _define_loads(self) -> None:
         """Define the kinematics."""
         self.system.add_actuators(
-            TorqueActuator(self.symbols["T"], self.parent.frame_lean_axis,
-                           self.parent.pelvis.frame, self.parent.rear_frame.frame)
+            TorqueActuator(
+                self.symbols["T"], self.parent.frame_lean_axis,
+                self.parent.pelvis.frame, self.parent.rear_frame.saddle.frame)
         )
 
 
@@ -241,5 +245,5 @@ class SideLeanSeatSpringDamper(LoadGroupBase):
                 -self.symbols["k"] * (pin.coordinates[0] - self.symbols["q_ref"]) -
                 self.symbols["c"] * pin.speeds[0],
                 self.parent.frame_lean_axis, self.parent.pelvis.frame,
-                self.parent.rear_frame.frame)
+                self.parent.rear_frame.saddle.frame)
         )

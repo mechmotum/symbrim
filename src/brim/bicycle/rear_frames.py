@@ -6,9 +6,10 @@ from abc import abstractmethod
 from typing import TYPE_CHECKING, Any
 
 from sympy import Symbol, symbols
-from sympy.physics.mechanics import Point, Vector, inertia
+from sympy.physics.mechanics import Point, RigidBody, inertia
+from sympy.physics.mechanics._system import System
 
-from brim.core import ModelBase, NewtonianBodyMixin, set_default_convention
+from brim.core import Attachment, Hub, ModelBase, set_default_convention
 
 with contextlib.suppress(ImportError):
     import numpy as np
@@ -29,45 +30,52 @@ if TYPE_CHECKING:
 __all__ = ["RearFrameBase", "RigidRearFrame", "RigidRearFrameMoore"]
 
 
-class RearFrameBase(NewtonianBodyMixin, ModelBase):
+class RearFrameBase(ModelBase):
     """Base class for the rear frame of a bicycle."""
 
     @property
     @abstractmethod
-    def steer_axis(self) -> Vector:
-        """Steer axis expressed in the rear frame."""
+    def steer_hub(self) -> Hub:
+        """Steer hub expressed in the rear frame."""
 
     @property
     @abstractmethod
-    def wheel_axis(self) -> Vector:
-        """Wheel axis expressed in the rear frame."""
+    def wheel_hub(self) -> Hub:
+        """Wheel hub for the rear wheel expressed in the rear frame."""
 
     @property
     @abstractmethod
-    def saddle(self) -> Point:
-        """Point representing the saddle."""
+    def saddle(self) -> Attachment:
+        """Attachment representing the saddle."""
 
     @property
     @abstractmethod
     def bottom_bracket(self) -> Point:
         """Point representing the center of the bottom bracket."""
 
-    @property
-    @abstractmethod
-    def wheel_attachment(self) -> Point:
-        """Point representing attachment of the rear wheel."""
-
-    def get_param_values(self, bicycle_parameters: Bicycle) -> dict[Symbol, float]:
-        """Get the parameter values of the rear frame."""
-        params = super().get_param_values(bicycle_parameters)
-        bp = remove_uncertainties(bicycle_parameters.parameters.get(
-            "Measured", bicycle_parameters.parameters.get("Benchmark")))
-        if bp is not None:
-            if hasattr(bp["mB"], "nominal_value"):
-                params[self.body.mass] = bp["mB"].nominal_value
-            else:
-                params[self.body.mass] = bp["mB"]
-        return params
+    def set_plot_objects(self, plot_object: PlotModel) -> None:
+        """Set the symmeplot plot objects."""
+        super().set_plot_objects(plot_object)
+        ax_l = 0.15 * self.bottom_bracket.pos_from(self.wheel_hub.point).magnitude()
+        saddle_low = self.saddle.point.locatenew(
+            "P", 0.15 * self.bottom_bracket.pos_from(self.saddle.point))
+        points = [
+            self.bottom_bracket,
+            saddle_low,
+            self.wheel_hub.point.locatenew("P", -ax_l / 2 * self.wheel_hub.axis),
+            self.bottom_bracket,
+            self.wheel_hub.point.locatenew("P", ax_l / 2 * self.wheel_hub.axis),
+            saddle_low,
+            self.saddle.point,
+            saddle_low,
+            self.steer_hub.point.locatenew(  # not perfect but close enough
+                "P", saddle_low.pos_from(self.steer_hub.point).dot(
+                    self.steer_hub.axis) / 2 * self.steer_hub.axis),
+            self.bottom_bracket,
+        ]
+        plot_object.add_line(points, self.name)
+        for body in self.system.bodies:
+            plot_object.add_body(body)
 
 
 @set_default_convention("moore")
@@ -80,19 +88,20 @@ class RigidRearFrame(RearFrameBase):
         return {
             **super().descriptions,
             self.symbols["l_bbx"]: f"Distance between the rear hub and the bottom "
-                                   f"bracket along {self.x}.",
+                                   f"bracket along {self.body.x}.",
             self.symbols["l_bbz"]: f"Distance between the rear hub and the bottom "
-                                   f"bracket along {self.z}.",
+                                   f"bracket along {self.body.z}.",
         }
 
     def _define_objects(self):
         """Define the objects of the rear frame."""
         super()._define_objects()
+        self._body = RigidBody(self._add_prefix("body"))
         self.body.central_inertia = inertia(self.body.frame,
                                             *symbols(self._add_prefix("ixx iyy izz")),
                                             izx=Symbol(self._add_prefix("izx")))
-        self._wheel_attachment = Point(self._add_prefix("wheel_attachment"))
-        self._saddle = Point(self._add_prefix("saddle"))
+        self._system = System.from_newtonian(self.body)
+        self._saddle = Attachment(self.body.frame, Point(self._add_prefix("saddle")))
         self._bottom_bracket = Point(self._add_prefix("bottom_bracket"))
         self.symbols.update({name: Symbol(self._add_prefix(name))
                              for name in ("l_bbx", "l_bbz")})
@@ -100,35 +109,19 @@ class RigidRearFrame(RearFrameBase):
     def _define_kinematics(self):
         """Define the kinematics of the rear frame."""
         super()._define_kinematics()
-        self.wheel_attachment.set_vel(self.frame, 0)
-        self.saddle.set_vel(self.frame, 0)
-        self.bottom_bracket.set_pos(self.wheel_attachment,
-                                    self.symbols["l_bbx"] * self.x +
-                                    self.symbols["l_bbz"] * self.z)
-        self.bottom_bracket.set_vel(self.frame, 0)
-
-    def _define_loads(self):
-        """Define the loads acting upon the rear frame."""
-        super()._define_loads()
+        self.bottom_bracket.set_pos(self.wheel_hub.point,
+                                    self.symbols["l_bbx"] * self.body.x +
+                                    self.symbols["l_bbz"] * self.body.z)
+        self.bottom_bracket.set_vel(self.body.frame, 0)
 
     @property
-    @abstractmethod
-    def steer_axis(self) -> Vector:
-        """Steer axis expressed in the rear frame."""
+    def body(self) -> RigidBody:
+        """Rigid body representing the rear frame."""
+        return self._body
 
     @property
-    def wheel_axis(self) -> Vector:
-        """Wheel axis expressed in the rear frame."""
-        return self.body.y
-
-    @property
-    def wheel_attachment(self) -> Point:
-        """Point representing attachment of the rear wheel."""
-        return self._wheel_attachment
-
-    @property
-    def saddle(self) -> Point:
-        """Point representing the saddle."""
+    def saddle(self) -> Attachment:
+        """Attachment representing the saddle."""
         return self._saddle
 
     @property
@@ -141,10 +134,13 @@ class RigidRearFrame(RearFrameBase):
         params = super().get_param_values(bicycle_parameters)
         if "Benchmark" in bicycle_parameters.parameters:
             bp = remove_uncertainties(bicycle_parameters.parameters["Benchmark"])
+            params[self.body.mass] = bp["mB"]
         if "Measured" in bicycle_parameters.parameters:
             mep = remove_uncertainties(bicycle_parameters.parameters["Measured"])
             rr, lcs, hbb, lamht = (mep.get(name) for name in (
                 "rR", "lcs", "hbb", "lamht"))
+            if "mB" in mep:
+                params[self.body.mass] = mep["mB"]
             if rr is None and "Benchmark" in bicycle_parameters.parameters:
                 rr = bp["rR"]
             if lamht is None and "Benchmark" in bicycle_parameters.parameters:
@@ -185,40 +181,36 @@ class RigidRearFrameMoore(RigidRearFrame):
         """Define the objects of the rear frame."""
         super()._define_objects()
         self.symbols.update({
-            name: Symbol(self._add_prefix(name)) for name in ("d1", "l1", "l2", "d4",
-                                                              "d5")})
-        self._steer_attachment = Point("steer_attachment")
+            name: Symbol(self._add_prefix(name))
+            for name in ("d1", "l1", "l2", "d4", "d5")})
+        self._steer_hub = Hub(
+            self.body.frame, Point(self._add_prefix("steer_hub_point")), "z")
+        self._wheel_hub = Hub(
+            self.body.frame, Point(self._add_prefix("wheel_hub_point")), "y")
 
     def _define_kinematics(self):
         """Define the kinematics of the rear frame."""
         super()._define_kinematics()
         d1, l1, l2, d4, d5 = (self.symbols[name] for name in ("d1", "l1", "l2", "d4",
                                                               "d5"))
-        self.steer_attachment.set_pos(self.wheel_attachment, d1 * self.x)
-        self.body.masscenter.set_pos(self.wheel_attachment, l1 * self.x + l2 * self.z)
-        self.saddle.set_pos(self.wheel_attachment, d4 * self.x + d5 * self.z)
-        self.body.masscenter.set_vel(self.frame, 0)
-        self.steer_attachment.set_vel(self.frame, 0)
-        self.wheel_attachment.set_vel(self.frame, 0)
-        self.saddle.set_vel(self.frame, 0)
+        x, z = self.body.x, self.body.z
+        self.steer_hub.point.set_pos(self.wheel_hub.point, d1 * x)
+        self.body.masscenter.set_pos(self.wheel_hub.point, l1 * x + l2 * z)
+        self.saddle.point.set_pos(self.wheel_hub.point, d4 * x + d5 * z)
+        self.body.masscenter.set_vel(self.body.frame, 0)
+        self.steer_hub.point.set_vel(self.body.frame, 0)
+        self.wheel_hub.point.set_vel(self.body.frame, 0)
+        self.saddle.point.set_vel(self.body.frame, 0)
 
     @property
-    def steer_axis(self) -> Vector:
-        """Steer axis expressed in the rear frame."""
-        return self.z
+    def steer_hub(self) -> Hub:
+        """Steer hub expressed in the rear frame."""
+        return self._steer_hub
 
     @property
-    def steer_attachment(self) -> Point:
-        """Attachment point between the rear frame and the front frame.
-
-        Explanation
-        -----------
-        In Moore's convention an attachment point between the rear and the front frame
-        is defined. This point is defined as the intersection of the steer axis a
-        perpendicular line, which passes through the attachment of the rear wheel to the
-        rear frame.
-        """
-        return self._steer_attachment
+    def wheel_hub(self) -> Hub:
+        """Wheel hub for the rear wheel expressed in the rear frame."""
+        return self._wheel_hub
 
     def get_param_values(self, bicycle_parameters: Bicycle) -> dict[Symbol, float]:
         """Get the parameter values of the rear frame."""
@@ -253,26 +245,3 @@ class RigidRearFrameMoore(RigidRearFrame):
                 params[self.symbols["d5"]] = (
                         r_rc_sdl[0, 0] * np.cos(lamht) + r_rc_sdl[2, 0] * np.sin(lamht))
         return params
-
-    def set_plot_objects(self, plot_object: PlotModel) -> None:
-        """Set the symmeplot plot objects."""
-        super().set_plot_objects(plot_object)
-        ax_l = 0.15 * self.bottom_bracket.pos_from(
-            self.wheel_attachment).magnitude()
-        saddle_low = self.saddle.locatenew(
-            "P", 0.15 * self.bottom_bracket.pos_from(self.saddle))
-        points = [
-            self.bottom_bracket,
-            saddle_low,
-            self.wheel_attachment.locatenew("P", -ax_l / 2 * self.wheel_axis),
-            self.bottom_bracket,
-            self.wheel_attachment.locatenew("P", ax_l / 2 * self.wheel_axis),
-            saddle_low,
-            self.saddle,
-            saddle_low,
-            self.steer_attachment.locatenew(  # not perfect but close enough
-                "P", saddle_low.pos_from(self.steer_attachment).dot(
-                    self.steer_axis) / 2 * self.steer_axis),
-            self.bottom_bracket,
-        ]
-        plot_object.add_line(points, self.name)
