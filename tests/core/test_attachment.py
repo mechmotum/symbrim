@@ -44,7 +44,7 @@ class TestMasslessBody:
             self.body.potential_energy = 1
 
 
-@pytest.mark.parametrize("cls, kwargs", [(Hub, {"axis": "x"}), (Attachment, {})])
+@pytest.mark.parametrize("cls, kwargs", [(Attachment, {}), (Hub, {"axis": "x"})])
 class TestAttachment:
     @pytest.fixture()
     def _setup(self, cls, kwargs) -> None:
@@ -64,9 +64,13 @@ class TestAttachment:
         assert attachment.frame.name == "attachment_frame"
         assert attachment.point.name == "attachment_point"
 
-    def test_to_valid_joint_arg(self, _setup) -> None:
-        body = MasslessBody("body", Point("point2"), ReferenceFrame("frame2"))
-        PinJoint("joint", self.attachment.to_valid_joint_arg(), body)
+    @pytest.mark.parametrize("set_body_name", [True, False])
+    def test_to_valid_joint_arg(self, _setup, set_body_name) -> None:
+        kwargs = {"name": "my_body"} if set_body_name else {}
+        parent = self.attachment.to_valid_joint_arg(**kwargs)
+        child = MasslessBody("body", Point("point2"), ReferenceFrame("frame2"))
+        PinJoint("joint", parent, child)
+        assert parent.name == "my_body" if set_body_name else "massless_body"
 
     def test_immutable(self, _setup) -> None:
         with pytest.raises(AttributeError):
