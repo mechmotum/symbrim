@@ -43,10 +43,28 @@ class TestModelBase:
 
     @pytest.fixture()
     def _create_model(self) -> None:
+        class MyTyre(NonHolonomicTyre):
+            """Tyre with a custom symbol."""
+
+            @property
+            def descriptions(self) -> dict[Any, str]:
+                """Dictionary of descriptions of the tyre's attributes."""
+                return {
+                    **super().descriptions,
+                    self.symbols["my_sym1"]: "My symbol.",
+                    self.symbols["my_sym2"]: "My symbol.",
+                }
+
+            def _define_objects(self) -> None:
+                """Define the objects in the tyre."""
+                super()._define_objects()
+                self.symbols["my_sym1"] = Symbol(self._add_prefix("my_sym1"))
+                self.symbols["my_sym2"] = Symbol(self._add_prefix("my_sym2"))
+
         self.disc = RollingDisc("rolling_disc")
         self.disc.disc = KnifeEdgeWheel("disc")
         self.disc.ground = FlatGround("ground")
-        self.disc.tyre = NonHolonomicTyre("tyre")
+        self.disc.tyre = MyTyre("tyre")
         self.load_group = MyLoad("load")
         self.disc.disc.add_load_groups(self.load_group)
 
@@ -93,6 +111,10 @@ class TestModelBase:
     def test_get_description_of_submodel(self, _create_model) -> None:
         self.disc.define_all()
         assert self.disc.get_description(self.disc.disc.radius) is not None
+
+    def test_get_description_of_connection(self, _create_model) -> None:
+        self.disc.define_all()
+        assert self.disc.get_description(self.disc.tyre.symbols["my_sym2"]) is not None
 
     def test_get_description_of_load_group(self, _create_model) -> None:
         self.disc.define_all()
