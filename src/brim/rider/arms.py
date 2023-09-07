@@ -11,9 +11,9 @@ from sympy.physics.mechanics import (
     Point,
     ReferenceFrame,
     RigidBody,
+    TorqueActuator,
     dynamicsymbols,
 )
-from sympy.physics.mechanics._actuator import TorqueActuator
 from sympy.physics.mechanics._system import System
 
 from brim.core import LoadGroupBase, ModelBase

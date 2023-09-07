@@ -9,7 +9,7 @@ __all__ = [
 
     "RigidRearFrame",
 
-    "RigidFrontFrame",
+    "RigidFrontFrame", "SuspensionRigidFrontFrame",
 
     "KnifeEdgeWheel", "ToroidalWheel",
 
@@ -50,6 +50,7 @@ from brim.bicycle import (
     RigidFrontFrame,
     RigidRearFrame,
     StationaryBicycle,
+    SuspensionRigidFrontFrame,
     ToroidalWheel,
     WhippleBicycle,
 )

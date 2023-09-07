@@ -4,8 +4,13 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from sympy import symbols
-from sympy.physics.mechanics import LinearPathway, Point, dynamicsymbols
-from sympy.physics.mechanics._actuator import LinearDamper, LinearSpring
+from sympy.physics.mechanics import (
+    LinearDamper,
+    LinearPathway,
+    LinearSpring,
+    Point,
+    dynamicsymbols,
+)
 from sympy.physics.mechanics._system import System
 
 from brim.brim.base_connections import HandGripsBase
