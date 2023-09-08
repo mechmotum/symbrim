@@ -5,8 +5,7 @@ import contextlib
 from abc import abstractmethod
 from typing import TYPE_CHECKING, Any
 
-from sympy import ImmutableMatrix as Matrix
-from sympy import Symbol, symbols
+from sympy import MutableMatrix, Symbol, symbols
 from sympy.physics.mechanics import Force, Point, RigidBody, dynamicsymbols, inertia
 from sympy.physics.mechanics._system import System
 
@@ -221,8 +220,8 @@ class SuspensionRigidFrontFrame(FrontFrameBase):
     def _define_objects(self) -> None:
         """Define the objects of the front frame."""
         super()._define_objects()
-        self.q = Matrix([dynamicsymbols(self._add_prefix("q"))])
-        self.u = Matrix([dynamicsymbols(self._add_prefix("u"))])
+        self.q = MutableMatrix([dynamicsymbols(self._add_prefix("q"))])
+        self.u = MutableMatrix([dynamicsymbols(self._add_prefix("u"))])
         self.symbols["k"] = Symbol(self._add_prefix("k"))
         self.symbols["c"] = Symbol(self._add_prefix("c"))
 
