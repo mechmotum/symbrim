@@ -20,7 +20,7 @@ class BicycleRider(ModelBase):
 
     required_models: tuple[ModelRequirement, ...] = (
         ModelRequirement("bicycle", BicycleBase, "Bicycle model."),
-        ModelRequirement("rider", Rider, "Rider model."),
+        ModelRequirement("rider", Rider, "Rider model.", False),
     )
     required_connections: tuple[ConnectionRequirement] = (
         ConnectionRequirement(
