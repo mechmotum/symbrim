@@ -42,7 +42,7 @@ results in a tree structure, where the root is the entire bicycle-rider system, 
 bicycle and rider are its children. The bicycle model can be further divided as
 illustrated in the image below. This graphical representation shows the division of
 the bicycle model into a ground, rear frame, front frame, rear wheel, front wheel and
-two tyre models.
+two tire models.
 
 .. image:: ../images/configuration_overview_whipple_default.svg
    :align: center
@@ -79,8 +79,8 @@ the model by choosing the components. ::
     bicycle.front_frame = RigidFrontFrame("front_frame")
     bicycle.rear_wheel = KnifeEdgeWheel("rear_wheel")
     bicycle.front_wheel = KnifeEdgeWheel("front_wheel")
-    bicycle.rear_tyre = NonHolonomicTyre("rear_tyre")
-    bicycle.front_tyre = NonHolonomicTyre("front_tyre")
+    bicycle.rear_tire = NonHolonomicTire("rear_tire")
+    bicycle.front_tire = NonHolonomicTire("front_tire")
 
 With the model configured, the next step is to let BRiM construct all the relationships
 in the model by calling :meth:`~.ModelBase.define_all`. After this, the model can be

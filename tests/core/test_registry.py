@@ -1,9 +1,9 @@
 import pytest
 from brim.bicycle import (
     KnifeEdgeWheel,
-    NonHolonomicTyre,
+    NonHolonomicTire,
+    TireBase,
     ToroidalWheel,
-    TyreBase,
     WheelBase,
 )
 from brim.core import LoadGroupBase, Registry
@@ -18,7 +18,7 @@ class TestRegistry:
     def test_models_registered(self, model) -> None:
         assert model in Registry().models
 
-    @pytest.mark.parametrize("conn", [NonHolonomicTyre])
+    @pytest.mark.parametrize("conn", [NonHolonomicTire])
     def test_connections_registered(self, conn) -> None:
         assert conn in Registry().connections
 
@@ -32,17 +32,17 @@ class TestRegistry:
     @pytest.mark.parametrize("args, kwargs, subset, disjoint", [
         ((ModelRequirement("wheel", WheelBase, "Wheel model."),), {},
          {KnifeEdgeWheel, ToroidalWheel},
-         {NonHolonomicTyre, RollingDisc, WheelBase}),
-        ((ConnectionRequirement("tyre", TyreBase, "Tyre model."),), {},
-         {NonHolonomicTyre},
-         {KnifeEdgeWheel, ToroidalWheel, TyreBase, RollingDisc, WheelBase}),
+         {NonHolonomicTire, RollingDisc, WheelBase}),
+        ((ConnectionRequirement("tire", TireBase, "Tire model."),), {},
+         {NonHolonomicTire},
+         {KnifeEdgeWheel, ToroidalWheel, TireBase, RollingDisc, WheelBase}),
         ((ModelRequirement("wheel", WheelBase, "Wheel model."),),
          {"drop_abstract": False},
          {KnifeEdgeWheel, ToroidalWheel, WheelBase},
-         {NonHolonomicTyre, RollingDisc}),
-        ((ConnectionRequirement("tyre", TyreBase, "Tyre model."),),
+         {NonHolonomicTire, RollingDisc}),
+        ((ConnectionRequirement("tire", TireBase, "Tire model."),),
          {"drop_abstract": False},
-         {NonHolonomicTyre, TyreBase},
+         {NonHolonomicTire, TireBase},
          {KnifeEdgeWheel, ToroidalWheel, RollingDisc, WheelBase}),
     ])
     def test_get_from_requirement(self, args, kwargs, subset, disjoint) -> None:
@@ -56,15 +56,15 @@ class TestRegistry:
 
     @pytest.mark.parametrize("args, kwargs, subset, disjoint", [
         ((RollingDisc("disc"), "disc"), {},
-         {KnifeEdgeWheel, ToroidalWheel}, {NonHolonomicTyre, WheelBase, RollingDisc}),
+         {KnifeEdgeWheel, ToroidalWheel}, {NonHolonomicTire, WheelBase, RollingDisc}),
         ((RollingDisc, "disc"), {},
-         {KnifeEdgeWheel, ToroidalWheel}, {NonHolonomicTyre, WheelBase, RollingDisc}),
-        ((RollingDisc("disc"), "tyre"), {},
-         {NonHolonomicTyre}, {TyreBase, KnifeEdgeWheel, RollingDisc}),
+         {KnifeEdgeWheel, ToroidalWheel}, {NonHolonomicTire, WheelBase, RollingDisc}),
+        ((RollingDisc("disc"), "tire"), {},
+         {NonHolonomicTire}, {TireBase, KnifeEdgeWheel, RollingDisc}),
         ((RollingDisc("disc"), "disc"), {"drop_abstract": False},
-         {KnifeEdgeWheel, ToroidalWheel, WheelBase}, {NonHolonomicTyre, RollingDisc}),
-        ((RollingDisc("disc"), "tyre"), {"drop_abstract": False},
-         {NonHolonomicTyre, TyreBase}, {KnifeEdgeWheel, RollingDisc}),
+         {KnifeEdgeWheel, ToroidalWheel, WheelBase}, {NonHolonomicTire, RollingDisc}),
+        ((RollingDisc("disc"), "tire"), {"drop_abstract": False},
+         {NonHolonomicTire, TireBase}, {KnifeEdgeWheel, RollingDisc}),
     ])
     def test_get_from_property(self, args, kwargs, subset, disjoint) -> None:
         options = set(Registry().get_from_property(*args, **kwargs))

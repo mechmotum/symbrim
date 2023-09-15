@@ -12,7 +12,7 @@ from brim.bicycle.bicycle_base import BicycleBase
 from brim.bicycle.front_frames import FrontFrameBase
 from brim.bicycle.grounds import GroundBase
 from brim.bicycle.rear_frames import RearFrameBase
-from brim.bicycle.tyres import TyreBase
+from brim.bicycle.tires import TireBase
 from brim.bicycle.wheels import WheelBase
 from brim.core import ConnectionRequirement, ModelRequirement, set_default_convention
 
@@ -31,26 +31,26 @@ class WhippleBicycle(BicycleBase):
         ModelRequirement("front_wheel", WheelBase, "Submodel of the front wheel."),
     )
     required_connections: tuple[ConnectionRequirement, ...] = (
-        ConnectionRequirement("front_tyre", TyreBase,
-                              "Tyre model for the front wheel."),
-        ConnectionRequirement("rear_tyre", TyreBase,
-                              "Tyre model for the rear wheel."),
+        ConnectionRequirement("front_tire", TireBase,
+                              "Tire model for the front wheel."),
+        ConnectionRequirement("rear_tire", TireBase,
+                              "Tire model for the rear wheel."),
     )
     ground: GroundBase
     rear_frame: RearFrameBase
     front_frame: FrontFrameBase
     rear_wheel: WheelBase
     front_wheel: WheelBase
-    rear_tyre: TyreBase
-    front_tyre: TyreBase
+    rear_tire: TireBase
+    front_tire: TireBase
 
     def _define_connections(self) -> None:
         """Define the connections between the submodels."""
         super()._define_connections()
-        self.rear_tyre.ground = self.ground
-        self.rear_tyre.wheel = self.rear_wheel
-        self.front_tyre.ground = self.ground
-        self.front_tyre.wheel = self.front_wheel
+        self.rear_tire.ground = self.ground
+        self.rear_tire.wheel = self.rear_wheel
+        self.front_tire.ground = self.ground
+        self.front_tire.wheel = self.front_wheel
 
 
 class WhippleBicycleMoore(WhippleBicycle):
@@ -84,9 +84,9 @@ class WhippleBicycleMoore(WhippleBicycle):
         """Define the objects of the Whipple bicycle."""
         super()._define_objects()
         self._system = System(self.ground.frame, self.ground.system.origin)
-        self.rear_tyre.define_objects()
-        self.rear_tyre.on_ground = True
-        self.front_tyre.define_objects()
+        self.rear_tire.define_objects()
+        self.rear_tire.on_ground = True
+        self.front_tire.define_objects()
         self.q = Matrix(dynamicsymbols(self._add_prefix("q1:9")))
         self.u = Matrix(dynamicsymbols(self._add_prefix("u1:9")))
         self.symbols["gear_ratio"] = Symbol(self._add_prefix("gear_ratio"))
@@ -96,10 +96,10 @@ class WhippleBicycleMoore(WhippleBicycle):
         super()._define_kinematics()
         qd_repl = dict(zip(self.q.diff(dynamicsymbols._t), self.u))
         # Define the location of the rear wheel contact point in the ground frame.
-        self.ground.set_pos_point(self.rear_tyre.contact_point, self.q[:2])
-        self.rear_tyre.contact_point.set_vel(
+        self.ground.set_pos_point(self.rear_tire.contact_point, self.q[:2])
+        self.rear_tire.contact_point.set_vel(
             self.ground.frame,
-            self.rear_tyre.contact_point.vel(self.ground.frame).xreplace(qd_repl))
+            self.rear_tire.contact_point.vel(self.ground.frame).xreplace(qd_repl))
         # Define the orientation of the rear frame.
         int_frame = ReferenceFrame("int_frame")
         int_frame.orient_body_fixed(self.ground.frame, (*self.q[2:4], 0), "zxy")
@@ -130,11 +130,11 @@ class WhippleBicycleMoore(WhippleBicycle):
         )
         # Define contact points.
         with contextlib.suppress(ValueError):
-            self.rear_tyre.upward_radial_axis = Vector(
+            self.rear_tire.upward_radial_axis = Vector(
                 {int_frame: self.ground.get_normal(
-                    self.rear_tyre.contact_point).to_matrix(self.ground.frame)})
-        self.rear_tyre.define_kinematics()
-        self.front_tyre.define_kinematics()
+                    self.rear_tire.contact_point).to_matrix(self.ground.frame)})
+        self.rear_tire.define_kinematics()
+        self.front_tire.define_kinematics()
         # Add the coordinates and speeds to the system.
         self.system.add_coordinates(*self.q[:5])
         self.system.add_speeds(*self.u[:5])
@@ -152,11 +152,11 @@ class WhippleBicycleMoore(WhippleBicycle):
     def _define_loads(self) -> None:
         """Define the loads of the Whipple bicycle."""
         super()._define_loads()
-        self.rear_tyre.define_loads()
-        self.front_tyre.define_loads()
+        self.rear_tire.define_loads()
+        self.front_tire.define_loads()
 
     def _define_constraints(self) -> None:
         """Define the constraints of the Whipple bicycle."""
         super()._define_constraints()
-        self.rear_tyre.define_constraints()
-        self.front_tyre.define_constraints()
+        self.rear_tire.define_constraints()
+        self.front_tire.define_constraints()

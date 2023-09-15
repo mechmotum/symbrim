@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any
 
 import pytest
-from brim.bicycle import FlatGround, KnifeEdgeWheel, NonHolonomicTyre
+from brim.bicycle import FlatGround, KnifeEdgeWheel, NonHolonomicTire
 from brim.core import LoadGroupBase, ModelBase, Registry, set_default_convention
 from brim.other.rolling_disc import RollingDisc
 from sympy import Symbol
@@ -43,12 +43,12 @@ class TestModelBase:
 
     @pytest.fixture()
     def _create_model(self) -> None:
-        class MyTyre(NonHolonomicTyre):
-            """Tyre with a custom symbol."""
+        class MyTire(NonHolonomicTire):
+            """Tire with a custom symbol."""
 
             @property
             def descriptions(self) -> dict[Any, str]:
-                """Dictionary of descriptions of the tyre's attributes."""
+                """Dictionary of descriptions of the tire's attributes."""
                 return {
                     **super().descriptions,
                     self.symbols["my_sym1"]: "My symbol.",
@@ -56,7 +56,7 @@ class TestModelBase:
                 }
 
             def _define_objects(self) -> None:
-                """Define the objects in the tyre."""
+                """Define the objects in the tire."""
                 super()._define_objects()
                 self.symbols["my_sym1"] = Symbol(self._add_prefix("my_sym1"))
                 self.symbols["my_sym2"] = Symbol(self._add_prefix("my_sym2"))
@@ -64,7 +64,7 @@ class TestModelBase:
         self.disc = RollingDisc("rolling_disc")
         self.disc.disc = KnifeEdgeWheel("disc")
         self.disc.ground = FlatGround("ground")
-        self.disc.tyre = MyTyre("tyre")
+        self.disc.tire = MyTire("tire")
         self.load_group = MyLoad("load")
         self.disc.disc.add_load_groups(self.load_group)
 
@@ -76,7 +76,7 @@ class TestModelBase:
         assert disc.name == "model"
         assert disc.disc is None
         assert disc.ground is None
-        assert disc.tyre is None
+        assert disc.tire is None
 
     @pytest.mark.parametrize("name", ["", " ", "my model", "my,model", "my:model"])
     def test_invalid_name(self, name) -> None:
@@ -91,17 +91,17 @@ class TestModelBase:
     def test_invalid_connection(self) -> None:
         disc = RollingDisc("model")
         with pytest.raises(TypeError):
-            disc.tyre = KnifeEdgeWheel("disc")
+            disc.tire = KnifeEdgeWheel("disc")
 
     def test_overwrite_submodel_of_connection(self, _create_model) -> None:
         self.disc.define_connections()
         self.disc.define_objects()
-        self.disc.tyre.wheel = KnifeEdgeWheel("disc2")
-        assert self.disc.tyre.wheel.name == "disc2"
+        self.disc.tire.wheel = KnifeEdgeWheel("disc2")
+        assert self.disc.tire.wheel.name == "disc2"
 
     def test_invalid_submodel_of_connection(self, _create_model) -> None:
         with pytest.raises(TypeError):
-            self.disc.tyre.ground = KnifeEdgeWheel("disc")
+            self.disc.tire.ground = KnifeEdgeWheel("disc")
 
     def test_get_description_own_description(self, _create_model) -> None:
         self.disc.define_all()
@@ -114,7 +114,7 @@ class TestModelBase:
 
     def test_get_description_of_connection(self, _create_model) -> None:
         self.disc.define_all()
-        assert self.disc.get_description(self.disc.tyre.symbols["my_sym2"]) is not None
+        assert self.disc.get_description(self.disc.tire.symbols["my_sym2"]) is not None
 
     def test_get_description_of_load_group(self, _create_model) -> None:
         self.disc.define_all()
@@ -152,7 +152,7 @@ class TestModelBase:
         load_model = MyEmptyLoad("load1")
         load_conn = MyEmptyLoad("load2")
         self.disc.add_load_groups(load_model)
-        self.disc.tyre.add_load_groups(load_conn)
+        self.disc.tire.add_load_groups(load_conn)
         self.disc.define_all()
         assert load_model.called_objects
         assert load_model.called_kinematics

@@ -1,6 +1,6 @@
 import numpy as np
 import pytest
-from brim.bicycle import FlatGround, KnifeEdgeWheel, NonHolonomicTyre
+from brim.bicycle import FlatGround, KnifeEdgeWheel, NonHolonomicTire
 from brim.other.rolling_disc import RollingDisc, rolling_disc_manual
 from sympy import Symbol, lambdify
 from sympy.physics.mechanics import dynamicsymbols
@@ -21,7 +21,7 @@ class TestRollingDisc:
     def _rolling_disc_brim(self) -> None:
         self.rolling_disc = RollingDisc("rolling_disc")
         self.rolling_disc.disc = KnifeEdgeWheel("disc")
-        self.rolling_disc.tyre = NonHolonomicTyre("tyre")
+        self.rolling_disc.tire = NonHolonomicTire("tire")
         self.rolling_disc.ground = FlatGround("ground")
         self.rolling_disc.define_all()
         self.system = self.rolling_disc.to_system()
