@@ -6,7 +6,7 @@ from brim.bicycle.cranks import MasslessCranks
 from brim.bicycle.front_frames import RigidFrontFrameMoore
 from brim.bicycle.grounds import FlatGround
 from brim.bicycle.rear_frames import RigidRearFrameMoore
-from brim.bicycle.tyres import NonHolonomicTyre
+from brim.bicycle.tires import NonHolonomicTire
 from brim.bicycle.wheels import KnifeEdgeWheel
 from brim.bicycle.whipple_bicycle import WhippleBicycleMoore
 from brim.brim.bicycle_rider import BicycleRider
@@ -68,9 +68,9 @@ class TestParametrize:
         self.bike.rear_frame = RigidRearFrameMoore("rear_frame")
         self.bike.front_frame = RigidFrontFrameMoore("front_frame")
         self.bike.rear_wheel = KnifeEdgeWheel("rear_wheel")
-        self.bike.rear_tyre = NonHolonomicTyre("rear_tyre")
+        self.bike.rear_tire = NonHolonomicTire("rear_tire")
         self.bike.front_wheel = KnifeEdgeWheel("front_wheel")
-        self.bike.front_tyre = NonHolonomicTyre("front_tyre")
+        self.bike.front_tire = NonHolonomicTire("front_tire")
         self.bike.ground = FlatGround("ground")
         self.bike.define_all()
 
@@ -81,8 +81,8 @@ class TestParametrize:
         self.bike.rear_frame = RigidRearFrameMoore("rear_frame")
         self.bike.front_wheel = KnifeEdgeWheel("front_wheel")
         self.bike.rear_wheel = KnifeEdgeWheel("rear_wheel")
-        self.bike.front_tyre = NonHolonomicTyre("front_tyre")
-        self.bike.rear_tyre = NonHolonomicTyre("rear_tyre")
+        self.bike.front_tire = NonHolonomicTire("front_tire")
+        self.bike.rear_tire = NonHolonomicTire("rear_tire")
         self.bike.cranks = MasslessCranks("cranks")
         self.bike.ground = FlatGround("ground")
 
@@ -182,21 +182,21 @@ class TestParametrize:
         initial_conditions.update({ui: 0 for ui in self.system.u})
         initial_conditions[self.bike.q[4]] = bp["lam"]
         params = {**constants, **initial_conditions}
-        assert msubs(self.bike.rear_tyre.contact_point.pos_from(
+        assert msubs(self.bike.rear_tire.contact_point.pos_from(
             self.bike.rear_wheel.center).magnitude(), params
                      ) == pytest.approx(bp["rR"], abs=1e-10)
-        assert msubs(self.bike.front_tyre.contact_point.pos_from(
+        assert msubs(self.bike.front_tire.contact_point.pos_from(
             self.bike.front_wheel.center).magnitude(), params
                      ) == pytest.approx(bp["rF"], abs=1e-10)
-        assert msubs(self.bike.rear_tyre.contact_point.pos_from(
-            self.bike.front_tyre.contact_point).magnitude(), params
+        assert msubs(self.bike.rear_tire.contact_point.pos_from(
+            self.bike.front_tire.contact_point).magnitude(), params
                      ) == pytest.approx(bp["w"], abs=1e-10)
         assert msubs(self.bike.cranks.center_point.pos_from(
             self.bike.rear_wheel.center).magnitude(), params
                      ) == pytest.approx(mp["lcs"], abs=1e-10)
         assert msubs(self.bike.cranks.center_point.pos_from(
-            self.bike.front_tyre.contact_point).dot(
-            self.bike.ground.get_normal(self.bike.front_tyre.contact_point)), params
+            self.bike.front_tire.contact_point).dot(
+            self.bike.ground.get_normal(self.bike.front_tire.contact_point)), params
                      ) == pytest.approx(mp["hbb"], abs=1e-10)
         assert msubs(self.bike.cranks.center_point.pos_from(
             self.bike.rear_frame.saddle.point).magnitude(), params

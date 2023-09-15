@@ -16,7 +16,7 @@ from sympy.physics.mechanics import (
 from sympy.physics.mechanics._system import System
 
 from brim.bicycle.grounds import GroundBase
-from brim.bicycle.tyres import TyreBase
+from brim.bicycle.tires import TireBase
 from brim.bicycle.wheels import WheelBase
 from brim.core import ConnectionRequirement, ModelBase, ModelRequirement
 
@@ -29,11 +29,11 @@ class RollingDisc(ModelBase):
         ModelRequirement("disc", WheelBase, "Disc model."),
     )
     required_connections: tuple[ConnectionRequirement, ...] = (
-        ConnectionRequirement("tyre", TyreBase, "Tyre model."),
+        ConnectionRequirement("tire", TireBase, "Tire model."),
     )
     ground: GroundBase
     disc: WheelBase
-    tyre: TyreBase
+    tire: TireBase
 
     @property
     def descriptions(self) -> dict[Any, str]:
@@ -55,15 +55,15 @@ class RollingDisc(ModelBase):
     def _define_connections(self) -> None:
         """Define the connections between the submodels."""
         super()._define_connections()
-        self.tyre.ground = self.ground
-        self.tyre.wheel = self.disc
+        self.tire.ground = self.ground
+        self.tire.wheel = self.disc
 
     def _define_objects(self) -> None:
         """Define the objects of the rolling disc."""
         super()._define_objects()
         self._system = System(self.ground.frame, self.ground.system.origin)
-        self.tyre.define_objects()
-        self.tyre.on_ground = True
+        self.tire.define_objects()
+        self.tire.on_ground = True
         self.q = Matrix([dynamicsymbols(self._add_prefix("q1:6"))])
         self.u = Matrix([dynamicsymbols(self._add_prefix("u1:6"))])
 
@@ -77,16 +77,16 @@ class RollingDisc(ModelBase):
         self.disc.frame.set_ang_vel(
             self.ground.frame, self.disc.frame.ang_vel_in(self.ground.frame).xreplace(
                 qd_repl))
-        self.ground.set_pos_point(self.tyre.contact_point, self.q[:2])
-        self.tyre.contact_point.set_vel(
+        self.ground.set_pos_point(self.tire.contact_point, self.q[:2])
+        self.tire.contact_point.set_vel(
             self.ground.frame,
-            self.tyre.contact_point.vel(self.ground.frame).xreplace(qd_repl))
+            self.tire.contact_point.vel(self.ground.frame).xreplace(qd_repl))
         with contextlib.suppress(ValueError):
-            self.tyre.upward_radial_axis = Vector(
-                {int_frame: self.ground.get_normal(self.tyre.contact_point).to_matrix(
+            self.tire.upward_radial_axis = Vector(
+                {int_frame: self.ground.get_normal(self.tire.contact_point).to_matrix(
                     self.ground.frame)})
 
-        self.tyre.define_kinematics()
+        self.tire.define_kinematics()
         self.system.q_ind = self.q
         self.system.u_ind = self.u
         self.system.kdes = [qdi - ui for qdi, ui in qd_repl.items()]
@@ -94,12 +94,12 @@ class RollingDisc(ModelBase):
     def _define_loads(self) -> None:
         """Define the loads of the rolling disc."""
         super()._define_loads()
-        self.tyre.define_loads()
+        self.tire.define_loads()
 
     def _define_constraints(self) -> None:
         """Define the constraints of the rolling disc."""
         super()._define_constraints()
-        self.tyre.define_constraints()
+        self.tire.define_constraints()
 
 
 def rolling_disc_manual() -> System:

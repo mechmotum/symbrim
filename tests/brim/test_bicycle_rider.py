@@ -5,7 +5,7 @@ from brim.bicycle import (
     FlatGround,
     KnifeEdgeWheel,
     MasslessCranks,
-    NonHolonomicTyre,
+    NonHolonomicTire,
     RigidFrontFrame,
     RigidRearFrame,
     StationaryBicycle,
@@ -41,8 +41,8 @@ class TestCompleteBicycleRider:
         self.bicycle.rear_frame = RigidRearFrame("rear_frame")
         self.bicycle.front_wheel = KnifeEdgeWheel("front_wheel")
         self.bicycle.rear_wheel = KnifeEdgeWheel("rear_wheel")
-        self.bicycle.front_tyre = NonHolonomicTyre("front_tyre")
-        self.bicycle.rear_tyre = NonHolonomicTyre("rear_tyre")
+        self.bicycle.front_tire = NonHolonomicTire("front_tire")
+        self.bicycle.rear_tire = NonHolonomicTire("rear_tire")
         self.bicycle.cranks = MasslessCranks("pedals")
         self.bicycle.ground = FlatGround("ground")
 

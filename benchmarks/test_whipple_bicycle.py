@@ -1,7 +1,7 @@
 from brim.bicycle import (
     FlatGround,
     KnifeEdgeWheel,
-    NonHolonomicTyre,
+    NonHolonomicTire,
     RigidFrontFrame,
     RigidRearFrame,
     WhippleBicycleMoore,
@@ -29,8 +29,8 @@ def create_whipple_bicycle_moore_brim():
     bike.front_frame = RigidFrontFrame("front_frame")
     bike.rear_wheel = KnifeEdgeWheel("rear_wheel")
     bike.front_wheel = KnifeEdgeWheel("front_wheel")
-    bike.rear_tyre = NonHolonomicTyre("rear_tyre")
-    bike.front_tyre = NonHolonomicTyre("front_tyre")
+    bike.rear_tire = NonHolonomicTire("rear_tire")
+    bike.front_tire = NonHolonomicTire("front_tire")
     bike.define_all()
     system = bike.to_system()
     system.apply_gravity(-symbols("g") * bike.ground.get_normal(bike.ground.origin))

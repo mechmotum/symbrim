@@ -1,4 +1,4 @@
-"""Module containing tyre models for bicycles."""
+"""Module containing tire models for bicycles."""
 from __future__ import annotations
 
 from sympy.physics.mechanics import Point, Vector, cross
@@ -9,11 +9,11 @@ from brim.bicycle.wheels import KnifeEdgeWheel, ToroidalWheel, WheelBase
 from brim.core import ConnectionBase, ModelRequirement
 from brim.utilities.utilities import check_zero
 
-__all__ = ["TyreBase", "NonHolonomicTyre"]
+__all__ = ["TireBase", "NonHolonomicTire"]
 
 
-class TyreBase(ConnectionBase):
-    """Base class for the tyre model connectors."""
+class TireBase(ConnectionBase):
+    """Base class for the tire model connectors."""
 
     required_models: tuple[ModelRequirement, ...] = (
         ModelRequirement("ground", GroundBase, "Submodel of the ground."),
@@ -41,7 +41,7 @@ class TyreBase(ConnectionBase):
             f"combination of {type(self.ground)} and {type(self.wheel)}.")
 
     def _define_objects(self) -> None:
-        """Define the objects of the tyre model."""
+        """Define the objects of the tire model."""
         super()._define_objects()
         self._system = System.from_newtonian(self.ground.body)
         self._contact_point = Point(self._add_prefix("contact_point"))
@@ -106,8 +106,8 @@ class TyreBase(ConnectionBase):
         self._on_ground = bool(value)
 
 
-class NonHolonomicTyre(TyreBase):
-    """Tyre model connection based on non-holonomic constraints."""
+class NonHolonomicTire(TireBase):
+    """Tire model connection based on non-holonomic constraints."""
 
     required_models: tuple[ModelRequirement, ...] = (
         ModelRequirement("ground", FlatGround, "Submodel of the ground."),
@@ -118,7 +118,7 @@ class NonHolonomicTyre(TyreBase):
     wheel: KnifeEdgeWheel | ToroidalWheel
 
     def _define_kinematics(self) -> None:
-        """Define the kinematics of the tyre model."""
+        """Define the kinematics of the tire model."""
         super()._define_kinematics()
         self._set_pos_contact_point()
         self.wheel.center.set_vel(self.ground.frame,
@@ -126,7 +126,7 @@ class NonHolonomicTyre(TyreBase):
                                         self.wheel.center.pos_from(self.contact_point)))
 
     def _define_constraints(self) -> None:
-        """Define the constraints of the tyre model."""
+        """Define the constraints of the tire model."""
         super()._define_constraints()
         normal = self.ground.get_normal(self.contact_point)
         tangent_vectors = self.ground.get_tangent_vectors(self.contact_point)

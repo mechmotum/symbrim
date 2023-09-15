@@ -1,6 +1,6 @@
 import itertools
 
-from brim.bicycle import FlatGround, KnifeEdgeWheel, NonHolonomicTyre
+from brim.bicycle import FlatGround, KnifeEdgeWheel, NonHolonomicTire
 from brim.other.rolling_disc import RollingDisc
 from brim.utilities.benchmarking import benchmark
 from sympy import count_ops, cse, symbols
@@ -142,7 +142,7 @@ def create_rolling_disc_brim():
     rolling_disc = RollingDisc("disc")
     rolling_disc.disc = KnifeEdgeWheel("wheel")
     rolling_disc.ground = FlatGround("ground")
-    rolling_disc.tyre = NonHolonomicTyre("tyre")
+    rolling_disc.tire = NonHolonomicTire("tire")
     rolling_disc.define_all()
     system = rolling_disc.to_system()
     system.u_ind = rolling_disc.u[2:]
