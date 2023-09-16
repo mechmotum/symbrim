@@ -9,37 +9,8 @@ request, please open an issue on GitHub. If you would like to contribute, feel f
 fork the repository and submit a pull request. To establish an effective development
 environment, we've taken inspiration from `Hypermodern Python`_ by Claudio Jolowicz and
 `Setting up Python Projects`_ by Johannes Schmidt. This page provides a brief overview
-of the installation of the environment and the tools used.
-
-Installation Developers
-=======================
-
-BRiM uses `poetry`_ as package manager. To install BRiM after installing `poetry`_ and
-cloning the repository, run: ::
-
-    poetry install
-
-BRiM offers dependency groups to assist developers:
-
-- ``lint``: packages required for linting.
-- ``test``: packages required for testing.
-- ``docs``: packages required for building the documentation.
-
-To install optional dependencies from a specific group, run: ::
-
-    poetry install --with <group>
-
-Some of the additional utilities also require extra packages. These can be installed
-using: ::
-
-    poetry install --extras parametrize
-    poetry install --extras plotting
-
-To quickly check code for linting errors, it is recommended to set up ``pre-commit``
-hooks by executing: ::
-
-    pip install pre-commit
-    pre-commit install
+of the various tools used in the development process. For the installation of the
+development environment, please refer to the :doc:`/guides/installation` page.
 
 Linting
 =======
@@ -77,7 +48,6 @@ can use: ::
 
     docs/make.bat html
 
-.. _poetry: https://python-poetry.org
 .. _ruff: https://beta.ruff.rs
 .. _pytest: https://docs.pytest.org
 .. _sphinx: https://www.sphinx-doc.org

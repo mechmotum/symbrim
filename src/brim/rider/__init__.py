@@ -51,7 +51,6 @@ from brim.rider.base_connections import (
     SacrumBase,
     ShoulderBase,
 )
-from brim.rider.connections import RiderLeanConnection
 from brim.rider.hip_joints import (
     PinLeftHip,
     PinRightHip,
@@ -71,7 +70,7 @@ from brim.rider.legs import (
 )
 from brim.rider.pelvis import PelvisBase, PlanarPelvis
 from brim.rider.rider import Rider
-from brim.rider.rider_lean import RiderLean
+from brim.rider.rider_lean import RiderLean, RiderLeanConnection
 from brim.rider.sacrums import FixedSacrum
 from brim.rider.shoulder_joints import (
     SphericalLeftShoulder,
