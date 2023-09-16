@@ -6,16 +6,20 @@ Introduction to BRiM
 ..
     Paragraph: Quick introduction on what BRiM is and does.
 
-BRiM is a Python package to model bicycle-riders symbolically. It offers a modular and
-extendable framework that empowers users to easily compose a custom bicycle-rider model.
-These models are build from a library of components, such as knife-edge wheels or
-toroidal-shaped wheels. The components serve as the building blocks of the system.
-Leveraging the open-source Python package :mod:`sympy` :cite:`Meurer2017`, a
-computer algebra system, BRiM allows the usage of :mod:`sympy`'s bodies and joints
-interface to modify the model and other tools to manipulate the equations. The equations
-of motion (EOMs) for the system are derived using Kane's method
-:cite:`kane_dynamics_1985`, which can be further analysed and used in simulation and
-optimization tasks.
+BRiM :cite:`stienstra_2023_brim` is a Python package to model bicycle-riders
+symbolically. It offers a modular and extendable framework that empowers users to easily
+compose a custom bicycle-rider model. These models are build from a library of
+components, such as knife-edge wheels or toroidal-shaped wheels. The components serve as
+the building blocks of the system. Leveraging the open-source Python package
+:mod:`sympy` :cite:`Meurer2017`, a computer algebra system, BRiM allows the usage of
+:mod:`sympy`'s bodies and joints interface to modify the model and other tools to
+manipulate the equations. The equations of motion (EOMs) for the system are derived
+using Kane's method :cite:`kane_dynamics_1985`, which can be further analysed and used
+in simulation and optimization tasks.
+
+For a more in-depth academic introduction to BRiM and its application in trajectory
+tracking problems, refer to :cite:`stienstra_2023_brim`. The rest of this page will
+focus on the practical usage of BRiM.
 
 Defining a Model Using SymPy
 ----------------------------
@@ -65,7 +69,7 @@ Defining a Model Using BRiM
 ..
     Paragraph: Create the default Whipple bicycle model using BRiM.
 
-The default Whipple bicycle model :cite:p:`whipple1899stability`, also visualized as a
+The default Whipple bicycle model :cite:`whipple1899stability`, also visualized as a
 tree in the image above, can be constructed as follows. The first step is to configure
 the model by choosing the components. ::
 
