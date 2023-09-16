@@ -131,6 +131,9 @@ Here are some useful reference to get started:
 
 - The `brim-examples <https://github.com/TJStienstra/brim-examples>`_ repository
   contains a collection of examples.
+- The `brim-bmd-2023-paper <https://github.com/TJStienstra/brim-bmd-2023-paper>`_
+  repository contains a ``src`` directory with various trajectory tracking examples
+  discussed in :cite:`stienstra_2023_brim`.
 - :cite:`moore_learn_2022` is a great place to learn more about the fundamental modeling
   concepts when using :mod:`sympy.physics.mechanics`.
 - The :mod:`sympy.physics.mechanics` module contains several examples and tutorials to
