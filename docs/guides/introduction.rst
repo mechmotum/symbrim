@@ -48,9 +48,12 @@ illustrated in the image below. This graphical representation shows the division
 the bicycle model into a ground, rear frame, front frame, rear wheel, front wheel and
 two tire models.
 
-.. image:: ../images/configuration_overview_whipple_default.svg
-   :align: center
-   :width: 800
+.. raw:: html
+
+    <svg class="align-center" viewBox="0 0 231.0395 70.457903" width="800px">
+        <use xlink:href="../_static/configuration_overview_whipple_default.svg#whippleConfig"></use>
+    </svg>
+
 
 Core Components
 ---------------
