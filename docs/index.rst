@@ -4,7 +4,7 @@ BRiM Documentation
 BRiM: a Modular and Extensible Open-Source Framework for Creating Bicycle-Rider
 Models.
 
-.. image:: ./images/lane_change.gif
+.. image:: ./_static/lane_change.gif
    :align: center
    :width: 800
 
