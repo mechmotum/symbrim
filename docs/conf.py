@@ -47,3 +47,5 @@ bibtex_bibfiles = ["references.bib"]
 
 html_theme = "furo"
 html_static_path = ["_static"]
+
+flavicon_html = "_static/favicon.ico"
