@@ -29,6 +29,8 @@ pytest-benchmark = "^4.0.0"
 sphinx = "^6.2.1"
 furo = "^2023.3.27"
 sphinxcontrib-bibtex = "^2.5.0"
+nbsphinx = "^0.9.3"
+rpds-py = "^0.10.3"
 
 [tool.poetry.extras]
 plotting = ["symmeplot"]
