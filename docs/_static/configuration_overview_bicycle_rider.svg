@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
-<svg width="163.20935mm" height="86.065704mm" version="1.1" viewBox="0 0 163.20935 86.065707" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<svg width="159.3306mm" height="86.065704mm" version="1.1" viewBox="0 0 159.3306 86.06571" xmlns="http://www.w3.org/2000/svg">
  <defs>
   <marker id="EmptyDiamondLend" overflow="visible" orient="auto">
-   <path transform="matrix(.8 0 0 .8 -5.6 0)" d="M 0,-7.0710768 -7.0710894,0 0,7.0710589 7.0710462,0 Z" stroke="currentColor" fill="#FFFFFF" stroke-width="1pt"/>
+   <path transform="matrix(.8 0 0 .8 -5.6 0)" d="M 0,-7.0710768 -7.0710894,0 0,7.0710589 7.0710462,0 Z" fill="#ffffff" stroke="currentColor" stroke-width="1pt"/>
   </marker>
   <marker id="EmptyTriangleLend" overflow="visible" orient="auto">
-   <path transform="matrix(.8 0 0 .8 -4.8 0)" d="m5.77 0-8.65 5v-10z" stroke="currentColor" fill="#FFFFFF" stroke-width="1pt"/>
+   <path transform="matrix(.8 0 0 .8 -4.8 0)" d="m5.77 0-8.65 5v-10z" fill="#ffffff" stroke="currentColor" stroke-width="1pt"/>
   </marker>
  </defs>
  <g transform="translate(-55.529932,-104.46082)" fill="none" stroke-width=".5">
@@ -67,21 +67,20 @@
  <g transform="translate(-55.529932,-104.46082)">
   <g transform="translate(14.196646,-60.971787)">
    <g transform="translate(29.925157,31.79548)">
-    <text x="45.707638" y="142.16032"  fill="currentColor" font-family="sans-serif" font-size="3.88056px" stroke-width=".264583" text-align="center" text-anchor="middle" style="line-height:1.25" xml:space="preserve"><tspan x="45.707638" y="142.16032" stroke-width=".264583" text-align="center" text-anchor="middle">Rider</tspan></text>
+    <text x="45.707638" y="142.16032" fill="currentColor" font-family="sans-serif" font-size="3.88056px" stroke-width=".264583" text-align="center" text-anchor="middle" style="line-height:1.25" xml:space="preserve"><tspan x="45.707638" y="142.16032" stroke-width=".264583" text-align="center" text-anchor="middle">Rider</tspan></text>
     <rect x="38.336506" y="136.21553" width="15" height="9" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width=".499999" style="paint-order:stroke fill markers"/>
    </g>
   </g>
-  <g transform="translate(-5.6967825,24.722982)"></g>
-  <text x="164.50803" y="144.24495"  fill="currentColor" font-family="sans-serif" font-size="3.88056px" stroke-width=".264583" text-align="center" text-anchor="middle" style="line-height:1.25" xml:space="preserve"><tspan x="164.50803" y="144.24495" stroke-width=".264583" text-align="center" text-anchor="middle">WhippleBicycle</tspan></text>
+  <text x="164.50803" y="144.24495" fill="currentColor" font-family="sans-serif" font-size="3.88056px" stroke-width=".264583" text-align="center" text-anchor="middle" style="line-height:1.25" xml:space="preserve"><tspan x="164.50803" y="144.24495" stroke-width=".264583" text-align="center" text-anchor="middle">WhippleBicycle</tspan></text>
   <rect x="148.50044" y="138.67154" width="32" height="9" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width=".499999" style="paint-order:stroke fill markers"/>
   <g transform="translate(111.44527,-14.057248)">
    <g transform="translate(-2.6458334,2.1166667)">
-    <text x="48.165203" y="141.78894"  fill="currentColor" font-family="sans-serif" font-size="3.88056px" stroke-width=".264583" text-align="center" text-anchor="middle" style="line-height:1.25" xml:space="preserve"><tspan x="48.165203" y="141.78894" stroke-width=".264583" text-align="center" text-anchor="middle">HolonomicHandGrip</tspan></text>
+    <text x="48.165203" y="141.78894" fill="currentColor" font-family="sans-serif" font-size="3.88056px" stroke-width=".264583" text-align="center" text-anchor="middle" style="line-height:1.25" xml:space="preserve"><tspan x="48.165203" y="141.78894" stroke-width=".264583" text-align="center" text-anchor="middle">HolonomicHandGrip</tspan></text>
     <rect x="27.752363" y="135.84415" width="41" height="9" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width=".499999" style="paint-order:stroke fill markers"/>
    </g>
   </g>
   <g transform="translate(105.0855,-13.668162)">
-   <text x="51.871559" y="127.4791"  fill="currentColor" font-family="sans-serif" font-size="3.88056px" stroke-width=".264583" text-align="center" text-anchor="middle" style="line-height:1.25" xml:space="preserve"><tspan x="51.871559" y="127.4791" stroke-width=".264583" text-align="center" text-anchor="middle">HandGripBase</tspan></text>
+   <text x="51.871559" y="127.4791" fill="currentColor" font-family="sans-serif" font-size="3.88056px" stroke-width=".264583" text-align="center" text-anchor="middle" style="line-height:1.25" xml:space="preserve"><tspan x="51.871559" y="127.4791" stroke-width=".264583" text-align="center" text-anchor="middle">HandGripBase</tspan></text>
    <rect x="36.966301" y="121.57221" width="30" height="9" fill="none" stroke="currentColor" stroke-dasharray="2, 1" stroke-linecap="round" stroke-linejoin="round" stroke-width=".5" style="paint-order:stroke fill markers"/>
   </g>
   <path d="m157.0518 123.75546v-6.60218" fill="none" marker-end="url(#EmptyTriangleLend)" stroke="currentColor" stroke-width=".264583px"/>
@@ -89,42 +88,35 @@
   <path d="m136.48778 128.40356-7.39457 5.4103" fill="none" marker-end="url(#EmptyDiamondLend)" stroke="currentColor" stroke-width=".265"/>
   <g transform="translate(146.38275,33.416083)">
    <g transform="translate(-2.6458334,2.1166667)">
-    <text x="51.102673" y="141.78894"  fill="currentColor" font-family="sans-serif" font-size="3.88056px" stroke-width=".264583" text-align="center" text-anchor="middle" style="line-height:1.25" xml:space="preserve"><tspan x="51.102673" y="141.78894" stroke-width=".264583" text-align="center" text-anchor="middle">HolonomicPedalsToFeet</tspan></text>
-    <rect x="27.752363" y="135.84415" width="47" height="9" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width=".499999" style="paint-order:stroke fill markers"/>
+    <text x="45.642464" y="141.78894" fill="currentColor" font-family="sans-serif" font-size="3.88056px" stroke-width=".264583" text-align="center" text-anchor="middle" style="line-height:1.25" xml:space="preserve"><tspan x="45.642464" y="141.78894" stroke-width=".264583" text-align="center" text-anchor="middle">HolonomicPedals</tspan></text>
+    <rect x="27.752363" y="135.84415" width="36" height="9" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width=".499999" style="paint-order:stroke fill markers"/>
    </g>
   </g>
   <g transform="translate(140.02298,33.805169)">
-   <text x="54.871563" y="127.4791"  fill="currentColor" font-family="sans-serif" font-size="3.88056px" stroke-width=".264583" text-align="center" text-anchor="middle" style="line-height:1.25" xml:space="preserve"><tspan x="54.871563" y="127.4791" stroke-width=".264583" text-align="center" text-anchor="middle">PedalsToFeetBase</tspan></text>
-   <rect x="36.966301" y="121.57221" width="36" height="9" fill="none" stroke="currentColor" stroke-dasharray="2, 1" stroke-linecap="round" stroke-linejoin="round" stroke-width=".5" style="paint-order:stroke fill markers"/>
+   <text x="49.371559" y="127.4791" fill="currentColor" font-family="sans-serif" font-size="3.88056px" stroke-width=".264583" text-align="center" text-anchor="middle" style="line-height:1.25" xml:space="preserve"><tspan x="49.371559" y="127.4791" stroke-width=".264583" text-align="center" text-anchor="middle">PedalsBase</tspan></text>
+   <rect x="35.966301" y="121.57221" width="27" height="9" fill="none" stroke="currentColor" stroke-dasharray="2, 1" stroke-linecap="round" stroke-linejoin="round" stroke-width=".5" style="paint-order:stroke fill markers"/>
   </g>
-  <path d="m194.98928 171.22879v-6.60218" fill="none" marker-end="url(#EmptyTriangleLend)" stroke="currentColor" stroke-width=".264583px"/>
+  <path d="m189.48928 171.22879v-6.60218" fill="none" marker-end="url(#EmptyTriangleLend)" stroke="currentColor" stroke-width=".264583px"/>
   <path d="m171.42526 175.87689-52.86107-12.6716" fill="none" marker-end="url(#EmptyDiamondLend)" stroke="currentColor" stroke-width=".265"/>
   <g transform="translate(109.63343,-13.414199)">
    <g transform="translate(46.648803,15.870211)">
-    <text x="44.733547" y="142.09685"  fill="currentColor" font-family="sans-serif" font-size="3.88056px" stroke-width=".264583" text-align="center" text-anchor="middle" style="line-height:1.25" xml:space="preserve"><tspan x="44.733547" y="142.09685" stroke-width=".264583" text-align="center" text-anchor="middle">BicycleBase</tspan></text>
+    <text x="44.733547" y="142.09685" fill="currentColor" font-family="sans-serif" font-size="3.88056px" stroke-width=".264583" text-align="center" text-anchor="middle" style="line-height:1.25" xml:space="preserve"><tspan x="44.733547" y="142.09685" stroke-width=".264583" text-align="center" text-anchor="middle">BicycleBase</tspan></text>
     <rect x="31.328289" y="136.21553" width="27" height="9" fill="none" stroke="currentColor" stroke-dasharray="2, 0.999998" stroke-linecap="round" stroke-linejoin="round" stroke-width=".499999" style="paint-order:stroke fill markers"/>
    </g>
   </g>
   <g transform="translate(25.231733,4.092425)">
    <g transform="translate(-3.7041668)">
-    <text x="48.165203" y="141.78894"  fill="currentColor" font-family="sans-serif" font-size="3.88056px" stroke-width=".264583" text-align="center" text-anchor="middle" style="line-height:1.25" xml:space="preserve"><tspan x="48.165203" y="141.78894" stroke-width=".264583" text-align="center" text-anchor="middle">SideLeanSeat</tspan></text>
+    <text x="48.165203" y="141.78894" fill="currentColor" font-family="sans-serif" font-size="3.88056px" stroke-width=".264583" text-align="center" text-anchor="middle" style="line-height:1.25" xml:space="preserve"><tspan x="48.165203" y="141.78894" stroke-width=".264583" text-align="center" text-anchor="middle">SideLeanSeat</tspan></text>
     <rect x="34.252365" y="135.84415" width="28" height="9" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width=".499999" style="paint-order:stroke fill markers"/>
    </g>
   </g>
   <g transform="translate(22.31363,2.3648432)">
-   <text x="47.43409" y="127.4791"  fill="currentColor" font-family="sans-serif" font-size="3.88056px" stroke-width=".264583" text-align="center" text-anchor="middle" style="line-height:1.25" xml:space="preserve"><tspan x="47.43409" y="127.4791" stroke-width=".264583" text-align="center" text-anchor="middle">SeatBase</tspan></text>
+   <text x="47.43409" y="127.4791" fill="currentColor" font-family="sans-serif" font-size="3.88056px" stroke-width=".264583" text-align="center" text-anchor="middle" style="line-height:1.25" xml:space="preserve"><tspan x="47.43409" y="127.4791" stroke-width=".264583" text-align="center" text-anchor="middle">SeatBase</tspan></text>
    <rect x="36.966301" y="121.57221" width="21" height="9" fill="none" stroke="currentColor" stroke-dasharray="2, 1" stroke-linecap="round" stroke-linejoin="round" stroke-width=".5" style="paint-order:stroke fill markers"/>
   </g>
   <path d="m69.779931 139.78846v-6.60218" fill="none" marker-end="url(#EmptyTriangleLend)" stroke="currentColor" stroke-width=".264583px"/>
   <path d="m83.938324 144.43657 10.459418-7.0935" fill="none" marker-end="url(#EmptyDiamondLend)" stroke="currentColor" stroke-width=".265"/>
   <path d="m97.449692 111.64145 12.462338 9.37891" fill="none" marker-end="url(#EmptyDiamondLend)" stroke="currentColor" stroke-width=".265"/>
   <path d="m148.36494 142.96337-10.14069 5.25398" fill="none" marker-end="url(#EmptyDiamondLend)" stroke="currentColor" stroke-width=".265"/>
-  <g transform="matrix(.26458333 0 0 .26458333 -11.236858 203.49803)">
-   <switch>
-    <a transform="translate(0,-5)" target="_blank" xlink:href="https://www.diagrams.net/doc/faq/svg-export-text-problems">
-     <text x="50%" y="100%"  fill="currentColor" font-size="10px" text-anchor="middle">Text is not SVG - cannot display</text>
-    </a>
-   </switch>
-  </g>
  </g>
 </svg>
