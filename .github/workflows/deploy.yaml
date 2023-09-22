@@ -18,6 +18,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Install pandoc
+        run: sudo apt-get install pandoc
       - name: Install poetry
         run: pipx install poetry==1.6.1
       - name: Set up Python
