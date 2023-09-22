@@ -32,7 +32,6 @@ sphinxcontrib-bibtex = "^2.5.0"
 nbsphinx = "^0.9.3"
 rpds-py = "^0.10.3"
 ipykernel = "^6.25.2"
-pandoc = "^2.3"
 
 [tool.poetry.extras]
 plotting = ["symmeplot"]
