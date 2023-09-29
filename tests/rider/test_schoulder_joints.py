@@ -39,42 +39,45 @@ class TestShoulderJointBase:
         _test_descriptions(self.shoulder)
 
 
-@pytest.mark.parametrize("shoulder_cls, arm_cls", [
-    (FlexRotLeftShoulder, PinElbowStickLeftArm),
-    (FlexRotRightShoulder, PinElbowStickRightArm)])
-class TestFlexRotShoulderJoints:
+class ShoulderSetupMixin:
     @pytest.fixture(autouse=True)
-    def _setup(self, shoulder_cls, arm_cls) -> None:
-        self.model = create_model_of_connection(shoulder_cls)("model")
-        self.model.conn = shoulder_cls("shoulder")
+    def _setup(self) -> None:
+        self.model = create_model_of_connection(self.shoulder_cls)("model")
+        self.model.conn = self.shoulder_cls("shoulder")
         self.model.torso = PlanarTorso("torso")
-        self.model.arm = arm_cls("arm")
+        if issubclass(self.shoulder_cls, LeftShoulderBase):
+            self.model.arm = PinElbowStickLeftArm("arm")
+        else:
+            self.model.arm = PinElbowStickRightArm("arm")
         self.model.define_all()
         self.shoulder, self.torso, self.arm = (
             self.model.conn, self.model.torso, self.model.arm)
+
+
+class TestFlexRotLeftShoulder(ShoulderSetupMixin):
+    shoulder_cls = FlexRotLeftShoulder
 
     def test_kinematics(self) -> None:
         w = self.arm.upper_arm.frame.ang_vel_in(self.torso.frame)
         assert w.dot(self.torso.y).xreplace(
             {self.shoulder.q[1]: 0}) == self.shoulder.u[0]
-        if isinstance(self.shoulder, FlexRotLeftShoulder):
-            assert w.dot(self.torso.z).xreplace(
-                {self.shoulder.q[0]: 0}) == self.shoulder.u[1]
-        else:
-            assert w.dot(self.torso.z).xreplace(
-                {self.shoulder.q[0]: 0}) == -self.shoulder.u[1]
+        assert w.dot(self.torso.z).xreplace(
+            {self.shoulder.q[0]: 0}) == self.shoulder.u[1]
 
 
-class TestSphericalLeftShoulderJoint:
-    @pytest.fixture(autouse=True)
-    def _setup(self) -> None:
-        self.model = create_model_of_connection(SphericalLeftShoulder)("model")
-        self.model.conn = SphericalLeftShoulder("shoulder")
-        self.model.torso = PlanarTorso("torso")
-        self.model.arm = PinElbowStickLeftArm("arm")
-        self.model.define_all()
-        self.shoulder, self.torso, self.arm = (
-            self.model.conn, self.model.torso, self.model.arm)
+class TestFlexRotRightShoulder(ShoulderSetupMixin):
+    shoulder_cls = FlexRotRightShoulder
+
+    def test_kinematics(self) -> None:
+        w = self.arm.upper_arm.frame.ang_vel_in(self.torso.frame)
+        assert w.dot(self.torso.y).xreplace(
+            {self.shoulder.q[1]: 0}) == self.shoulder.u[0]
+        assert w.dot(self.torso.z).xreplace(
+            {self.shoulder.q[0]: 0}) == -self.shoulder.u[1]
+
+
+class TestSphericalLeftShoulder(ShoulderSetupMixin):
+    shoulder_cls = SphericalLeftShoulder
 
     def test_kinematics(self) -> None:
         w = self.arm.upper_arm.frame.ang_vel_in(self.torso.frame)
@@ -86,16 +89,8 @@ class TestSphericalLeftShoulderJoint:
             {self.shoulder.q[0]: 0, self.shoulder.q[1]: 0}) == self.shoulder.u[2]
 
 
-class TestSphericalRightShoulderJoint:
-    @pytest.fixture(autouse=True)
-    def _setup(self) -> None:
-        self.model = create_model_of_connection(SphericalRightShoulder)("model")
-        self.model.conn = SphericalRightShoulder("shoulder")
-        self.model.torso = PlanarTorso("torso")
-        self.model.arm = PinElbowStickRightArm("arm")
-        self.model.define_all()
-        self.shoulder, self.torso, self.arm = (
-            self.model.conn, self.model.torso, self.model.arm)
+class TestSphericalRightShoulder(ShoulderSetupMixin):
+    shoulder_cls = SphericalRightShoulder
 
     def test_kinematics(self) -> None:
         w = self.arm.upper_arm.frame.ang_vel_in(self.torso.frame)
