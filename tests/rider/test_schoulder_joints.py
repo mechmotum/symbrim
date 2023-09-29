@@ -7,6 +7,8 @@ from brim.rider.base_connections import (
     RightShoulderBase,
 )
 from brim.rider.shoulder_joints import (
+    FlexAddLeftShoulder,
+    FlexAddRightShoulder,
     FlexRotLeftShoulder,
     FlexRotRightShoulder,
     SphericalLeftShoulder,
@@ -20,6 +22,8 @@ from brim.utilities.utilities import check_zero
 
 
 @pytest.mark.parametrize("shoulder_cls, arm_cls, base_cls", [
+    (FlexAddLeftShoulder, PinElbowStickLeftArm, LeftShoulderBase),
+    (FlexAddRightShoulder, PinElbowStickRightArm, RightShoulderBase),
     (FlexRotLeftShoulder, PinElbowStickLeftArm, LeftShoulderBase),
     (FlexRotRightShoulder, PinElbowStickRightArm, RightShoulderBase),
     (SphericalLeftShoulder, PinElbowStickLeftArm, LeftShoulderBase),
@@ -52,6 +56,28 @@ class ShoulderSetupMixin:
         self.model.define_all()
         self.shoulder, self.torso, self.arm = (
             self.model.conn, self.model.torso, self.model.arm)
+
+
+class TestFlexAddLeftShoulder(ShoulderSetupMixin):
+    shoulder_cls = FlexAddLeftShoulder
+
+    def test_kinematics(self) -> None:
+        w = self.arm.upper_arm.frame.ang_vel_in(self.torso.frame)
+        assert w.dot(self.torso.y).xreplace(
+            {self.shoulder.q[1]: 0}) == self.shoulder.u[0]
+        assert w.dot(self.torso.x).xreplace(
+            {self.shoulder.q[0]: 0}) == -self.shoulder.u[1]
+
+
+class TestFlexAddRightShoulder(ShoulderSetupMixin):
+    shoulder_cls = FlexAddRightShoulder
+
+    def test_kinematics(self) -> None:
+        w = self.arm.upper_arm.frame.ang_vel_in(self.torso.frame)
+        assert w.dot(self.torso.y).xreplace(
+            {self.shoulder.q[1]: 0}) == self.shoulder.u[0]
+        assert w.dot(self.torso.x).xreplace(
+            {self.shoulder.q[0]: 0}) == self.shoulder.u[1]
 
 
 class TestFlexRotLeftShoulder(ShoulderSetupMixin):

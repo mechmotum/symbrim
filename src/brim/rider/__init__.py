@@ -28,6 +28,7 @@ __all__ = [
 
     "SphericalHipTorque", "SphericalHipSpringDamper",
 
+    "FlexAddLeftShoulder", "FlexAddRightShoulder",
     "FlexRotLeftShoulder", "FlexRotRightShoulder",
     "SphericalLeftShoulder", "SphericalRightShoulder",
 
@@ -74,6 +75,8 @@ from brim.rider.rider import Rider
 from brim.rider.rider_lean import RiderLean, RiderLeanConnection
 from brim.rider.sacrums import FixedSacrum
 from brim.rider.shoulder_joints import (
+    FlexAddLeftShoulder,
+    FlexAddRightShoulder,
     FlexRotLeftShoulder,
     FlexRotRightShoulder,
     SphericalLeftShoulder,
