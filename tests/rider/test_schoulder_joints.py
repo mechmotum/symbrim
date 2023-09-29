@@ -1,12 +1,10 @@
 from __future__ import annotations
 
 import pytest
-from brim.core import ConnectionRequirement, ModelBase, ModelRequirement
-from brim.rider.arms import ArmBase, PinElbowStickLeftArm, PinElbowStickRightArm
+from brim.rider.arms import PinElbowStickLeftArm, PinElbowStickRightArm
 from brim.rider.base_connections import (
     LeftShoulderBase,
     RightShoulderBase,
-    ShoulderBase,
 )
 from brim.rider.shoulder_joints import (
     SphericalLeftShoulder,
@@ -14,39 +12,9 @@ from brim.rider.shoulder_joints import (
     SphericalShoulderSpringDamper,
     SphericalShoulderTorque,
 )
-from brim.rider.torso import PlanarTorso, TorsoBase
-from brim.utilities.testing import _test_descriptions
+from brim.rider.torso import PlanarTorso
+from brim.utilities.testing import _test_descriptions, create_model_of_connection
 from brim.utilities.utilities import check_zero
-
-
-class ShoulderModel(ModelBase):
-    required_models = (
-        ModelRequirement("torso", TorsoBase, "Torso of the rider."),
-        ModelRequirement("arm", ArmBase, "Arm of the rider."),
-    )
-    required_connections = (
-        ConnectionRequirement("shoulder", ShoulderBase,
-                              "Shoulder joint of the rider."),
-    )
-    torso: TorsoBase
-    arm: ArmBase
-    shoulder: ShoulderBase
-
-    def define_connections(self) -> None:
-        self.shoulder.torso = self.torso
-        self.shoulder.arm = self.arm
-
-    def define_objects(self) -> None:
-        super().define_objects()
-        self.shoulder.define_objects()
-
-    def define_kinematics(self) -> None:
-        super().define_kinematics()
-        self.shoulder.define_kinematics()
-
-    def define_loads(self) -> None:
-        super().define_loads()
-        self.shoulder.define_loads()
 
 
 @pytest.mark.parametrize("shoulder_cls, arm_cls, base_cls", [
@@ -70,13 +38,13 @@ class TestShoulderJointBase:
 class TestSphericalLeftShoulderJoint:
     @pytest.fixture(autouse=True)
     def _setup(self) -> None:
-        self.model = ShoulderModel("model")
-        self.model.shoulder = SphericalLeftShoulder("shoulder")
+        self.model = create_model_of_connection(SphericalLeftShoulder)("model")
+        self.model.conn = SphericalLeftShoulder("shoulder")
         self.model.torso = PlanarTorso("torso")
         self.model.arm = PinElbowStickLeftArm("arm")
         self.model.define_all()
         self.shoulder, self.torso, self.arm = (
-            self.model.shoulder, self.model.torso, self.model.arm)
+            self.model.conn, self.model.torso, self.model.arm)
 
     def test_kinematics(self) -> None:
         w = self.arm.upper_arm.frame.ang_vel_in(self.torso.frame)
@@ -91,13 +59,13 @@ class TestSphericalLeftShoulderJoint:
 class TestSphericalRightShoulderJoint:
     @pytest.fixture(autouse=True)
     def _setup(self) -> None:
-        self.model = ShoulderModel("model")
-        self.model.shoulder = SphericalRightShoulder("shoulder")
+        self.model = create_model_of_connection(SphericalRightShoulder)("model")
+        self.model.conn = SphericalRightShoulder("shoulder")
         self.model.torso = PlanarTorso("torso")
         self.model.arm = PinElbowStickRightArm("arm")
         self.model.define_all()
         self.shoulder, self.torso, self.arm = (
-            self.model.shoulder, self.model.torso, self.model.arm)
+            self.model.conn, self.model.torso, self.model.arm)
 
     def test_kinematics(self) -> None:
         w = self.arm.upper_arm.frame.ang_vel_in(self.torso.frame)
@@ -107,6 +75,7 @@ class TestSphericalRightShoulderJoint:
             {self.shoulder.q[0]: 0, self.shoulder.q[2]: 0}) == self.shoulder.u[1]
         assert w.dot(self.torso.z).xreplace(
             {self.shoulder.q[0]: 0, self.shoulder.q[1]: 0}) == -self.shoulder.u[2]
+
 
 class TestSphericalShoulderTorque:
     @pytest.mark.parametrize("load_group_cls", [
@@ -123,21 +92,18 @@ class TestSphericalShoulderTorque:
     @staticmethod
     def _get_test_torques_info(shoulder_cls: type, arm_cls: type, load_group_cls: type
                                ) -> tuple:
-        model = ShoulderModel("model")
-        model.shoulder = shoulder_cls("shoulder")
+        model = create_model_of_connection(shoulder_cls)("model")
+        model.conn = shoulder_cls("shoulder")
         model.torso = PlanarTorso("torso")
         model.arm = arm_cls("arm")
         load_group = load_group_cls("shoulder")
-        model.shoulder.add_load_groups(load_group)
+        model.conn.add_load_groups(load_group)
         model.define_all()
         assert len(load_group.system.loads) == 2
         w = model.arm.shoulder_interframe.ang_vel_in(model.torso.frame)
-        flex_axis = w.xreplace(
-            {model.shoulder.u[1]: 0, model.shoulder.u[2]: 0}).normalize()
-        add_axis = w.xreplace(
-            {model.shoulder.u[0]: 0, model.shoulder.u[2]: 0}).normalize()
-        rot_axis = w.xreplace(
-            {model.shoulder.u[0]: 0, model.shoulder.u[1]: 0}).normalize()
+        flex_axis = w.xreplace({model.conn.u[1]: 0, model.conn.u[2]: 0}).normalize()
+        add_axis = w.xreplace({model.conn.u[0]: 0, model.conn.u[2]: 0}).normalize()
+        rot_axis = w.xreplace({model.conn.u[0]: 0, model.conn.u[1]: 0}).normalize()
         return model, load_group, flex_axis, add_axis, rot_axis
 
     @pytest.mark.parametrize("shoulder_cls, leg_cls", [
@@ -182,21 +148,21 @@ class TestSphericalShoulderTorque:
             if load.frame == model.arm.shoulder_interframe:
                 assert check_zero(
                     load.torque.xreplace({**zero[1], **zero[2]}).dot(flex_axis) -
-                    torque(syms[0], model.shoulder.q[0], model.shoulder.u[0]))
+                    torque(syms[0], model.conn.q[0], model.conn.u[0]))
                 assert check_zero(
                     load.torque.xreplace({**zero[0], **zero[2]}).dot(add_axis) -
-                    torque(syms[1], model.shoulder.q[1], model.shoulder.u[1]))
+                    torque(syms[1], model.conn.q[1], model.conn.u[1]))
                 assert check_zero(
                     load.torque.xreplace({**zero[0], **zero[1]}).dot(rot_axis) -
-                    torque(syms[2], model.shoulder.q[2], model.shoulder.u[2]))
+                    torque(syms[2], model.conn.q[2], model.conn.u[2]))
             else:
                 assert load.frame == model.torso.frame
                 assert check_zero(
                     load.torque.xreplace({**zero[1], **zero[2]}).dot(flex_axis) +
-                    torque(syms[0], model.shoulder.q[0], model.shoulder.u[0]))
+                    torque(syms[0], model.conn.q[0], model.conn.u[0]))
                 assert check_zero(
                     load.torque.xreplace({**zero[0], **zero[2]}).dot(add_axis) +
-                    torque(syms[1], model.shoulder.q[1], model.shoulder.u[1]))
+                    torque(syms[1], model.conn.q[1], model.conn.u[1]))
                 assert check_zero(
                     load.torque.xreplace({**zero[0], **zero[1]}).dot(rot_axis) +
-                    torque(syms[2], model.shoulder.q[2], model.shoulder.u[2]))
+                    torque(syms[2], model.conn.q[2], model.conn.u[2]))
