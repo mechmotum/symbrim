@@ -77,7 +77,7 @@ class TestSphericalRightShoulderJoint:
             {self.shoulder.q[0]: 0, self.shoulder.q[1]: 0}) == -self.shoulder.u[2]
 
 
-class TestSphericalShoulderTorque:
+class TestSphericalShoulderTorques:
     @pytest.mark.parametrize("load_group_cls", [
         SphericalShoulderTorque, SphericalShoulderSpringDamper])
     def test_invalid_type(self, load_group_cls) -> None:
