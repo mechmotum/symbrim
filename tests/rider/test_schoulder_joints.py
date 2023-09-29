@@ -26,17 +26,17 @@ from brim.utilities.utilities import check_zero
     (SphericalRightShoulder, PinElbowStickRightArm, RightShoulderBase),
 ])
 class TestShoulderJointBase:
-    def test_types(self, shoulder_cls, arm_cls, base_cls) -> None:
-        shoulder = shoulder_cls("shoulder")
-        shoulder.torso = PlanarTorso("torso")
-        shoulder.arm = arm_cls("arm")
-        assert isinstance(shoulder, base_cls)
+    @pytest.fixture(autouse=True)
+    def _setup(self, shoulder_cls, arm_cls, base_cls) -> None:
+        self.shoulder = shoulder_cls("shoulder")
+        self.shoulder.torso = PlanarTorso("torso")
+        self.shoulder.arm = arm_cls("arm")
 
-    def test_descriptions(self, shoulder_cls, arm_cls, base_cls) -> None:
-        shoulder = shoulder_cls("shoulder")
-        shoulder.torso = PlanarTorso("torso")
-        shoulder.arm = arm_cls("arm")
-        _test_descriptions(shoulder)
+    def test_types(self, base_cls) -> None:
+        assert isinstance(self.shoulder, base_cls)
+
+    def test_descriptions(self) -> None:
+        _test_descriptions(self.shoulder)
 
 
 @pytest.mark.parametrize("shoulder_cls, arm_cls", [
