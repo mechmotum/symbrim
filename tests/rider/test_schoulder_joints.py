@@ -7,6 +7,8 @@ from brim.rider.base_connections import (
     RightShoulderBase,
 )
 from brim.rider.shoulder_joints import (
+    FlexRotLeftShoulder,
+    FlexRotRightShoulder,
     SphericalLeftShoulder,
     SphericalRightShoulder,
     SphericalShoulderSpringDamper,
@@ -18,6 +20,8 @@ from brim.utilities.utilities import check_zero
 
 
 @pytest.mark.parametrize("shoulder_cls, arm_cls, base_cls", [
+    (FlexRotLeftShoulder, PinElbowStickLeftArm, LeftShoulderBase),
+    (FlexRotRightShoulder, PinElbowStickRightArm, RightShoulderBase),
     (SphericalLeftShoulder, PinElbowStickLeftArm, LeftShoulderBase),
     (SphericalRightShoulder, PinElbowStickRightArm, RightShoulderBase),
 ])
@@ -33,6 +37,32 @@ class TestShoulderJointBase:
         shoulder.torso = PlanarTorso("torso")
         shoulder.arm = arm_cls("arm")
         _test_descriptions(shoulder)
+
+
+@pytest.mark.parametrize("shoulder_cls, arm_cls", [
+    (FlexRotLeftShoulder, PinElbowStickLeftArm),
+    (FlexRotRightShoulder, PinElbowStickRightArm)])
+class TestFlexRotShoulderJoints:
+    @pytest.fixture(autouse=True)
+    def _setup(self, shoulder_cls, arm_cls) -> None:
+        self.model = create_model_of_connection(shoulder_cls)("model")
+        self.model.conn = shoulder_cls("shoulder")
+        self.model.torso = PlanarTorso("torso")
+        self.model.arm = arm_cls("arm")
+        self.model.define_all()
+        self.shoulder, self.torso, self.arm = (
+            self.model.conn, self.model.torso, self.model.arm)
+
+    def test_kinematics(self) -> None:
+        w = self.arm.upper_arm.frame.ang_vel_in(self.torso.frame)
+        assert w.dot(self.torso.y).xreplace(
+            {self.shoulder.q[1]: 0}) == self.shoulder.u[0]
+        if isinstance(self.shoulder, FlexRotLeftShoulder):
+            assert w.dot(self.torso.z).xreplace(
+                {self.shoulder.q[0]: 0}) == self.shoulder.u[1]
+        else:
+            assert w.dot(self.torso.z).xreplace(
+                {self.shoulder.q[0]: 0}) == -self.shoulder.u[1]
 
 
 class TestSphericalLeftShoulderJoint:
