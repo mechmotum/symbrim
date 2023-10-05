@@ -112,6 +112,16 @@ class TestFixedSeatConnection:
         assert self.pelvis.frame.dcm(self.rear_frame.saddle.frame) == Matrix([
             [cos(a), 0, -sin(a)], [0, 1, 0], [sin(a), 0, cos(a)]])
 
+    def test_override_symbols(self):
+        self.model.define_connections()
+        self.model.define_objects()
+        self.conn.symbols["yaw"] = 0
+        self.conn.symbols["pitch"] = 0
+        self.conn.symbols["roll"] = 0
+        self.model.define_kinematics()
+        assert self.pelvis.frame.dcm(self.rear_frame.saddle.frame) == eye(3)
+
+
 class TestSideLeanConnection:
     @pytest.fixture(autouse=True)
     def _setup(self) -> None:
