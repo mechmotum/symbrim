@@ -6,8 +6,8 @@ import pytest
 from brim.bicycle import FlatGround, KnifeEdgeWheel, NonHolonomicTire
 from brim.core import LoadGroupBase, ModelBase, Registry, set_default_convention
 from brim.other.rolling_disc import RollingDisc
-from sympy import Symbol
-from sympy.physics.mechanics import Torque
+from sympy import S, Symbol
+from sympy.physics.mechanics import Torque, dynamicsymbols
 from sympy.physics.mechanics._system import System
 
 
@@ -123,6 +123,39 @@ class TestModelBase:
     def test_get_description_of_not_existing_symbol(self, _create_model) -> None:
         self.disc.define_all()
         assert self.disc.get_description(Symbol("not_existing_symbol")) is None
+
+    def test_traversal_get_all_symbols(self, _create_model) -> None:
+        self.disc.define_all()
+        assert self.disc.get_all_symbols() == {
+            self.disc.disc.symbols["r"], self.disc.tire.symbols["my_sym1"],
+            self.disc.tire.symbols["my_sym2"], self.load_group.symbols["T"]
+        }
+        assert self.disc.disc.get_all_symbols() == {
+            self.disc.disc.symbols["r"], self.load_group.symbols["T"]}
+        assert self.disc.tire.get_all_symbols() == {
+            self.disc.disc.symbols["r"], self.disc.tire.symbols["my_sym1"],
+            self.disc.tire.symbols["my_sym2"], self.load_group.symbols["T"]}
+        assert self.disc.disc.load_groups[0].get_all_symbols() == {
+            self.load_group.symbols["T"]}
+
+    @pytest.mark.parametrize("sym, expected", [
+        (Symbol("r_my"), {Symbol("r_my")}),
+        (dynamicsymbols("r_var"), {dynamicsymbols("r_var")}),
+        (dynamicsymbols("r_var", 1),
+         {dynamicsymbols("r_var"), dynamicsymbols("r_var", 1)}),
+        (Symbol("r_def") - dynamicsymbols("r_var"),
+         {Symbol("r_def"), dynamicsymbols("r_var")}),
+        (0, set()),
+        (1.0, set()),
+        (S.Zero, set()),
+    ])
+    def test_type_get_all_symbols(self, sym, expected, _create_model) -> None:
+        self.disc.define_connections()
+        self.disc.define_objects()
+        self.disc.disc.symbols["r"] = sym
+        assert self.disc.get_all_symbols() == {
+            self.disc.tire.symbols["my_sym1"], self.disc.tire.symbols["my_sym2"],
+            self.load_group.symbols["T"], *expected}
 
     def test_call_system(self, _create_model) -> None:
         self.disc.define_all()

@@ -5,7 +5,8 @@ from abc import ABCMeta
 from functools import wraps
 from typing import TYPE_CHECKING, Any, Callable
 
-from sympy import MutableDenseMatrix, Symbol, symbols
+from sympy import Basic, MutableDenseMatrix, Symbol, symbols
+from sympy.physics.mechanics import dynamicsymbols, find_dynamicsymbols
 from sympy.physics.mechanics._system import System
 
 from brim.core.registry import Registry
@@ -185,6 +186,29 @@ class BrimBase:
                 desc = load_group.get_description(obj)
                 if desc is not None:
                     return desc
+
+    def get_all_symbols(self) -> set[Basic]:
+        """Get all declared symbols of a model."""
+        syms = set()
+        # Get local symbols.
+        for sym in self.symbols.values():
+            # Extract symbols if an expression is set as symbol.
+            if isinstance(sym, Basic):
+                syms.update(sym.free_symbols)
+                syms.update(find_dynamicsymbols(sym))
+        if dynamicsymbols._t in syms:  # Remove t.
+            syms.remove(dynamicsymbols._t)
+        # Traverse children.
+        if hasattr(self, "submodels"):
+            for submodel in self.submodels:
+                syms.update(submodel.get_all_symbols())
+        if hasattr(self, "connections"):
+            for conn in self.connections:
+                syms.update(conn.get_all_symbols())
+        if hasattr(self, "load_groups"):
+            for load_group in self.load_groups:
+                syms.update(load_group.get_all_symbols())
+        return syms
 
     @property
     def system(self) -> System | None:
