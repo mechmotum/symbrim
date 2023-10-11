@@ -7,3 +7,8 @@ poetry.lock binary
 *.png binary
 *.svg binary
 */.ipynb_checkpoints binary
+
+# Filter the Jupyter Notebooks.
+*.ipynb filter=nbstripout
+*.zpln filter=nbstripout
+*.ipynb diff=ipynb
