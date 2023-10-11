@@ -7,6 +7,7 @@ downloaded as exercise locally and run on your own computer. The web version of 
 tutorials each show the full solution, so you can also just read through them.
 
 The tutorials are ordered with increasing depth and complexity.
+:download:`Click here <./tutorials.zip>` to download all tutorials as a zip file.
 
 .. toctree::
     :maxdepth: 1
