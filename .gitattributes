@@ -1,0 +1,9 @@
+# Automatically normalize line endings.
+* text=auto
+
+# Files which are not modified by humans should be treated as binary.
+poetry.lock binary
+*.gif binary
+*.png binary
+*.svg binary
+*/.ipynb_checkpoints binary
