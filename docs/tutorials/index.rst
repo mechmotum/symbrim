@@ -12,6 +12,7 @@ The tutorials are ordered with increasing depth and complexity.
     :maxdepth: 1
 
     four_bar_linkage.ipynb
+    my_first_bicycle.ipynb
 
 Installation
 ------------
