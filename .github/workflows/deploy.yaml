@@ -19,7 +19,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Install pandoc
-        run: sudo apt-get install pandoc
+        run: |
+          sudo apt-get update
+          sudo apt-get install pandoc
+      - name: Create the tutorials' environment
+        uses: mamba-org/setup-micromamba@v1
+        with:
+          environment-file: docs/tutorials/tutorials_environment.yml
+          cache-environment: true
+          post-cleanup: 'all'
+      - name: Deactivate the tutorials environment
+        run: conda deactivate
       - name: Install poetry
         run: pipx install poetry==1.6.1
       - name: Set up Python
