@@ -32,9 +32,7 @@ jobs:
           cache-environment: true
           post-cleanup: 'all'
       - name: Deactivate the tutorials environment
-        run: |
-          source /usr/share/miniconda/etc/profile.d/conda.sh
-          conda deactivate
+        run: micromamba deactivate
       - name: Install poetry
         run: pipx install poetry==1.6.1
       - name: Set up Python
