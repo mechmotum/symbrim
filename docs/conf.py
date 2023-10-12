@@ -10,7 +10,7 @@ import sys
 sys.path.insert(0, os.path.dirname(__file__))
 sys.path.insert(0, os.path.abspath("../src"))
 
-from convert_notebooks import main as convert_notebooks  # noqa: E402
+from process_tutorials import main as process_tutorials  # noqa: E402
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
@@ -46,8 +46,8 @@ intersphinx_mapping = {
 
 bibtex_bibfiles = ["references.bib"]
 
-# Run convert_notebooks.py to convert notebooks to create a zip file with exercises.
-convert_notebooks()
+# Run process_tutorials.py to convert notebooks to create a zip file with exercises.
+process_tutorials()
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
