@@ -15,14 +15,14 @@ class TestRandomEval:
         dynamicsymbols("x").diff()
     ])
     def test_non_zero(self, expr, method) -> None:
-        assert random_eval(expr, method=method) != 0
+        assert float(random_eval(expr, method=method)) != 0.
 
     @pytest.mark.parametrize("method", ["lambdify", "evalf"])
     @pytest.mark.parametrize("expr", [
         sqrt(dynamicsymbols("x") ** 2) - dynamicsymbols("x"),
     ])
     def test_zero(self, expr, method) -> None:
-        assert random_eval(expr, method=method) == 0
+        assert float(random_eval(expr, method=method)) == 0.
 
     @pytest.mark.parametrize("method", ["lambdify", "evalf"])
     @pytest.mark.parametrize("expr", [3, 3.3])

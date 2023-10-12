@@ -134,7 +134,7 @@ class TestSuspensionRigidFrontFrameMoore:
         stanchion_force = stanchion_force.xreplace({k: 1000, c: 50})
         slider_force = slider_force.xreplace({k: 1000, c: 50})
         steer_axis_up = -front.steer_hub.axis
-        assert stanchion_force.dot(steer_axis_up).xreplace({q: 0.02, u: -0.1}) == 15
-        assert slider_force.dot(steer_axis_up).xreplace({q: 0.02, u: -0.1}) == -15
-        assert stanchion_force.dot(steer_axis_up).xreplace({q: 0.02, u: 0.1}) == 25
-        assert slider_force.dot(steer_axis_up).xreplace({q: 0.02, u: 0.1}) == -25
+        assert stanchion_force.dot(steer_axis_up).xreplace({q: 0.02, u: -0.1}) == 15.
+        assert slider_force.dot(steer_axis_up).xreplace({q: 0.02, u: -0.1}) == -15.
+        assert stanchion_force.dot(steer_axis_up).xreplace({q: 0.02, u: 0.1}) == 25.
+        assert slider_force.dot(steer_axis_up).xreplace({q: 0.02, u: 0.1}) == -25.
