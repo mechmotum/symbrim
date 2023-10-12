@@ -15,10 +15,10 @@ The tutorials are ordered with increasing depth and complexity. The tutorials ar
 Installation
 ------------
 To run the tutorials locally, you need to install BRiM and various dependencies. The
-easiest way to do this is to use the provided `tutorial_environment.yml>`. The
+easiest way to do this is to use the provided `tutorials_environment.yml>`. The
 environment can be created using conda or mamba:
 
 ```bash
-conda env create -f tutorial_environment.yml
+conda env create -f tutorials_environment.yml
 conda activate brim_tutorials
 ```
