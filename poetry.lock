@@ -1553,8 +1553,8 @@ files = [
 [package.dependencies]
 numpy = [
     {version = ">=1.20.3", markers = "python_version < \"3.10\""},
-    {version = ">=1.21.0", markers = "python_version >= \"3.10\" and python_version < \"3.11\""},
     {version = ">=1.23.2", markers = "python_version >= \"3.11\""},
+    {version = ">=1.21.0", markers = "python_version >= \"3.10\" and python_version < \"3.11\""},
 ]
 python-dateutil = ">=2.8.2"
 pytz = ">=2020.1"
@@ -2664,7 +2664,7 @@ dev = ["hypothesis (>=6.70.0)", "pytest (>=7.1.0)"]
 type = "git"
 url = "https://github.com/sympy/sympy.git"
 reference = "HEAD"
-resolved_reference = "f327f0ba9ca32a15a999e9d8e8704729f9db8c8b"
+resolved_reference = "84e2ecd2a9c476db82dfac98e29719235df518c3"
 
 [[package]]
 name = "tenacity"
