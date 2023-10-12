@@ -32,7 +32,8 @@ extensions = [
 ]
 
 templates_path = ["_templates"]
-exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "tutorials/exercises/*.ipynb"]
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "tutorials/exercises/*.ipynb",
+                    "tutorials/my_first_bicycle.ipynb"]
 
 napoleon_numpy_docstring = True
 napoleon_custom_sections = [("Explanation", "notes_style")]
