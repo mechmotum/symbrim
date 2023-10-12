@@ -137,7 +137,7 @@ def create_zip(required_files: dict[str, str]) -> None:
     for file, new_location in required_files.items():
         shutil.copy(os.path.join(TUTORIALS_DIR, file),
                     os.path.join(zip_dir, new_location))
-    for file in ("README.md", "tutorial_environment.yml"):
+    for file in ("README.md", "tutorials_environment.yml"):
         shutil.copy(os.path.join(TUTORIALS_DIR, file), zip_dir)
 
     # Create a zip file.
