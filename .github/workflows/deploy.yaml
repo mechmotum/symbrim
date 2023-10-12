@@ -33,7 +33,7 @@ jobs:
           post-cleanup: 'all'
       - name: Deactivate the tutorials environment
         run: |
-          conda init bash
+          source /usr/share/miniconda/etc/profile.d/conda.sh
           conda deactivate
       - name: Install poetry
         run: pipx install poetry==1.6.1
