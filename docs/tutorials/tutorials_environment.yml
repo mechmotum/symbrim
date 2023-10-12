@@ -5,6 +5,7 @@ dependencies:
   - python >=3.9,<3.12
   - pip
   - notebook
+  - requests
   - scikits.odes
   - pip:
       - git+https://github.com/moorepants/BicycleParameters.git
