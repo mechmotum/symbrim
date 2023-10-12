@@ -127,9 +127,9 @@ def main():
     # Execute notebooks.
     notebooks = notebooks_to_execute()
     if notebooks:
-        check_environment()
+        command = get_command_environment()
         for notebook in notebooks:
-            execute_notebook(notebook)
+            execute_notebook(notebook, command)
 
 
 def create_zip(required_files: dict[str, str]) -> None:
@@ -192,24 +192,30 @@ def get_tutorials_environment_name():
                 return line.split(":")[1].strip()
 
 
-def check_environment() -> None:
+def get_command_environment() -> str:
     """Check if the tutorials' environment exists."""
-    # Check if conda is installed.
-    if shutil.which("conda") is None:
-        raise RuntimeError("Conda is not installed.")
-    # Check if the tutorials' environment exists.
-    env = get_tutorials_environment_name()
-    if env not in subprocess.run(["conda", "env", "list"], capture_output=True
-                                 ).stdout.decode():
-        raise RuntimeError(f"The conda environment '{env}' does not exist.")
+    commands = ("mamba", "micromamba", "conda")
+    for command in commands:
+        # Check if command is installed.
+        if shutil.which(command) is None:
+            if command == commands[-1]:
+                raise RuntimeError(f"{command.capitalize()} is not installed.")
+            continue
+        # Check if the tutorials' environment exists.
+        env = get_tutorials_environment_name()
+        if env in subprocess.run([command, "env", "list"], capture_output=True
+                              ).stdout.decode():
+            return command
+        else:
+            if command == commands[-1]:
+                raise RuntimeError(f"The {command} environment '{env}' does not exist.")
 
 
-def execute_notebook(nb: str) -> None:
+def execute_notebook(nb: str, command: str = "conda") -> None:
     """Execute a notebook."""
-    subprocess.run(["conda", "run", "-n", get_tutorials_environment_name(),
+    subprocess.run([command, "run", "-n", get_tutorials_environment_name(),
                     "jupyter", "nbconvert", nb, "--execute", "--inplace"])
 
 
 if __name__ == "__main__":
-    # main()
-    check_environment()
+    main()
