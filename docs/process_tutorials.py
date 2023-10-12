@@ -4,6 +4,7 @@ from __future__ import annotations
 import os
 import re
 import shutil
+import subprocess
 import zipfile
 
 import nbformat
@@ -123,6 +124,13 @@ def main():
     # Create a zip file with exercise notebooks.
     create_zip(required_files)
 
+    # Execute notebooks.
+    notebooks = notebooks_to_execute()
+    if notebooks:
+        check_environment()
+        for notebook in notebooks:
+            execute_notebook(notebook)
+
 
 def create_zip(required_files: dict[str, str]) -> None:
     """Create a zip file with exercise notebooks."""
@@ -151,5 +159,57 @@ def create_zip(required_files: dict[str, str]) -> None:
     shutil.rmtree(zip_dir)
 
 
+def notebook_is_executed(nb: str | nbformat.NotebookNode) -> bool:
+    """Check if a notebook is executed."""
+    if isinstance(nb, str):
+        with open(nb, encoding="utf-8") as f:
+            nb = nbformat.read(f, as_version=4)
+    for _cell in nb.cells:
+        # If statement is from the nbsphinx source code.
+        if (
+                # At least one code cell actually containing source code:
+                any(c.source for c in nb.cells if c.cell_type == "code") and
+                # No outputs, not even a prompt number:
+                not any(c.get("outputs") or c.get("execution_count")
+                        for c in nb.cells if c.cell_type == "code")
+        ):
+            return False
+    return True
+
+
+def notebooks_to_execute() -> tuple[str]:
+    """Return a list of notebooks that need to be executed."""
+    notebooks = [os.path.join(TUTORIALS_DIR, f)
+                 for f in os.listdir(TUTORIALS_DIR) if f.endswith(".ipynb")]
+    return tuple(nb for nb in notebooks if not notebook_is_executed(nb))
+
+
+def get_tutorials_environment_name():
+    """Return the name of the tutorials' environment."""
+    with open(os.path.join(TUTORIALS_DIR, "tutorials_environment.yml")) as f:
+        for line in f:
+            if line.startswith("name:"):
+                return line.split(":")[1].strip()
+
+
+def check_environment() -> None:
+    """Check if the tutorials' environment exists."""
+    # Check if conda is installed.
+    if shutil.which("conda") is None:
+        raise RuntimeError("Conda is not installed.")
+    # Check if the tutorials' environment exists.
+    env = get_tutorials_environment_name()
+    if env not in subprocess.run(["conda", "env", "list"], capture_output=True
+                                 ).stdout.decode():
+        raise RuntimeError(f"The conda environment '{env}' does not exist.")
+
+
+def execute_notebook(nb: str) -> None:
+    """Execute a notebook."""
+    subprocess.run(["conda", "run", "-n", get_tutorials_environment_name(),
+                    "jupyter", "nbconvert", nb, "--execute", "--inplace"])
+
+
 if __name__ == "__main__":
-    main()
+    # main()
+    check_environment()
