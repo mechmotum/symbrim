@@ -1,4 +1,5 @@
 """Utilities for the tutorials."""
+import inspect
 import os
 import zipfile
 
@@ -30,3 +31,31 @@ def download_parametrization_data(data_dir: str = None) -> None:
     os.rename(os.path.join(TUTORIALS_DIR, "BicycleParameters-master/data/"), data_dir)
     # Remove the BicycleParameters-master folder.
     os.rmdir(os.path.join(TUTORIALS_DIR, "BicycleParameters-master"))
+
+
+def check_documentation(*objects: object) -> None:
+    """Check if type signature and a docstring are provided for each object."""
+    objects = list(objects)
+    errors = []
+    while objects:
+        obj = objects.pop()
+        if isinstance(obj, property):
+            obj_str = f"'{obj.fget.__name__}'"
+        else:
+            obj_str = f"'{obj.__name__}'"
+        if not obj.__doc__:
+            errors.append(f"{obj_str} has no docstring.")
+        if isinstance(obj, property):
+            if "return" not in obj.fget.__annotations__:
+                errors.append(f"{obj_str} has no type hint for what it returns")
+            continue
+        if inspect.isclass(obj):
+            continue
+        sig = inspect.signature(obj)
+        for par in sig.parameters:
+            if par not in ("self",) and par not in obj.__annotations__:
+                errors.append(f"'{par}' from {obj_str} does not have a type hint.")
+        if "return" not in obj.__annotations__:
+            errors.append(f"{obj_str} has no type hint for what it returns")
+    if errors:
+        raise Exception("\n".join(errors))
