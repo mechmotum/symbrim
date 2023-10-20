@@ -4,8 +4,8 @@ A Modular and Extensible Open-Source Framework for Creating Bicycle-Rider Models
 Links with more information:
 
 - [Online documentation](https://tjstienstra.github.io/brim/)
-- [BRiM Paper](https://doi.org/10.59490/6504c5a765e8118fc7b106c3)
-- [BMD conference PowerPoint](https://docs.google.com/presentation/d/1ogz0Qs-t8bQT-2uk8gyYo40WmO387zIf/edit?usp=share_link&ouid=104124211006373398120&rtpof=true&sd=true)
+- [BRiM paper publication](https://doi.org/10.59490/6504c5a765e8118fc7b106c3) ([source](https://github.com/TJStienstra/brim-bmd-2023-paper))
+- [BMD 2023 conference PowerPoint](https://docs.google.com/presentation/d/1ogz0Qs-t8bQT-2uk8gyYo40WmO387zIf/edit?usp=share_link&ouid=104124211006373398120&rtpof=true&sd=true)
 
 This package is still under development, therefore there is no guarantee on backward
 compatibility.
