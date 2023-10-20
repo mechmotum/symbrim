@@ -1,10 +1,8 @@
 # Based of: https://github.com/eeholmes/readthedoc-test
 on:
   push:
-    workflow_run:
-      workflows: [tests]
-      types: [completed]
-      branches: [main]
+    branches:
+      - main
 permissions:
   contents: write
 
@@ -17,15 +15,32 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+      - name: Install pandoc
+        run: |
+          sudo apt-get update
+          sudo apt-get install pandoc
+      - name: Create the tutorials' environment
+        uses: mamba-org/setup-micromamba@v1
+        with:
+          environment-file: docs/tutorials/tutorials_environment.yml
+          init-shell: >-
+            bash
+            powershell
+          cache-environment: true
+          post-cleanup: 'all'
+      - name: Deactivate the tutorials environment
+        run: |
+          source /usr/share/miniconda/etc/profile.d/conda.sh
+          conda deactivate
       - name: Install poetry
-        run: pipx install poetry==1.4.0
+        run: pipx install poetry==1.6.1
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: 3.11
       - name: Install dependencies
-        run: poetry install --with docs --extras plotting
+        run: poetry install --with docs --all-extras
       - name: make the sphinx docs
         run: |
           poetry run make -C docs clean

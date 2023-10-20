@@ -7,7 +7,10 @@ import os
 import sys
 
 # Add source folder to path for autodoc
+sys.path.insert(0, os.path.dirname(__file__))
 sys.path.insert(0, os.path.abspath("../src"))
+
+from process_tutorials import main as process_tutorials  # noqa: E402
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
@@ -25,10 +28,12 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
     "sphinxcontrib.bibtex",
+    "nbsphinx",
 ]
 
 templates_path = ["_templates"]
-exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "tutorials/exercises/*.ipynb",
+                    "tutorials/my_first_bicycle.ipynb"]
 
 napoleon_numpy_docstring = True
 napoleon_custom_sections = [("Explanation", "notes_style")]
@@ -41,6 +46,9 @@ intersphinx_mapping = {
 }
 
 bibtex_bibfiles = ["references.bib"]
+
+# Run process_tutorials.py to convert notebooks to create a zip file with exercises.
+process_tutorials()
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output

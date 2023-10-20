@@ -93,13 +93,16 @@ class FixedSeat(PelvisInterPointMixin, SeatBase):
         self.symbols.update({
             name: Symbol(self._add_prefix(name)) for name in ("yaw", "pitch", "roll")})
         self._rear_interframe = ReferenceFrame(self._add_prefix("rear_interframe"))
-        self._rear_interframe.orient_body_fixed(
-            self.rear_frame.saddle.frame,
-            (self.symbols[a] for a in ("yaw", "pitch", "roll")), "zyx")
 
     def _define_kinematics(self) -> None:
         """Define the kinematics."""
         super()._define_kinematics()
+        try:
+            self._rear_interframe.dcm(self.rear_frame.saddle.frame)
+        except ValueError:
+            self._rear_interframe.orient_body_fixed(
+                self.rear_frame.saddle.frame,
+                (self.symbols[a] for a in ("yaw", "pitch", "roll")), "zyx")
         self.system.add_joints(WeldJoint(
             self._add_prefix("weld_joint"), self.rear_frame.saddle.to_valid_joint_arg(),
             self.pelvis.body, self.rear_frame.saddle.point, self.pelvis_interpoint,

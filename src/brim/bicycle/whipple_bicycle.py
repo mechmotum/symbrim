@@ -73,11 +73,12 @@ class WhippleBicycleMoore(WhippleBicycle):
             self.q[5]: f"Front wheel rotation angle of {self.name}.",
             self.q[6]: f"Steering rotation angle of {self.name}.",
             self.q[7]: f"Rear wheel rotation angle of {self.name}.",
-            self.symbols["gear_ratio"]: "Ratio between the angle of the rear wheel and"
-                                        " the cranks.",
         }
         desc.update({ui: f"Generalized speed of the {desc[qi].lower()}"
                      for qi, ui in zip(self.q, self.u)})
+        if "gear_ratio" in self.symbols:
+            desc[self.symbols["gear_ratio"]] = (
+                "Ratio between the angle of the rear wheel and the cranks.")
         return desc
 
     def _define_objects(self) -> None:
@@ -89,7 +90,8 @@ class WhippleBicycleMoore(WhippleBicycle):
         self.front_tire.define_objects()
         self.q = Matrix(dynamicsymbols(self._add_prefix("q1:9")))
         self.u = Matrix(dynamicsymbols(self._add_prefix("u1:9")))
-        self.symbols["gear_ratio"] = Symbol(self._add_prefix("gear_ratio"))
+        if self.cranks is not None:
+            self.symbols["gear_ratio"] = Symbol(self._add_prefix("gear_ratio"))
 
     def _define_kinematics(self) -> None:
         """Define the kinematics of the Whipple bicycle."""

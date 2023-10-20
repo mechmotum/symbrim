@@ -13,5 +13,6 @@ Models.
     :titlesonly:
 
     guides/index
+    tutorials/index
     contributing/index
     api_reference

@@ -260,7 +260,7 @@ class SuspensionRigidFrontFrameMoore(SuspensionRigidFrontFrame):
             self.symbols["d8"]: "Distance of the hand grips from the steer point along "
                                 "the steer axis. The hand grips are below the steer "
                                 "attachment if d8 is positive.",
-            self.symbols["d9"]: "Perpendicular distance from the steer axis to the"
+            self.symbols["d9"]: "Perpendicular distance from the steer axis to the "
                                 "suspension.",
         }
 

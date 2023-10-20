@@ -29,6 +29,8 @@ __all__ = [
 
     "PinLeftHip", "PinRightHip", "SphericalLeftHip", "SphericalRightHip",
 
+    "FlexAddLeftShoulder", "FlexAddRightShoulder",
+    "FlexRotLeftShoulder", "FlexRotRightShoulder",
     "SphericalLeftShoulder", "SphericalRightShoulder",
 
     "FixedSacrum",
@@ -63,6 +65,10 @@ from brim.brim import (
 )
 from brim.rider import (
     FixedSacrum,
+    FlexAddLeftShoulder,
+    FlexAddRightShoulder,
+    FlexRotLeftShoulder,
+    FlexRotRightShoulder,
     PinElbowStickLeftArm,
     PinElbowStickRightArm,
     PinLeftHip,

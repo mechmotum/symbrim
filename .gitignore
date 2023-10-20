@@ -2,5 +2,8 @@ __pycache__
 .coverage*
 docs/_build
 docs/_autosummary
+docs/tutorials/exercises
+docs/tutorials/tutorials.zip
 data
 dist
+*\.ipynb_checkpoints
