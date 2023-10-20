@@ -13,6 +13,7 @@ The tutorials are ordered with increasing depth and complexity.
     :maxdepth: 1
 
     four_bar_linkage.ipynb
+    my_first_bicycle.ipynb
 
 Installation
 ------------
@@ -24,7 +25,7 @@ conda or mamba:
 .. code-block:: bash
 
     conda env create -f tutorials_environment.yml
-    conda activate brim_tutorials
+    conda activate brim-tutorials
 
 
 .. _general SymPy tutorials: https://docs.sympy.org/dev/tutorial/index.html
