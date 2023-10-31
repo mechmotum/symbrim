@@ -118,6 +118,24 @@ Connections should be specified similarly using the class property
         # These type hints are useful for some IDEs.
         connection: MyConnection
 
+Specify a Load Group Parent
+---------------------------
+
+Load groups are associated with a certain model or connection. To specify this
+association, one should specify the class property ``required_parent_type``. This
+property is utilized in a ``isinstance(parent, self.required_parent_type)`` check when
+adding a load group to a component. An example is shown below. ::
+
+    class MyLoadGroup(LoadGroupBase):
+        """My load group."""
+
+        required_parent_type: type[Union[ModelBase, ConnectionBase]] = MyModel
+
+    model = MyModel("my_model")
+    load_group = MyLoadGroup("my_load_group")
+    model.add_load_group(load_group)
+    assert load_group.parent is model
+
 Implementation Define Steps
 ---------------------------
 
