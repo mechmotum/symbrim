@@ -86,6 +86,9 @@ runtime. The following simple class shows how to specify the required submodels.
             ModelRequirement("ground", GroundBase, "Submodel of the ground."),
             ModelRequirement("other_submodel", OtherSubModel, "Other submodel."),
         )
+        # These type hints are useful for some IDEs.
+        ground: GroundBase
+        other_submodel: OtherSubModel
 
 The property created for ``"ground"`` will be like the following: ::
 
@@ -112,6 +115,8 @@ Connections should be specified similarly using the class property
         required_connections: tuple[ConnectionRequirement, ...] = (
             ConnectionRequirement("connection", MyConnection, "Connection."),
         )
+        # These type hints are useful for some IDEs.
+        connection: MyConnection
 
 Implementation Define Steps
 ---------------------------
