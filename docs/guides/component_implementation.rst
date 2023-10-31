@@ -52,6 +52,24 @@ The image below shows a schematic visualization of these steps for a rolling dis
         <use xlink:href="../_static/definition_steps.svg#definitionSteps"></use>
     </svg>
 
+Usage of Base Classes
+---------------------
+
+BRiM uses base classes for components to specify a common structure of a component.
+:class:`brim.bicycle.grounds.GroundBase` is an example of a base class. The advantage of
+using base classes is that it allows for a common interface between components, which
+makes it possible to swap out components without having to change the code. For example,
+one can swap out the ground model for a different ground model without having to change
+the code of the bicycle model.
+
+In case of :class:`brim.bicycle.grounds.GroundBase` some of the commonly shared
+properties are defined in the base class, such as a rigid body to represent the ground.
+Apart from those it also prescribes several properties using :class:`abc.ABCMeta` and
+:class:`abc.abstractmethod`. An example is the
+:meth:`brim.bicycle.grounds.GroundBase.get_normal` method. These kind of abstract
+methods have to be implemented by subclasses, such as
+:class:`brim.bicycle.grounds.FlatGround`.
+
 Setting Submodels and Connections
 ---------------------------------
 
