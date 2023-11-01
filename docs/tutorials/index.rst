@@ -1,3 +1,5 @@
+.. _tutorials:
+
 =========
 Tutorials
 =========
@@ -14,6 +16,7 @@ The tutorials are ordered with increasing depth and complexity.
 
     four_bar_linkage.ipynb
     my_first_bicycle.ipynb
+    rolling_disc_from_scratch.ipynb
 
 Installation
 ------------

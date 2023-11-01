@@ -9,3 +9,4 @@ User Guide
 
     installation
     introduction
+    component_implementation

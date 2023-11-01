@@ -36,7 +36,7 @@ If you use `BRiM` in your research, please cite the following paper:
     booktitle = {The Evolving Scholar - BMD 2023, 5th Edition},
     year = {2023},
     language = {en},
-    url = {https://dapp.orvium.io/deposits/6504c5a765e8118fc7b106c3/view},
+    doi = "10.59490/6504c5a765e8118fc7b106c3",
 }
 ```
 
