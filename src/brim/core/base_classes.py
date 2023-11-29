@@ -525,7 +525,7 @@ def _merge_systems(*systems: System) -> System:
     This function is not used in the current implementation of brim.
     However, it should in the end be moved to sympy mechanics.
     """
-    system = System(systems[0].frame, systems[0].origin)
+    system = System(systems[0].frame, systems[0].fixed_point)
     for s in systems:
         if s is None:  # pragma: no cover
             continue

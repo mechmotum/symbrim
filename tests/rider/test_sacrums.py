@@ -37,7 +37,7 @@ class TestSacrumBase:
     @pytest.mark.skipif(PlotConnection is None, reason="symmeplot not installed")
     def test_plotting(self):
         plot_conn = PlotConnection(self.conn.system.frame,
-                                   self.conn.system.origin, self.conn)
+                                   self.conn.system.fixed_point, self.conn)
         assert plot_conn.children
 
 

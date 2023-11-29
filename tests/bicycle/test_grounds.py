@@ -74,6 +74,6 @@ class TestFlatGround:
     def test_plotting(self):
         ground = FlatGround("ground")
         ground.define_all()
-        plot_model = PlotModel(ground.system.frame, ground.system.origin, ground)
+        plot_model = PlotModel(ground.system.frame, ground.system.fixed_point, ground)
         assert len(plot_model.children) == 1
         assert isinstance(plot_model.children[0], PlotFrame)

@@ -56,11 +56,11 @@ class TestFrontFrame:
         assert isinstance(front.left_hand_grip, Attachment)
         assert isinstance(front.right_hand_grip, Attachment)
         for body in front.system.bodies:
-            body.masscenter.pos_from(front.system.origin)
+            body.masscenter.pos_from(front.system.fixed_point)
         for attachment in (front.steer_hub, front.wheel_hub, front.left_hand_grip,
                            front.right_hand_grip):
             attachment.frame.dcm(front.system.frame)
-            attachment.point.pos_from(front.system.origin)
+            attachment.point.pos_from(front.system.fixed_point)
 
     @pytest.mark.skipif(PlotModel is None, reason="symmeplot not installed")
     @pytest.mark.parametrize("cls, n_children", [
@@ -68,7 +68,7 @@ class TestFrontFrame:
     def test_plotting(self, cls, n_children):
         front = cls("front")
         front.define_all()
-        plot_model = PlotModel(front.system.frame, front.system.origin, front)
+        plot_model = PlotModel(front.system.frame, front.system.fixed_point, front)
         assert len(plot_model.children) == n_children
         assert any(isinstance(obj, PlotBody) for obj in plot_model.children)
         assert any(isinstance(obj, PlotLine) for obj in plot_model.children)

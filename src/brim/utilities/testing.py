@@ -42,7 +42,7 @@ def create_model_of_connection(connection_cls: type[ConnectionBase]) -> type[Mod
         ModelBase._define_objects(self)
         for conn in self.connections:
             conn.define_objects()
-        self._system = System(self.conn.system.frame, self.conn.system.origin)
+        self._system = System(self.conn.system.frame, self.conn.system.fixed_point)
 
     def _define_kinematics(self):
         ModelBase._define_kinematics(self)

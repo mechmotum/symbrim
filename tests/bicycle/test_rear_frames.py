@@ -47,18 +47,18 @@ class TestRigidRearFrame:
         assert isinstance(rear.saddle, Attachment)
         assert isinstance(rear.bottom_bracket, Point)
         for body in rear.system.bodies:
-            body.masscenter.pos_from(rear.system.origin)
+            body.masscenter.pos_from(rear.system.fixed_point)
         for attachment in (rear.steer_hub, rear.wheel_hub, rear.saddle):
             attachment.frame.dcm(rear.system.frame)
-            attachment.point.pos_from(rear.system.origin)
-        rear.bottom_bracket.pos_from(rear.system.origin)
+            attachment.point.pos_from(rear.system.fixed_point)
+        rear.bottom_bracket.pos_from(rear.system.fixed_point)
 
     @pytest.mark.skipif(PlotModel is None, reason="symmeplot not installed")
     @pytest.mark.parametrize("cls, n_children", [(RigidRearFrameMoore, 2)])
     def test_plotting(self, cls, n_children):
         rear = cls("rear")
         rear.define_all()
-        plot_model = PlotModel(rear.system.frame, rear.system.origin, rear)
+        plot_model = PlotModel(rear.system.frame, rear.system.fixed_point, rear)
         assert len(plot_model.children) == n_children
         assert any(isinstance(obj, PlotBody) for obj in plot_model.children)
         assert any(isinstance(obj, PlotLine) for obj in plot_model.children)

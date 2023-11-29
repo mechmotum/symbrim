@@ -70,7 +70,7 @@ class TestRollingDisc:
         from symmeplot import SymMePlotter
         fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
         plotter = SymMePlotter(
-            ax, self.system.frame, self.system.origin)
+            ax, self.system.frame, self.system.fixed_point)
         disc = self.system.get_body("disc")
         disc_plt = plotter.add_body(disc)
         disc_plt.attach_circle(disc.masscenter, Symbol("r"), disc.y,

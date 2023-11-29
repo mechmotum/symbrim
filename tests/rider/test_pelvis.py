@@ -27,7 +27,7 @@ class TestPelvisBase:
     def test_plotting(self, pelvis_cls):
         pelvis = pelvis_cls("pelvis")
         pelvis.define_all()
-        plot_model = PlotModel(pelvis.system.frame, pelvis.system.origin, pelvis)
+        plot_model = PlotModel(pelvis.system.frame, pelvis.system.fixed_point, pelvis)
         assert plot_model.children
 
 

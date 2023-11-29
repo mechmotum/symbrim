@@ -45,6 +45,6 @@ class TestMasslessCranks:
     def test_plotting(self):
         cranks = MasslessCranks("cranks")
         cranks.define_all()
-        plot_model = PlotModel(cranks.system.frame, cranks.system.origin, cranks)
+        plot_model = PlotModel(cranks.system.frame, cranks.system.fixed_point, cranks)
         assert len(plot_model.children) == 1
         assert isinstance(plot_model.children[0], PlotLine)

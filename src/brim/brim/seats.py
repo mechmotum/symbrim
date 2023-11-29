@@ -146,8 +146,8 @@ class SideLeanSeat(PelvisInterPointMixin, SeatBase):
         self._frame_lean_axis = (cos(alpha) * self.rear_frame.saddle.frame.x -
                                  sin(alpha) * self.rear_frame.saddle.frame.z)
         self._pelvis_lean_axis = self.pelvis.x
-        self._system = System(self.rear_frame.system.frame,
-                              self.rear_frame.system.origin)
+        self._system = System(
+            self.rear_frame.system.frame, self.rear_frame.system.fixed_point)
 
     def _define_kinematics(self) -> None:
         """Define the kinematics."""

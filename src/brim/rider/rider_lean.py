@@ -104,7 +104,7 @@ class RiderLeanConnection(ConnectionBase):
         """Define the objects of the rider lean connection for the rear frame."""
         super()._define_objects()
         self._system = System(self.rear_frame.system.frame,
-                              self.rear_frame.system.origin)
+                              self.rear_frame.system.fixed_point)
         self._lean_axis = self.rear_frame.saddle.frame.x
         self._lean_point = Point(self._add_prefix("lean_point"))
         self.symbols["d_lp_x"] = Symbol(self._add_prefix("d_lp_x"))

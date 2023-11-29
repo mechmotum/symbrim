@@ -89,7 +89,7 @@ class WhippleBicycleMoore(WhippleBicycle):
     def _define_objects(self) -> None:
         """Define the objects of the Whipple bicycle."""
         super()._define_objects()
-        self._system = System(self.ground.frame, self.ground.system.origin)
+        self._system = System(self.ground.frame, self.ground.origin)
         self.rear_tire.define_objects()
         self.rear_tire.on_ground = True
         self.front_tire.define_objects()

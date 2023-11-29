@@ -28,7 +28,7 @@ class TestTorsoBase:
     def test_plotting(self, torso_cls):
         torso = torso_cls("torso")
         torso.define_all()
-        plot_model = PlotModel(torso.system.frame, torso.system.origin, torso)
+        plot_model = PlotModel(torso.system.frame, torso.system.fixed_point, torso)
         assert plot_model.children
 
 

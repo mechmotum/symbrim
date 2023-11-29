@@ -57,7 +57,8 @@ class BicycleRider(ModelBase):
     def _define_objects(self) -> None:
         """Define the objects."""
         super()._define_objects()
-        self._system = System(self.bicycle.system.frame, self.bicycle.system.origin)
+        self._system = System(
+            self.bicycle.system.frame, self.bicycle.system.fixed_point)
         if self.seat is not None:
             self.seat.define_objects()
         if self.pedals is not None:
