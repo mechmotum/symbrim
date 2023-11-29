@@ -1,4 +1,4 @@
-"""Module for simulating sympy.physics.mechanics._system.System objects."""
+"""Module for simulating sympy.physics.mechanics.system.System objects."""
 from __future__ import annotations
 
 from typing import Callable
@@ -15,11 +15,11 @@ from scipy.optimize import fsolve
 from sympy import Basic, Function, lambdify
 from sympy.physics.mechanics import (
     KanesMethod,
+    System,
     dynamicsymbols,
     find_dynamicsymbols,
     msubs,
 )
-from sympy.physics.mechanics._system import System
 
 __all__ = ["Simulator"]
 
@@ -28,7 +28,7 @@ array_type = npt.NDArray[np.float64]
 
 
 class Simulator:
-    """Simulator for sympy.physics.mechanics._system.System object."""
+    """Simulator for sympy.physics.mechanics.system.System object."""
 
     def __init__(self, system: System) -> None:
         if not isinstance(system, System):

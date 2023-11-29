@@ -6,8 +6,7 @@ from abc import abstractmethod
 from typing import TYPE_CHECKING, Any
 
 from sympy import Symbol
-from sympy.physics.mechanics import Point, ReferenceFrame, Vector
-from sympy.physics.mechanics._system import System
+from sympy.physics.mechanics import Point, ReferenceFrame, System, Vector
 
 from brim.core import ModelBase
 

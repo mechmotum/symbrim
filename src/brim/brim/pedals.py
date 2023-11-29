@@ -8,9 +8,9 @@ from sympy.physics.mechanics import (
     LinearDamper,
     LinearPathway,
     LinearSpring,
+    System,
     dynamicsymbols,
 )
-from sympy.physics.mechanics._system import System
 
 from brim.brim.base_connections import PedalsBase
 from brim.utilities.utilities import check_zero

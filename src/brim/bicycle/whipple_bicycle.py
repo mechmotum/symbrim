@@ -5,8 +5,13 @@ import contextlib
 from typing import Any
 
 from sympy import Matrix, Symbol
-from sympy.physics.mechanics import PinJoint, ReferenceFrame, Vector, dynamicsymbols
-from sympy.physics.mechanics._system import System
+from sympy.physics.mechanics import (
+    PinJoint,
+    ReferenceFrame,
+    System,
+    Vector,
+    dynamicsymbols,
+)
 
 from brim.bicycle.bicycle_base import BicycleBase
 from brim.bicycle.front_frames import FrontFrameBase

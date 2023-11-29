@@ -19,7 +19,7 @@ from brim.utilities.testing import _test_descriptions
 from brim.utilities.utilities import check_zero
 
 if TYPE_CHECKING:
-    from sympy.physics.mechanics._system import System
+    from sympy.physics.mechanics import System
 
 
 class HipModel(ModelBase):

@@ -3,8 +3,7 @@ from __future__ import annotations
 import pytest
 from brim.bicycle.grounds import FlatGround
 from sympy import Symbol
-from sympy.physics.mechanics import Vector
-from sympy.physics.mechanics._system import System
+from sympy.physics.mechanics import System, Vector
 
 try:
     from brim.utilities.plotting import PlotModel

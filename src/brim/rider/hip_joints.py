@@ -7,10 +7,10 @@ from sympy import Matrix, cos, sin
 from sympy.physics.mechanics import (
     PinJoint,
     SphericalJoint,
+    System,
     Torque,
     dynamicsymbols,
 )
-from sympy.physics.mechanics._system import System
 
 from brim.core import LoadGroupBase
 from brim.rider.base_connections import LeftHipBase, RightHipBase

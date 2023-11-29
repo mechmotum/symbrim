@@ -4,8 +4,7 @@ from __future__ import annotations
 import contextlib
 from typing import TYPE_CHECKING, Any
 
-from sympy.physics.mechanics import ReferenceFrame, RigidBody, Vector
-from sympy.physics.mechanics._system import System
+from sympy.physics.mechanics import ReferenceFrame, RigidBody, System, Vector
 
 if TYPE_CHECKING:
     with contextlib.suppress(ImportError):

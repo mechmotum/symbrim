@@ -9,9 +9,9 @@ from sympy.physics.mechanics import (
     LinearPathway,
     LinearSpring,
     Point,
+    System,
     dynamicsymbols,
 )
-from sympy.physics.mechanics._system import System
 
 from brim.brim.base_connections import HandGripsBase
 from brim.utilities.utilities import check_zero

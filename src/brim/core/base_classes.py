@@ -6,8 +6,7 @@ from functools import wraps
 from typing import TYPE_CHECKING, Any, Callable
 
 from sympy import Basic, MutableDenseMatrix, Symbol, symbols
-from sympy.physics.mechanics import dynamicsymbols, find_dynamicsymbols
-from sympy.physics.mechanics._system import System
+from sympy.physics.mechanics import System, dynamicsymbols, find_dynamicsymbols
 
 from brim.core.registry import Registry
 

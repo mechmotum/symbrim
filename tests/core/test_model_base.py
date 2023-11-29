@@ -7,8 +7,7 @@ from brim.bicycle import FlatGround, KnifeEdgeWheel, NonHolonomicTire
 from brim.core import LoadGroupBase, ModelBase, Registry, set_default_convention
 from brim.other.rolling_disc import RollingDisc
 from sympy import S, Symbol
-from sympy.physics.mechanics import Torque, dynamicsymbols
-from sympy.physics.mechanics._system import System
+from sympy.physics.mechanics import System, Torque, dynamicsymbols
 
 
 class MyLoad(LoadGroupBase):

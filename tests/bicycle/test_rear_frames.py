@@ -2,8 +2,7 @@ import pytest
 from brim.bicycle.rear_frames import RigidRearFrame, RigidRearFrameMoore
 from brim.core import Attachment, Hub
 from brim.utilities.testing import _test_descriptions
-from sympy.physics.mechanics import Point
-from sympy.physics.mechanics._system import System
+from sympy.physics.mechanics import Point, System
 
 try:
     from brim.utilities.plotting import PlotModel

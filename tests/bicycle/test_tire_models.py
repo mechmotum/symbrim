@@ -6,8 +6,7 @@ from brim.bicycle.tires import NonHolonomicTire, TireBase
 from brim.bicycle.wheels import KnifeEdgeWheel, ToroidalWheel, WheelBase
 from brim.utilities.testing import create_model_of_connection
 from sympy import cos, sin
-from sympy.physics.mechanics import ReferenceFrame, cross, dynamicsymbols
-from sympy.physics.mechanics._system import System
+from sympy.physics.mechanics import ReferenceFrame, System, cross, dynamicsymbols
 
 
 class MyTire(TireBase):

@@ -1,7 +1,7 @@
 """Module containing utilities for testing."""
 from __future__ import annotations
 
-from sympy.physics.mechanics._system import System
+from sympy.physics.mechanics import System
 
 from brim.core import ConnectionBase, ConnectionRequirement, LoadGroupBase, ModelBase
 

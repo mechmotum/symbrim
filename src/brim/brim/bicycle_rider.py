@@ -1,7 +1,7 @@
 """Module containing the customizable bicycle-rider model."""
 from __future__ import annotations
 
-from sympy.physics.mechanics._system import System
+from sympy.physics.mechanics import System
 
 from brim.bicycle import BicycleBase
 from brim.brim.base_connections import (

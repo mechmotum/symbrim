@@ -6,8 +6,7 @@ from abc import abstractmethod
 from typing import TYPE_CHECKING, Any
 
 from sympy import Symbol, symbols
-from sympy.physics.mechanics import Point, RigidBody, inertia
-from sympy.physics.mechanics._system import System
+from sympy.physics.mechanics import Point, RigidBody, System, inertia
 
 from brim.core import Attachment, Hub, ModelBase, set_default_convention
 

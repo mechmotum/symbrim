@@ -7,8 +7,7 @@ from brim.bicycle.front_frames import (
 )
 from brim.core import Attachment, Hub
 from brim.utilities.testing import _test_descriptions
-from sympy.physics.mechanics import Point, Vector
-from sympy.physics.mechanics._system import System
+from sympy.physics.mechanics import Point, System, Vector
 
 try:
     from brim.utilities.plotting import PlotModel

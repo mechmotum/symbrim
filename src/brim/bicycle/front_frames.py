@@ -6,8 +6,14 @@ from abc import abstractmethod
 from typing import TYPE_CHECKING, Any
 
 from sympy import MutableMatrix, Symbol, symbols
-from sympy.physics.mechanics import Force, Point, RigidBody, dynamicsymbols, inertia
-from sympy.physics.mechanics._system import System
+from sympy.physics.mechanics import (
+    Force,
+    Point,
+    RigidBody,
+    System,
+    dynamicsymbols,
+    inertia,
+)
 
 from brim.core import Attachment, Hub, ModelBase, set_default_convention
 

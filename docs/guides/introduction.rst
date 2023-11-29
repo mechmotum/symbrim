@@ -33,7 +33,7 @@ reference frames, points, bodies and joints to describe a system. For a comprehe
 guide on the low-level interface to describe dynamical systems, refer to
 :cite:`moore_learn_2022`. An example of defining a simple system, which follows a
 similar workflow as BRiM, can be found in the docstring of
-:class:`sympy.physics.mechanics._system.System`.
+:class:`sympy.physics.mechanics.system.System`.
 
 Composing a Model
 -----------------
@@ -91,7 +91,7 @@ the model by choosing the components. ::
 
 With the model configured, the next step is to let BRiM construct all the relationships
 in the model by calling :meth:`~.ModelBase.define_all`. After this, the model can be
-exported to a single :class:`sympy.physics.mechanics._system.System` object. ::
+exported to a single :class:`sympy.physics.mechanics.system.System` object. ::
 
     bicycle.define_all()
     system = bicycle.to_system()
@@ -118,7 +118,7 @@ rate of the rear wheel, and the yaw and pitch rate of the rear frame. ::
     system.u_dep = [*bicycle.u[:3], bicycle.u[4], bicycle.u[7]]
 
 The following code validates the system on its consistency using
-:meth:`sympy.physics.mechanics._system.System.validate_system` and forms the EOMs with
+:meth:`sympy.physics.mechanics.system.System.validate_system` and forms the EOMs with
 Kane's method. ``CRAMER`` is chosen as the constraint solver, as it provides better
 numeric stability. ::
 

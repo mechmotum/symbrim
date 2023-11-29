@@ -8,12 +8,12 @@ from sympy.physics.mechanics import (
     PinJoint,
     Point,
     ReferenceFrame,
+    System,
     TorqueActuator,
     Vector,
     WeldJoint,
     dynamicsymbols,
 )
-from sympy.physics.mechanics._system import System
 
 from brim.brim.base_connections import SeatBase
 from brim.core import LoadGroupBase
