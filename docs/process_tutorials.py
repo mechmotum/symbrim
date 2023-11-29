@@ -201,6 +201,11 @@ def get_command_environment() -> str:
             if command == commands[-1]:
                 raise RuntimeError(f"{command.capitalize()} is not installed.")
             continue
+        try:  # If the command cannot be found, try using the full path.
+            subprocess.run([command])
+        except FileNotFoundError:
+            command = subprocess.run(
+                ["where", "mamba"], capture_output=True).stdout.decode().strip()
         # Check if the tutorials' environment exists.
         env = get_tutorials_environment_name()
         if env in subprocess.run([command, "env", "list"], capture_output=True
