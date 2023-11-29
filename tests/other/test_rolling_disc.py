@@ -27,8 +27,9 @@ class TestRollingDisc:
         self.rolling_disc.ground = FlatGround("ground")
         self.rolling_disc.define_all()
         self.system = self.rolling_disc.to_system()
-        self.system.apply_gravity(-Symbol("g") * self.rolling_disc.ground.get_normal(
-            self.rolling_disc.ground.origin))
+        self.system.apply_uniform_gravity(
+            -Symbol("g") * self.rolling_disc.ground.get_normal(
+                self.rolling_disc.ground.origin))
         str_vals = self._arbitrary_values()
         inertia = self.rolling_disc.disc.body.central_inertia.to_matrix(
             self.rolling_disc.disc.frame)

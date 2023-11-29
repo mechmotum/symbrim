@@ -104,7 +104,7 @@ The model can be extended by adding an actuator for steering and applying gravit
     system.add_actuators(TorqueActuator(
         T, bicycle.rear_frame.steer_axis,
         bicycle.front_frame.frame, bicycle.rear_frame.frame))
-    system.apply_gravity(-g * normal)
+    system.apply_uniform_gravity(-g * normal)
 
 The last step before forming the EOMs is to define which generalized coordinates and
 speeds are independent and which are dependent. In this case the generalized coordinate
