@@ -41,7 +41,7 @@ class Plotter(SymMePlotter):
             :class:`symmeplot.plot_objects.PlotFrame` representing the inertial
             reference frame.
         """
-        plotter = cls(ax, model.system.frame, model.system.origin,
+        plotter = cls(ax, model.system.frame, model.system.fixed_point,
                       **inertial_frame_properties)
         plotter._model = model
         plotter.add_model(model)
@@ -151,7 +151,7 @@ class PlotBrimMixin:
     def __init__(self, inertial_frame: ReferenceFrame, zero_point: Point,
                  brim_object: BrimBase) -> None:
         """Initialize a plot object of the BRiM model."""
-        origin = None if brim_object.system is None else brim_object.system.origin
+        origin = None if brim_object.system is None else brim_object.system.fixed_point
         super().__init__(inertial_frame, zero_point, origin, brim_object.name)
         brim_object.set_plot_objects(self)
         self._expressions_self = ()

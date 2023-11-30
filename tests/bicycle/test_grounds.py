@@ -3,8 +3,7 @@ from __future__ import annotations
 import pytest
 from brim.bicycle.grounds import FlatGround
 from sympy import Symbol
-from sympy.physics.mechanics import Vector
-from sympy.physics.mechanics._system import System
+from sympy.physics.mechanics import System, Vector
 
 try:
     from brim.utilities.plotting import PlotModel
@@ -75,6 +74,6 @@ class TestFlatGround:
     def test_plotting(self):
         ground = FlatGround("ground")
         ground.define_all()
-        plot_model = PlotModel(ground.system.frame, ground.system.origin, ground)
+        plot_model = PlotModel(ground.system.frame, ground.system.fixed_point, ground)
         assert len(plot_model.children) == 1
         assert isinstance(plot_model.children[0], PlotFrame)

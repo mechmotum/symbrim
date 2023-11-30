@@ -41,6 +41,10 @@ using: ::
     poetry install --extras parametrize
     poetry install --extras plotting
 
+To install everything at once, run: ::
+
+    poetry install --with lint,test,docs --all-extras
+
 To quickly check code for linting errors, it is recommended to set up ``pre-commit``
 hooks by executing: ::
 

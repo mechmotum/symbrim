@@ -5,8 +5,14 @@ import contextlib
 from abc import abstractmethod
 from typing import TYPE_CHECKING
 
-from sympy.physics.mechanics import Point, ReferenceFrame, RigidBody, Vector, cross
-from sympy.physics.mechanics._system import System
+from sympy.physics.mechanics import (
+    Point,
+    ReferenceFrame,
+    RigidBody,
+    System,
+    Vector,
+    cross,
+)
 
 from brim.core import ModelBase
 

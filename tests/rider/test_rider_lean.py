@@ -41,7 +41,7 @@ class TestRiderLean:
         self.model.define_loads()
         self.model.define_constraints()
         system = self.model.to_system()
-        system.apply_gravity(g * self.rear.saddle.frame.z)
+        system.apply_uniform_gravity(g * self.rear.saddle.frame.z)
         system.form_eoms()
         assert simplify(system.mass_matrix - Matrix([d_lp ** 2 * m + ixx])) == zeros(1)
         assert simplify(system.forcing - Matrix([g * d_lp * m * sin(q)])) == zeros(1)

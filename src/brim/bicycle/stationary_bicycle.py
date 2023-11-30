@@ -4,8 +4,7 @@ from __future__ import annotations
 from typing import Any
 
 from sympy import Matrix, Symbol
-from sympy.physics.mechanics import PinJoint, dynamicsymbols
-from sympy.physics.mechanics._system import System
+from sympy.physics.mechanics import PinJoint, System, dynamicsymbols
 
 from brim.bicycle.bicycle_base import BicycleBase
 
@@ -37,7 +36,7 @@ class StationaryBicycle(BicycleBase):
         self.u = Matrix(dynamicsymbols(self._add_prefix("u1:4")))
         self.symbols["gear_ratio"] = Symbol(self._add_prefix("gear_ratio"))
         self._system = System(self.rear_frame.system.frame,
-                              self.rear_frame.system.origin)
+                              self.rear_frame.system.fixed_point)
 
     def _define_kinematics(self) -> None:
         """Define the kinematics of the Whipple bicycle."""

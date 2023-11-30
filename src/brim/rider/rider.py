@@ -1,7 +1,7 @@
 """Module containing the customizable rider models."""
 from __future__ import annotations
 
-from sympy.physics.mechanics._system import System
+from sympy.physics.mechanics import System
 
 from brim.core import ConnectionRequirement, ModelBase, ModelRequirement
 from brim.rider.arms import LeftArmBase, RightArmBase

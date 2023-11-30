@@ -1,7 +1,7 @@
 """Module containing the customizable bicycle-rider model."""
 from __future__ import annotations
 
-from sympy.physics.mechanics._system import System
+from sympy.physics.mechanics import System
 
 from brim.bicycle import BicycleBase
 from brim.brim.base_connections import (
@@ -57,7 +57,8 @@ class BicycleRider(ModelBase):
     def _define_objects(self) -> None:
         """Define the objects."""
         super()._define_objects()
-        self._system = System(self.bicycle.system.frame, self.bicycle.system.origin)
+        self._system = System(
+            self.bicycle.system.frame, self.bicycle.system.fixed_point)
         if self.seat is not None:
             self.seat.define_objects()
         if self.pedals is not None:

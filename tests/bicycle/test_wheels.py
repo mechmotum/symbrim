@@ -36,7 +36,7 @@ class TestKnifeEdgeWheel:
         wheel = KnifeEdgeWheel("wheel")
         wheel.define_all()
 
-        plot_model = PlotModel(wheel.system.frame, wheel.system.origin, wheel)
+        plot_model = PlotModel(wheel.system.frame, wheel.system.fixed_point, wheel)
         assert len(plot_model.children) == 1
         assert isinstance(plot_model.children[0], PlotBody)
         assert any(isinstance(art, Circle3D) for art in plot_model.artists)

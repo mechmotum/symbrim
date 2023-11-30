@@ -5,8 +5,7 @@ import contextlib
 from typing import TYPE_CHECKING, Any
 
 from sympy import Symbol
-from sympy.physics.mechanics import Vector, WeldJoint
-from sympy.physics.mechanics._system import System
+from sympy.physics.mechanics import System, Vector, WeldJoint
 
 from brim.rider.base_connections import SacrumBase
 

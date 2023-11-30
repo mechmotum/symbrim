@@ -95,7 +95,7 @@ class TestWhippleBicycleMoore:
         t = dynamicsymbols._t
         self.bike.define_all()
         system = self.bike.to_system()
-        system.apply_gravity(-Symbol("g") * self.bike.ground.get_normal(
+        system.apply_uniform_gravity(-Symbol("g") * self.bike.ground.get_normal(
             self.bike.ground.origin))
         system.q_ind = [*self.bike.q[:4], *self.bike.q[5:]]
         system.q_dep = [self.bike.q[4]]

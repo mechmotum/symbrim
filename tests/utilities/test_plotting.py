@@ -54,13 +54,15 @@ class TestPlotting:
         assert len(pelvis_objects) == 1
 
     def test_add_model(self) -> None:
-        plotter = Plotter(self.ax, self.rider.system.frame, self.rider.system.origin)
+        plotter = Plotter(self.ax, self.rider.system.frame,
+                          self.rider.system.fixed_point)
         assert plotter.get_plot_object(self.rider) is None
         plotter.add_model(self.rider)
         self._check_all_objects(plotter)
 
     def test_add_load_group_manually(self) -> None:
-        plotter = Plotter(self.ax, self.rider.system.frame, self.rider.system.origin)
+        plotter = Plotter(self.ax, self.rider.system.frame,
+                          self.rider.system.fixed_point)
         assert plotter.get_plot_object(self.rider) is None
         plotter.add_model(self.rider, plot_load_groups=False)
         assert plotter.get_plot_object(self.load_group) is None
@@ -69,7 +71,8 @@ class TestPlotting:
 
     @pytest.mark.parametrize("plot_load_groups", [True, False])
     def test_add_connection(self, plot_load_groups) -> None:
-        plotter = Plotter(self.ax, self.rider.system.frame, self.rider.system.origin)
+        plotter = Plotter(self.ax, self.rider.system.frame,
+                          self.rider.system.fixed_point)
         plotter.add_connection(self.rider.left_hip, plot_load_groups=plot_load_groups)
         assert plotter.get_plot_object(self.rider) is None
         assert isinstance(plotter.get_plot_object(self.rider.pelvis), PlotModel)

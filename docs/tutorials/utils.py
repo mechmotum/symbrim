@@ -9,7 +9,6 @@ import sympy.physics.mechanics as me
 from brim.bicycle import WheelBase
 from brim.utilities.utilities import check_zero
 from sympy.core.function import AppliedUndef
-from sympy.physics.mechanics._system import System
 
 BICYCLE_PARAMETERS_ZIP_URL = (
     "https://github.com/moorepants/BicycleParameters/archive/refs/heads/master.zip")
@@ -117,7 +116,7 @@ def verify_tire_base(tire_base_cls: type, flat_ground_cls: type,
     tire.ground.define_objects()
     tire.wheel.define_objects()
     tire.define_objects()
-    assert isinstance(tire.system, System)
+    assert isinstance(tire.system, me.System)
     assert isinstance(tire.contact_point, me.Point)
     assert tire.on_ground is False
     tire.on_ground = True
@@ -149,7 +148,7 @@ def verify_rolling_disc(rolling_disc_cls: type, flat_ground_cls: type,
     assert isinstance(rolling_disc.q, sm.MutableMatrix)
     assert isinstance(rolling_disc.u, sm.MutableMatrix)
     assert rolling_disc.tire.on_ground is True
-    assert isinstance(rolling_disc.system, System)
+    assert isinstance(rolling_disc.system, me.System)
     for sym in (*(rolling_disc.q), *(rolling_disc.u)):
         if not rolling_disc.descriptions.get(sym):
             raise AssertionError(f"{sym!r} has no valid description.")

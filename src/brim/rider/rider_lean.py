@@ -4,8 +4,7 @@ from __future__ import annotations
 from typing import Any
 
 from sympy import Matrix, Symbol
-from sympy.physics.mechanics import PinJoint, Point, Vector, dynamicsymbols
-from sympy.physics.mechanics._system import System
+from sympy.physics.mechanics import PinJoint, Point, System, Vector, dynamicsymbols
 
 from brim.bicycle.rear_frames import RearFrameBase
 from brim.core import ConnectionBase, ModelBase, ModelRequirement, NewtonianBodyMixin
@@ -105,7 +104,7 @@ class RiderLeanConnection(ConnectionBase):
         """Define the objects of the rider lean connection for the rear frame."""
         super()._define_objects()
         self._system = System(self.rear_frame.system.frame,
-                              self.rear_frame.system.origin)
+                              self.rear_frame.system.fixed_point)
         self._lean_axis = self.rear_frame.saddle.frame.x
         self._lean_point = Point(self._add_prefix("lean_point"))
         self.symbols["d_lp_x"] = Symbol(self._add_prefix("d_lp_x"))

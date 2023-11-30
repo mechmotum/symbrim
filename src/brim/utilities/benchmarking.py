@@ -20,13 +20,13 @@ def benchmark(rounds: int = 3, group: Optional[str] = None, **kwargs) -> callabl
         Group to put the benchmark in, by default None.
     kwargs
         If kwargs are provided, then they are passed to
-        :meth:`sympy.physics.mechanics._system.System.form_eoms`.
+        :meth:`sympy.physics.mechanics.system.System.form_eoms`.
 
     Returns
     -------
     function
         Decorated function, which should return an instance of
-        :class:`sympy.physics.mechanics._system.System` or
+        :class:`sympy.physics.mechanics.system.System` or
         :class:`sympy.physics.mechanics.kane.KanesMethod`.
 
     """

@@ -11,10 +11,10 @@ from sympy.physics.mechanics import (
     Point,
     ReferenceFrame,
     RigidBody,
+    System,
     TorqueActuator,
     dynamicsymbols,
 )
-from sympy.physics.mechanics._system import System
 
 from brim.core import LoadGroupBase, ModelBase
 

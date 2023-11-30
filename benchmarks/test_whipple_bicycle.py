@@ -33,7 +33,8 @@ def create_whipple_bicycle_moore_brim():
     bike.front_tire = NonHolonomicTire("front_tire")
     bike.define_all()
     system = bike.to_system()
-    system.apply_gravity(-symbols("g") * bike.ground.get_normal(bike.ground.origin))
+    system.apply_uniform_gravity(
+        -symbols("g") * bike.ground.get_normal(bike.ground.origin))
     system.q_ind = [*bike.q[:4], *bike.q[5:]]
     system.q_dep = [bike.q[4]]
     system.u_ind = [bike.u[3], *bike.u[5:7]]

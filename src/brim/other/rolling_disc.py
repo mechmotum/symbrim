@@ -8,12 +8,12 @@ from sympy import Matrix, Symbol, symbols
 from sympy.physics.mechanics import (
     ReferenceFrame,
     RigidBody,
+    System,
     Vector,
     cross,
     dynamicsymbols,
     inertia,
 )
-from sympy.physics.mechanics._system import System
 
 from brim.bicycle.grounds import GroundBase
 from brim.bicycle.tires import TireBase
@@ -61,7 +61,7 @@ class RollingDisc(ModelBase):
     def _define_objects(self) -> None:
         """Define the objects of the rolling disc."""
         super()._define_objects()
-        self._system = System(self.ground.frame, self.ground.system.origin)
+        self._system = System(self.ground.frame, self.ground.origin)
         self.tire.define_objects()
         self.tire.on_ground = True
         self.q = Matrix([dynamicsymbols(self._add_prefix("q1:6"))])

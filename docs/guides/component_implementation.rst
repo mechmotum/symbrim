@@ -166,7 +166,7 @@ Define Objects
 ~~~~~~~~~~~~~~
 
 - Each model and connection must instantiate its own
-  :class:`sympy.physics.mechanics._system.System` instance and assign it to
+  :class:`sympy.physics.mechanics.system.System` instance and assign it to
   ``self._system``. Load groups automatically inherit the system from their parent.
 - Symbols, such as masses and lengths, must be added to the ``self.symbols`` dictionary
   with a string as key and the (dynamic)symbol as value.

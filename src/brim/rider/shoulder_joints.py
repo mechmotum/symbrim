@@ -9,10 +9,10 @@ from sympy.physics.mechanics import (
     Point,
     ReferenceFrame,
     SphericalJoint,
+    System,
     Torque,
     dynamicsymbols,
 )
-from sympy.physics.mechanics._system import System
 
 from brim.core import Attachment, LoadGroupBase
 from brim.rider.base_connections import LeftShoulderBase, RightShoulderBase

@@ -43,7 +43,7 @@ class TestArmBase:
     def test_plotting(self, arm_cls, base_cls):
         arm = arm_cls("arm")
         arm.define_all()
-        plot_model = PlotModel(arm.system.frame, arm.system.origin, arm)
+        plot_model = PlotModel(arm.system.frame, arm.system.fixed_point, arm)
         assert plot_model.children
 
 

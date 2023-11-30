@@ -6,8 +6,7 @@ from functools import wraps
 from typing import TYPE_CHECKING, Any, Callable
 
 from sympy import Basic, MutableDenseMatrix, Symbol, symbols
-from sympy.physics.mechanics import dynamicsymbols, find_dynamicsymbols
-from sympy.physics.mechanics._system import System
+from sympy.physics.mechanics import System, dynamicsymbols, find_dynamicsymbols
 
 from brim.core.registry import Registry
 
@@ -526,7 +525,7 @@ def _merge_systems(*systems: System) -> System:
     This function is not used in the current implementation of brim.
     However, it should in the end be moved to sympy mechanics.
     """
-    system = System(systems[0].frame, systems[0].origin)
+    system = System(systems[0].frame, systems[0].fixed_point)
     for s in systems:
         if s is None:  # pragma: no cover
             continue

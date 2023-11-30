@@ -5,8 +5,13 @@ import contextlib
 from typing import Any
 
 from sympy import Matrix, Symbol
-from sympy.physics.mechanics import PinJoint, ReferenceFrame, Vector, dynamicsymbols
-from sympy.physics.mechanics._system import System
+from sympy.physics.mechanics import (
+    PinJoint,
+    ReferenceFrame,
+    System,
+    Vector,
+    dynamicsymbols,
+)
 
 from brim.bicycle.bicycle_base import BicycleBase
 from brim.bicycle.front_frames import FrontFrameBase
@@ -84,7 +89,7 @@ class WhippleBicycleMoore(WhippleBicycle):
     def _define_objects(self) -> None:
         """Define the objects of the Whipple bicycle."""
         super()._define_objects()
-        self._system = System(self.ground.frame, self.ground.system.origin)
+        self._system = System(self.ground.frame, self.ground.origin)
         self.rear_tire.define_objects()
         self.rear_tire.on_ground = True
         self.front_tire.define_objects()

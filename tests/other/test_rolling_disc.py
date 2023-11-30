@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import numpy as np
 import pytest
 from brim.bicycle import FlatGround, KnifeEdgeWheel, NonHolonomicTire
@@ -25,8 +27,9 @@ class TestRollingDisc:
         self.rolling_disc.ground = FlatGround("ground")
         self.rolling_disc.define_all()
         self.system = self.rolling_disc.to_system()
-        self.system.apply_gravity(-Symbol("g") * self.rolling_disc.ground.get_normal(
-            self.rolling_disc.ground.origin))
+        self.system.apply_uniform_gravity(
+            -Symbol("g") * self.rolling_disc.ground.get_normal(
+                self.rolling_disc.ground.origin))
         str_vals = self._arbitrary_values()
         inertia = self.rolling_disc.disc.body.central_inertia.to_matrix(
             self.rolling_disc.disc.frame)
@@ -68,7 +71,7 @@ class TestRollingDisc:
         from symmeplot import SymMePlotter
         fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
         plotter = SymMePlotter(
-            ax, self.system.frame, self.system.origin)
+            ax, self.system.frame, self.system.fixed_point)
         disc = self.system.get_body("disc")
         disc_plt = plotter.add_body(disc)
         disc_plt.attach_circle(disc.masscenter, Symbol("r"), disc.y,

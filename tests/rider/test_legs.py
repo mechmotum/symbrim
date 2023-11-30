@@ -42,7 +42,7 @@ class TestLegBase:
     def test_plotting(self, leg_cls, base):
         leg = leg_cls("leg")
         leg.define_all()
-        plot_model = PlotModel(leg.system.frame, leg.system.origin, leg)
+        plot_model = PlotModel(leg.system.frame, leg.system.fixed_point, leg)
         assert plot_model.children
 
 
