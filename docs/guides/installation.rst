@@ -10,7 +10,7 @@ Installation Users
 BRiM is currently not available on PyPI. Therefore, you'll need to install the
 development version from GitHub using: ::
 
-    pip install git+https://github.com/TJStienstra/brim.git
+    pip install git+https://github.com/mechmotum/brim.git
 
 The optional dependencies can be installed with: ::
 

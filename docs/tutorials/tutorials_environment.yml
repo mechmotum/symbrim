@@ -9,5 +9,5 @@ dependencies:
   - scikits.odes
   - pip:
       - git+https://github.com/moorepants/BicycleParameters.git
-      - git+https://github.com/TJStienstra/brim.git
+      - git+https://github.com/mechmotum/brim.git
       - git+https://github.com/TJStienstra/symmeplot.git
