@@ -5,7 +5,7 @@ description = "A Modular and Extensible Open-Source Framework for Creating Bicyc
 authors = ["TJStienstra <T.J.Stienstra@student.tudelft.nl>"]
 license = "CC0-1.0"
 readme = "README.md"
-repository = "https://github.com/TJStienstra/brim"
+repository = "https://github.com/mechmotum/brim"
 
 [tool.poetry.dependencies]
 python = "^3.8"

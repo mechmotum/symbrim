@@ -3,7 +3,7 @@ A Modular and Extensible Open-Source Framework for Creating Bicycle-Rider Models
 
 Links with more information:
 
-- [Online documentation](https://tjstienstra.github.io/brim/)
+- [Online documentation](https://mechmotum.github.io/brim/)
 - [BRiM paper publication](https://doi.org/10.59490/6504c5a765e8118fc7b106c3) ([source](https://github.com/TJStienstra/brim-bmd-2023-paper))
 - [BMD 2023 conference PowerPoint](https://docs.google.com/presentation/d/1ogz0Qs-t8bQT-2uk8gyYo40WmO387zIf/edit?usp=share_link&ouid=104124211006373398120&rtpof=true&sd=true)
 
@@ -14,7 +14,7 @@ compatibility.
 `BRiM` is currently not available on `PyPI`. Therefore, you'll need to install the
 development version from GitHub using:
 ```bash
-pip install git+https://github.com/TJStienstra/brim.git
+pip install git+https://github.com/mechmotum/brim.git
 ```
 The optional dependencies can be installed with:
 ```bash
@@ -40,4 +40,4 @@ If you use `BRiM` in your research, please cite the following paper:
 }
 ```
 
-[contributing page]: https://tjstienstra.github.io/brim/contributing/index.html
+[contributing page]: https://mechmotum.github.io/brim/contributing/index.html
