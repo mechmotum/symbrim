@@ -7,7 +7,7 @@ from sympy.physics.mechanics import RigidBody
 
 try:
     from brim.utilities.plotting import PlotModel
-    from symmeplot import PlotBody
+    from symmeplot.matplotlib import PlotBody
 except ImportError:
     PlotModel = None
 

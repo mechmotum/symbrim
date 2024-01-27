@@ -7,7 +7,7 @@ from sympy.physics.mechanics import Point, ReferenceFrame, Vector
 
 try:
     from brim.utilities.plotting import PlotModel
-    from symmeplot import PlotLine
+    from symmeplot.matplotlib import PlotLine
 except ImportError:
     PlotModel = None
 
