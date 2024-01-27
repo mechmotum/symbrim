@@ -8,7 +8,7 @@ readme = "README.md"
 repository = "https://github.com/mechmotum/brim"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.9"
 sympy = {git = "https://github.com/sympy/sympy.git"}
 symmeplot = {git = "https://github.com/TJStienstra/symmeplot.git", optional = true}
 bicycleparameters = {git = "https://github.com/moorepants/BicycleParameters.git", optional = true}
