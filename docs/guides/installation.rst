@@ -48,7 +48,6 @@ To install everything at once, run: ::
 To quickly check code for linting errors, it is recommended to set up ``pre-commit``
 hooks by executing: ::
 
-    pip install pre-commit
     pre-commit install
 
 .. _poetry: https://python-poetry.org

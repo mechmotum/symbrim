@@ -7,7 +7,8 @@ dependencies:
   - notebook
   - requests
   - scikits.odes
+  - matplotlib
   - pip:
+      - symmeplot
       - git+https://github.com/moorepants/BicycleParameters.git
       - git+https://github.com/mechmotum/brim.git
-      - git+https://github.com/TJStienstra/symmeplot.git

@@ -6,7 +6,7 @@ from sympy.physics.mechanics import Point, System
 
 try:
     from brim.utilities.plotting import PlotModel
-    from symmeplot import PlotBody, PlotLine
+    from symmeplot.matplotlib import PlotBody, PlotLine
 except ImportError:
     PlotModel = None
 

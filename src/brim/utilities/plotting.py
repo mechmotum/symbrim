@@ -8,10 +8,10 @@ mechanics. Therefore, there is no guarantee that the plotter will work in the fu
 """
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
-from symmeplot import SymMePlotter
-from symmeplot.plot_base import PlotBase
+from symmeplot.matplotlib import Scene3D
+from symmeplot.matplotlib.plot_base import MplPlotBase
 
 from brim.core import ConnectionBase, LoadGroupBase, ModelBase
 from brim.core.base_classes import BrimBase
@@ -23,27 +23,27 @@ if TYPE_CHECKING:
 __all__ = ["Plotter", "PlotBrimMixin", "PlotModel", "PlotConnection", "PlotLoadGroup"]
 
 
-class Plotter(SymMePlotter):
+class Plotter(Scene3D):
     """Plotter for models created by BRiM using SymMePlot."""
 
     @classmethod
-    def from_model(cls, ax: Axes3D, model: ModelBase, **inertial_frame_properties):
+    def from_model(cls, model: ModelBase, ax: Axes3D | None = None,
+                   **inertial_frame_properties):
         """Initialize the plotter.
 
         Parameters
         ----------
-        ax : mpl_toolkits.mplot3d.axes3d.Axes3D
-            Axes to plot on.
         model : ModelBase
             Model to plot.
+        ax : mpl_toolkits.mplot3d.axes3d.Axes3D, optional
+            Axes to plot on. If None, a new figure is created.
         **inertial_frame_properties
             Keyword arguments are parsed to
             :class:`symmeplot.plot_objects.PlotFrame` representing the inertial
             reference frame.
         """
-        plotter = cls(ax, model.system.frame, model.system.fixed_point,
+        plotter = cls(model.system.frame, model.system.fixed_point, ax=ax,
                       **inertial_frame_properties)
-        plotter._model = model
         plotter.add_model(model)
         return plotter
 
@@ -57,9 +57,9 @@ class Plotter(SymMePlotter):
         **kwargs
             Keyword arguments are passed to :class:`brim.utilities.plotting.PlotModel`.
         """
-        self._children.append(
-            PlotModel(self.inertial_frame, self.zero_point, model, **kwargs))
-        return self._children[-1]
+        obj = PlotModel(self.inertial_frame, self.zero_point, model, **kwargs)
+        self.add_plot_object(obj)
+        return obj
 
     def add_connection(self, connection: ConnectionBase, **kwargs):
         """Add a connection to the plotter.
@@ -72,9 +72,9 @@ class Plotter(SymMePlotter):
             Keyword arguments are passed to
             :class:`brim.utilities.plotting.PlotConnection`.
         """
-        self._children.append(
-            PlotConnection(self.inertial_frame, self.zero_point, connection, **kwargs))
-        return self._children[-1]
+        obj = PlotConnection(self.inertial_frame, self.zero_point, connection, **kwargs)
+        self.add_plot_object(obj)
+        return obj
 
     def add_load_group(self, load_group: LoadGroupBase, **kwargs):
         """Add a load group to the plotter.
@@ -87,58 +87,19 @@ class Plotter(SymMePlotter):
             Keyword arguments are passed to
             :class:`brim.utilities.plotting.PlotLoadGroup`.
         """
-        self._children.append(
-            PlotLoadGroup(self.inertial_frame, self.zero_point, load_group, **kwargs))
-        return self._children[-1]
-
-    def get_plot_object(self, sympy_object: Any) -> PlotBase:
-        """Return the `plot_object` based on a sympy object.
-
-        Explanation
-        -----------
-        Return the ``plot_object`` based on a provided sympy object. For example
-        ``ReferenceFrame('N')`` will give the ``PlotFrame`` of that reference frame. If
-        the ``plot_object`` has not been added it will return `None`.
-
-        Parameters
-        ----------
-        sympy_object : Any
-            SymPy object to search for. If it is a string it will search for the name.
-
-        Returns
-        -------
-        PlotBase or None
-            Retrieved plot object.
-
-        """
-        mapping = [
-            (ModelBase, lambda obj:
-            isinstance(obj, PlotModel) and obj.model is sympy_object),
-            (ConnectionBase, lambda obj:
-            isinstance(obj, PlotConnection) and obj.connection is sympy_object),
-            (LoadGroupBase, lambda obj:
-            isinstance(obj, PlotLoadGroup) and obj.load_group is sympy_object),
-        ]
-        known_type = False
-        for sympy_type, is_plot_object in mapping:
-            if isinstance(sympy_object, sympy_type):
-                known_type = True
-                queue = [self]
-                while queue:
-                    for child in queue.pop().children:
-                        if is_plot_object(child):
-                            return child
-                        queue.append(child)
-        try:
-            # SymMePlotter instead of super() to allow copying to PlotModel.
-            return SymMePlotter.get_plot_object(self, sympy_object)
-        except NotImplementedError as e:
-            if not known_type:
-                raise e
+        obj = PlotLoadGroup(self.inertial_frame, self.zero_point, load_group, **kwargs)
+        self.add_plot_object(obj)
+        return obj
 
 
 class PlotBrimMixin:
     """Mixin class for plotting BRiM objects."""
+
+    _PlotPoint: type[MplPlotBase] = Scene3D._PlotPoint
+    _PlotLine: type[MplPlotBase] = Scene3D._PlotLine
+    _PlotVector: type[MplPlotBase] = Scene3D._PlotVector
+    _PlotFrame: type[MplPlotBase] = Scene3D._PlotFrame
+    _PlotBody: type[MplPlotBase] = Scene3D._PlotBody
 
     add_point = Plotter.add_point
     add_line = Plotter.add_line
@@ -146,31 +107,42 @@ class PlotBrimMixin:
     add_frame = Plotter.add_frame
     add_body = Plotter.add_body
     plot_objects = Plotter.plot_objects
+    add_plot_object = Plotter.add_plot_object
     get_plot_object = Plotter.get_plot_object
 
     def __init__(self, inertial_frame: ReferenceFrame, zero_point: Point,
                  brim_object: BrimBase) -> None:
         """Initialize a plot object of the BRiM model."""
-        origin = None if brim_object.system is None else brim_object.system.fixed_point
-        super().__init__(inertial_frame, zero_point, origin, brim_object.name)
+        super().__init__(inertial_frame, zero_point, brim_object, brim_object.name)
         brim_object.set_plot_objects(self)
-        self._expressions_self = ()
+
+    def add_point(self, point: Point, **kwargs) -> PlotBrimMixin._PlotPoint:
+        """Add a point to the plotter.
+
+        Parameters
+        ----------
+        point : Point
+            Point to add.
+        **kwargs
+            Keyword arguments are passed to :class:`symmeplot.plot_objects.PlotPoint`.
+
+        Returns
+        -------
+        PlotPoint
+            Plot object of the point.
+        """
+        return super().add_point(point, **kwargs)
 
     @property
     def annot_coords(self):
         """Coordinate where the annotation text is displayed."""
-        return self.origin
-
-    def _get_expressions_to_evaluate_self(self):
-        """Return a tuple of the necessary expressions for plotting."""
-        return self._expressions_self
-
-    def _update_self(self):
-        """Update own artists."""
-        return ()
+        if self.sympy_object.system is None:
+            return self.zero_point
+        else:
+            return self.sympy_object.system.fixed_point
 
 
-class PlotModel(PlotBrimMixin, PlotBase):
+class PlotModel(PlotBrimMixin, MplPlotBase):
     """Plot object of a BRiM model."""
 
     def __init__(self, inertial_frame: ReferenceFrame, zero_point: Point,
@@ -208,7 +180,7 @@ class PlotModel(PlotBrimMixin, PlotBase):
         return self._model
 
     @model.setter
-    def model(self, model):
+    def model(self, model: ModelBase):
         if not isinstance(model, ModelBase):
             raise TypeError(f"'model' should be an instance of {ModelBase}.")
         else:
@@ -233,7 +205,7 @@ class PlotModel(PlotBrimMixin, PlotBase):
                      if isinstance(child, PlotLoadGroup))
 
 
-class PlotConnection(PlotBrimMixin, PlotBase):
+class PlotConnection(PlotBrimMixin, MplPlotBase):
     """Plot object of a BRiM connection."""
 
     def __init__(self, inertial_frame: ReferenceFrame, zero_point: Point,
@@ -271,7 +243,7 @@ class PlotConnection(PlotBrimMixin, PlotBase):
         return self._connection
 
     @connection.setter
-    def connection(self, connection):
+    def connection(self, connection: ConnectionBase):
         if not isinstance(connection, ConnectionBase):
             raise TypeError(f"'connection' should be an instance of {ConnectionBase}.")
         else:
@@ -290,7 +262,7 @@ class PlotConnection(PlotBrimMixin, PlotBase):
                      if isinstance(child, PlotLoadGroup))
 
 
-class PlotLoadGroup(PlotBrimMixin, PlotBase):
+class PlotLoadGroup(PlotBrimMixin, MplPlotBase):
     """Plot object of a BRiM load group."""
 
     def __init__(self, inertial_frame: ReferenceFrame, zero_point: Point,
@@ -315,7 +287,7 @@ class PlotLoadGroup(PlotBrimMixin, PlotBase):
         return self._load_group
 
     @load_group.setter
-    def load_group(self, load_group):
+    def load_group(self, load_group: LoadGroupBase):
         if not isinstance(load_group, LoadGroupBase):
             raise TypeError(f"'load_group' should be an instance of {LoadGroupBase}.")
         else:

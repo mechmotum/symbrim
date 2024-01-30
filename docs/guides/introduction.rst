@@ -132,8 +132,7 @@ See Also
 
 Here are some useful reference to get started:
 
-- The `brim-examples <https://github.com/TJStienstra/brim-examples>`_ repository
-  contains a collection of examples.
+- The :ref:`tutorials` page contains a collection of tutorials to get started with BRiM.
 - The `brim-bmd-2023-paper <https://github.com/TJStienstra/brim-bmd-2023-paper>`_
   repository contains a ``src`` directory with various trajectory tracking examples
   discussed in :cite:`stienstra_2023_brim`.

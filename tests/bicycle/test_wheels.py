@@ -5,8 +5,8 @@ from brim.bicycle.wheels import KnifeEdgeWheel, ToroidalWheel
 
 try:
     from brim.utilities.plotting import PlotModel
-    from symmeplot import PlotBody
-    from symmeplot.plot_artists import Circle3D
+    from symmeplot.matplotlib import PlotBody
+    from symmeplot.matplotlib.artists import Circle3D
 except ImportError:
     PlotModel = None
 

@@ -68,19 +68,17 @@ class TestRollingDisc:
         """Test that is not actually ran, but is useful for debugging."""
         # These are not official dependencies
         import matplotlib.pyplot as plt
-        from symmeplot import SymMePlotter
-        fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
-        plotter = SymMePlotter(
-            ax, self.system.frame, self.system.fixed_point)
+        from symmeplot.matplotlib import Scene3D
+        scene = Scene3D(self.system.frame, self.system.fixed_point)
         disc = self.system.get_body("disc")
-        disc_plt = plotter.add_body(disc)
+        disc_plt = scene.add_body(disc)
         disc_plt.attach_circle(disc.masscenter, Symbol("r"), disc.y,
                                facecolor="none", edgecolor="k")
-        plotter.lambdify_system((self.system.q, self.system.u, self.p))
-        plotter.evaluate_system(self.q0, self.u0, self.p_vals)
-        plotter.plot()
-        ax.invert_zaxis()
-        ax.invert_yaxis()
+        scene.lambdify_system((self.system.q, self.system.u, self.p))
+        scene.evaluate_system(self.q0, self.u0, self.p_vals)
+        scene.plot()
+        scene.axes.invert_zaxis()
+        scene.axes.invert_yaxis()
         plt.show()
 
     def _plot_rolling_disc_brim(self, _rolling_disc_brim) -> None:
@@ -89,7 +87,7 @@ class TestRollingDisc:
         import matplotlib.pyplot as plt
         from brim.utilities.plotting import Plotter
         fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
-        plotter = Plotter.from_model(ax, self.rolling_disc)
+        plotter = Plotter.from_model(self.rolling_disc, ax=ax)
         plotter.lambdify_system((self.system.q, self.system.u, self.p))
         plotter.evaluate_system(self.q0, self.u0, self.p_vals)
         plotter.plot()

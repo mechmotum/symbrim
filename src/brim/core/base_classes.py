@@ -15,9 +15,9 @@ try:  # pragma: no cover
 except ImportError:  # pragma: no cover
     Bicycle = None
 try:
-    from symmeplot.plot_base import PlotBase
+    from symmeplot.matplotlib.plot_base import MplPlotBase
 except ImportError:  # pragma: no cover
-    PlotBase = None
+    MplPlotBase = None
 
 if TYPE_CHECKING:
     from brim.core.requirement import ConnectionRequirement, ModelRequirement
@@ -229,9 +229,9 @@ class BrimBase:
             raise ImportError("The bicycle parameters package is not installed.")
         return {}
 
-    def set_plot_objects(self, plot_object: PlotBase) -> None:
+    def set_plot_objects(self, plot_object: MplPlotBase) -> None:
         """Set the symmeplot plot objects."""
-        if PlotBase is None:
+        if MplPlotBase is None:
             raise ImportError("The symmeplot package is not installed.")
 
     def _define_objects(self) -> None:

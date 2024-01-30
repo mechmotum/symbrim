@@ -34,11 +34,11 @@ jobs:
           source /usr/share/miniconda/etc/profile.d/conda.sh
           conda deactivate
       - name: Install poetry
-        run: pipx install poetry==1.6.1
+        run: pipx install poetry==1.7.1
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: 3.11
+          python-version: 3.12
       - name: Install dependencies
         run: poetry install --with docs --all-extras
       - name: make the sphinx docs
