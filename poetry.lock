@@ -2003,13 +2003,13 @@ six = ">=1.5"
 
 [[package]]
 name = "pytz"
-version = "2023.3.post1"
+version = "2023.4"
 description = "World timezone definitions, modern and historical"
 optional = true
 python-versions = "*"
 files = [
-    {file = "pytz-2023.3.post1-py2.py3-none-any.whl", hash = "sha256:ce42d816b81b68506614c11e8937d3aa9e41007ceb50bfdcb0749b921bf646c7"},
-    {file = "pytz-2023.3.post1.tar.gz", hash = "sha256:7b4fddbeb94a1eba4b557da24f19fdf9db575192544270a9101d8509f9f43d7b"},
+    {file = "pytz-2023.4-py2.py3-none-any.whl", hash = "sha256:f90ef520d95e7c46951105338d918664ebfd6f1d995bd7d153127ce90efafa6a"},
+    {file = "pytz-2023.4.tar.gz", hash = "sha256:31d4583c4ed539cd037956140d695e42c033a19e984bfce9964a3f7d59bc2b40"},
 ]
 
 [[package]]
@@ -2201,13 +2201,13 @@ cffi = {version = "*", markers = "implementation_name == \"pypy\""}
 
 [[package]]
 name = "referencing"
-version = "0.32.1"
+version = "0.33.0"
 description = "JSON Referencing + Python"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "referencing-0.32.1-py3-none-any.whl", hash = "sha256:7e4dc12271d8e15612bfe35792f5ea1c40970dadf8624602e33db2758f7ee554"},
-    {file = "referencing-0.32.1.tar.gz", hash = "sha256:3c57da0513e9563eb7e203ebe9bb3a1b509b042016433bd1e45a2853466c3dd3"},
+    {file = "referencing-0.33.0-py3-none-any.whl", hash = "sha256:39240f2ecc770258f28b642dd47fd74bc8b02484de54e1882b74b35ebd779bd5"},
+    {file = "referencing-0.33.0.tar.gz", hash = "sha256:c775fedf74bc0f9189c2a3be1c12fd03e8c23f4d371dce795df44e06c5b412f7"},
 ]
 
 [package.dependencies]
@@ -2645,23 +2645,22 @@ tests = ["cython", "littleutils", "pygments", "pytest", "typeguard"]
 
 [[package]]
 name = "symmeplot"
-version = "0.0.1"
+version = "0.2.0"
 description = "SymPy Mechanics Plotter"
 optional = true
-python-versions = "^3.8"
-files = []
-develop = false
+python-versions = ">=3.9,<4.0"
+files = [
+    {file = "symmeplot-0.2.0-py3-none-any.whl", hash = "sha256:0043f5a5131f63ac1c1bba406a874f8fc3f92f81c8221a25d49631b52c926bfb"},
+    {file = "symmeplot-0.2.0.tar.gz", hash = "sha256:5f4ba9034ec1f23d4695a5db30f9c47f01a94de68d1c290dbd7a53309d5fc8d3"},
+]
 
 [package.dependencies]
-matplotlib = "^3.7.1"
-numpy = "^1.24.2"
-sympy = "^1.11.1"
+numpy = ">=1.26.0,<2.0.0"
+sympy = ">=1.12,<2.0"
 
-[package.source]
-type = "git"
-url = "https://github.com/TJStienstra/symmeplot.git"
-reference = "HEAD"
-resolved_reference = "2c2b2d31104db63cb9863d685fa355e280ce328f"
+[package.extras]
+mpl-backend = ["matplotlib (>=3.8.2,<4.0.0)"]
+pg-backend = ["pyopengl (>=3.1.7,<4.0.0)", "pyqt6 (>=6.6.1,<7.0.0)", "pyqtgraph (>=0.13.3,<0.14.0)"]
 
 [[package]]
 name = "sympy"
@@ -2682,7 +2681,7 @@ dev = ["hypothesis (>=6.70.0)", "pytest (>=7.1.0)"]
 type = "git"
 url = "https://github.com/sympy/sympy.git"
 reference = "HEAD"
-resolved_reference = "9742d29168d2c063198b74ab9c44aa824efc1516"
+resolved_reference = "1c44491cbfd0bfbc2705e7e460e1450ad7c919a9"
 
 [[package]]
 name = "tenacity"
@@ -2902,4 +2901,4 @@ plotting = ["symmeplot"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "b01ca3ab7d17199dae86b3ab86adc57e948e5d517b6e188dbbce58ebf25c5035"
+content-hash = "84273f06a6229ae2640522f41c5b60b98e3e404a1caf2133b7d55cf00841fdb5"
