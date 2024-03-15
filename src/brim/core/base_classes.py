@@ -534,6 +534,7 @@ def _merge_systems(*systems: System) -> System:
             ("q_dep", "q", "add_coordinates", {"independent": False}),
             ("u_ind", "u", "add_speeds", {"independent": True}),
             ("u_dep", "u", "add_speeds", {"independent": False}),
+            ("u_aux", "u", "add_auxiliary_speeds", {}),
             ("bodies", "bodies", "add_bodies", {}),
             ("joints", "joints", "add_joints", {}),
             ("loads", "loads", "add_loads", {}),
