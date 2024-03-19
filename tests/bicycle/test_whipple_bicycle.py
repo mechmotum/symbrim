@@ -12,6 +12,7 @@ from brim import (
     RigidRearFrame,
 )
 from brim.bicycle import MasslessCranks, WhippleBicycle, WhippleBicycleMoore
+from brim.utilities.testing import ignore_point_warnings
 from sympy import Symbol, lambdify
 from sympy.physics.mechanics import dynamicsymbols
 
@@ -101,7 +102,8 @@ class TestWhippleBicycleMoore:
         system.q_dep = [self.bike.q[4]]
         system.u_ind = [self.bike.u[3], *self.bike.u[5:7]]
         system.u_dep = [*self.bike.u[:3], self.bike.u[4], self.bike.u[7]]
-        system.form_eoms(constraint_solver="CRAMER")
+        with ignore_point_warnings():
+            system.form_eoms(constraint_solver="CRAMER")
 
         constants, initial_state = self._get_basu_mandal_values(self.bike)
         p, p_vals = zip(*constants.items())
