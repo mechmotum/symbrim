@@ -120,24 +120,22 @@ class NonHolonomicTire(TireBase):
         """Define the kinematics of the tire model."""
         super()._define_kinematics()
         self._set_pos_contact_point()
-        ground_v_center = cross(self.wheel.frame.ang_vel_in(self.ground.frame),
-                                self.wheel.center.pos_from(self.contact_point))
-        # Compute velocity of the wheel center using Point.vel as that will take
-        # auxiliary speeds into account contrary to taking the time derivative of the
-        # position w.r.t. the origin. `ground_v_center` should be a valid different
-        # computation of the velocity of the wheel center because this model has not
-        # specified the contact point to be the instantaneous center of rotation and a
-        # parent model may/should not assume this.
-        self._v0 = self.wheel.center.vel(self.ground.frame) - ground_v_center
-        self.wheel.center.set_vel(self.ground.frame, ground_v_center)
+        self.wheel.center.set_vel(self.ground.frame,
+                                  cross(self.wheel.frame.ang_vel_in(self.ground.frame),
+                                        self.wheel.center.pos_from(self.contact_point)))
 
     def _define_constraints(self) -> None:
         """Define the constraints of the tire model."""
         super()._define_constraints()
         normal = self.ground.get_normal(self.contact_point)
         tangent_vectors = self.ground.get_tangent_vectors(self.contact_point)
+        v0 = self.wheel.center.pos_from(self.ground.origin).dt(self.ground.frame
+                                                               ) + cross(
+            self.wheel.frame.ang_vel_in(self.ground.frame),
+            self.contact_point.pos_from(self.wheel.center)
+        )
         self.system.add_nonholonomic_constraints(
-            self._v0.dot(tangent_vectors[0]), self._v0.dot(tangent_vectors[1]))
+            v0.dot(tangent_vectors[0]), v0.dot(tangent_vectors[1]))
         if not self.on_ground:
             self.system.add_holonomic_constraints(
                 self.contact_point.pos_from(self.ground.origin).dot(normal))
