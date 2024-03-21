@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Callable, Iterable
 
 from sympy import Function
-from sympy.physics.mechanics import Force, Point, ReferenceFrame, Torque, Vector
+from sympy.physics.mechanics import Force, Point, ReferenceFrame, System, Torque, Vector
 
 if TYPE_CHECKING:
     from sympy.physics.mechanics.loads import LoadBase
@@ -94,6 +94,11 @@ class AuxiliaryDataHandler:
         self._position_tree = None
         self._aux_vels_points = None
         self.auxiliary_data_list: list[AuxiliaryData] = []
+
+    @classmethod
+    def from_system(cls, system: System) -> AuxiliaryDataHandler:
+        """Create an auxiliary data handler from a system."""
+        return cls(system.frame, system.fixed_point)
 
     @property
     def inertial_frame(self) -> ReferenceFrame:

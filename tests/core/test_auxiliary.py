@@ -86,6 +86,12 @@ class TestAuxiliaryHandler(AuxiliarySetup):
         assert self.handler.auxiliary_forces_data == tuple(self.noncontributing_loads)
         assert self.handler.auxiliary_torques_data == ()
 
+    def test_from_system(self) -> None:
+        sys = System()
+        handler = AuxiliaryDataHandler.from_system(sys)
+        assert handler.inertial_frame == sys.frame
+        assert handler.inertial_point == sys.fixed_point
+
     @pytest.mark.parametrize("get_childs", [
         "_pos_dict", lambda pt: pt._pos_dict.keys()])
     def test_create_tree(self, get_childs) -> None:
