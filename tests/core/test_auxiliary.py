@@ -11,7 +11,7 @@ from sympy.physics.mechanics import (
 )
 
 
-class NonContributingSetup:
+class AuxiliarySetup:
     @pytest.fixture(autouse=True)
     def _setup_cart_pendulum(self) -> None:
         """Cart with a two link pendulum."""
@@ -44,7 +44,7 @@ class NonContributingSetup:
         self.ld_j2 = AuxiliaryData(self.p1, -self.f2.y, self.ual, self.fal)
         self.noncontributing_loads = [self.ld_fz, self.ld_j2]
 
-class TestAuxiliaryData(NonContributingSetup):
+class TestAuxiliaryData(AuxiliarySetup):
     def test_init_force(self) -> None:
         assert self.ld_fz.location == self.cart
         assert self.ld_fz.direction == self.inertial_frame.y
@@ -73,18 +73,18 @@ class TestAuxiliaryData(NonContributingSetup):
         assert self.ld_j2.auxiliary_velocity == -self.ual * self.f2.y
 
 
-class TestAuxiliaryGraph(NonContributingSetup):
+class TestAuxiliaryHandler(AuxiliarySetup):
     @pytest.fixture(autouse=True)
     def _setup_graph(self) -> None:
-        self.graph = AuxiliaryDataHandler(self.inertial_frame, self.inertial_point)
-        self.graph.auxiliary_data_list.extend(self.noncontributing_loads)
+        self.handler = AuxiliaryDataHandler(self.inertial_frame, self.inertial_point)
+        self.handler.auxiliary_data_list.extend(self.noncontributing_loads)
 
     def test_init(self) -> None:
-        assert self.graph.inertial_frame == self.inertial_frame
-        assert self.graph.inertial_point == self.inertial_point
-        assert self.graph.auxiliary_data_list == self.noncontributing_loads
-        assert self.graph.auxiliary_forces_data == tuple(self.noncontributing_loads)
-        assert self.graph.auxiliary_torques_data == ()
+        assert self.handler.inertial_frame == self.inertial_frame
+        assert self.handler.inertial_point == self.inertial_point
+        assert self.handler.auxiliary_data_list == self.noncontributing_loads
+        assert self.handler.auxiliary_forces_data == tuple(self.noncontributing_loads)
+        assert self.handler.auxiliary_torques_data == ()
 
     @pytest.mark.parametrize("get_childs", [
         "_pos_dict", lambda pt: pt._pos_dict.keys()])
@@ -103,7 +103,7 @@ class TestAuxiliaryGraph(NonContributingSetup):
             assert len(chlds) == len(expected_tree[p])
 
     def test_apply_speeds(self) -> None:
-        self.graph.apply_speeds()
+        self.handler.apply_speeds()
         cart_vel = self.v * self.inertial_frame.x + self.uay * self.inertial_frame.y
         p1_vel = cart_vel + self.l[0] * self.u[0] * self.f1.x - self.ual * self.f2.y
         p2_vel = p1_vel + self.l[1] * (self.u[0] + self.u[1]) * self.f2.x
@@ -114,14 +114,14 @@ class TestAuxiliaryGraph(NonContributingSetup):
         assert self.p3.vel(self.inertial_frame) == p3_vel
 
     def test_apply_speeds_double(self) -> None:
-        self.graph.apply_speeds()
-        pytest.raises(ValueError, lambda: self.graph.apply_speeds())
+        self.handler.apply_speeds()
+        pytest.raises(ValueError, lambda: self.handler.apply_speeds())
 
     def test_create_loads(self) -> None:
-        loads = self.graph.create_loads()
+        loads = self.handler.create_loads()
         for ld in loads:
             with pytest.raises(ValueError):
-                ld.get_load(self.inertial_frame)
+                ld.point.pos_from(self.inertial_point)
         assert loads[0].point.vel(self.inertial_frame) == (
             self.uay * self.inertial_frame.y)
         assert loads[0].force == self.fay * self.inertial_frame.y
@@ -158,11 +158,11 @@ class TestAuxiliaryGraph(NonContributingSetup):
         )
 
         # Introduce noncontributing load.
-        graph = AuxiliaryDataHandler(sb_sys.frame, sb_sys.fixed_point)
-        graph.add_noncontributing_force(box.masscenter, sb_sys.y, uaux, fn)
-        graph.apply_speeds()
+        handler = AuxiliaryDataHandler(sb_sys.frame, sb_sys.fixed_point)
+        handler.add_noncontributing_force(box.masscenter, sb_sys.y, uaux, fn)
+        handler.apply_speeds()
 
-        sb_sys.add_loads(*graph.create_loads())
+        sb_sys.add_loads(*handler.create_loads())
 
         # Form the equations of motion.
         sb_sys.validate_system()
