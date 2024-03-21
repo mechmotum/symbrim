@@ -91,7 +91,7 @@ class AuxiliaryDataHandler:
             raise TypeError("Inertial point must be an instance of Point.")
         self._inertial_frame = inertial_frame
         self._inertial_point = inertial_point
-        self._position_tree = None
+        self._position_tree = None  # Chosen structure is {parent: [child1, ...]}
         self._aux_vels_points = None
         self.auxiliary_data_list: list[AuxiliaryData] = []
 
