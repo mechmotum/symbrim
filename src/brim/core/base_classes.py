@@ -578,4 +578,6 @@ def _merge_systems(*systems: System) -> System:
             for item in getattr(s, attr_to_add):
                 if item not in getattr(system, attr_existing):
                     getattr(system, add_method)(item, **kwargs)
+        system.velocity_constraints = (
+            system.velocity_constraints[:] + s.velocity_constraints[:])
     return system
