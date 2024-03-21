@@ -279,6 +279,7 @@ class ModelBase(BrimBase, metaclass=ModelMeta):
             Name of the model.
         """
         super().__init__(name)
+        self.is_root: bool | None = None  # None means that it is not defined.
         self._load_groups = []
         for req in self.required_models:
             setattr(self, f"_{req.attribute_name}", None)
@@ -338,6 +339,13 @@ class ModelBase(BrimBase, metaclass=ModelMeta):
 
     def define_objects(self) -> None:
         """Initialize the objects belonging to the model."""
+        if self.is_root is None:
+            self.is_root = True
+            queue = list(self.submodels)
+            while queue:
+                submodel = queue.pop(0)
+                submodel.is_root = False
+                queue.extend(submodel.submodels)
         for submodel in self.submodels:
             submodel.define_objects()
         self._define_objects()
