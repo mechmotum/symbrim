@@ -378,6 +378,7 @@ class ModelBase(BrimBase, metaclass=ModelMeta):
             load_group.define_kinematics()
         if self.is_root:
             self.auxiliary_handler.apply_speeds()
+            self.system.add_auxiliary_speeds(*self.auxiliary_handler.auxiliary_speeds)
 
     def define_loads(self) -> None:
         """Define the loads that are acting upon the model."""

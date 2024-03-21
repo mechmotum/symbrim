@@ -149,7 +149,6 @@ class NonHolonomicTire(TireBase):
         if self.compute_normal_force:
             self.u = Matrix([dynamicsymbols(self._add_prefix("uaux_z"))])
             self.symbols["Fz"] = dynamicsymbols(self._add_prefix("Fz"))
-            self.system.add_auxiliary_speeds(self.u[0])
 
     def _define_kinematics(self) -> None:
         """Define the kinematics of the tire model."""

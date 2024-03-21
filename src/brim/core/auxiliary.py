@@ -118,6 +118,11 @@ class AuxiliaryDataHandler:
         """Tuple of noncontributing torque data."""
         return tuple(ld for ld in self.auxiliary_data_list if ld.is_torque)
 
+    @property
+    def auxiliary_speeds(self) -> tuple[DynamicSymbol]:
+        """Tuple of auxiliary speeds used to compute the noncontributing loads."""
+        return tuple(ld.speed_symbol for ld in self.auxiliary_data_list)
+
     def add_noncontributing_force(self, point: Point, direction: Vector,
                                   speed_sym: DynamicSymbol, force_sym: DynamicSymbol
                                   ) -> AuxiliaryData:
