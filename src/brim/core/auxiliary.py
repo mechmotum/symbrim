@@ -30,15 +30,6 @@ class AuxiliaryData:
         Auxiliary speed symbol used to compute of the noncontributing load.
     load_symbol : DynamicSymbol
         Magnitude of the noncontributing load.
-
-    Notes
-    -----
-    When defining the direction be careful that the reference part is the child, when
-    visualizing the position or orientation graph as a tree. For example, if you have a
-    four-bar linkage and you'd like to know the noncontributing force in the first joint
-    then you can specify the direction as ``A1.x``. However, if you would like the
-    noncontributing force in the closing link and you use the end effector as location
-    then you should specify the direction to be negative ``-A1.x``.
     """
 
     location: Point | ReferenceFrame
