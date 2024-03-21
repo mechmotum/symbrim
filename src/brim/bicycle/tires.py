@@ -1,7 +1,10 @@
 """Module containing tire models for bicycles."""
 from __future__ import annotations
 
-from sympy.physics.mechanics import Point, System, Vector, cross
+from typing import Any
+
+from sympy import MutableDenseMatrix as Matrix
+from sympy.physics.mechanics import Point, System, Vector, cross, dynamicsymbols
 
 from brim.bicycle.grounds import FlatGround, GroundBase
 from brim.bicycle.wheels import KnifeEdgeWheel, ToroidalWheel, WheelBase
@@ -116,13 +119,53 @@ class NonHolonomicTire(TireBase):
     ground: FlatGround
     wheel: KnifeEdgeWheel | ToroidalWheel
 
+    def __init__(self, name: str) -> None:
+        super().__init__(name)
+        self._compute_normal_force = False
+
+    @property
+    def compute_normal_force(self) -> bool:
+        """Boolean whether the normal force should be computed."""
+        return self._compute_normal_force
+
+    @compute_normal_force.setter
+    def compute_normal_force(self, value: bool) -> None:
+        self._compute_normal_force = bool(value)
+
+    @property
+    def descriptions(self) -> dict[Any, str]:
+        """Dictionary of descriptions of the non-holonomic tire model's attributes."""
+        descriptions = super().descriptions
+        if self.compute_normal_force:
+            descriptions.update({
+                self.u[0]: "Auxiliary generalized speed to determine the normal force.",
+                self.symbols["Fz"]: "Negative of the normal force of the tire model.",
+            })
+        return descriptions
+
+    def _define_objects(self) -> None:
+        """Define the objects of the tire model."""
+        super()._define_objects()
+        if self.compute_normal_force:
+            self.u = Matrix([dynamicsymbols(self._add_prefix("uaux_z"))])
+            self.symbols["Fz"] = dynamicsymbols(self._add_prefix("Fz"))
+            self.system.add_auxiliary_speeds(self.u[0])
+
     def _define_kinematics(self) -> None:
         """Define the kinematics of the tire model."""
         super()._define_kinematics()
         self._set_pos_contact_point()
-        self.wheel.center.set_vel(self.ground.frame,
-                                  cross(self.wheel.frame.ang_vel_in(self.ground.frame),
-                                        self.wheel.center.pos_from(self.contact_point)))
+        if self.on_ground:
+            self.wheel.center.set_vel(
+                self.ground.frame,
+                cross(self.wheel.frame.ang_vel_in(self.ground.frame),
+                      self.wheel.center.pos_from(self.contact_point)))
+        if self.compute_normal_force:
+            direction = -self.ground.get_normal(self.contact_point)
+            if self.on_ground:
+                direction = -direction
+            self.auxiliary_handler.add_noncontributing_force(
+                self.contact_point, direction, self.u[0], self.symbols["Fz"])
 
     def _define_constraints(self) -> None:
         """Define the constraints of the tire model."""
@@ -139,3 +182,10 @@ class NonHolonomicTire(TireBase):
         if not self.on_ground:
             self.system.add_holonomic_constraints(
                 self.contact_point.pos_from(self.ground.origin).dot(normal))
+            if self.compute_normal_force:
+                self.system.velocity_constraints = [
+                    self.system.holonomic_constraints[0].diff(dynamicsymbols._t) +
+                    self.auxiliary_handler.get_auxiliary_velocity(
+                        self.contact_point).dot(normal),
+                    *self.system.nonholonomic_constraints
+                ]
