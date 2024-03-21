@@ -39,7 +39,6 @@ class AuxiliaryData:
     then you can specify the direction as ``A1.x``. However, if you would like the
     noncontributing force in the closing link and you use the end effector as location
     then you should specify the direction to be negative ``-A1.x``.
-
     """
 
     location: Point | ReferenceFrame
@@ -82,7 +81,15 @@ class AuxiliaryData:
 
 
 class AuxiliaryDataHandler:
-    """Class to compute noncontributing loads in a system."""
+    """Class to compute noncontributing loads in a system.
+
+    Parameters
+    ----------
+    inertial_frame : ReferenceFrame
+        Inertial reference frame in which the equations of motion will be formed.
+    inertial_point : Point
+        Inertial point which is used as root in the tree graph representation.z
+    """
 
     def __init__(self, inertial_frame: ReferenceFrame, inertial_point: Point):
         if not isinstance(inertial_frame, ReferenceFrame):
@@ -123,7 +130,7 @@ class AuxiliaryDataHandler:
     def add_noncontributing_force(self, point: Point, direction: Vector,
                                   speed_sym: DynamicSymbol, force_sym: DynamicSymbol
                                   ) -> AuxiliaryData:
-        """Add a noncontributing force to the graph."""
+        """Add the data of a noncontributing force to the graph."""
         force = AuxiliaryData(point, direction, speed_sym, force_sym)
         self.auxiliary_data_list.append(force)
         return force
@@ -253,5 +260,5 @@ class AuxiliaryDataHandler:
         return self._aux_vels_points[point]
 
     def create_loads(self) -> list[LoadBase]:
-        """Create loads for all noncontributing loads data."""
+        """Create loads for all noncontributing load data."""
         return [ld.get_load(self.inertial_frame) for ld in self.auxiliary_data_list]
