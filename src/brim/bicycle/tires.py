@@ -24,6 +24,10 @@ class TireBase(ConnectionBase):
     ground: GroundBase
     wheel: WheelBase
 
+    def __init__(self, name: str) -> None:
+        super().__init__(name)
+        self._on_ground = None
+
     def _set_pos_contact_point(self) -> None:
         """Compute the contact point of the wheel with the ground."""
         if isinstance(self.ground, FlatGround):
@@ -47,7 +51,6 @@ class TireBase(ConnectionBase):
         super()._define_objects()
         self._system = System.from_newtonian(self.ground.body)
         self._contact_point = Point(self._add_prefix("contact_point"))
-        self._on_ground = None
         self._upward_radial_axis = None
 
     @property
