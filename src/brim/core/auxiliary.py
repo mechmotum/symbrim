@@ -232,12 +232,10 @@ class AuxiliaryDataHandler:
         # This is done before adding the auxiliary forces because auxiliary speeds may
         # otherwise also be added by Point.vel.
         queue = [self.inertial_point]
-        parent = None
         while queue:
             point = queue.pop(0)
-            self._compute_velocity(point, parent)
+            point.set_vel(self.inertial_frame, point.vel(self.inertial_frame))
             queue.extend(self._position_tree[point])
-            parent = point
 
         # Add auxiliary speeds to each point of the graph.
         for point in all_points:
