@@ -74,6 +74,13 @@ class AuxiliaryData:
 class AuxiliaryDataHandler:
     """Class to compute noncontributing loads in a system.
 
+    Explanation
+    -----------
+    This is an experimental class to compute noncontributing forces and torques in a
+    system. To do so, the class creates a tree representation of what points are used
+    to compute the velocity of other points. Based on this tree, auxiliary velocities
+    of each point are computed and added to the inertal velocity graph of the points.
+
     Parameters
     ----------
     inertial_frame : ReferenceFrame
