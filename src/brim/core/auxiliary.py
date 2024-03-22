@@ -180,31 +180,6 @@ class AuxiliaryDataHandler:
             if point in childs:
                 return parent
 
-    def _compute_velocity(self, point: Point, parent: Point | None = None) -> Vector:
-        """Compute the velocity of a point based on its parent in the position tree."""
-        if self.inertial_frame in point._vel_dict:
-            return point._vel_dict[self.inertial_frame]
-        if point is self.inertial_point:
-            return point.vel(self.inertial_frame)
-        if self._position_tree is None or point not in self._position_tree:
-            self.retrieve_graphs()
-        if parent is None:
-            parent = self._get_parent(point)
-        shared_frames = set(point._vel_dict).intersection(parent._vel_dict)
-        # Compute velocity based on the velocity two point theorem if possible.
-        for frame in shared_frames:
-            if point._vel_dict[frame] == 0 and parent._vel_dict[frame] == 0:
-                return point.v2pt_theory(parent, self.inertial_frame, frame)
-        # Compute velocity based on the velocity one point theorem if possible.
-        for frame in shared_frames:
-            if parent._vel_dict[frame] == 0:
-                return point.v1pt_theory(parent, self.inertial_frame, frame)
-        # Fall back to velocity computation based on vector differentiation.
-        point.set_vel(self.inertial_frame,
-                      parent._vel_dict[self.inertial_frame] +
-                      point.pos_from(parent).dt(self.inertial_frame))
-        return point._vel_dict[self.inertial_frame]
-
     def apply_speeds(self) -> None:
         """Apply auxiliary speeds to the velocity graph."""
         if self._aux_vels_points is not None:
