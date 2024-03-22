@@ -172,22 +172,22 @@ class NonHolonomicTire(TireBase):
     def _define_constraints(self) -> None:
         """Define the constraints of the tire model."""
         super()._define_constraints()
+        aux_vel_cp = self.auxiliary_handler.get_auxiliary_velocity(self.contact_point)
+        aux_vel_wc = self.auxiliary_handler.get_auxiliary_velocity(self.wheel.center)
+        aux_vel_gnd = self.auxiliary_handler.get_auxiliary_velocity(self.ground.origin)
         normal = self.ground.get_normal(self.contact_point)
         tangent_vectors = self.ground.get_tangent_vectors(self.contact_point)
-        v0 = self.wheel.center.pos_from(self.ground.origin).dt(self.ground.frame
-                                                               ) + cross(
-            self.wheel.frame.ang_vel_in(self.ground.frame),
-            self.contact_point.pos_from(self.wheel.center)
-        )
+        v0 = (self.wheel.center.pos_from(self.ground.origin).dt(self.ground.frame)
+              + cross(self.wheel.frame.ang_vel_in(self.ground.frame),
+                      self.contact_point.pos_from(self.wheel.center)))
+        aux_v0 = aux_vel_wc - aux_vel_gnd + aux_vel_cp
         self.system.add_nonholonomic_constraints(
-            v0.dot(tangent_vectors[0]), v0.dot(tangent_vectors[1]))
+            v0.dot(tangent_vectors[0]) + aux_v0.dot(tangent_vectors[0]),
+            v0.dot(tangent_vectors[1]) + aux_v0.dot(tangent_vectors[1]))
         if not self.on_ground:
             self.system.add_holonomic_constraints(
                 self.contact_point.pos_from(self.ground.origin).dot(normal))
-            if self.compute_normal_force:
-                self.system.velocity_constraints = [
-                    self.system.holonomic_constraints[0].diff(dynamicsymbols._t) +
-                    self.auxiliary_handler.get_auxiliary_velocity(
-                        self.contact_point).dot(normal),
-                    *self.system.nonholonomic_constraints
-                ]
+            self.system.velocity_constraints = [
+                self.system.holonomic_constraints[0].diff(dynamicsymbols._t) +
+                aux_vel_cp.dot(normal), *self.system.nonholonomic_constraints
+            ]
