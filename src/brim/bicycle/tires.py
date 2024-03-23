@@ -103,7 +103,7 @@ class TireBase(ConnectionBase):
         """Longitudinal axis of the wheel."""
         if self._longitudinal_axis is None:
             self._longitudinal_axis = cross(self.ground.get_normal(self.contact_point),
-                                            self.wheel.rotation_axis)
+                                            self.wheel.rotation_axis).normalize()
         return self._longitudinal_axis
 
     @longitudinal_axis.setter
@@ -123,8 +123,10 @@ class TireBase(ConnectionBase):
     def lateral_axis(self) -> Vector:
         """Lateral axis of the wheel."""
         if self._lateral_axis is None:
-            self._lateral_axis = cross(self.longitudinal_axis,
-                                       self.ground.get_normal(self.contact_point))
+            self._lateral_axis = cross(
+                cross(self.ground.get_normal(self.contact_point),
+                      self.wheel.rotation_axis),
+                self.ground.get_normal(self.contact_point)).normalize()
         return self._lateral_axis
 
     @lateral_axis.setter
@@ -269,7 +271,7 @@ class InContactTire(TireBase):
             self.system.add_loads(Force(self.contact_point, tire_force))
         tire_torque = (
             self.symbols.get("Mx", 0) * self.longitudinal_axis +
-            self.symbols.get("Mz", 0) * self.ground.get_normal(self.contact_point)
+            self.symbols.get("Mz", 0) * -self.ground.get_normal(self.contact_point)
         )
         if tire_torque != 0:
             self.system.add_loads(Torque(self.wheel.frame, tire_torque))
