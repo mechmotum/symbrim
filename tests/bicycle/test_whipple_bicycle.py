@@ -142,15 +142,19 @@ class TestWhippleBicycleMoore:
         assert (self.bike.cranks.frame.ang_vel_in(rf).dot(rf.y) ==
                 self.bike.u[7] / self.bike.symbols["gear_ratio"])
 
-    @pytest.mark.parametrize("normal, components", [
-        ("+z", Matrix([0, 0, 1])), ("-z", Matrix([0, 0, -1]))])
-    def test_define_upward_radial_axis(self, _setup_default, normal, components
-                                       ) -> None:
+    @pytest.mark.parametrize("normal, upward, longitudinal, lateral", [
+        ("+z", Matrix([0, 0, 1]), Matrix([-1, 0, 0]), Matrix([0, 1, 0])),
+        ("-z", Matrix([0, 0, -1]), Matrix([1, 0, 0]), Matrix([0, 1, 0]))])
+    def test_define_tire_axes(self, _setup_default, normal, upward, longitudinal,
+                              lateral) -> None:
         self.bike.ground = FlatGround("ground", normal=normal)
         self.bike.define_all()
-        radial_axis = self.bike.rear_tire.upward_radial_axis
-        assert len(radial_axis.args) == 1
-        assert self.bike.rear_tire.upward_radial_axis.args[0][0] == components
+        assert len(self.bike.rear_tire.upward_radial_axis.args) == 1
+        assert self.bike.rear_tire.upward_radial_axis.args[0][0] == upward
+        assert len(self.bike.rear_tire.longitudinal_axis.args) == 1
+        assert self.bike.rear_tire.longitudinal_axis.args[0][0] == longitudinal
+        assert len(self.bike.rear_tire.lateral_axis.args) == 1
+        assert self.bike.rear_tire.lateral_axis.args[0][0] == lateral
 
     @pytest.mark.parametrize("normal", ["+x", "-x", "+y", "-y"])
     def test_do_not_define_upward_radial_axis(self, _setup_default, normal) -> None:

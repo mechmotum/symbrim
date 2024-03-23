@@ -9,7 +9,6 @@ from sympy.physics.mechanics import (
     PinJoint,
     ReferenceFrame,
     System,
-    Vector,
     dynamicsymbols,
 )
 
@@ -108,9 +107,11 @@ class WhippleBicycleMoore(WhippleBicycle):
             self.ground.frame,
             self.rear_tire.contact_point.vel(self.ground.frame).xreplace(qd_repl))
         # Define the orientation of the rear frame.
-        int_frame = ReferenceFrame("int_frame")
-        int_frame.orient_body_fixed(self.ground.frame, (*self.q[2:4], 0), "zxy")
-        self.rear_frame.wheel_hub.frame.orient_axis(int_frame, int_frame.y, self.q[4])
+        yaw_frame = ReferenceFrame("yaw_frame")
+        roll_frame = ReferenceFrame("roll_frame")
+        yaw_frame.orient_axis(self.ground.frame, self.ground.frame.z, self.q[2])
+        roll_frame.orient_axis(yaw_frame, yaw_frame.x, self.q[3])
+        self.rear_frame.wheel_hub.frame.orient_axis(roll_frame, roll_frame.y, self.q[4])
         self.rear_frame.wheel_hub.frame.set_ang_vel(
             self.ground.frame,
             self.rear_frame.wheel_hub.frame.ang_vel_in(
@@ -137,9 +138,11 @@ class WhippleBicycleMoore(WhippleBicycle):
         )
         # Define contact points.
         with contextlib.suppress(ValueError):
-            self.rear_tire.upward_radial_axis = Vector(
-                {int_frame: self.ground.get_normal(
-                    self.rear_tire.contact_point).to_matrix(self.ground.frame)})
+            normal = self.ground.get_normal(self.rear_tire.contact_point)
+            direction = normal.dot(-self.ground.frame.z)
+            self.rear_tire.upward_radial_axis = direction * -roll_frame.z
+            self.rear_tire.longitudinal_axis = direction * yaw_frame.x
+            self.rear_tire.lateral_axis = yaw_frame.y
         self.rear_tire.define_kinematics()
         self.front_tire.define_kinematics()
         # Add the coordinates and speeds to the system.
