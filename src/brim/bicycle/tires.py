@@ -227,9 +227,10 @@ class InContactTire(TireBase):
     def _define_objects(self) -> None:
         """Define the objects of the tire model."""
         super()._define_objects()
-        syms_to_add = ["Fx", "Fy", "Fz", "Mx", "Mz"]
+        syms_to_add = ["Fx", "Fy", "Mx", "Mz"]
         if self.compute_normal_force:
             self.u = Matrix([dynamicsymbols(self._add_prefix("uaux_z"))])
+            syms_to_add.append("Fz")
         if self.no_longitudinal_slip:
             syms_to_add.remove("Fx")
         if self.no_lateral_slip:
