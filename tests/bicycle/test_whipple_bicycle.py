@@ -13,7 +13,7 @@ from brim import (
 )
 from brim.bicycle import MasslessCranks, WhippleBicycle, WhippleBicycleMoore
 from brim.utilities.testing import ignore_point_warnings
-from sympy import Matrix, Symbol, lambdify, linear_eq_to_matrix
+from sympy import Matrix, Symbol, count_ops, lambdify, linear_eq_to_matrix
 from sympy.physics.mechanics import dynamicsymbols, msubs
 
 if TYPE_CHECKING:
@@ -141,6 +141,23 @@ class TestWhippleBicycleMoore:
             dynamicsymbols._t, rf) == 0
         assert (self.bike.cranks.frame.ang_vel_in(rf).dot(rf.y) ==
                 self.bike.u[7] / self.bike.symbols["gear_ratio"])
+
+    @pytest.mark.parametrize("normal, components", [
+        ("+z", Matrix([0, 0, 1])), ("-z", Matrix([0, 0, -1]))])
+    def test_define_upward_radial_axis(self, _setup_default, normal, components
+                                       ) -> None:
+        self.bike.ground = FlatGround("ground", normal=normal)
+        self.bike.define_all()
+        radial_axis = self.bike.rear_tire.upward_radial_axis
+        assert len(radial_axis.args) == 1
+        assert self.bike.rear_tire.upward_radial_axis.args[0][0] == components
+
+    @pytest.mark.parametrize("normal", ["+x", "-x", "+y", "-y"])
+    def test_do_not_define_upward_radial_axis(self, _setup_default, normal) -> None:
+        self.bike.ground = FlatGround("ground", normal=normal)
+        self.bike.define_all()
+        radial_axis = self.bike.rear_tire.upward_radial_axis
+        assert count_ops(radial_axis.args[0][0]) > 20
 
     @pytest.mark.parametrize("compute_rear", [True, False])
     @pytest.mark.parametrize("compute_front", [True, False])
