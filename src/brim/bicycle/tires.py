@@ -52,6 +52,8 @@ class TireBase(ConnectionBase):
         self._system = System.from_newtonian(self.ground.body)
         self._contact_point = Point(self._add_prefix("contact_point"))
         self._upward_radial_axis = None
+        self._longitudinal_axis = None
+        self._lateral_axis = None
 
     @property
     def upward_radial_axis(self) -> Vector:
@@ -85,9 +87,51 @@ class TireBase(ConnectionBase):
         if not check_zero(axis.dot(cross(self.ground.get_normal(self.contact_point),
                                          self.wheel.rotation_axis))):
             raise ValueError(
-                f"{name} should be perpendicular to an axis that is perpendicular to "
-                f"both the normal vector and rotation axis.")
+                f"{name} should be perpendicular to the longitudinal axis.")
         self._upward_radial_axis = axis
+
+    @property
+    def longitudinal_axis(self) -> Vector:
+        """Longitudinal axis of the wheel."""
+        if self._longitudinal_axis is None:
+            self._longitudinal_axis = cross(self.ground.get_normal(self.contact_point),
+                                            self.wheel.rotation_axis)
+        return self._longitudinal_axis
+
+    @longitudinal_axis.setter
+    def longitudinal_axis(self, axis: Vector) -> None:
+        name = "The longitudinal axis of the wheel"
+        if not isinstance(axis, Vector):
+            raise TypeError(f"{name} should be a vector, but received a {type(axis)}")
+        if not check_zero(axis.magnitude() - 1):
+            raise ValueError(f"{name} should be normalized.")
+        if not check_zero(axis.dot(self.wheel.rotation_axis)):
+            raise ValueError(f"{name} should be perpendicular to the rotation axis.")
+        if not check_zero(axis.dot(self.ground.get_normal(self.contact_point))):
+            raise ValueError(f"{name} should be perpendicular to the normal vector.")
+        self._longitudinal_axis = axis
+
+    @property
+    def lateral_axis(self) -> Vector:
+        """Lateral axis of the wheel."""
+        if self._lateral_axis is None:
+            self._lateral_axis = cross(self.longitudinal_axis,
+                                       self.ground.get_normal(self.contact_point))
+        return self._lateral_axis
+
+    @lateral_axis.setter
+    def lateral_axis(self, axis: Vector) -> None:
+        name = "The lateral axis of the wheel"
+        if not isinstance(axis, Vector):
+            raise TypeError(f"{name} should be a vector, but received a {type(axis)}")
+        if not check_zero(axis.magnitude() - 1):
+            raise ValueError(f"{name} should be normalized.")
+        if not check_zero(axis.dot(self.longitudinal_axis)):
+            raise ValueError(
+                f"{name} should be perpendicular to the longitudinal axis.")
+        if not check_zero(axis.dot(self.ground.get_normal(self.contact_point))):
+            raise ValueError(f"{name} should be perpendicular to the normal vector.")
+        self._lateral_axis = axis
 
     @property
     def contact_point(self) -> Point:

@@ -20,22 +20,28 @@ class TestComputeContactPoint:
         self.ground.define_objects()
         self.ground.define_kinematics()
         self.q = dynamicsymbols("q1:4")
-        self.int_frame = ReferenceFrame("int_frame")
-        self.int_frame.orient_body_fixed(self.ground.frame, (*self.q[:2], 0), "zxy")
+        self.yaw_frame = ReferenceFrame("yaw_frame")
+        self.yaw_frame.orient_axis(self.ground.frame, self.q[0], self.ground.frame.z)
+        self.roll_frame = ReferenceFrame("roll_frame")
+        self.roll_frame.orient_axis(self.yaw_frame, self.q[1], self.yaw_frame.x)
         self.tire = MyTire("tire")
         self.tire.ground = self.ground
         self.tire.define_objects()
 
-    def test_knife_edge_wheel_on_flat_ground(self, _setup_flat_ground):
-        wheel = KnifeEdgeWheel("wheel")
-        wheel.define_objects()
-        wheel.define_kinematics()
-        self.tire.wheel = wheel
-        wheel.frame.orient_axis(self.int_frame, self.q[2], self.int_frame.y)
+    @pytest.fixture()
+    def _setup_knife_edge_wheel(self, _setup_flat_ground):
+        self.wheel = KnifeEdgeWheel("wheel")
+        self.tire.wheel = self.wheel
+        self.tire.wheel.define_objects()
+        self.tire.wheel.define_kinematics()
+        self.tire.wheel.frame.orient_axis(self.roll_frame, self.q[2], self.roll_frame.y)
+
+    def test_knife_edge_wheel_on_flat_ground(self, _setup_knife_edge_wheel):
         self.tire._set_pos_contact_point()
-        assert (self.tire.contact_point.pos_from(wheel.center) -
-                wheel.symbols["r"] * self.int_frame.z).express(wheel.frame).simplify(
-        ).xreplace({self.q[1]: 0.123, self.q[2]: 1.234}) == 0
+        assert (self.tire.contact_point.pos_from(self.wheel.center) -
+                self.wheel.symbols["r"] * self.roll_frame.z).express(
+                    self.wheel.frame).simplify().xreplace(
+                        {self.q[1]: 0.123, self.q[2]: 1.234}) == 0
         # sqrt(cos(q2)**2) is not simplified
 
     def test_toroidal_wheel_on_flat_ground(self, _setup_flat_ground) -> None:
@@ -43,10 +49,10 @@ class TestComputeContactPoint:
         wheel.define_objects()
         wheel.define_kinematics()
         self.tire.wheel = wheel
-        wheel.frame.orient_axis(self.int_frame, self.q[2], self.int_frame.y)
+        wheel.frame.orient_axis(self.roll_frame, self.q[2], self.roll_frame.y)
         self.tire._set_pos_contact_point()
         assert (self.tire.contact_point.pos_from(wheel.center) -
-                wheel.symbols["r"] * self.int_frame.z + wheel.symbols["tr"] *
+                wheel.symbols["r"] * self.roll_frame.z + wheel.symbols["tr"] *
                 self.ground.get_normal(self.tire.contact_point)).express(
             wheel.frame).simplify().xreplace({self.q[1]: 0.123, self.q[2]: 1.234}) == 0
         # sqrt(cos(q2)**2) is not simplified
@@ -85,32 +91,51 @@ class TestComputeContactPoint:
             with pytest.raises(NotImplementedError):
                 tire._set_pos_contact_point()
 
-    def test_upward_radial_axis(self, _setup_flat_ground):
-        wheel = KnifeEdgeWheel("wheel")
-        wheel.define_objects()
-        wheel.define_kinematics()
-        self.tire.wheel = wheel
-        wheel.frame.orient_axis(self.int_frame, self.q[2], self.int_frame.y)
-        self.tire.upward_radial_axis = -self.int_frame.z
+    def test_upward_radial_axis(self, _setup_knife_edge_wheel):
+        self.tire.upward_radial_axis = -self.roll_frame.z
         self.tire._set_pos_contact_point()
-        assert (self.tire.contact_point.pos_from(wheel.center) -
-                wheel.symbols["r"] * self.int_frame.z).simplify() == 0
+        assert (self.tire.contact_point.pos_from(self.wheel.center) -
+                self.wheel.symbols["r"] * self.roll_frame.z).simplify() == 0
 
-    def test_upward_radial_axis_invalid(self, _setup_flat_ground):
-        self.tire.wheel = KnifeEdgeWheel("wheel")
-        self.tire.wheel.define_objects()
-        self.tire.wheel.define_kinematics()
-        self.tire.wheel.frame.orient_axis(self.int_frame, self.q[2], self.int_frame.y)
+    def test_upward_radial_axis_invalid(self, _setup_knife_edge_wheel):
         normal = self.ground.get_normal(self.tire.contact_point)
         with pytest.raises(TypeError):  # no vector
             self.tire.upward_radial_axis = 5
-        with pytest.raises(ValueError):  # not normalize
-            self.tire.upward_radial_axis = 2 * self.int_frame.z
+        with pytest.raises(ValueError):  # not normalized
+            self.tire.upward_radial_axis = 2 * self.roll_frame.z
         with pytest.raises(ValueError):  # not radial
             self.tire.upward_radial_axis = normal
         with pytest.raises(ValueError):  # not correct with respect to normal
             self.tire.upward_radial_axis = cross(
                 self.tire.wheel.rotation_axis, normal).normalize()
+
+    def test_longitudinal_axis(self, _setup_knife_edge_wheel):
+        self.tire.longitudinal_axis = self.roll_frame.x
+        assert self.tire.longitudinal_axis == self.roll_frame.x
+
+    def test_longitudinal_axis_invalid(self, _setup_knife_edge_wheel):
+        with pytest.raises(TypeError):  # no vector
+            self.tire.longitudinal_axis = 5
+        with pytest.raises(ValueError):  # not normalized
+            self.tire.longitudinal_axis = 2 * self.roll_frame.x
+        with pytest.raises(ValueError):  # not radial
+            self.tire.longitudinal_axis = self.yaw_frame.y
+        with pytest.raises(ValueError):  # not parallel to the ground
+            self.tire.longitudinal_axis = self.roll_frame.z
+
+    def test_lateral_axis(self, _setup_knife_edge_wheel):
+        self.tire.lateral_axis = self.yaw_frame.y
+        assert self.tire.lateral_axis == self.yaw_frame.y
+
+    def test_lateral_axis_invalid(self, _setup_knife_edge_wheel):
+        with pytest.raises(TypeError):  # no vector
+            self.tire.lateral_axis = 5
+        with pytest.raises(ValueError):  # not normalized
+            self.tire.lateral_axis = 2 * self.yaw_frame.y
+        with pytest.raises(ValueError):  # is radial
+            self.tire.lateral_axis = self.roll_frame.x
+        with pytest.raises(ValueError):  # not parallel to the ground
+            self.tire.lateral_axis = self.roll_frame.z
 
     @pytest.mark.parametrize("with_wheel", [True, False])
     def test_on_ground_default(self, _setup_flat_ground, with_wheel):
@@ -118,20 +143,12 @@ class TestComputeContactPoint:
             self.tire.wheel = KnifeEdgeWheel("wheel")
         assert not self.tire.on_ground
 
-    def test_on_ground_unconnected(self, _setup_flat_ground):
-        self.tire.wheel = KnifeEdgeWheel("wheel")
-        self.tire.wheel.define_objects()
-        self.tire.wheel.define_kinematics()
-        self.tire.wheel.frame.orient_axis(self.int_frame, self.q[2], self.int_frame.y)
+    def test_on_ground_unconnected(self, _setup_knife_edge_wheel):
         self.tire._set_pos_contact_point()
         assert not self.tire.on_ground
 
     @pytest.mark.parametrize("off_ground", [True, False])
-    def test_on_ground_computation(self, _setup_flat_ground, off_ground):
-        self.tire.wheel = KnifeEdgeWheel("wheel")
-        self.tire.wheel.define_objects()
-        self.tire.wheel.define_kinematics()
-        self.tire.wheel.frame.orient_axis(self.int_frame, self.q[2], self.int_frame.y)
+    def test_on_ground_computation(self, _setup_knife_edge_wheel, off_ground):
         self.tire._set_pos_contact_point()
         self.tire.contact_point.set_pos(
             self.ground.origin,
