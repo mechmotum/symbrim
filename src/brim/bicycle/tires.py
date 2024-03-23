@@ -157,11 +157,13 @@ class NonHolonomicTire(TireBase):
         """Define the kinematics of the tire model."""
         super()._define_kinematics()
         self._set_pos_contact_point()
-        if self.on_ground:
+        if self.ground.origin in self.contact_point._pos_dict:
+            self.contact_point.set_vel(self.ground.frame, 0)
             self.wheel.center.set_vel(
                 self.ground.frame,
-                cross(self.wheel.frame.ang_vel_in(self.ground.frame),
-                      self.wheel.center.pos_from(self.contact_point)))
+                -cross(self.wheel.center.pos_from(self.contact_point),
+                       self.wheel.frame.ang_vel_in(self.ground.frame)))
+
         if self.compute_normal_force:
             direction = -self.ground.get_normal(self.contact_point)
             if self.on_ground:
