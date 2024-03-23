@@ -5,6 +5,7 @@ from brim.bicycle.grounds import FlatGround, GroundBase
 from brim.bicycle.tires import NonHolonomicTire, TireBase
 from brim.bicycle.wheels import KnifeEdgeWheel, ToroidalWheel, WheelBase
 from brim.utilities.testing import create_model_of_connection
+from brim.utilities.utilities import check_zero
 from sympy import cos, sin
 from sympy.physics.mechanics import ReferenceFrame, System, cross, dynamicsymbols
 
@@ -136,6 +137,19 @@ class TestComputeContactPoint:
             self.tire.lateral_axis = self.roll_frame.x
         with pytest.raises(ValueError):  # not parallel to the ground
             self.tire.lateral_axis = self.roll_frame.z
+
+    @pytest.mark.parametrize("axis, expected", [
+        ("upward_radial_axis", "-roll_frame.z"),
+        ("longitudinal_axis", "+yaw_frame.x"),
+        ("lateral_axis", "+yaw_frame.y"),
+        ])
+    def test_auto_compute_axes(self, _setup_knife_edge_wheel, axis, expected):
+        setattr(self.tire, axis, getattr(self.tire, axis))  # Quick check
+        direction, expected = expected[0], expected[1:]
+        direction = {"+": 1, "-": -1}[direction]
+        exp_frame, exp_axis = expected.split(".")
+        expected = direction * getattr(getattr(self, exp_frame), exp_axis)
+        assert check_zero(getattr(self.tire, axis).dot(expected) - 1)
 
     @pytest.mark.parametrize("with_wheel", [True, False])
     def test_on_ground_default(self, _setup_flat_ground, with_wheel):
