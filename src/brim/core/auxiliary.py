@@ -88,6 +88,12 @@ class AuxiliaryDataHandler:
     system. To do so, the class creates a tree representation of what points are used
     to compute the velocity of other points. Based on this tree, auxiliary velocities
     of each point are computed and added to the inertal velocity graph of the points.
+    For this to work, the system must be defined in a way that the velocity of each
+    point is computed based on the velocity of its parent point in the position tree.
+    This is almost always the case. An example where this is not the case is when the
+    the velocity of the front wheel of a bicycle, which is constrained to touch the
+    ground using a holonomic constraint, is computed based on the assumption that its
+    contact point is an instantaneous center of rotation.
 
     Parameters
     ----------
