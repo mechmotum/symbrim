@@ -138,6 +138,7 @@ class BrimBase:
         self.symbols: dict[str, Any] = {}
         self.q: MutableDenseMatrix = MutableDenseMatrix()
         self.u: MutableDenseMatrix = MutableDenseMatrix()
+        self.uaux: MutableDenseMatrix = MutableDenseMatrix()
 
     def _add_prefix(self, names: str) -> str:
         """Add the name of the object as a prefix to a set of names.

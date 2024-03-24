@@ -209,7 +209,7 @@ class InContactTire(TireBase):
         """Dictionary of descriptions of the lateral tire model's attributes."""
         descriptions = super().descriptions
         if self.compute_normal_force:
-            descriptions[self.u[0]] = (
+            descriptions[self.uaux[0]] = (
                 f"Auxiliary generalized speed to determine the normal force of "
                 f"'{self.name}'.")
         if "Fx" in self.symbols:
@@ -247,7 +247,7 @@ class InContactTire(TireBase):
         super()._define_objects()
         syms_to_add = ["Fx", "Fy", "Mx", "Mz"]
         if self.compute_normal_force:
-            self.u = Matrix([dynamicsymbols(self._add_prefix("uaux_z"))])
+            self.uaux = Matrix([dynamicsymbols(self._add_prefix("uaux_z"))])
             syms_to_add.append("Fz")
         if self.no_longitudinal_slip:
             syms_to_add.remove("Fx")
@@ -277,7 +277,7 @@ class InContactTire(TireBase):
             if self.on_ground:
                 direction = -direction
             self.auxiliary_handler.add_noncontributing_force(
-                self.contact_point, direction, self.u[0], self.symbols["Fz"])
+                self.contact_point, direction, self.uaux[0], self.symbols["Fz"])
 
     def _define_loads(self) -> None:
         """Define the loads of the tire model."""
