@@ -312,3 +312,38 @@ Define Constraints
         ]
         # Call define constraints of connections.
         self.connection.define_constraints()  # Without leading underscore!
+
+Auxiliary Data Handler
+----------------------
+
+The :class:`brim.core.auxiliary.AuxiliaryDataHandler` is a utility class that is used to
+compute noncontributing forces and optimize the computation of the velocity of points.
+An instance of the auxiliary data handler is automatically created at the end of the
+``define_objects`` step. This instance is shared by the root model, i.e. the uppermost
+parent model, with all submodels, connections, and load groups. This makes the auxiliary
+data handler accessible from all components through the ``self.auxiliary_handler``
+attribute.
+
+In the ``define_kinematics`` step modelers can register noncontributing forces that
+should be computed using the
+:meth:`brim.core.auxiliary.AuxiliaryDataHandler.add_noncontributing_force` method. This
+method requires the point, the axis of the force, the auxiliary speed, and the force
+symbol as arguments. From this information the auxiliary data handler can do the rest.
+When defining the other kinematics it is best practise to define the velocity of a point
+based on the point w.r.t. which it has been positioned. This is because the auxiliary
+data handler propagates the auxiliary velocities of points to other points based on how
+points are defined w.r.t. to each other.
+
+At the end of the ``define_kinematics`` step the auxiliary data handler automatically
+computes the velocity of each point in the inertial frame, while adding the auxiliary
+velocity. The auxiliary speed is also automatically added to the root model's system
+instance.
+At the end of the ``define_loads`` step the noncontributing forces are automatically
+added to the root model's system instance.
+
+When computing the constraints in the ``define_constraints`` step it is important to
+take the auxiliary speeds into account, even if you didn't define any in you component.
+In many cases it is possible that other components may have defined auxiliary speeds
+that do affect your constraints. To get the auxiliary velocity of a point of intereset
+you can use the :meth:`brim.core.auxiliary.AuxiliaryDataHandler.get_auxiliary_velocity`
+method.
