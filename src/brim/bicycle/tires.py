@@ -305,9 +305,9 @@ class InContactTire(TireBase):
         elif self.no_lateral_slip:
             no_slip_vectors = (self.lateral_axis,)
         aux_cp = self.auxiliary_handler.get_auxiliary_velocity(self.contact_point)
+        aux_gnd = self.auxiliary_handler.get_auxiliary_velocity(self.ground.origin)
         if self.no_longitudinal_slip or self.no_lateral_slip:
             aux_wc = self.auxiliary_handler.get_auxiliary_velocity(self.wheel.center)
-            aux_gnd = self.auxiliary_handler.get_auxiliary_velocity(self.ground.origin)
             v0 = (self.wheel.center.pos_from(self.ground.origin).dt(self.ground.frame)
                 + cross(self.wheel.frame.ang_vel_in(self.ground.frame),
                         self.contact_point.pos_from(self.wheel.center)))
@@ -321,7 +321,7 @@ class InContactTire(TireBase):
                 self.contact_point.pos_from(self.ground.origin).dot(normal))
             self.system.velocity_constraints = [
                 self.system.holonomic_constraints[0].diff(dynamicsymbols._t) +
-                aux_cp.dot(normal), *self.system.nonholonomic_constraints
+                (aux_cp - aux_gnd).dot(normal), *self.system.nonholonomic_constraints
             ]
 
 
