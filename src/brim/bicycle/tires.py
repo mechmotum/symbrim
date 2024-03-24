@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from sympy import Expr, atan2
 from sympy import MutableDenseMatrix as Matrix
 from sympy.physics.mechanics import (
     Force,
@@ -223,6 +224,23 @@ class InContactTire(TireBase):
         if "Mz" in self.symbols:
             descriptions["Mz"] = f"Self aligning moment of tire model '{self.name}'."
         return descriptions
+
+    @property
+    def camber_angle(self) -> Expr:
+        """Camber angle of the wheel."""
+        # atan2 is used instead of acos to account for the sign of the angle.
+        # atan2 is used for consistency with the slip angle.
+        return atan2(
+            self.upward_radial_axis.dot(self.lateral_axis),
+            self.upward_radial_axis.dot(self.ground.get_normal(self.contact_point)))
+
+    @property
+    def slip_angle(self) -> Expr:
+        """Slip angle of the wheel."""
+        # atan2 is used instead of acos to account for the sign of the angle.
+        # atan2 is used instead of atan as the slip angle can be between -pi and pi.
+        vel = self.contact_point.vel(self.ground.frame)
+        return atan2(vel.dot(self.lateral_axis), vel.dot(self.longitudinal_axis))
 
     def _define_objects(self) -> None:
         """Define the objects of the tire model."""
