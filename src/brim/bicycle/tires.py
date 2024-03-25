@@ -212,17 +212,16 @@ class InContactTire(TireBase):
             descriptions[self.uaux[0]] = (
                 f"Auxiliary generalized speed to determine the normal force of "
                 f"'{self.name}'.")
-        if "Fx" in self.symbols:
-            descriptions["Fx"] = f"Longitudinal force of tire model '{self.name}'."
-        if "Fy" in self.symbols:
-            descriptions["Fy"] = f"Lateral force of tire model '{self.name}'."
-        if "Fz" in self.symbols:
-            descriptions["Fz"] = f"Normal force of tire model '{self.name}'."
-        if "Mx" in self.symbols:
-            descriptions["Mx"] = (
-                f"Rolling resistance moment of tire model '{self.name}'.")
-        if "Mz" in self.symbols:
-            descriptions["Mz"] = f"Self aligning moment of tire model '{self.name}'."
+        load_descriptions = {
+            "Fx": f"Longitudinal force of the tire model '{self.name}'.",
+            "Fy": f"Lateral force of the tire model '{self.name}'.",
+            "Fz": f"Normal force of the tire model '{self.name}'.",
+            "Mx": f"Rolling resistance moment of the tire model '{self.name}'.",
+            "Mz": f"Self aligning moment of the tire model '{self.name}'.",
+        }
+        for name, description in load_descriptions.items():
+            if name in self.symbols:
+                descriptions[self.symbols[name]] = description
         return descriptions
 
     @property
