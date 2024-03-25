@@ -21,12 +21,9 @@ def _test_descriptions(instance: ModelBase | ConnectionBase | LoadGroupBase) -> 
     else:
         instance.define_connections()
         instance.define_objects()
-    for sym in instance.symbols.values():
-        assert sym in instance.descriptions
-    for qi in instance.q:
-        assert qi in instance.descriptions
-    for ui in instance.u:
-        assert ui in instance.descriptions
+    for sym in (*instance.symbols.values(), *instance.q, *instance.u, *instance.uaux):
+        if sym not in instance.descriptions:
+            raise ValueError(f"Description missing for {sym}")
 
 
 def create_model_of_connection(connection_cls: type[ConnectionBase]) -> type[ModelBase]:
