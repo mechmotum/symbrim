@@ -153,8 +153,8 @@ class AuxiliaryDataHandler:
         return force
 
     @staticmethod
-    def _extract_tree(root: Any, get_childs: str | Callable[[Any], Iterable[Any]],
-                      _validate_tree: bool = True) -> dict[Any: list[Any]]:
+    def _extract_tree(root: Any, get_childs: str | Callable[[Any], Iterable[Any]]
+                      ) -> dict[Any: list[Any]]:
         """Create a tree graph using a breath-first search from the root."""
         if isinstance(get_childs, str):
             attr_name = get_childs
@@ -171,12 +171,6 @@ class AuxiliaryDataHandler:
                 if neighbor not in tree:
                     queue.append(neighbor)
                     tree[parent].append(neighbor)
-        if _validate_tree:
-            all_nodes = [root] + [obj for obj_lst in tree.values() for obj in obj_lst]
-            if len(all_nodes) != len(set(all_nodes)):
-                raise ValueError("Graph contains a cycle.")
-            elif len(all_nodes) != len(tree):
-                raise ValueError("Graph is invalid.")
         return tree
 
     @staticmethod
