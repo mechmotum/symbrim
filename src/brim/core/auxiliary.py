@@ -205,6 +205,8 @@ class AuxiliaryDataHandler:
             self.retrieve_graphs()
         if parent is None:
             parent = self._get_parent(point)
+        if self.inertial_frame not in parent._vel_dict:
+            self._compute_velocity(parent)
         shared_frames = set(point._vel_dict).intersection(parent._vel_dict)
         # Compute velocity based on the velocity two point theorem if possible.
         for frame in shared_frames:
