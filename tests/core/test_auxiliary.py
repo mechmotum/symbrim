@@ -12,7 +12,7 @@ from sympy.physics.mechanics import (
 
 
 class AuxiliarySetup:
-    @pytest.fixture(autouse=True)
+    @pytest.fixture()
     def _setup_cart_pendulum(self) -> None:
         """Cart with a two link pendulum."""
         self.x, self.v = dynamicsymbols("x v")
@@ -45,21 +45,21 @@ class AuxiliarySetup:
         self.noncontributing_loads = [self.ld_fz, self.ld_j2]
 
 class TestAuxiliaryData(AuxiliarySetup):
-    def test_init_force(self) -> None:
+    def test_init_force(self, _setup_cart_pendulum) -> None:
         assert self.ld_fz.location == self.cart
         assert self.ld_fz.direction == self.inertial_frame.y
         assert self.ld_fz.speed_symbol == self.uay
         assert self.ld_fz.load_symbol == self.fay
 
-    def test_init_torque(self) -> None:
+    def test_init_torque(self, _setup_cart_pendulum) -> None:
         with pytest.raises(NotImplementedError):
             AuxiliaryData(self.f1, self.inertial_frame.x, self.uay, self.fay)
 
-    def test_is_force_torque(self) -> None:
+    def test_is_force_torque(self, _setup_cart_pendulum) -> None:
         assert self.ld_fz.is_force
         assert not self.ld_fz.is_torque
 
-    def test_get_load_force(self) -> None:
+    def test_get_load_force(self, _setup_cart_pendulum) -> None:
         force = self.ld_fz.get_load(self.inertial_frame)
         pytest.raises(ValueError, lambda: force.point.pos_from(self.inertial_point))
         assert isinstance(force, Force)
@@ -68,25 +68,25 @@ class TestAuxiliaryData(AuxiliarySetup):
             self.uay.diff() * self.inertial_frame.y)
         assert force.force == self.fay * self.inertial_frame.y
 
-    def test_auxiliary_velocity(self) -> None:
+    def test_auxiliary_velocity(self, _setup_cart_pendulum) -> None:
         assert self.ld_fz.auxiliary_velocity == self.uay * self.inertial_frame.y
         assert self.ld_j2.auxiliary_velocity == -self.ual * self.f2.y
 
 
 class TestAuxiliaryHandler(AuxiliarySetup):
-    @pytest.fixture(autouse=True)
-    def _setup_graph(self) -> None:
+    @pytest.fixture()
+    def _setup_handler(self, _setup_cart_pendulum) -> None:
         self.handler = AuxiliaryDataHandler(self.inertial_frame, self.inertial_point)
         self.handler.auxiliary_data_list.extend(self.noncontributing_loads)
 
-    def test_init(self) -> None:
+    def test_init(self, _setup_handler) -> None:
         assert self.handler.inertial_frame == self.inertial_frame
         assert self.handler.inertial_point == self.inertial_point
         assert self.handler.auxiliary_data_list == self.noncontributing_loads
         assert self.handler.auxiliary_forces_data == tuple(self.noncontributing_loads)
         assert self.handler.auxiliary_torques_data == ()
 
-    def test_from_system(self) -> None:
+    def test_from_system(self, _setup_handler) -> None:
         sys = System()
         handler = AuxiliaryDataHandler.from_system(sys)
         assert handler.inertial_frame == sys.frame
@@ -94,7 +94,7 @@ class TestAuxiliaryHandler(AuxiliarySetup):
 
     @pytest.mark.parametrize("get_childs", [
         "_pos_dict", lambda pt: pt._pos_dict.keys()])
-    def test_create_tree(self, get_childs) -> None:
+    def test_create_tree(self, _setup_handler, get_childs) -> None:
         tree = AuxiliaryDataHandler._extract_tree(self.inertial_point, get_childs)
         expected_tree = {
             self.inertial_point: [self.cart],
@@ -108,7 +108,7 @@ class TestAuxiliaryHandler(AuxiliarySetup):
             assert set(chlds) == set(expected_tree[p])
             assert len(chlds) == len(expected_tree[p])
 
-    def test_apply_speeds(self) -> None:
+    def test_apply_speeds(self, _setup_handler) -> None:
         self.handler.apply_speeds()
         cart_vel = self.v * self.inertial_frame.x + self.uay * self.inertial_frame.y
         p1_vel = cart_vel + self.l[0] * self.u[0] * self.f1.x - self.ual * self.f2.y
@@ -119,11 +119,11 @@ class TestAuxiliaryHandler(AuxiliarySetup):
         assert self.p2.vel(self.inertial_frame) == p2_vel
         assert self.p3.vel(self.inertial_frame) == p3_vel
 
-    def test_apply_speeds_double(self) -> None:
+    def test_apply_speeds_double(self, _setup_handler) -> None:
         self.handler.apply_speeds()
         pytest.raises(ValueError, lambda: self.handler.apply_speeds())
 
-    def test_create_loads(self) -> None:
+    def test_create_loads(self, _setup_handler) -> None:
         loads = self.handler.create_loads()
         for ld in loads:
             with pytest.raises(ValueError):
