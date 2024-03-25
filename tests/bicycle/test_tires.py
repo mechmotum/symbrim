@@ -14,7 +14,7 @@ class MyTire(TireBase):
     pass
 
 
-class TestComputeContactPoint:
+class TestTireBase:
     @pytest.fixture()
     def _setup_flat_ground(self):
         self.ground = FlatGround("ground")
@@ -170,7 +170,7 @@ class TestComputeContactPoint:
         assert self.tire.on_ground != off_ground
 
 
-class TestNonHolonomicTireModel:
+class TestNonHolonomicTire:
     @pytest.fixture(autouse=True)
     def _setup(self) -> None:
         self.model = create_model_of_connection(NonHolonomicTire)("model")
