@@ -205,7 +205,7 @@ class TestInContactTire:
         tire.wheel = KnifeEdgeWheel("wheel")
         _test_descriptions(tire)
         assert set(tire.symbols) == syms
-        assert len(tire.uaux) == n_aux
+        assert len(tire.u_aux) == n_aux
 
     @pytest.mark.parametrize("no_lateral_slip, no_longitudinal_slip, n_constraints", [
         (True, False, 1), (False, True, 1), (True, True, 2), (False, False, 0)])

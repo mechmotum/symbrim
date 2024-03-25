@@ -21,7 +21,7 @@ def _test_descriptions(instance: ModelBase | ConnectionBase | LoadGroupBase) -> 
     else:
         instance.define_connections()
         instance.define_objects()
-    for sym in (*instance.symbols.values(), *instance.q, *instance.u, *instance.uaux):
+    for sym in (*instance.symbols.values(), *instance.q, *instance.u, *instance.u_aux):
         if sym not in instance.descriptions:
             raise ValueError(f"Description missing for {sym}")
 
