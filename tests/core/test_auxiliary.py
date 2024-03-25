@@ -154,6 +154,15 @@ class TestAuxiliaryHandler(AuxiliarySetup):
         with pytest.raises(ValueError):
             AuxiliaryDataHandler._extract_tree(root, get_childs)
 
+    @pytest.mark.parametrize("point, parent", [
+        ("inertial_point", None), ("cart", "inertial_point"), ("p2", "p1"),
+        (point, None)])
+    def test_get_parent(self, _setup_handler, point, parent) -> None:
+        point = getattr(self, point) if isinstance(point, str) else point
+        parent = getattr(self, parent) if isinstance(parent, str) else parent
+        self.handler.retrieve_graphs()
+        assert self.handler._get_parent(point) == parent
+
     def test_apply_speeds(self, _setup_handler) -> None:
         self.handler.apply_speeds()
         cart_vel = self.v * self.inertial_frame.x + self.uay * self.inertial_frame.y
