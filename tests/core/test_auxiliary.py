@@ -163,6 +163,54 @@ class TestAuxiliaryHandler(AuxiliarySetup):
         self.handler.retrieve_graphs()
         assert self.handler._get_parent(point) == parent
 
+    def test_compute_velocity_inertial_point(self) -> None:
+        handler = AuxiliaryDataHandler(frame, point)
+        point2 = point.locatenew("point2", 5 * frame.x)
+        point2.set_vel(frame, 10 * frame.y)
+        assert handler._compute_velocity(point, frame) == 10 * frame.y
+
+    @pytest.mark.parametrize("pass_parent", [True, False])
+    @pytest.mark.parametrize("point, parent, vel", [
+        ("p2", "p1", "u2 * f1.x"),  # simple retrieval
+        ("p3", "p2", "p3.v2pt_theory(p2, f1, f2)"),  # v2pt_theory
+        ("p3", "p2", "u2 * f1.x - u1 * 3 * f2.x"),  # v2pt_theory
+        ("p4", "p2", "p4.v1pt_theory(p2, f1, f2)"),  # v1pt_theory
+        ("p4", "p2", "u2 * f1.x + u3 * f2.x + u1 * q3 * f2.y"),  # v1pt_theory
+        ("p5", "p4", "u2 * f1.x + (u3 - 2 * u1) * f2.x + u1 * q3 * f2.y"),  # derivative
+    ])
+    def test_compute_velocity(self, pass_parent, point, parent, vel) -> None:
+        q1, q2, q3, u1, u2, u3 = dynamicsymbols("q1:4 u1:4")
+        q1d, q2d, q3d = dynamicsymbols("q1:4", 1)
+        f1 = ReferenceFrame("f1")
+        f2 = ReferenceFrame("f2")
+        f2.orient_axis(f1, q1, f1.z)
+        f2.set_ang_vel(f1, u1 * f1.z)
+        p1 = Point("p1")
+        p1.set_vel(f1, 0)
+        p2 = p1.locatenew("p2", q2 * f1.x)
+        p2.set_vel(f1, u2 * f1.x)
+        p2.set_vel(f2, 0)
+        p3 = p2.locatenew("p3", 3 * f2.y)
+        p3.set_vel(f2, 0)
+        p4 = p2.locatenew("p4", q3 * f2.x)
+        p4.set_vel(f2, u3 * f2.x)
+        p5 = p4.locatenew("p5", 2 * f2.y)  # noqa: F841
+        handler = AuxiliaryDataHandler(f1, p1)
+        point = eval(point) if isinstance(point, str) else point
+        vel_exp = eval(vel) if isinstance(vel, str) else vel
+        if pass_parent:
+            vel = handler._compute_velocity(point, eval(parent))
+        else:
+            vel = handler._compute_velocity(point)
+        assert (vel - vel_exp).express(f2).simplify() == 0
+
+    def test_compute_velocity_disconnected(self) -> None:
+        handler = AuxiliaryDataHandler(frame, point)
+        point.set_vel(frame, 0)
+        point2 = Point("point2")
+        with pytest.raises(ValueError):
+            handler._compute_velocity(point2)
+
     def test_apply_speeds(self, _setup_handler) -> None:
         self.handler.apply_speeds()
         cart_vel = self.v * self.inertial_frame.x + self.uay * self.inertial_frame.y
