@@ -242,7 +242,7 @@ class AuxiliaryDataHandler:
             self._position_tree, self.inertial_point, include_parent=True)
         self._aux_vels_points = {pt: Vector(0) for pt in all_points}
 
-        if self.auxiliary_torques_data:
+        if self.auxiliary_torques_data:  # pragma: no cover
             raise NotImplementedError(
                 "Support for noncontributing torques has not been implemented")
 

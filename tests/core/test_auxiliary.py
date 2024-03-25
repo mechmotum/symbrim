@@ -226,6 +226,11 @@ class TestAuxiliaryHandler(AuxiliarySetup):
         self.handler.apply_speeds()
         pytest.raises(ValueError, lambda: self.handler.apply_speeds())
 
+    def test_apply_speeds_disconnected(self, _setup_handler) -> None:
+        self.handler.add_noncontributing_force(point, frame.y, uaux, faux)
+        with pytest.raises(ValueError):
+            self.handler.apply_speeds()
+
     def test_create_loads(self, _setup_handler) -> None:
         loads = self.handler.create_loads()
         for ld in loads:
