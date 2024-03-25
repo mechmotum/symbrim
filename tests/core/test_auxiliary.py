@@ -40,8 +40,7 @@ class AuxiliarySetup:
         # Additional point attached to the first link.
         self.p3 = self.p1.locatenew("p3", self.l[2] * self.f1.x)
         self.p1.v2pt_theory(self.cart, self.inertial_frame, self.f1)
-        self.p2.v2pt_theory(self.p1, self.inertial_frame, self.f2)
-        # Don't define the velocity of p3 to possibly cause errors.
+        # Don't define the velocity of p2, p3 to possibly cause errors.
 
         self.ld_fz = AuxiliaryData(
             self.cart, self.inertial_frame.y, self.uay, self.fay)
@@ -122,7 +121,7 @@ class TestAuxiliaryHandler(AuxiliarySetup):
 
     @pytest.mark.parametrize("get_childs", [
         "_pos_dict", lambda pt: pt._pos_dict.keys()])
-    def test_create_tree(self, _setup_handler, get_childs) -> None:
+    def test_create_tree_points(self, _setup_handler, get_childs) -> None:
         tree = AuxiliaryDataHandler._extract_tree(self.inertial_point, get_childs)
         expected_tree = {
             self.inertial_point: [self.cart],
@@ -136,6 +135,25 @@ class TestAuxiliaryHandler(AuxiliarySetup):
             assert set(chlds) == set(expected_tree[p])
             assert len(chlds) == len(expected_tree[p])
 
+    @pytest.mark.parametrize("graph, root, tree_exp", [
+        ({1: [2, 3], 2: [1, 4], 3: [1], 4: [2]}, 1, {1: [2, 3], 2: [4], 3: [], 4: []}),
+        ({1: [2, 3], 2: [1, 4], 3: [1], 4: [2]}, 2, {2: [1, 4], 1: [3], 4: [], 3: []}),
+    ])
+    def test_extract_tree(self, graph, root, tree_exp) -> None:
+        get_childs = lambda pt: graph[pt]  # noqa: E731
+        tree = AuxiliaryDataHandler._extract_tree(root, get_childs)
+        assert tree == tree_exp
+
+    @pytest.mark.parametrize("graph, root", [
+        ({1: [2, 3], 2: [1, 3], 3: [1, 2]}, 1),
+        ({1: [2, 3], 2: [1, 4], 3: [1, 4], 4: [2, 3]}, 1),
+        ({1: [2, 3], 2: [1, 4], 3: [1, 4], 4: [2, 3]}, 2),
+    ])
+    def test_extract_tree_cycle(self, graph, root) -> None:
+        get_childs = lambda pt: graph[pt]  # noqa: E731
+        with pytest.raises(ValueError):
+            AuxiliaryDataHandler._extract_tree(root, get_childs)
+
     def test_apply_speeds(self, _setup_handler) -> None:
         self.handler.apply_speeds()
         cart_vel = self.v * self.inertial_frame.x + self.uay * self.inertial_frame.y
@@ -147,7 +165,7 @@ class TestAuxiliaryHandler(AuxiliarySetup):
         assert self.p2.vel(self.inertial_frame) == p2_vel
         assert self.p3.vel(self.inertial_frame) == p3_vel
 
-    def test_apply_speeds_double(self, _setup_handler) -> None:
+    def test_apply_speeds_twice(self, _setup_handler) -> None:
         self.handler.apply_speeds()
         pytest.raises(ValueError, lambda: self.handler.apply_speeds())
 
