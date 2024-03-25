@@ -20,7 +20,7 @@ from brim.bicycle.wheels import KnifeEdgeWheel, ToroidalWheel, WheelBase
 from brim.core import ConnectionBase, ModelRequirement
 from brim.utilities.utilities import check_zero
 
-__all__ = ["TireBase", "NonHolonomicTire"]
+__all__ = ["TireBase", "InContactTire", "NonHolonomicTire"]
 
 
 class TireBase(ConnectionBase):
