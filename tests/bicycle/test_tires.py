@@ -2,11 +2,12 @@ from __future__ import annotations
 
 import pytest
 from brim.bicycle.grounds import FlatGround, GroundBase
-from brim.bicycle.tires import NonHolonomicTire, TireBase
+from brim.bicycle.tires import InContactTire, NonHolonomicTire, TireBase
 from brim.bicycle.wheels import KnifeEdgeWheel, ToroidalWheel, WheelBase
-from brim.utilities.testing import create_model_of_connection
+from brim.other.rolling_disc import RollingDisc
+from brim.utilities.testing import _test_descriptions, create_model_of_connection
 from brim.utilities.utilities import check_zero
-from sympy import cos, sin
+from sympy import Matrix, cos, linear_eq_to_matrix, pi, simplify, sin, symbols
 from sympy.physics.mechanics import ReferenceFrame, System, cross, dynamicsymbols
 
 
@@ -169,6 +170,119 @@ class TestTireBase:
             int(off_ground) * dynamicsymbols("q3") * self.ground.frame.z)
         assert self.tire.on_ground != off_ground
 
+
+class TestInContactTire:
+    @pytest.fixture()
+    def _setup_rolling_disc(self) -> None:
+        self.model = RollingDisc("model")
+        self.model.ground = FlatGround("ground")
+        self.model.disc = KnifeEdgeWheel("wheel")
+        self.model.tire = InContactTire("tire")
+        self.ground, self.wheel, self.tire = (
+            self.model.ground, self.model.disc, self.model.tire)
+
+    def test_default(self, _setup_rolling_disc) -> None:
+        self.model.define_connections()
+        self.model.define_objects()
+        assert self.tire.compute_normal_force
+        assert not self.tire.no_lateral_slip
+        assert not self.tire.no_longitudinal_slip
+
+    @pytest.mark.parametrize(
+        "compute_normal_force, no_lateral_slip, no_longitudinal_slip, syms, n_aux", [
+            (True, False, False, {"Fx", "Fy", "Fz", "Mx", "Mz"}, 1),
+            (True, True, False, {"Fx", "Fz", "Mx"}, 1),
+            (False, False, True, {"Fy", "Mx", "Mz"}, 0),
+            (False, True, True, set(), 0),
+            ])
+    def test_settings(self, compute_normal_force, no_lateral_slip,
+                      no_longitudinal_slip, syms, n_aux) -> None:
+        tire = InContactTire("tire")
+        tire.compute_normal_force = compute_normal_force
+        tire.no_lateral_slip = no_lateral_slip
+        tire.no_longitudinal_slip = no_longitudinal_slip
+        tire.ground = FlatGround("ground")
+        tire.wheel = KnifeEdgeWheel("wheel")
+        _test_descriptions(tire)
+        assert set(tire.symbols) == syms
+        assert len(tire.uaux) == n_aux
+
+    @pytest.mark.parametrize("no_lateral_slip, no_longitudinal_slip, n_constraints", [
+        (True, False, 1), (False, True, 1), (True, True, 2), (False, False, 0)])
+    def test_settings_constraints(self, _setup_rolling_disc, no_lateral_slip,
+                                  no_longitudinal_slip, n_constraints) -> None:
+        self.tire.no_lateral_slip = no_lateral_slip
+        self.tire.no_longitudinal_slip = no_longitudinal_slip
+        self.model.define_all()
+        assert len(self.tire.system.nonholonomic_constraints) == n_constraints
+
+    @pytest.mark.parametrize("subs, angle", [
+        ("{q4: 0}", 0), ("{q4: 0.5}", 0.5), ("{q4: -0.5}", -0.5)])
+    def test_camber_angle(self, _setup_rolling_disc, subs, angle) -> None:
+        self.model.define_all()
+        q3, q4, q5 = self.model.q[2:]
+        subs = eval(subs)
+        assert self.tire.camber_angle.subs(subs) == angle
+
+    @pytest.mark.parametrize("subs, angle", [
+        ("{q3: 0, u1: 1, u2: 0}", 0), ("{q3: 0, u1: 0, u2: 1}", pi / 2),
+        ("{q3: 0, u1: 0, u2: -1}", -pi / 2), ("{q3: pi/4, u1: 1, u2: 1}", 0),
+        ("{q3: pi, u1: 1, u2: 0}", pi), ("{q3: -pi/4, u1: 1, u2: 1}", pi / 2),
+        ])
+    def test_slip_angle(self, _setup_rolling_disc, subs, angle) -> None:
+        self.model.define_all()
+        q3, (u1, u2) = self.model.q[2], self.model.u[:2]  # noqa: F841
+        subs = eval(subs)
+        assert self.tire.slip_angle.subs(subs) == angle
+
+    @pytest.mark.parametrize("no_slip", [True, False])
+    def test_compute_normal_force_rolling_disc(self, _setup_rolling_disc, no_slip
+                                               ) -> None:
+        self.tire.no_lateral_slip = no_slip
+        self.tire.no_longitudinal_slip = no_slip
+        g = symbols("g")
+        self.model.define_all()
+        system = self.model.to_system()
+        system.apply_uniform_gravity(
+            -g * self.model.ground.get_normal(self.model.ground.origin))
+        if no_slip:
+            system.u_ind = self.model.u[2:]
+            system.u_dep = self.model.u[:2]
+        system.validate_system()
+        system.form_eoms()
+        aux_eq = system.eom_method.auxiliary_eqs
+        fn_eq = Matrix.cramer_solve(*linear_eq_to_matrix(
+            aux_eq, self.tire.symbols["Fz"]))[0]
+        m, r = self.model.disc.body.mass, self.model.disc.radius
+        q4, u4 = self.model.q[3], self.model.u[3]
+        fn_eq_expected = m * (g - r * (u4 ** 2 * cos(q4) + sin(q4) * u4.diff()))
+        assert simplify(fn_eq - fn_eq_expected) == 0
+
+    @pytest.mark.parametrize("load_str, location, direction", [
+        ("Fx", "self.tire.contact_point", "self.tire.longitudinal_axis"),
+        ("Fy", "self.tire.contact_point", "self.tire.lateral_axis"),
+        ("Mx", "self.wheel.frame", "self.tire.longitudinal_axis"),
+        ("Mz", "self.wheel.frame", "self.ground.frame.z"),
+        ])
+    def test_apply_single_load(self, _setup_rolling_disc, load_str, location, direction
+                               ) -> None:
+        self.tire.compute_normal_force = False
+        self.tire.no_lateral_slip = True
+        self.tire.no_longitudinal_slip = True
+        self.model.define_connections()
+        self.model.define_objects()
+        load_sym = symbols(load_str)
+        self.tire.symbols[load_str] = load_sym
+        self.model.define_kinematics()
+        self.model.define_loads()
+        self.model.define_constraints()
+        system = self.model.to_system()
+        location = eval(location)
+        direction = eval(direction)
+        assert len(system.loads) == 1
+        load = system.loads[0]
+        assert load.location is location
+        assert check_zero(load.vector.dot(direction) - load_sym)
 
 class TestNonHolonomicTire:
     @pytest.fixture(autouse=True)
