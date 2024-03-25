@@ -20,7 +20,7 @@ class AuxiliarySetup:
     def _setup_cart_pendulum(self) -> None:
         """Cart with a two link pendulum."""
         self.x, self.v = dynamicsymbols("x v")
-        self.q, self.u = dynamicsymbols("q:2"), dynamicsymbols("u:2")
+        self.q1, self.q2, self.u1, self.u2 = dynamicsymbols("q1:3 u1:3")
         self.l = symbols("l:3")
         self.uay, self.fay, self.ual, self.fal = dynamicsymbols("uay fay ual fal")
         self.inertial_frame = ReferenceFrame("inertial_frame")
@@ -28,10 +28,10 @@ class AuxiliarySetup:
         self.inertial_point.set_vel(self.inertial_frame, 0)
         self.f1 = ReferenceFrame("link1")
         self.f2 = ReferenceFrame("link2")
-        self.f1.orient_axis(self.inertial_frame, self.q[0], self.inertial_frame.z)
-        self.f1.set_ang_vel(self.inertial_frame, self.u[0] * self.inertial_frame.z)
-        self.f2.orient_axis(self.f1, self.q[1], self.f1.z)
-        self.f2.set_ang_vel(self.f1, self.u[1] * self.f1.z)
+        self.f1.orient_axis(self.inertial_frame, self.q1, self.inertial_frame.z)
+        self.f1.set_ang_vel(self.inertial_frame, self.u1 * self.inertial_frame.z)
+        self.f2.orient_axis(self.f1, self.q2, self.f1.z)
+        self.f2.set_ang_vel(self.f1, self.u2 * self.f1.z)
         self.cart = self.inertial_point.locatenew(
             "cart", self.x * self.inertial_frame.x)
         self.cart.set_vel(self.inertial_frame, self.v * self.inertial_frame.x)
@@ -214,9 +214,9 @@ class TestAuxiliaryHandler(AuxiliarySetup):
     def test_apply_speeds(self, _setup_handler) -> None:
         self.handler.apply_speeds()
         cart_vel = self.v * self.inertial_frame.x + self.uay * self.inertial_frame.y
-        p1_vel = cart_vel + self.l[0] * self.u[0] * self.f1.x - self.ual * self.f2.y
-        p2_vel = p1_vel + self.l[1] * (self.u[0] + self.u[1]) * self.f2.x
-        p3_vel = p1_vel + self.l[2] * self.u[0]  * self.f1.y
+        p1_vel = cart_vel + self.l[0] * self.u1 * self.f1.x - self.ual * self.f2.y
+        p2_vel = p1_vel + self.l[1] * (self.u1 + self.u2) * self.f2.x
+        p3_vel = p1_vel + self.l[2] * self.u1  * self.f1.y
         assert self.cart.vel(self.inertial_frame) == cart_vel
         assert self.p1.vel(self.inertial_frame) == p1_vel
         assert self.p2.vel(self.inertial_frame) == p2_vel
@@ -241,6 +241,30 @@ class TestAuxiliaryHandler(AuxiliarySetup):
         assert loads[0].force == self.fay * self.inertial_frame.y
         assert loads[1].point.vel(self.inertial_frame) == -self.ual * self.f2.y
         assert loads[1].force == -self.fal * self.f2.y
+
+    @pytest.mark.parametrize("point, vel", [
+        ("inertial_point", 0),
+        ("cart", "uay * inertial_frame.y"),
+        ("p1", "uay * inertial_frame.y - ual * f2.y"),
+        ("p2", "uay * inertial_frame.y - ual * f2.y"),
+        ("p3", "uay * inertial_frame.y - ual * f2.y"),
+    ])
+    def test_get_auxiliary_velocity(self, _setup_handler, point, vel) -> None:
+        inertial_frame = self.inertial_frame  # noqa: F841
+        uay, ual, f1, f2 = self.uay, self.ual, self.f1, self.f2  # noqa: F841
+        point = getattr(self, point) if isinstance(point, str) else point
+        vel = eval(vel) if isinstance(vel, str) else vel
+        self.handler.apply_speeds()
+        assert self.handler.get_auxiliary_velocity(point) == vel
+
+    def test_get_auxiliary_velocity_not_applied(self, _setup_handler) -> None:
+        with pytest.raises(ValueError):
+            self.handler.get_auxiliary_velocity(self.p2)
+
+    def test_get_auxiliary_velocity_disconnected(self, _setup_handler) -> None:
+        self.handler.apply_speeds()
+        with pytest.raises(ValueError):
+            self.handler.get_auxiliary_velocity(Point("point2"))
 
     def test_sliding_box(self):
         sign = lambda x: x / sqrt(x**2)  # noqa: E731
