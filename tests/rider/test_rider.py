@@ -54,7 +54,7 @@ class TestCompleteRider:
             rider.pelvis = PlanarPelvis("pelvis")
             rider.define_all()
         else:
-            with pytest.raises(Exception):
+            with pytest.raises((ValueError, AttributeError)):
                 rider.define_all()
 
     def test_form_eoms(self, _setup) -> None:

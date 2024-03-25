@@ -308,8 +308,8 @@ class InContactTire(TireBase):
         if self.no_longitudinal_slip or self.no_lateral_slip:
             aux_wc = self.auxiliary_handler.get_auxiliary_velocity(self.wheel.center)
             v0 = (self.wheel.center.pos_from(self.ground.origin).dt(self.ground.frame)
-                + cross(self.wheel.frame.ang_vel_in(self.ground.frame),
-                        self.contact_point.pos_from(self.wheel.center)))
+                  + cross(self.wheel.frame.ang_vel_in(self.ground.frame),
+                          self.contact_point.pos_from(self.wheel.center)))
             aux_v0 = aux_wc - aux_gnd + aux_cp
             for vector in no_slip_vectors:
                 self.system.add_nonholonomic_constraints(
