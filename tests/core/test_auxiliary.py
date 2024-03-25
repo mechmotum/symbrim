@@ -10,6 +10,10 @@ from sympy.physics.mechanics import (
     dynamicsymbols,
 )
 
+frame = ReferenceFrame("frame")
+point = Point("point")
+uaux = dynamicsymbols("uaux")
+faux = dynamicsymbols("faux")
 
 class AuxiliarySetup:
     @pytest.fixture()
@@ -45,15 +49,29 @@ class AuxiliarySetup:
         self.noncontributing_loads = [self.ld_fz, self.ld_j2]
 
 class TestAuxiliaryData(AuxiliarySetup):
-    def test_init_force(self, _setup_cart_pendulum) -> None:
-        assert self.ld_fz.location == self.cart
-        assert self.ld_fz.direction == self.inertial_frame.y
-        assert self.ld_fz.speed_symbol == self.uay
-        assert self.ld_fz.load_symbol == self.fay
+    @pytest.mark.parametrize("args, kwargs, expected", [
+        ((point, frame.x, uaux, faux), {}, (point, frame.x, uaux, faux)),
+        ((), {"location": point, "direction": frame.z, "speed_symbol": uaux,
+              "load_symbol": faux}, (point, frame.z, uaux, faux)),
+    ])
+    def test_init_force(self, args, kwargs, expected) -> None:
+        force = AuxiliaryData(*args, **kwargs)
+        assert force.location == expected[0]
+        assert force.direction == expected[1]
+        assert force.speed_symbol == expected[2]
+        assert force.load_symbol == expected[3]
 
     def test_init_torque(self, _setup_cart_pendulum) -> None:
         with pytest.raises(NotImplementedError):
             AuxiliaryData(self.f1, self.inertial_frame.x, self.uay, self.fay)
+
+    @pytest.mark.parametrize("args", [
+        (frame.x, frame.y, uaux, faux),
+        (point, 5, uaux, faux),
+    ])
+    def test_init_invalid_type(self, args):
+        with pytest.raises(TypeError):
+            AuxiliaryData(*args)
 
     def test_is_force_torque(self, _setup_cart_pendulum) -> None:
         assert self.ld_fz.is_force
@@ -79,12 +97,22 @@ class TestAuxiliaryHandler(AuxiliarySetup):
         self.handler = AuxiliaryDataHandler(self.inertial_frame, self.inertial_point)
         self.handler.auxiliary_data_list.extend(self.noncontributing_loads)
 
-    def test_init(self, _setup_handler) -> None:
-        assert self.handler.inertial_frame == self.inertial_frame
-        assert self.handler.inertial_point == self.inertial_point
-        assert self.handler.auxiliary_data_list == self.noncontributing_loads
-        assert self.handler.auxiliary_forces_data == tuple(self.noncontributing_loads)
-        assert self.handler.auxiliary_torques_data == ()
+    @pytest.mark.parametrize("args, kwargs, exp_frame, exp_point", [
+        ((frame, point), {}, frame, point),
+        ((), {"inertial_frame": frame, "inertial_point": point}, frame, point),
+    ])
+    def test_init(self, args, kwargs, exp_frame, exp_point) -> None:
+        handler = AuxiliaryDataHandler(*args, **kwargs)
+        assert handler.inertial_frame == exp_frame
+        assert handler.inertial_point == exp_point
+        assert handler.auxiliary_data_list == []
+        assert handler.auxiliary_forces_data == ()
+        assert handler.auxiliary_torques_data == ()
+
+    @pytest.mark.parametrize("args", [(frame, 5), (5, point)])
+    def test_init_invalid_type(self, args) -> None:
+        with pytest.raises(TypeError):
+            AuxiliaryDataHandler(*args)
 
     def test_from_system(self, _setup_handler) -> None:
         sys = System()
