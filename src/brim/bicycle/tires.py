@@ -239,7 +239,7 @@ class InContactTire(TireBase):
         # atan2 is used instead of acos to account for the sign of the angle.
         # atan2 is used instead of atan as the slip angle can be between -pi and pi.
         vel = self.contact_point.vel(self.ground.frame)
-        return atan2(vel.dot(self.lateral_axis), vel.dot(self.longitudinal_axis))
+        return atan2(vel.dot(-self.lateral_axis), vel.dot(self.longitudinal_axis))
 
     def _define_objects(self) -> None:
         """Define the objects of the tire model."""

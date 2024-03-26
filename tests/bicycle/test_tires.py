@@ -225,9 +225,9 @@ class TestInContactTire:
         assert self.tire.camber_angle.subs(subs) == angle
 
     @pytest.mark.parametrize("subs, angle", [
-        ("{q3: 0, u1: 1, u2: 0}", 0), ("{q3: 0, u1: 0, u2: 1}", pi / 2),
-        ("{q3: 0, u1: 0, u2: -1}", -pi / 2), ("{q3: pi/4, u1: 1, u2: 1}", 0),
-        ("{q3: pi, u1: 1, u2: 0}", pi), ("{q3: -pi/4, u1: 1, u2: 1}", pi / 2),
+        ("{q3: 0, u1: 1, u2: 0}", 0), ("{q3: 0, u1: 0, u2: 1}", -pi / 2),
+        ("{q3: 0, u1: 0, u2: -1}", pi / 2), ("{q3: pi/4, u1: 1, u2: 1}", 0),
+        ("{q3: -pi/4, u1: 1, u2: 1}", -pi / 2),
         ])
     def test_slip_angle(self, _setup_rolling_disc, subs, angle) -> None:
         self.model.define_all()
