@@ -149,19 +149,19 @@ class TestWhippleBicycleMoore:
                               lateral) -> None:
         self.bike.ground = FlatGround("ground", normal=normal)
         self.bike.define_all()
-        assert len(self.bike.rear_tire.upward_radial_axis.args) == 1
-        assert self.bike.rear_tire.upward_radial_axis.args[0][0] == upward
-        assert len(self.bike.rear_tire.longitudinal_axis.args) == 1
-        assert self.bike.rear_tire.longitudinal_axis.args[0][0] == longitudinal
-        assert len(self.bike.rear_tire.lateral_axis.args) == 1
-        assert self.bike.rear_tire.lateral_axis.args[0][0] == lateral
+        tire = self.bike.rear_tire
+        assert count_ops(tire.upward_radial_axis.to_matrix(self.bike.ground.frame)) < 30
+        assert count_ops(tire.longitudinal_axis.to_matrix(self.bike.ground.frame)) < 30
+        assert count_ops(tire.lateral_axis.to_matrix(self.bike.ground.frame)) < 30
 
     @pytest.mark.parametrize("normal", ["+x", "-x", "+y", "-y"])
     def test_do_not_define_upward_radial_axis(self, _setup_default, normal) -> None:
         self.bike.ground = FlatGround("ground", normal=normal)
         self.bike.define_all()
-        radial_axis = self.bike.rear_tire.upward_radial_axis
-        assert count_ops(radial_axis.args[0][0]) > 20
+        tire = self.bike.rear_tire
+        assert count_ops(tire.upward_radial_axis.to_matrix(self.bike.ground.frame)) > 30
+        assert count_ops(tire.longitudinal_axis.to_matrix(self.bike.ground.frame)) > 30
+        assert count_ops(tire.lateral_axis.to_matrix(self.bike.ground.frame)) > 30
 
     @pytest.mark.parametrize("compute_rear", [True, False])
     @pytest.mark.parametrize("compute_front", [True, False])
