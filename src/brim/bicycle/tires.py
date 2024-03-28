@@ -180,14 +180,28 @@ class InContactTire(TireBase):
     compute_normal_force : bool
         Flag to indicate if the normal force of the tire model should be computed.
         Default is True.
-    no_longitudinal_slip : bool
-        Flag to indicate if the tire model has no longitudinal slip. If True, a
-        nonholonomic constraint is added to the system to enforce no slip in the
-        longitudinal direction. Default is False.
     no_lateral_slip : bool
         Flag to indicate if the tire model has no lateral slip. If True, a nonholonomic
         constraint is added to the system to enforce no slip in the lateral direction.
         Default is False.
+    no_longitudinal_slip : bool
+        Flag to indicate if the tire model has no longitudinal slip. If True, a
+        nonholonomic constraint is added to the system to enforce no slip in the
+        longitudinal direction. Default is False.
+
+    Notes
+    -----
+    The tire model reserves the following symbols for the loads:
+    - Fx: Longitudinal force of the tire model.
+    - Fy: Lateral force of the tire model.
+    - Fz: Normal force of the tire model.
+    - Mx: Rolling resistance moment of the tire model.
+    - Mz: Self aligning moment of the tire model.
+
+    If these symbols are specified in the ``symbols`` attribute, loads are automatically
+    applied to the system. Some of these symbols are automatically removed if
+    the normal force is not computed or if the tire model has no slip in the lateral or
+    longitudinal direction.
     """
 
     required_models: tuple[ModelRequirement, ...] = (
@@ -201,8 +215,8 @@ class InContactTire(TireBase):
     def __init__(self, name: str) -> None:
         super().__init__(name)
         self.compute_normal_force: bool = True
-        self.no_longitudinal_slip: bool = False
         self.no_lateral_slip: bool = False
+        self.no_longitudinal_slip: bool = False
 
     @property
     def descriptions(self) -> dict[Any, str]:
