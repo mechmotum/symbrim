@@ -186,7 +186,7 @@ class TestInContactTire:
         assert self.tire.compute_normal_force
         assert not self.tire.no_lateral_slip
         assert not self.tire.no_longitudinal_slip
-        assert self.tire.substitute_loads
+        assert not self.tire.substitute_loads
         assert self.tire.load_equations == {}
 
     @pytest.mark.parametrize(

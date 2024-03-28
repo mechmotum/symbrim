@@ -176,7 +176,7 @@ class TestAuxiliaryHandler(AuxiliarySetup):
         ("p3", "p2", "u2 * f1.x - u1 * 3 * f2.x"),  # v2pt_theory
         ("p4", "p2", "p4.v1pt_theory(p2, f1, f2)"),  # v1pt_theory
         ("p4", "p2", "u2 * f1.x + u3 * f2.x + u1 * q3 * f2.y"),  # v1pt_theory
-        ("p5", "p4", "u2 * f1.x + (u3 - 2 * u1) * f2.x + u1 * q3 * f2.y"),  # derivative
+        ("p5", "p4", "u2 * f1.x + (u3 - 2 * u1) * f2.x + u1 * q3 * f2.y"),  # deep
     ])
     def test_compute_velocity(self, pass_parent, point, parent, vel) -> None:
         q1, q2, q3, u1, u2, u3 = dynamicsymbols("q1:4 u1:4")
@@ -203,6 +203,21 @@ class TestAuxiliaryHandler(AuxiliarySetup):
         else:
             vel = handler._compute_velocity(point)
         assert (vel - vel_exp).express(f2).simplify() == 0
+
+    def test_compute_velocity_derivative(self) -> None:
+        q1, q2 = dynamicsymbols("q1:3")
+        q1d, q2d = dynamicsymbols("q1:3", 1)
+        u1, u2 = dynamicsymbols("u1:3")
+        f1 = ReferenceFrame("f1")
+        f2 = ReferenceFrame("f2")
+        f2.orient_axis(f1, q1, f1.z)
+        f2.set_ang_vel(f1, u1 * f1.z)
+        p1 = Point("p1")
+        p1.set_vel(f1, 2 * f1.x)
+        p2 = p1.locatenew("p2", q2 * f2.y)
+        handler = AuxiliaryDataHandler(f1, p1)
+        vel = handler._compute_velocity(p2)
+        assert vel == 2 * f1.x - q2 * u1 * f2.x + q2d * f2.y
 
     def test_compute_velocity_disconnected(self) -> None:
         handler = AuxiliaryDataHandler(frame, point)

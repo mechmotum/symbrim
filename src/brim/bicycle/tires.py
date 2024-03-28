@@ -220,7 +220,7 @@ class InContactTire(TireBase):
         self.compute_normal_force: bool = True
         self.no_lateral_slip: bool = False
         self.no_longitudinal_slip: bool = False
-        self.substitute_loads: bool = True
+        self.substitute_loads: bool = False
 
     @property
     def descriptions(self) -> dict[Any, str]:
