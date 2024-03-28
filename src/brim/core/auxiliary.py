@@ -1,8 +1,9 @@
 """Utility to compute the noncontributing forces and torques."""
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, Callable, Iterable
+from typing import TYPE_CHECKING, Any, Callable
 
 from sympy import Function
 from sympy.physics.mechanics import (
