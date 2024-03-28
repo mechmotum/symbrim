@@ -7,7 +7,7 @@ from brim.bicycle.wheels import KnifeEdgeWheel, ToroidalWheel, WheelBase
 from brim.other.rolling_disc import RollingDisc
 from brim.utilities.testing import _test_descriptions, create_model_of_connection
 from brim.utilities.utilities import check_zero
-from sympy import Matrix, cos, linear_eq_to_matrix, pi, simplify, sin, symbols
+from sympy import Matrix, S, cos, linear_eq_to_matrix, pi, simplify, sin, symbols
 from sympy.physics.mechanics import ReferenceFrame, System, cross, dynamicsymbols
 
 
@@ -182,11 +182,12 @@ class TestInContactTire:
             self.model.ground, self.model.disc, self.model.tire)
 
     def test_default(self, _setup_rolling_disc) -> None:
-        self.model.define_connections()
-        self.model.define_objects()
+        self.model.define_all()
         assert self.tire.compute_normal_force
         assert not self.tire.no_lateral_slip
         assert not self.tire.no_longitudinal_slip
+        assert self.tire.substitute_loads
+        assert self.tire.load_equations == {}
 
     @pytest.mark.parametrize(
         "compute_normal_force, no_lateral_slip, no_longitudinal_slip, syms, n_aux", [
@@ -283,6 +284,39 @@ class TestInContactTire:
         load = system.loads[0]
         assert load.location is location
         assert check_zero(load.vector.dot(direction) - load_sym)
+
+    @pytest.mark.parametrize("substitute_loads", [True, False])
+    def test_substitute_loads(self, _setup_rolling_disc, substitute_loads) -> None:
+        class MyTire(InContactTire):
+            def __init__(self, name: str) -> None:
+                super().__init__(name)
+                self.compute_normal_force = True
+                self.no_lateral_slip = False
+                self.no_longitudinal_slip = True
+                self.substitute_loads = substitute_loads
+
+            def _define_objects(self) -> None:
+                super()._define_objects()
+                self.symbols["Mx"] = S.Zero
+
+            @property
+            def load_equations(self):
+                return {
+                    self.symbols["Fy"]: self.camber_angle * self.symbols["Fz"],
+                    self.symbols["Mz"]: 0.1 * self.symbols["Fz"],
+                }
+
+        self.model.tire = MyTire("tire")
+        self.tire = self.model.tire
+        self.model.define_all()
+        assert isinstance(self.tire, MyTire)
+        assert self.tire.symbols["Fy"] in self.tire.load_equations
+        assert (self.tire.load_equations[self.tire.symbols["Mz"]]
+                == 0.1 * self.tire.symbols["Fz"])
+        assert len(self.tire.system.loads) == 2
+        for load in self.tire.system.loads:
+            assert (self.tire.symbols["Fz"] in load.vector.free_dynamicsymbols(
+                self.wheel.frame)) == substitute_loads
 
 class TestNonHolonomicTire:
     @pytest.fixture(autouse=True)

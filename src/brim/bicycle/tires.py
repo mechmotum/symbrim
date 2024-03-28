@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from sympy import Expr, atan2
+from sympy import Expr, Function, atan2
 from sympy import MutableDenseMatrix as Matrix
 from sympy.physics.mechanics import (
     Force,
@@ -188,6 +188,9 @@ class InContactTire(TireBase):
         Flag to indicate if the tire model has no longitudinal slip. If True, a
         nonholonomic constraint is added to the system to enforce no slip in the
         longitudinal direction. Default is False.
+    substitute_loads : bool
+        Flag to indicate if the tire model should automatically substitute the symbols
+        for the loads with the actual tire force and moment equations. Default is True.
 
     Notes
     -----
@@ -217,6 +220,7 @@ class InContactTire(TireBase):
         self.compute_normal_force: bool = True
         self.no_lateral_slip: bool = False
         self.no_longitudinal_slip: bool = False
+        self.substitute_loads: bool = True
 
     @property
     def descriptions(self) -> dict[Any, str]:
@@ -237,6 +241,11 @@ class InContactTire(TireBase):
             if name in self.symbols:
                 descriptions[self.symbols[name]] = description
         return descriptions
+
+    @property
+    def load_equations(self) -> dict[Function, Expr]:
+        """Equations defining the forces and moments of the tire model."""
+        return {}
 
     @property
     def camber_angle(self) -> Expr:
@@ -294,16 +303,22 @@ class InContactTire(TireBase):
 
     def _define_loads(self) -> None:
         """Define the loads of the tire model."""
+        def get_symbol(load_str: str) -> Expr:
+            sym = self.symbols.get(load_str, 0)
+            if self.substitute_loads and sym != 0:
+                return self.load_equations.get(sym, sym)
+            return sym
+
         super()._define_loads()
         tire_force = (
-            self.symbols.get("Fx", 0) * self.longitudinal_axis +
-            self.symbols.get("Fy", 0) * self.lateral_axis
+            get_symbol("Fx") * self.longitudinal_axis +
+            get_symbol("Fy") * self.lateral_axis
         )
         if tire_force != 0:
             self.system.add_loads(Force(self.contact_point, tire_force))
         tire_torque = (
-            self.symbols.get("Mx", 0) * self.longitudinal_axis +
-            self.symbols.get("Mz", 0) * -self.ground.get_normal(self.contact_point)
+            get_symbol("Mx") * self.longitudinal_axis +
+            get_symbol("Mz") * -self.ground.get_normal(self.contact_point)
         )
         if tire_torque != 0:
             self.system.add_loads(Torque(self.wheel.frame, tire_torque))
