@@ -141,9 +141,11 @@ class WhippleBicycleMoore(WhippleBicycle):
             direction = normal.dot(-self.ground.frame.z)
             self.rear_tire.upward_radial_axis = direction * -roll_frame.z
             self.rear_tire.longitudinal_axis = direction * roll_frame.x
-            # It is for some reason highly inefficient to define a yaw frame between the
-            # ground and roll frame. Instead, we define two disconnected frames to get
-            # the y axis of the yaw frame efficiently expressed in the roll frame.
+            # It is efficient to have the roll frame's angular velocity w.r.t. the
+            # ground frame expressed in the roll frame. Therefore, we didn't use a yaw
+            # frame between the ground and roll frame. Instead, we define two
+            # disconnected frames to get # the y axis of the yaw frame efficiently
+            # expressed in the roll frame.
             fake_roll = ReferenceFrame("fake_roll")
             fake_yaw = ReferenceFrame("fake_yaw")
             fake_roll.orient_axis(fake_yaw, fake_yaw.x, self.q[3])
