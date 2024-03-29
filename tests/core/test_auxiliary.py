@@ -214,7 +214,9 @@ class TestAuxiliaryHandler(AuxiliarySetup):
         f2.set_ang_vel(f1, u1 * f1.z)
         p1 = Point("p1")
         p1.set_vel(f1, 2 * f1.x)
+        p1.set_vel(f2, 3 * f2.y)
         p2 = p1.locatenew("p2", q2 * f2.y)
+        p2.set_vel(f2, (q2d + 3) * f2.y)
         handler = AuxiliaryDataHandler(f1, p1)
         vel = handler._compute_velocity(p2)
         assert vel == 2 * f1.x - q2 * u1 * f2.x + q2d * f2.y
