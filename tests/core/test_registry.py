@@ -55,13 +55,13 @@ class TestRegistry:
             Registry().get_from_requirement(WheelBase)
 
     @pytest.mark.parametrize("args, kwargs, subset, disjoint", [
-        ((RollingDisc("disc"), "disc"), {},
+        ((RollingDisc("disc"), "wheel"), {},
          {KnifeEdgeWheel, ToroidalWheel}, {NonHolonomicTire, WheelBase, RollingDisc}),
-        ((RollingDisc, "disc"), {},
+        ((RollingDisc, "wheel"), {},
          {KnifeEdgeWheel, ToroidalWheel}, {NonHolonomicTire, WheelBase, RollingDisc}),
         ((RollingDisc("disc"), "tire"), {},
          {NonHolonomicTire}, {TireBase, KnifeEdgeWheel, RollingDisc}),
-        ((RollingDisc("disc"), "disc"), {"drop_abstract": False},
+        ((RollingDisc("disc"), "wheel"), {"drop_abstract": False},
          {KnifeEdgeWheel, ToroidalWheel, WheelBase}, {NonHolonomicTire, RollingDisc}),
         ((RollingDisc("disc"), "tire"), {"drop_abstract": False},
          {NonHolonomicTire, TireBase}, {KnifeEdgeWheel, RollingDisc}),
@@ -73,7 +73,7 @@ class TestRegistry:
 
     def test_get_from_property_error(self) -> None:
         with pytest.raises(ValueError):
-            Registry().get_from_property(RollingDisc("disc"), "wheel")
+            Registry().get_from_property(RollingDisc("disc"), "not_a_submodel")
 
     @pytest.mark.parametrize("args, kwargs, subset, disjoint", [
         ((PinElbowStickLeftArm("arm"),), {},

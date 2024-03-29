@@ -22,7 +22,7 @@ class TestRollingDisc:
     @pytest.fixture()
     def _rolling_disc_brim(self) -> None:
         self.rolling_disc = RollingDisc("rolling_disc")
-        self.rolling_disc.disc = KnifeEdgeWheel("disc")
+        self.rolling_disc.wheel = KnifeEdgeWheel("disc")
         self.rolling_disc.tire = NonHolonomicTire("tire")
         self.rolling_disc.ground = FlatGround("ground")
         self.rolling_disc.define_all()
@@ -31,13 +31,13 @@ class TestRollingDisc:
             -Symbol("g") * self.rolling_disc.ground.get_normal(
                 self.rolling_disc.ground.origin))
         str_vals = self._arbitrary_values()
-        inertia = self.rolling_disc.disc.body.central_inertia.to_matrix(
-            self.rolling_disc.disc.frame)
+        inertia = self.rolling_disc.wheel.body.central_inertia.to_matrix(
+            self.rolling_disc.wheel.frame)
         self.val_dict = {
-            self.rolling_disc.disc.body.mass: str_vals["m"],
+            self.rolling_disc.wheel.body.mass: str_vals["m"],
             inertia[0, 0]: str_vals["ixx"],
             inertia[1, 1]: str_vals["iyy"],
-            self.rolling_disc.disc.radius: str_vals["r"],
+            self.rolling_disc.wheel.radius: str_vals["r"],
             Symbol("g"): str_vals["g"],
             **{qi: str_vals[f"q{i}"] for i, qi in enumerate(self.rolling_disc.q, 1)},
             **{ui: str_vals[f"u{i}"] for i, ui in enumerate(self.rolling_disc.u, 1)}
@@ -124,3 +124,11 @@ class TestRollingDisc:
             assert self.rolling_disc.descriptions[qi]
         for ui in self.rolling_disc.u:
             assert self.rolling_disc.descriptions[ui]
+
+    def test_disc_property_deprecation(self) -> None:
+        model = RollingDisc("model")
+        with pytest.warns(DeprecationWarning):
+            model.disc = KnifeEdgeWheel("wheel")
+        with pytest.warns(DeprecationWarning):
+            disc = model.disc
+        assert disc is model.wheel

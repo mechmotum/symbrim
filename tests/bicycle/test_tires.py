@@ -176,10 +176,10 @@ class TestInContactTire:
     def _setup_rolling_disc(self) -> None:
         self.model = RollingDisc("model")
         self.model.ground = FlatGround("ground")
-        self.model.disc = KnifeEdgeWheel("wheel")
+        self.model.wheel = KnifeEdgeWheel("wheel")
         self.model.tire = InContactTire("tire")
         self.ground, self.wheel, self.tire = (
-            self.model.ground, self.model.disc, self.model.tire)
+            self.model.ground, self.model.wheel, self.model.tire)
 
     def test_default(self, _setup_rolling_disc) -> None:
         self.model.define_all()
@@ -254,7 +254,7 @@ class TestInContactTire:
         aux_eq = system.eom_method.auxiliary_eqs
         fn_eq = Matrix.cramer_solve(*linear_eq_to_matrix(
             aux_eq, self.tire.symbols["Fz"]))[0]
-        m, r = self.model.disc.body.mass, self.model.disc.radius
+        m, r = self.model.wheel.body.mass, self.model.wheel.radius
         q4, u4 = self.model.q[3], self.model.u[3]
         fn_eq_expected = m * (g - r * (u4 ** 2 * cos(q4) + sin(q4) * u4.diff()))
         assert simplify(fn_eq - fn_eq_expected) == 0
