@@ -19,7 +19,7 @@ pip install git+https://github.com/mechmotum/brim.git
 The optional dependencies can be installed with:
 ```bash
 pip install git+https://github.com/moorepants/BicycleParameters.git
-pip install git+https://github.com/TJStienstra/symmeplot.git
+pip install symmeplot
 ```
 
 ## Contributing
