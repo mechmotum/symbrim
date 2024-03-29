@@ -15,7 +15,7 @@ development version from GitHub using: ::
 The optional dependencies can be installed with: ::
 
     pip install git+https://github.com/moorepants/BicycleParameters.git
-    pip install git+https://github.com/TJStienstra/symmeplot.git
+    pip install symmeplot
 
 Installation Developers
 =======================
