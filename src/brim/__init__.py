@@ -13,7 +13,7 @@ __all__ = [
 
     "KnifeEdgeWheel", "ToroidalWheel",
 
-    "NonHolonomicTire",
+    "InContactTire", "NonHolonomicTire",
 
     "MasslessCranks",
 
@@ -46,6 +46,7 @@ __all__ = [
 
 from brim.bicycle import (
     FlatGround,
+    InContactTire,
     KnifeEdgeWheel,
     MasslessCranks,
     NonHolonomicTire,
