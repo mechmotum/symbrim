@@ -140,7 +140,7 @@ def create_rolling_disc_manual(efficient_kdes: bool, efficient_constraints: bool
 
 def create_rolling_disc_brim():
     rolling_disc = RollingDisc("disc")
-    rolling_disc.disc = KnifeEdgeWheel("wheel")
+    rolling_disc.wheel = KnifeEdgeWheel("wheel")
     rolling_disc.ground = FlatGround("ground")
     rolling_disc.tire = NonHolonomicTire("tire")
     rolling_disc.define_all()

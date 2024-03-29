@@ -67,11 +67,11 @@ class TestModelBase:
                 self.symbols["my_sym2"] = Symbol(self._add_prefix("my_sym2"))
 
         self.disc = RollingDisc("rolling_disc")
-        self.disc.disc = KnifeEdgeWheel("disc")
+        self.disc.wheel = KnifeEdgeWheel("disc")
         self.disc.ground = FlatGround("ground")
         self.disc.tire = MyTire("tire")
         self.load_group = MyLoad("load")
-        self.disc.disc.add_load_groups(self.load_group)
+        self.disc.wheel.add_load_groups(self.load_group)
 
     def test_init(self) -> None:
         disc = RollingDisc("model")
@@ -79,7 +79,7 @@ class TestModelBase:
         assert str(disc) == "model"
         assert repr(disc) == "RollingDisc('model')"
         assert disc.name == "model"
-        assert disc.disc is None
+        assert disc.wheel is None
         assert disc.ground is None
         assert disc.tire is None
 
@@ -91,7 +91,7 @@ class TestModelBase:
     def test_invalid_model(self) -> None:
         disc = RollingDisc("model")
         with pytest.raises(TypeError):
-            disc.disc = FlatGround("ground")
+            disc.wheel = FlatGround("ground")
 
     def test_invalid_connection(self) -> None:
         disc = RollingDisc("model")
@@ -110,12 +110,12 @@ class TestModelBase:
 
     def test_get_description_own_description(self, _create_model) -> None:
         self.disc.define_all()
-        assert (self.disc.disc.get_description(self.disc.disc.radius) ==
-                self.disc.disc.descriptions[self.disc.disc.radius])
+        assert (self.disc.wheel.get_description(self.disc.wheel.radius) ==
+                self.disc.wheel.descriptions[self.disc.wheel.radius])
 
     def test_get_description_of_submodel(self, _create_model) -> None:
         self.disc.define_all()
-        assert self.disc.get_description(self.disc.disc.radius) is not None
+        assert self.disc.get_description(self.disc.wheel.radius) is not None
 
     def test_get_description_of_connection(self, _create_model) -> None:
         self.disc.define_all()
@@ -132,15 +132,15 @@ class TestModelBase:
     def test_traversal_get_all_symbols(self, _create_model) -> None:
         self.disc.define_all()
         assert self.disc.get_all_symbols() == {
-            self.disc.disc.symbols["r"], self.disc.tire.symbols["my_sym1"],
+            self.disc.wheel.symbols["r"], self.disc.tire.symbols["my_sym1"],
             self.disc.tire.symbols["my_sym2"], self.load_group.symbols["T"]
         }
-        assert self.disc.disc.get_all_symbols() == {
-            self.disc.disc.symbols["r"], self.load_group.symbols["T"]}
+        assert self.disc.wheel.get_all_symbols() == {
+            self.disc.wheel.symbols["r"], self.load_group.symbols["T"]}
         assert self.disc.tire.get_all_symbols() == {
-            self.disc.disc.symbols["r"], self.disc.tire.symbols["my_sym1"],
+            self.disc.wheel.symbols["r"], self.disc.tire.symbols["my_sym1"],
             self.disc.tire.symbols["my_sym2"], self.load_group.symbols["T"]}
-        assert self.disc.disc.load_groups[0].get_all_symbols() == {
+        assert self.disc.wheel.load_groups[0].get_all_symbols() == {
             self.load_group.symbols["T"]}
 
     @pytest.mark.parametrize("sym, expected", [
@@ -157,7 +157,7 @@ class TestModelBase:
     def test_type_get_all_symbols(self, sym, expected, _create_model) -> None:
         self.disc.define_connections()
         self.disc.define_objects()
-        self.disc.disc.symbols["r"] = sym
+        self.disc.wheel.symbols["r"] = sym
         assert self.disc.get_all_symbols() == {
             self.disc.tire.symbols["my_sym1"], self.disc.tire.symbols["my_sym2"],
             self.load_group.symbols["T"], *expected}
@@ -222,8 +222,8 @@ class TestModelBase:
         self.disc.define_all()
         system = self.disc.to_system()
         assert system.loads == (
-            Torque(self.disc.disc.frame,
-                   self.load_group.symbols["T"] * self.disc.disc.rotation_axis),)
+            Torque(self.disc.wheel.frame,
+                   self.load_group.symbols["T"] * self.disc.wheel.rotation_axis),)
 
     def test_is_root(self, _create_model) -> None:
         class MyModel(ModelBase):
@@ -238,12 +238,12 @@ class TestModelBase:
 
         root = MyModel("root")
         root.rolling_disc = self.disc
-        for obj in (root, self.disc, self.disc.disc, self.disc.ground):
+        for obj in (root, self.disc, self.disc.wheel, self.disc.ground):
             assert obj.is_root is None
         root.define_connections()
         root.define_objects()
         assert root.is_root
-        for obj in (self.disc, self.disc.disc, self.disc.ground):
+        for obj in (self.disc, self.disc.wheel, self.disc.ground):
             assert not obj.is_root
         root.define_kinematics()
         root.define_loads()

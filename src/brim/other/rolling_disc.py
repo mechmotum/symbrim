@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import contextlib
 from typing import Any
+from warnings import warn
 
 from sympy import Matrix, Symbol, symbols
 from sympy.physics.mechanics import (
@@ -25,14 +26,27 @@ class RollingDisc(ModelBase):
 
     required_models: tuple[ModelRequirement, ...] = (
         ModelRequirement("ground", GroundBase, "Ground model."),
-        ModelRequirement("disc", WheelBase, "Disc model."),
+        ModelRequirement("wheel", WheelBase, "Wheel model."),
     )
     required_connections: tuple[ConnectionRequirement, ...] = (
         ConnectionRequirement("tire", TireBase, "Tire model."),
     )
     ground: GroundBase
-    disc: WheelBase
+    wheel: WheelBase
     tire: TireBase
+
+    @property
+    def disc(self) -> WheelBase:
+        """Disc model."""
+        warn("The 'disc' attribute is deprecated, use 'wheel' instead.",
+             DeprecationWarning, stacklevel=2)
+        return self.wheel
+
+    @disc.setter
+    def disc(self, value: WheelBase) -> None:
+        warn("The 'disc' attribute is deprecated, use 'wheel' instead.",
+             DeprecationWarning, stacklevel=2)
+        self.wheel = value
 
     @property
     def descriptions(self) -> dict[Any, str]:
@@ -55,7 +69,7 @@ class RollingDisc(ModelBase):
         """Define the connections between the submodels."""
         super()._define_connections()
         self.tire.ground = self.ground
-        self.tire.wheel = self.disc
+        self.tire.wheel = self.wheel
 
     def _define_objects(self) -> None:
         """Define the objects of the rolling disc."""
@@ -74,9 +88,9 @@ class RollingDisc(ModelBase):
         roll_frame = ReferenceFrame("roll_frame")
         yaw_frame.orient_axis(self.ground.frame, self.ground.frame.z, self.q[2])
         roll_frame.orient_axis(yaw_frame, yaw_frame.x, self.q[3])
-        self.disc.frame.orient_axis(roll_frame, roll_frame.y, self.q[4])
-        self.disc.frame.set_ang_vel(
-            self.ground.frame, self.disc.frame.ang_vel_in(self.ground.frame).xreplace(
+        self.wheel.frame.orient_axis(roll_frame, roll_frame.y, self.q[4])
+        self.wheel.frame.set_ang_vel(
+            self.ground.frame, self.wheel.frame.ang_vel_in(self.ground.frame).xreplace(
                 qd_repl))
         self.ground.set_pos_point(self.tire.contact_point, self.q[:2])
         self.tire.contact_point.set_vel(

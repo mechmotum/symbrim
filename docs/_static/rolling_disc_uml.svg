@@ -36,7 +36,7 @@
   <text x="194.5" y="97.5">RollingDisc</text>
  </g>
  <g clip-path="url(#mx-clip-134-111-122-26-0)" fill="currentColor" font-family="Helvetica" font-size="12px" pointer-events="none">
-  <text x="135.5" y="123.5">disc: WheelBase</text>
+  <text x="135.5" y="123.5">wheel: WheelBase</text>
  </g>
  <g clip-path="url(#mx-clip-134-137-122-26-0)" fill="currentColor" font-family="Helvetica" font-size="12px" pointer-events="none">
   <text x="135.5" y="149.5">ground: GroundBase</text>
