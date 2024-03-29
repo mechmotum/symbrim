@@ -2684,7 +2684,7 @@ dev = ["hypothesis (>=6.70.0)", "pytest (>=7.1.0)"]
 type = "git"
 url = "https://github.com/sympy/sympy.git"
 reference = "HEAD"
-resolved_reference = "6336119004d0fc41ce359058c514fcbbe664091d"
+resolved_reference = "abc7d28ecda9d7b8f87308eef3ebd19ba49c2b90"
 
 [[package]]
 name = "tenacity"
