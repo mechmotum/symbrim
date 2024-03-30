@@ -34,7 +34,7 @@ class HolonomicPedals(PedalsBase):
     def _define_objects(self) -> None:
         """Define the objects."""
         super()._define_objects()
-        self._system = System()
+        self._system = System(self.cranks.system.frame, self.cranks.system.fixed_point)
 
     def _define_constraints(self) -> None:
         """Define the constraints."""
@@ -51,17 +51,23 @@ class HolonomicPedals(PedalsBase):
                             f"{direction} is not dependent on time. The following "
                             f"equations should be set to zero by redefining symbols "
                             f"before the define_kinematics stage: {constr}")
-                    constrs.append(constr)
+                    hol_constrs.append(constr)
+                    aux_vel = (
+                        self.auxiliary_handler.get_auxiliary_velocity(foot_point) -
+                        self.auxiliary_handler.get_auxiliary_velocity(pedal_point))
+                    vel_constrs.append(constr.diff(dynamicsymbols._t) +
+                                       aux_vel.dot(direction))
 
         super()._define_constraints()
-        error_msg, constrs = [], []
+        error_msg, hol_constrs, vel_constrs = [], [], []
         if self.left_leg:
             attach_foot(self.left_leg.foot_interpoint, self.cranks.left_pedal_point)
         if self.right_leg:
             attach_foot(self.right_leg.foot_interpoint, self.cranks.right_pedal_point)
         if error_msg:
             raise ValueError(error_msg)
-        self.system.add_holonomic_constraints(*constrs)
+        self.system.add_holonomic_constraints(*hol_constrs)
+        self.system.velocity_constraints = vel_constrs
 
 
 class SpringDamperPedals(PedalsBase):
