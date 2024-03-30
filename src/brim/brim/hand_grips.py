@@ -38,7 +38,8 @@ class HolonomicHandGrips(HandGripsBase):
     def _define_objects(self) -> None:
         """Define the objects."""
         super()._define_objects()
-        self._system = System()
+        self._system = System(self.front_frame.system.frame,
+                              self.front_frame.system.fixed_point)
 
     def _define_constraints(self) -> None:
         """Define the constraints."""
@@ -55,10 +56,15 @@ class HolonomicHandGrips(HandGripsBase):
                             f"{direction} is not dependent on time. The following "
                             f"equations should be set to zero by redefining symbols "
                             f"before the define_kinematics stage: {constr}")
-                    constrs.append(constr)
+                    hol_constrs.append(constr)
+                    aux_vel = (
+                        self.auxiliary_handler.get_auxiliary_velocity(hand_point) -
+                        self.auxiliary_handler.get_auxiliary_velocity(hand_grip.point))
+                    vel_constrs.append(constr.diff(dynamicsymbols._t) +
+                                       aux_vel.dot(direction))
 
         super()._define_constraints()
-        error_msg, constrs = [], []
+        error_msg, hol_constrs, vel_constrs = [], [], []
         if self.left_arm:
             attach_hand(self.left_arm.hand_interpoint, self.front_frame.left_hand_grip)
         if self.right_arm:
@@ -66,7 +72,8 @@ class HolonomicHandGrips(HandGripsBase):
                         self.front_frame.right_hand_grip)
         if error_msg:
             raise ValueError(error_msg)
-        self.system.add_holonomic_constraints(*constrs)
+        self.system.add_holonomic_constraints(*hol_constrs)
+        self.system.velocity_constraints = vel_constrs
 
 
 class SpringDamperHandGrips(HandGripsBase):
