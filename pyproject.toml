@@ -2,7 +2,7 @@
 name = "brim"
 version = "0.0.1"
 description = "A Modular and Extensible Open-Source Framework for Creating Bicycle-Rider Models"
-authors = ["TJStienstra <T.J.Stienstra@student.tudelft.nl>"]
+authors = ["tjstienstra <T.J.Stienstra@tudelft.nl>"]
 license = "CC0-1.0"
 readme = "README.md"
 repository = "https://github.com/mechmotum/brim"
