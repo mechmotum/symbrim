@@ -110,6 +110,8 @@ class WhippleBicycleMoore(WhippleBicycle):
         # Define the orientation of the rear frame.
         roll_frame = ReferenceFrame("roll_frame")
         roll_frame.orient_body_fixed(self.ground.frame, (*self.q[2:4], 0), "zxy")
+        roll_frame.set_ang_vel(self.ground.frame, roll_frame.ang_vel_in(
+            self.ground.frame).xreplace(qd_repl))
         self.rear_frame.wheel_hub.frame.orient_axis(roll_frame, roll_frame.y, self.q[4])
         self.rear_frame.wheel_hub.frame.set_ang_vel(
             self.ground.frame,
