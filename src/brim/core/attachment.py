@@ -51,15 +51,15 @@ class MasslessBody(RigidBody):
             raise AttributeError("Massless bodies do not have potential energy.")
         RigidBody.potential_energy.fset(self, potential_energy)
 
-    def linear_momentum(self, frame: ReferenceFrame) -> Vector:
+    def linear_momentum(self, frame: ReferenceFrame) -> Vector:  # noqa: ARG002
         """Linear momentum of the body."""
         return Vector(0)
 
-    def angular_momentum(self, point: Point, frame: ReferenceFrame) -> Vector:
+    def angular_momentum(self, point: Point, frame: ReferenceFrame) -> Vector:  # noqa: ARG002
         """Angular momentum of the body about a point in a frame."""
         return Vector(0)
 
-    def kinetic_energy(self, frame: ReferenceFrame) -> Expr:
+    def kinetic_energy(self, frame: ReferenceFrame) -> Expr:  # noqa: ARG002
         """Kinetic energy of the body."""
         return S.Zero
 
@@ -114,7 +114,7 @@ class Attachment:
             name = "massless_body"
         return MasslessBody(name, self.point, self.frame)
 
-    def __getitem__(self, item):
+    def __getitem__(self, item: int) -> ReferenceFrame | Point:
         return (self.frame, self.point)[item]
 
 

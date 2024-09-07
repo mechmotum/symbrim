@@ -1,7 +1,6 @@
 """Module containing the base connection classes between the rider parts."""
 from __future__ import annotations
 
-import contextlib
 from typing import TYPE_CHECKING
 
 from brim.core import ConnectionBase, ModelRequirement
@@ -11,6 +10,7 @@ from brim.rider.pelvis import PelvisBase
 from brim.rider.torso import TorsoBase
 
 if TYPE_CHECKING:
+    import contextlib
     with contextlib.suppress(ImportError):
         from brim.utilities.plotting import PlotModel
 

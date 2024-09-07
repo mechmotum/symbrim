@@ -4,6 +4,9 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 import pytest
+from sympy import Matrix, Symbol, count_ops, lambdify, linear_eq_to_matrix
+from sympy.physics.mechanics import dynamicsymbols, msubs
+
 from brim import (
     FlatGround,
     KnifeEdgeWheel,
@@ -13,8 +16,6 @@ from brim import (
 )
 from brim.bicycle import MasslessCranks, WhippleBicycle, WhippleBicycleMoore
 from brim.utilities.testing import ignore_point_warnings
-from sympy import Matrix, Symbol, count_ops, lambdify, linear_eq_to_matrix
-from sympy.physics.mechanics import dynamicsymbols, msubs
 
 if TYPE_CHECKING:
     from sympy import Basic
@@ -25,7 +26,7 @@ class TestWhippleBicycle:
         front = WhippleBicycle("bike")
         assert isinstance(front, WhippleBicycleMoore)
 
-    @pytest.mark.parametrize("convention_name, expected_class", [
+    @pytest.mark.parametrize(("convention_name", "expected_class"), [
         ("moore", WhippleBicycleMoore),
     ])
     def test_init(self, convention_name, expected_class) -> None:
@@ -81,7 +82,7 @@ class TestWhippleBicycleMoore:
                 -8.0133620584155)))}
         return constants, initial_state
 
-    @pytest.fixture()
+    @pytest.fixture
     def _setup_default(self) -> None:
         self.bike = WhippleBicycleMoore("bike")
         self.bike.ground = FlatGround("ground")
@@ -92,7 +93,8 @@ class TestWhippleBicycleMoore:
         self.bike.rear_tire = NonHolonomicTire("rear_tire")
         self.bike.front_tire = NonHolonomicTire("front_tire")
 
-    def test_basu_mandal(self, _setup_default) -> None:
+    @pytest.mark.usefixtures("_setup_default")
+    def test_basu_mandal(self) -> None:
         t = dynamicsymbols._t
         self.bike.define_all()
         system = self.bike.to_system()
@@ -124,7 +126,8 @@ class TestWhippleBicycleMoore:
         ud0_expected = [expected_state[udi] for udi in system.u.diff(t)]
         assert np.allclose(ud0, ud0_expected)
 
-    def test_descriptions(self, _setup_default) -> None:
+    @pytest.mark.usefixtures("_setup_default")
+    def test_descriptions(self) -> None:
         self.bike.define_connections()
         self.bike.define_objects()
         for qi in self.bike.q:
@@ -132,7 +135,8 @@ class TestWhippleBicycleMoore:
         for ui in self.bike.u:
             assert self.bike.descriptions[ui]
 
-    def test_cranks(self, _setup_default) -> None:
+    @pytest.mark.usefixtures("_setup_default")
+    def test_cranks(self) -> None:
         self.bike.cranks = MasslessCranks("cranks")
         self.bike.define_all()
         assert self.bike.get_description(self.bike.symbols["gear_ratio"]) is not None
@@ -142,11 +146,11 @@ class TestWhippleBicycleMoore:
         assert (self.bike.cranks.frame.ang_vel_in(rf).dot(rf.y) ==
                 self.bike.u[7] / self.bike.symbols["gear_ratio"])
 
-    @pytest.mark.parametrize("normal, upward, longitudinal, lateral", [
+    @pytest.mark.parametrize(("normal", "upward", "longitudinal", "lateral"), [
         ("+z", Matrix([0, 0, 1]), Matrix([-1, 0, 0]), Matrix([0, 1, 0])),
         ("-z", Matrix([0, 0, -1]), Matrix([1, 0, 0]), Matrix([0, 1, 0]))])
-    def test_define_tire_axes(self, _setup_default, normal, upward, longitudinal,
-                              lateral) -> None:
+    @pytest.mark.usefixtures("_setup_default")
+    def test_define_tire_axes(self, normal, upward, longitudinal, lateral) -> None:
         self.bike.ground = FlatGround("ground", normal=normal)
         self.bike.define_all()
         tire = self.bike.rear_tire
@@ -155,7 +159,8 @@ class TestWhippleBicycleMoore:
         assert count_ops(tire.lateral_axis.to_matrix(self.bike.ground.frame)) < 30
 
     @pytest.mark.parametrize("normal", ["+x", "-x", "+y", "-y"])
-    def test_do_not_define_upward_radial_axis(self, _setup_default, normal) -> None:
+    @pytest.mark.usefixtures("_setup_default")
+    def test_do_not_define_upward_radial_axis(self, normal) -> None:
         self.bike.ground = FlatGround("ground", normal=normal)
         self.bike.define_all()
         tire = self.bike.rear_tire
@@ -165,8 +170,10 @@ class TestWhippleBicycleMoore:
 
     @pytest.mark.parametrize("compute_rear", [True, False])
     @pytest.mark.parametrize("compute_front", [True, False])
-    def test_computation_normal_force_nominal_config(self, _setup_default, compute_rear,
-                                                     compute_front) -> None:
+    @pytest.mark.usefixtures("_setup_default")
+    def test_computation_normal_force_nominal_config(
+        self, compute_rear, compute_front
+    ) -> None:
         if not compute_rear and not compute_front:
             return
         self.bike.rear_tire.compute_normal_force = compute_rear

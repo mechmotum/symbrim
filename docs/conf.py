@@ -3,12 +3,12 @@
 For the full list of built-in configuration values, see the documentation:
 https://www.sphinx-doc.org/en/master/usage/configuration.html
 """
-import os
 import sys
+from pathlib import Path
 
 # Add source folder to path for autodoc
-sys.path.insert(0, os.path.dirname(__file__))
-sys.path.insert(0, os.path.abspath("../src"))
+sys.path.insert(0, str(Path(__file__).parent))
+sys.path.insert(0, str(Path("../src").resolve()))
 
 from process_tutorials import main as process_tutorials
 

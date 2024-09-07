@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import contextlib
 from abc import abstractmethod
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from sympy import Symbol, symbols
 from sympy.physics.mechanics import Point, Vector, inertia
@@ -38,9 +38,9 @@ class WheelBase(NewtonianBodyMixin, ModelBase):
     def rotation_axis(self) -> Vector:
         """Rotation axis of the wheel."""
 
-    def get_param_values(self, bicycle_parameters: Bicycle,
-                         position: str | None = None
-                         ) -> dict[Symbol, float]:  # pragma: no cover
+    def get_param_values(  # noqa: PLR0912
+        self, bicycle_parameters: Bicycle, position: str | None = None
+    ) -> dict[Symbol, float]:  # pragma: no cover
         """Get the parameter values of the wheel.
 
         Parameters
@@ -53,7 +53,7 @@ class WheelBase(NewtonianBodyMixin, ModelBase):
         params = super().get_param_values(bicycle_parameters)
         if position is None:
             return params
-        elif position not in ["front", "rear"]:
+        if position not in ["front", "rear"]:
             raise ValueError("Position must be 'front' or 'rear'.")
         if "Benchmark" in bicycle_parameters.parameters:
             bp = remove_uncertainties(bicycle_parameters.parameters["Benchmark"])
@@ -81,7 +81,7 @@ class KnifeEdgeWheel(WheelBase):
     """Knife edge wheel."""
 
     @property
-    def descriptions(self) -> dict[Any, str]:
+    def descriptions(self) -> dict[object, str]:
         """Descriptions of the attributes of the wheel."""
         return {
             **super().descriptions,
@@ -145,7 +145,7 @@ class ToroidalWheel(WheelBase):
     """Toroidal shaped wheel."""
 
     @property
-    def descriptions(self) -> dict[Any, str]:
+    def descriptions(self) -> dict[object, str]:
         """Descriptions of the attributes of the wheel."""
         return {
             **super().descriptions,

@@ -1,15 +1,24 @@
 """Module containing utilities to easily benchmark models."""
+from __future__ import annotations
 
-from typing import Optional
+from typing import TYPE_CHECKING
 
 import pytest
 from sympy import count_ops, cse
 from sympy.core.cache import clear_cache
 
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
+    from pytest_benchmark.fixture import BenchmarkFixture
+    from sympy.physics.mechanics import KanesMethod, System
+
 __all__ = ["benchmark"]
 
 
-def benchmark(rounds: int = 3, group: Optional[str] = None, **kwargs) -> callable:
+def benchmark(
+    rounds: int = 3, group: str | None = None, **kwargs: dict[str, object]
+) -> Callable[[Callable[[], KanesMethod | System]], Callable]:
     """Create decorator to benchmark a function.
 
     Parameters
@@ -31,15 +40,15 @@ def benchmark(rounds: int = 3, group: Optional[str] = None, **kwargs) -> callabl
 
     """
 
-    def decorator(func):
+    def decorator(func: Callable[[], KanesMethod | System]) -> Callable:
         @pytest.mark.benchmark(group=group)
-        def wrapper(benchmark):
+        def wrapper(benchmark: BenchmarkFixture) -> None:
             data = {}
 
-            def setup():
+            def setup() -> None:
                 clear_cache()
 
-            def form_eoms():
+            def form_eoms() -> None:
                 data["system"] = func()
                 if hasattr(data["system"], "form_eoms"):
                     data["eoms"] = data["system"].form_eoms(**kwargs)

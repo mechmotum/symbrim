@@ -1,9 +1,10 @@
 import pytest
+from sympy import Matrix, Symbol, simplify, sin, zeros
+from sympy.physics.mechanics import Point
+
 from brim.bicycle import RigidRearFrame
 from brim.rider import RiderLean, RiderLeanConnection
 from brim.utilities.testing import _test_descriptions, create_model_of_connection
-from sympy import Matrix, Symbol, simplify, sin, zeros
-from sympy.physics.mechanics import Point
 
 
 class TestRiderLean:

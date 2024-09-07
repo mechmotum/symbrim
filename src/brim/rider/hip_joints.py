@@ -1,8 +1,6 @@
 """Module containing the hip joints."""
 from __future__ import annotations
 
-from typing import Any
-
 from sympy import Matrix, cos, sin
 from sympy.physics.mechanics import (
     PinJoint,
@@ -23,7 +21,7 @@ class SphericalHipMixin:
     """Spherical joint between the pelvis and the leg."""
 
     @property
-    def descriptions(self) -> dict[Any, str]:
+    def descriptions(self) -> dict[object, str]:
         """Descriptions of the objects."""
         return {
             **super().descriptions,
@@ -79,7 +77,7 @@ class PinHipMixin:
     """Pin joint between the pelvis and the leg."""
 
     @property
-    def descriptions(self) -> dict[Any, str]:
+    def descriptions(self) -> dict[object, str]:
         """Descriptions of the objects."""
         return {
             **super().descriptions,
@@ -121,7 +119,7 @@ class SphericalHipTorque(LoadGroupBase):
     required_parent_type = (SphericalLeftHip, SphericalRightHip)
 
     @property
-    def descriptions(self) -> dict[Any, str]:
+    def descriptions(self) -> dict[object, str]:
         """Descriptions of the objects."""
         return {
             **super().descriptions,
@@ -161,7 +159,7 @@ class SphericalHipSpringDamper(LoadGroupBase):
     required_parent_type = (SphericalLeftHip, SphericalRightHip)
 
     @property
-    def descriptions(self) -> dict[Any, str]:
+    def descriptions(self) -> dict[object, str]:
         """Descriptions of the objects."""
         desc = {**super().descriptions}
         for tp in ("flexion", "adduction", "rotation"):

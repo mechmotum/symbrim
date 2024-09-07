@@ -1,9 +1,8 @@
 """Utility to compute the noncontributing forces and torques."""
 from __future__ import annotations
 
-from collections.abc import Iterable
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING
 
 from sympy import Function
 from sympy.physics.mechanics import (
@@ -17,6 +16,8 @@ from sympy.physics.mechanics import (
 )
 
 if TYPE_CHECKING:
+    from collections.abc import Callable, Iterable
+
     from sympy.physics.mechanics.loads import LoadBase
 
 __all__ = ["AuxiliaryData", "AuxiliaryDataHandler"]
@@ -104,7 +105,7 @@ class AuxiliaryDataHandler:
         Inertial point which is used as root in the tree graph representation.z
     """
 
-    def __init__(self, inertial_frame: ReferenceFrame, inertial_point: Point):
+    def __init__(self, inertial_frame: ReferenceFrame, inertial_point: Point) -> None:
         if not isinstance(inertial_frame, ReferenceFrame):
             raise TypeError("Inertial must be an instance of ReferenceFrame.")
         if not isinstance(inertial_point, Point):
@@ -154,12 +155,13 @@ class AuxiliaryDataHandler:
         return force
 
     @staticmethod
-    def _extract_tree(root: Any, get_childs: str | Callable[[Any], Iterable[Any]]
-                      ) -> dict[Any: list[Any]]:
+    def _extract_tree(
+        root: object, get_childs: str | Callable[[object], Iterable[object]]
+    ) -> dict[object: list[object]]:
         """Create a tree graph using a breath-first search from the root."""
         if isinstance(get_childs, str):
             attr_name = get_childs
-            def get_childs(parent: Any) -> Iterable[Any]:
+            def get_childs(parent: object) -> Iterable[object]:
                 return getattr(parent, attr_name)
         tree = {}
         queue = [root]
@@ -175,8 +177,9 @@ class AuxiliaryDataHandler:
         return tree
 
     @staticmethod
-    def _get_children_from_tree(tree: dict[Any, list[Any]], parent: Any,
-                                include_parent: bool = False) -> list[Any]:
+    def _get_children_from_tree(
+        tree: dict[object, list[object]], parent: object, include_parent: bool = False
+    ) -> list[object]:
         """Get children of a node in a tree."""
         queue = tree[parent].copy()
         children = [parent] if include_parent else []
@@ -195,6 +198,7 @@ class AuxiliaryDataHandler:
         for parent, childs in self._position_tree.items():
             if point in childs:
                 return parent
+        return None
 
     def _compute_velocity(self, point: Point, parent: Point | None = None) -> Vector:
         """Compute the velocity of a point based on its parent in the position tree."""
@@ -278,7 +282,7 @@ class AuxiliaryDataHandler:
         """Return the auxiliary velocity of a point."""
         if self._aux_vels_points is None:
             raise ValueError("Auxiliary velocities have not been computed yet.")
-        elif point not in self._aux_vels_points:
+        if point not in self._aux_vels_points:
             raise ValueError(
                 f"Auxiliary velocity of point {point!r} has not been computed.")
         return self._aux_vels_points[point]

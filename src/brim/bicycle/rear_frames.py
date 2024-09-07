@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import contextlib
 from abc import abstractmethod
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from sympy import Symbol, symbols
 from sympy.physics.mechanics import Point, RigidBody, System, inertia
@@ -82,7 +82,7 @@ class RigidRearFrame(RearFrameBase):
     """Rigid rear frame."""
 
     @property
-    def descriptions(self) -> dict[Any, str]:
+    def descriptions(self) -> dict[object, str]:
         """Dictionary of descriptions of the rear frame's symbols."""
         return {
             **super().descriptions,
@@ -92,7 +92,7 @@ class RigidRearFrame(RearFrameBase):
                                    f"bracket along {self.body.z}.",
         }
 
-    def _define_objects(self):
+    def _define_objects(self) -> None:
         """Define the objects of the rear frame."""
         super()._define_objects()
         self._body = RigidBody(self._add_prefix("body"))
@@ -105,7 +105,7 @@ class RigidRearFrame(RearFrameBase):
         self.symbols.update({name: Symbol(self._add_prefix(name))
                              for name in ("l_bbx", "l_bbz")})
 
-    def _define_kinematics(self):
+    def _define_kinematics(self) -> None:
         """Define the kinematics of the rear frame."""
         super()._define_kinematics()
         self.bottom_bracket.set_pos(self.wheel_hub.point,
@@ -160,7 +160,7 @@ class RigidRearFrameMoore(RigidRearFrame):
     convention: str = "moore"
 
     @property
-    def descriptions(self) -> dict[Any, str]:
+    def descriptions(self) -> dict[object, str]:
         """Descriptions of the attributes of the rear frame."""
         return {
             **super().descriptions,
@@ -176,7 +176,7 @@ class RigidRearFrameMoore(RigidRearFrame):
                                 "wheel center to the point representing the saddle.",
         }
 
-    def _define_objects(self):
+    def _define_objects(self) -> None:
         """Define the objects of the rear frame."""
         super()._define_objects()
         self.symbols.update({
@@ -187,7 +187,7 @@ class RigidRearFrameMoore(RigidRearFrame):
         self._wheel_hub = Hub(
             self.body.frame, Point(self._add_prefix("wheel_hub_point")), "y")
 
-    def _define_kinematics(self):
+    def _define_kinematics(self) -> None:
         """Define the kinematics of the rear frame."""
         super()._define_kinematics()
         d1, l1, l2, d4, d5 = (self.symbols[name] for name in ("d1", "l1", "l2", "d4",

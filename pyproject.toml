@@ -14,7 +14,7 @@ symmeplot = {version = "^0.2.0", optional = true}
 bicycleparameters = {git = "https://github.com/moorepants/BicycleParameters.git", optional = true}
 
 [tool.poetry.group.lint.dependencies]
-ruff = "^0.3.4"
+ruff = "^0.6.4"
 pre-commit = "^3.6.0"
 
 [tool.poetry.group.test.dependencies]
@@ -45,20 +45,56 @@ build-backend = "poetry.core.masonry.api"
 [tool.ruff]
 target-version = "py39"
 line-length = 88
-lint.select = ["A", "B", "C", "D", "E", "F", "I", "N", "Q", "W", "NPY", "RUF", "SIM",
-               "TID", "T20", "UP"]
-lint.ignore = ["A003", "C901", "D105", "D203", "D213"]
+lint.select = ["ALL"]
+lint.ignore = [
+    "COM812",  # trailing comma missing
+    "C901",  # function is too complex
+    "D105",  # missing docstring in magic method
+    "D203",  # 1 blank line required before class docstring
+    "D213",  # multi-line docstring summary should start at the second line
+    "EM",  # exception must not use a string literal
+    "FBT",  # boolean-typed positional argument
+    "PLR0913",  # too many arguments in function definition
+    "PLR2004",  # magic value used in comparison
+    "SLF001",  # private member accessed
+    "TRY003",  # avoid specifying long messages outside the exception class
+]
 output-format = "full"
 
 [tool.ruff.lint.per-file-ignores]
-"tests/*" = ["D", "S101"]
-"benchmarks/*" = ["D", "S101"]
+"tests/*" = [
+    "ANN",  # annotations
+    "ARG002",  # unused method argument (occurs frequently due to fixtures/parametrize)
+    "D",  # documentation
+    "PT011",  # `pytest.raises(...)` is too broad, set the `match` parameter or use a more specific exception
+    "SLF001",  # private member accessed
+    "S101",  # use of `assert` detected
+]
+"benchmarks/*" = [
+    "ANN",  # annotations
+    "D",  # documentation
+    "INP001",  # part of an implicit namespace package
+    "S101",  # use of `assert` detected
+]
+"docs/*" = [
+    "INP001",  # part of an implicit namespace package
+    "S101",  # use of `assert` detected
+    "S603", "S607",  # `subprocess` call
+]
+"docs/tutorials/*" = [
+    "E501",  # line too long
+    "ERA001",  # commented out code as example
+    "ARG005",  # unused lambda argument
+    "E731",  # do not assign a `lambda` expression, use a `def`
+    "F401", "F811",  # unused imports to help users
+    "F403", "F405",  # related to star import
+]
 
 [tool.ruff.lint.pydocstyle]
 convention = "numpy"
 
 [tool.mypy]
-python_version = "3.8"
+python_version = "3.9"
 
 [tool.pytest.ini_options]
 testpaths = [

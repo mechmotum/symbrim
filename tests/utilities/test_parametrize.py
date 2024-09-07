@@ -1,7 +1,10 @@
-import os
+from pathlib import Path
 
 import numpy as np
 import pytest
+from sympy import diag
+from sympy.physics.mechanics import RigidBody, msubs
+
 from brim.bicycle.cranks import MasslessCranks
 from brim.bicycle.front_frames import RigidFrontFrameMoore
 from brim.bicycle.grounds import FlatGround
@@ -21,38 +24,36 @@ from brim.rider.rider import Rider
 from brim.rider.sacrums import FixedSacrum
 from brim.rider.shoulder_joints import SphericalLeftShoulder, SphericalRightShoulder
 from brim.rider.torso import PlanarTorso
-from sympy import diag
-from sympy.physics.mechanics import RigidBody, msubs
 
 try:
     from bicycleparameters import Bicycle
     from bicycleparameters.io import remove_uncertainties
+
     from brim.utilities.parametrize import get_inertia_vals
 except ImportError:
     pytest.skip("bicycleparameters not installed", allow_module_level=True)
 
-data_dir = os.path.join(__file__[:__file__.index("brim") + 4], "data")
+data_dir = Path(__file__[:__file__.index("brim") + 4]) / "data"
 
 
 def _check_dir(bicycle: str, rider: str) -> bool:
-    if bicycle is not None and not os.path.isdir(
-            os.path.join(data_dir, "bicycles", bicycle)):
+    if bicycle is not None and not (Path(data_dir) / "bicycles" / bicycle).is_dir():
         return False
-    if rider is not None and not os.path.isdir(os.path.join(data_dir, "riders", rider)):
+    if rider is not None and not (Path(data_dir) / "riders" / rider).is_dir():
         return False
     if bicycle is not None and rider is not None:
-        raw_data_dir = os.path.join(data_dir, "riders", rider, "RawData")
-        if not (os.path.isfile(
-                os.path.join(raw_data_dir, f"{rider}{bicycle}YeadonCFG.txt")) and
-                os.path.isfile(
-                    os.path.join(raw_data_dir, f"{rider}YeadonMeas.txt"))):
+        raw_data_dir = Path(data_dir) / "riders" / rider / "RawData"
+        if not (
+            (Path(raw_data_dir) / f"{rider}{bicycle}YeadonCFG.txt").is_file()
+            and (Path(raw_data_dir) / f"{rider}YeadonMeas.txt").is_file()
+        ):
             return False
     return True
 
 
-@pytest.mark.skipif(not os.path.isdir(data_dir), reason="data directory not found")
+@pytest.mark.skipif(not data_dir.is_dir(), reason="data directory not found")
 class TestParametrize:
-    @pytest.mark.parametrize("bicycle, rider", [
+    @pytest.mark.parametrize(("bicycle", "rider"), [
         ("Benchmark", None),
         ("Browser", "Jason"),
     ])
@@ -62,7 +63,7 @@ class TestParametrize:
         if rider is not None:
             bike.add_rider(rider)
 
-    @pytest.fixture()
+    @pytest.fixture
     def _setup_moore_bicycle(self) -> None:
         self.bike = WhippleBicycleMoore("bike")
         self.bike.rear_frame = RigidRearFrameMoore("rear_frame")
@@ -74,7 +75,7 @@ class TestParametrize:
         self.bike.ground = FlatGround("ground")
         self.bike.define_all()
 
-    @pytest.fixture()
+    @pytest.fixture
     def _setup_full_model(self) -> None:
         self.bike = WhippleBicycleMoore("bicycle")
         self.bike.front_frame = RigidFrontFrameMoore("front_frame")
@@ -108,7 +109,7 @@ class TestParametrize:
         self.br.define_all()
         self.system = self.br.to_system()
 
-    @pytest.mark.parametrize("args, kwargs, expected", [
+    @pytest.mark.parametrize(("args", "kwargs", "expected"), [
         ([], {}, {}),
         ([1], {}, {"ixx": 1}),
         ([1, 2], {"izx": 3}, {"ixx": 1, "iyy": 2, "izx": 3}),
@@ -125,7 +126,8 @@ class TestParametrize:
         params = {k.name[-3:]: v for k, v in params.items()}
         assert params == expected
 
-    def test_benchmark_moore(self, _setup_moore_bicycle) -> None:
+    @pytest.mark.usefixtures("_setup_moore_bicycle")
+    def test_benchmark_moore(self) -> None:
         def get_inertia_matrix(model):
             return model.body.central_inertia.to_matrix(model.body.frame)
 
@@ -159,11 +161,12 @@ class TestParametrize:
         for sym, value in constants.items():
             assert params[sym] == pytest.approx(value, abs=1e-10)
 
-    @pytest.mark.parametrize("bicycle, rider", [
+    @pytest.mark.parametrize(("bicycle", "rider"), [
         ("Browser", "Jason"),
         ("Rigidcl", "Luke"),
     ])
-    def test_full_model_example(self, _setup_full_model, bicycle, rider) -> None:
+    @pytest.mark.usefixtures("_setup_full_model")
+    def test_full_model_example(self, bicycle, rider) -> None:
         if not _check_dir(bicycle, rider):
             pytest.skip("data not found")
         bike_params = Bicycle(bicycle, pathToData=data_dir)

@@ -1,4 +1,5 @@
 import pytest
+
 from brim.core import Singleton
 
 

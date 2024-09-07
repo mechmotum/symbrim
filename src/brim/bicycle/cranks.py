@@ -1,9 +1,8 @@
 """Module containing models of the cranks."""
 from __future__ import annotations
 
-import contextlib
 from abc import abstractmethod
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from sympy import Symbol
 from sympy.physics.mechanics import Point, ReferenceFrame, System, Vector
@@ -11,6 +10,7 @@ from sympy.physics.mechanics import Point, ReferenceFrame, System, Vector
 from brim.core import ModelBase
 
 if TYPE_CHECKING:
+    import contextlib
     with contextlib.suppress(ImportError):
         from brim.utilities.plotting import PlotModel
 
@@ -83,7 +83,7 @@ class MasslessCranks(CranksBase):
     """Simplified cranks model."""
 
     @property
-    def descriptions(self) -> dict[Any, str]:
+    def descriptions(self) -> dict[object, str]:
         """Descriptions of the objects."""
         return {
             **super().descriptions,

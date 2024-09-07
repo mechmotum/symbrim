@@ -193,7 +193,7 @@ Define Objects
   in this stage, but they should not be oriented or positioned yet. ::
 
     @property
-    def descriptions(self) -> dict[Any, str]:
+    def descriptions(self) -> dict[object, str]:
         """Descriptions of the attributes of the object."""
         return {
             **super().descriptions,

@@ -1,4 +1,5 @@
 import pytest
+
 from brim.bicycle import (
     KnifeEdgeWheel,
     NonHolonomicTire,
@@ -29,7 +30,7 @@ class TestRegistry:
     def test_connections_and_models_split(self) -> None:
         assert Registry().models.isdisjoint(Registry().connections)
 
-    @pytest.mark.parametrize("args, kwargs, subset, disjoint", [
+    @pytest.mark.parametrize(("args", "kwargs", "subset", "disjoint"), [
         ((ModelRequirement("wheel", WheelBase, "Wheel model."),), {},
          {KnifeEdgeWheel, ToroidalWheel},
          {NonHolonomicTire, RollingDisc, WheelBase}),
@@ -54,7 +55,7 @@ class TestRegistry:
         with pytest.raises(TypeError):
             Registry().get_from_requirement(WheelBase)
 
-    @pytest.mark.parametrize("args, kwargs, subset, disjoint", [
+    @pytest.mark.parametrize(("args", "kwargs", "subset", "disjoint"), [
         ((RollingDisc("disc"), "wheel"), {},
          {KnifeEdgeWheel, ToroidalWheel}, {NonHolonomicTire, WheelBase, RollingDisc}),
         ((RollingDisc, "wheel"), {},
@@ -75,7 +76,7 @@ class TestRegistry:
         with pytest.raises(ValueError):
             Registry().get_from_property(RollingDisc("disc"), "not_a_submodel")
 
-    @pytest.mark.parametrize("args, kwargs, subset, disjoint", [
+    @pytest.mark.parametrize(("args", "kwargs", "subset", "disjoint"), [
         ((PinElbowStickLeftArm("arm"),), {},
          {PinElbowTorque, PinElbowSpringDamper}, {LoadGroupBase, PinElbowStickLeftArm}),
         ((PinElbowStickLeftArm,), {},

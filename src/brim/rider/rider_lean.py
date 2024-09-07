@@ -1,8 +1,6 @@
 """Module containing a simplified rider lean model."""
 from __future__ import annotations
 
-from typing import Any
-
 from sympy import Matrix, Symbol
 from sympy.physics.mechanics import PinJoint, Point, System, Vector, dynamicsymbols
 
@@ -16,12 +14,12 @@ class RiderLean(NewtonianBodyMixin, ModelBase):
     """Rider lean model."""
 
     @property
-    def lean_point(self):
+    def lean_point(self) -> Point:
         """Point about which the rider leans defined w.r.t. the rider."""
         return self._lean_point
 
     @property
-    def lean_axis(self):
+    def lean_axis(self) -> Vector:
         """Lean axis expressed in the leaning rider's frame."""
         return self._lean_axis
 
@@ -35,7 +33,7 @@ class RiderLean(NewtonianBodyMixin, ModelBase):
         self._lean_axis = lean_axis
 
     @property
-    def descriptions(self) -> dict[Any, str]:
+    def descriptions(self) -> dict[object, str]:
         """Descriptions of the symbols of the rider lean model."""
         return {
             **super().descriptions,
@@ -86,7 +84,7 @@ class RiderLeanConnection(ConnectionBase):
         return self._lean_point
 
     @property
-    def descriptions(self) -> dict[Any, str]:
+    def descriptions(self) -> dict[object, str]:
         """Descriptions of the symbols of the rider lean connection."""
         desc = {
             **super().descriptions,
@@ -100,7 +98,7 @@ class RiderLeanConnection(ConnectionBase):
                      for qi, ui in zip(self.q, self.u)})
         return desc
 
-    def _define_objects(self):
+    def _define_objects(self) -> None:
         """Define the objects of the rider lean connection for the rear frame."""
         super()._define_objects()
         self._system = System(self.rear_frame.system.frame,
@@ -112,7 +110,7 @@ class RiderLeanConnection(ConnectionBase):
         self.q = Matrix([dynamicsymbols(self._add_prefix("q_rl"))])
         self.u = Matrix([dynamicsymbols(self._add_prefix("u_rl"))])
 
-    def _define_kinematics(self):
+    def _define_kinematics(self) -> None:
         """Define the kinematics of the rider lean connection for the rear frame."""
         super()._define_kinematics()
         saddle = self.rear_frame.saddle

@@ -1,8 +1,5 @@
 import itertools
 
-from brim.bicycle import FlatGround, KnifeEdgeWheel, NonHolonomicTire
-from brim.other.rolling_disc import RollingDisc
-from brim.utilities.benchmarking import benchmark
 from sympy import count_ops, cse, symbols
 from sympy.physics.mechanics import (
     KanesMethod,
@@ -14,6 +11,10 @@ from sympy.physics.mechanics import (
     dynamicsymbols,
     inertia,
 )
+
+from brim.bicycle import FlatGround, KnifeEdgeWheel, NonHolonomicTire
+from brim.other.rolling_disc import RollingDisc
+from brim.utilities.benchmarking import benchmark
 
 ROUNDS = 10
 
@@ -53,7 +54,7 @@ def rolling_disc_from_sympy_test_suite():
     Dmc.v2pt_theory(C, N, R)
 
     # This is a simple way to form the inertia dyadic.
-    I = inertia(L, *symbols("Ixx Iyy Ixx"))  # noqa: N806 E741
+    I = inertia(L, *symbols("Ixx Iyy Ixx"))  # noqa: E741, N806
 
     # Kinematic differential equations; how the generalized coordinate time
     # derivatives relate to generalized speeds.

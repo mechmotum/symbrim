@@ -1,8 +1,6 @@
 """Module containing the shoulder joints."""
 from __future__ import annotations
 
-from typing import Any
-
 from sympy import Matrix, cos, sin
 from sympy.physics.mechanics import (
     PinJoint,
@@ -27,7 +25,7 @@ class SphericalShoulderMixin:
     """Spherical joint between the pelvis and the leg."""
 
     @property
-    def descriptions(self) -> dict[Any, str]:
+    def descriptions(self) -> dict[object, str]:
         """Descriptions of the objects."""
         return {
             **super().descriptions,
@@ -85,7 +83,7 @@ class FlexRotShoulderMixin:
     """Shoulder joint mixin with flexion and rotation."""
 
     @property
-    def descriptions(self) -> dict[Any, str]:
+    def descriptions(self) -> dict[object, str]:
         """Descriptions of the objects."""
         return {
             **super().descriptions,
@@ -153,7 +151,7 @@ class FlexAddShoulderMixin:
     """Shoulder joint mixin with flexion and adduction."""
 
     @property
-    def descriptions(self) -> dict[Any, str]:
+    def descriptions(self) -> dict[object, str]:
         """Descriptions of the objects."""
         return {
             **super().descriptions,
@@ -224,7 +222,7 @@ class SphericalShoulderTorque(LoadGroupBase):
     required_parent_type = (SphericalLeftShoulder, SphericalRightShoulder)
 
     @property
-    def descriptions(self) -> dict[Any, str]:
+    def descriptions(self) -> dict[object, str]:
         """Descriptions of the objects."""
         return {
             **super().descriptions,
@@ -266,7 +264,7 @@ class SphericalShoulderSpringDamper(LoadGroupBase):
     required_parent_type = (SphericalLeftShoulder, SphericalRightShoulder)
 
     @property
-    def descriptions(self) -> dict[Any, str]:
+    def descriptions(self) -> dict[object, str]:
         """Descriptions of the objects."""
         desc = {**super().descriptions}
         for tp in ("flexion", "adduction", "rotation"):

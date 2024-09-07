@@ -20,10 +20,9 @@ def random_eval(expr: Expr, prec: int = 7, method: str = "lambdify") -> float:
             free = tuple(dummy_map.get(f, f) for f in free)
             expr = msubs(expr, dummy_map)
         return round(lambdify(free, expr, cse=True)(*(random() for _ in free)), prec)
-    elif method == "evalf":
+    if method == "evalf":
         return round(expr.evalf(prec, {s: random() for s in free}), prec)
-    else:
-        raise NotImplementedError(f"Method {method} not implemented.")
+    raise NotImplementedError(f"Method {method} not implemented.")
 
 
 def check_zero(expr: Expr, n_evaluations: int = 10, atol: float = 1e-8) -> bool:
@@ -63,5 +62,5 @@ def check_zero(expr: Expr, n_evaluations: int = 10, atol: float = 1e-8) -> bool:
     # The comparison is to zero, so the relative tolerance is not used.
     rng = np.random.default_rng()
     return np.allclose(
-        np.fromfunction(lambda i: f(*rng.random(len(free))), (n_evaluations,)),
+        np.fromfunction(lambda _: f(*rng.random(len(free))), (n_evaluations,)),
         np.zeros(n_evaluations), 0, atol)

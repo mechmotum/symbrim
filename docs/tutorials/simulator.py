@@ -1,7 +1,7 @@
 """Module for simulating sympy.physics.mechanics.system.System objects."""
 from __future__ import annotations
 
-from typing import Callable
+from collections.abc import Callable
 
 import numpy as np
 import numpy.typing as npt
@@ -74,7 +74,7 @@ class Simulator:
         return self._constants
 
     @constants.setter
-    def constants(self, constants: dict[Basic, float]):
+    def constants(self, constants: dict[Basic, float]) -> None:
         if not isinstance(constants, dict):
             raise TypeError(f"Constants should be of type {type(dict)} not "
                             f"{type(constants)}.")
@@ -89,13 +89,14 @@ class Simulator:
                 self.solve_initial_conditions()
 
     @property
-    def inputs(self
-               ) -> dict[Function, Callable[[float, array_type], float]]:
+    def inputs(self) -> dict[Function, Callable[[float, array_type], float]]:
         """Input of the system."""
         return self._inputs
 
     @inputs.setter
-    def inputs(self, inputs: dict[Function, Callable[[float, array_type], float]]):
+    def inputs(
+        self, inputs: dict[Function, Callable[[float, array_type], float]]
+    ) -> None:
         if not isinstance(inputs, dict):
             raise TypeError(f"Inputs should be of type {type(dict)} not "
                             f"{type(inputs)}.")
@@ -118,7 +119,7 @@ class Simulator:
         return self._initial_conditions
 
     @initial_conditions.setter
-    def initial_conditions(self, initial_conditions: dict[Function, float]):
+    def initial_conditions(self, initial_conditions: dict[Function, float]) -> None:
         if not isinstance(initial_conditions, dict):
             raise TypeError(f"Initial condintions should be of type "
                             f"{type(dict)} not {type(initial_conditions)}.")
@@ -141,7 +142,7 @@ class Simulator:
 
     def _solve_configuration_constraints(
             self, q_ind: array_type, q_dep_guess: array_type
-    ) -> array_type:  # type: ignore
+    ) -> array_type:
         """Solve the configuration constraints for the dependent coordinates."""
         if not self.system.q_dep:
             return np.array([])
@@ -267,8 +268,12 @@ class Simulator:
             residual[-n_nh:] = self._eval_velocity_constraints(
                 u_dep, q, u_ind, self._p_vals)[-n_nh:]
 
-    def solve(self, t_span: tuple[float, float] | array_type, solver: str = "solve_ivp",
-              **kwargs) -> tuple[array_type, array_type]:
+    def solve(
+        self,
+        t_span: tuple[float, float] | array_type,
+        solver: str = "solve_ivp",
+        **kwargs: dict[str, object],
+    ) -> tuple[array_type, array_type]:
         """Simulate the system.
 
         Parameters
@@ -306,8 +311,8 @@ class Simulator:
                 algebraic_vars_idx=range(len(x0) - n_constrs, len(x0)), old_api=False,
                 **kwargs)
             sol = dae_solver.solve(t_span, x0, self.eval_rhs(t_span[0], x0))
-            self._t = sol.values.t
-            self._x = sol.values.y.T
+            self._t = sol.values.t  # noqa: PD011
+            self._x = sol.values.y.T  # noqa: PD011
         else:
             raise ValueError(f"Unknown solver {solver}.")
         return self.t, self.x

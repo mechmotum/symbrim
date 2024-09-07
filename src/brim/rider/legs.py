@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import contextlib
 from abc import abstractmethod
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from sympy import Matrix, Symbol
 from sympy.physics.mechanics import (
@@ -101,7 +101,7 @@ class TwoPinStickLegMixin:
     """Mixin class for a leg with two pin joints."""
 
     @property
-    def descriptions(self) -> dict[Any, str]:
+    def descriptions(self) -> dict[object, str]:
         """Descriptions of the objects."""
         return {
             **super().descriptions,
@@ -261,7 +261,7 @@ class TwoPinLegTorque(LoadGroupBase):
     required_parent_type = (TwoPinStickLeftLeg, TwoPinStickRightLeg)
 
     @property
-    def descriptions(self) -> dict[Any, str]:
+    def descriptions(self) -> dict[object, str]:
         """Descriptions of the objects."""
         return {
             **super().descriptions,
@@ -291,7 +291,7 @@ class TwoPinLegSpringDamper(LoadGroupBase):
     required_parent_type = (TwoPinStickLeftLeg, TwoPinStickRightLeg)
 
     @property
-    def descriptions(self) -> dict[Any, str]:
+    def descriptions(self) -> dict[object, str]:
         """Descriptions of the objects."""
         return {
             **super().descriptions,

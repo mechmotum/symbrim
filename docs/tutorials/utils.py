@@ -1,41 +1,45 @@
 """Utilities for the tutorials."""
+from __future__ import annotations
+
 import inspect
-import os
 import zipfile
+from pathlib import Path
 
 import requests
 import sympy as sm
 import sympy.physics.mechanics as me
-from brim.bicycle import WheelBase
-from brim.utilities.utilities import check_zero
 from sympy.core.function import AppliedUndef
 
+from brim.bicycle import WheelBase
+from brim.utilities.utilities import check_zero
+
 BICYCLE_PARAMETERS_ZIP_URL = (
-    "https://github.com/moorepants/BicycleParameters/archive/refs/heads/master.zip")
-TUTORIALS_DIR = os.path.dirname(__file__)
+    "https://github.com/moorepants/BicycleParameters/archive/refs/heads/master.zip"
+)
+TUTORIALS_DIR = Path(__file__).parent
 
 
 def download_parametrization_data(data_dir: str | None = None) -> None:
     """Download the bicycle and rider data from the BicycleParameters repository."""
     if data_dir is None:
-        data_dir = os.path.join(TUTORIALS_DIR, "data")
-    if os.path.exists(os.path.join(TUTORIALS_DIR, "data")):
+        data_dir = TUTORIALS_DIR / "data"
+    if (TUTORIALS_DIR / "data").exists():
         raise FileExistsError("The data folder already exists.")
     # Download the zip file.
-    zip_file = os.path.join(os.path.dirname(__file__), "bicycle_parameters.zip")
-    with open(zip_file, "wb") as f:
-        f.write(requests.get(BICYCLE_PARAMETERS_ZIP_URL).content)
+    zip_file = TUTORIALS_DIR / "bicycle_parameters.zip"
+    with Path(zip_file).open("wb") as f:
+        f.write(requests.get(BICYCLE_PARAMETERS_ZIP_URL, timeout=10).content)
     # Obtain the data folder from the zip file.
     with zipfile.ZipFile(zip_file, "r") as f:
         for file in f.namelist():
             if file.startswith("BicycleParameters-master/data/"):
                 f.extract(file, TUTORIALS_DIR)
     # Remove the zip file.
-    os.remove(zip_file)
+    zip_file.unlink()
     # Rename the data folder.
-    os.rename(os.path.join(TUTORIALS_DIR, "BicycleParameters-master/data/"), data_dir)
+    (TUTORIALS_DIR / "BicycleParameters-master/data/").rename(data_dir)
     # Remove the BicycleParameters-master folder.
-    os.rmdir(os.path.join(TUTORIALS_DIR, "BicycleParameters-master"))
+    (TUTORIALS_DIR / "BicycleParameters-master").rmdir()
 
 
 def check_documentation(*objects: object) -> None:
@@ -59,11 +63,11 @@ def check_documentation(*objects: object) -> None:
         sig = inspect.signature(obj)
         for par in sig.parameters:
             if par not in ("self",) and par not in obj.__annotations__:
-                errors.append(f"'{par}' from {obj_str} does not have a type hint.")
+                errors.append(f"'{par}' from {obj_str} does not have a type hint.")  # noqa: PERF401
         if "return" not in obj.__annotations__:
             errors.append(f"{obj_str} has no type hint for what it returns")
     if errors:
-        raise Exception("\n".join(errors))
+        raise Exception("\n".join(errors))  # noqa: TRY002
 
 def verify_ground_base(ground_base_cls: type) -> None:
     """Verify GroundBase from the rolling_disc_from_scratch tutorial."""

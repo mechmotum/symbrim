@@ -1,12 +1,12 @@
 """Mixin classes providing common properties for models."""
 from __future__ import annotations
 
-import contextlib
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from sympy.physics.mechanics import ReferenceFrame, RigidBody, System, Vector
 
 if TYPE_CHECKING:
+    import contextlib
     with contextlib.suppress(ImportError):
         from brim.utilities.plotting import PlotModel
 
@@ -21,7 +21,7 @@ class NewtonianBodyMixin:
         self._system = System.from_newtonian(body)
 
     @property
-    def descriptions(self) -> dict[Any, str]:
+    def descriptions(self) -> dict[object, str]:
         """Descriptions of the symbols used in defining the body."""
         body = self.body
         inertia_matrix = body.central_inertia.to_matrix(body.frame)

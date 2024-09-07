@@ -1,24 +1,27 @@
 from __future__ import annotations
 
 import pytest
-from brim.bicycle.grounds import FlatGround
 from sympy import Symbol
 from sympy.physics.mechanics import System, Vector
 
+from brim.bicycle.grounds import FlatGround
+
 try:
-    from brim.utilities.plotting import PlotModel
     from symmeplot.matplotlib import PlotFrame
+
+    from brim.utilities.plotting import PlotModel
 except ImportError:
     PlotModel = None
 
 
 class TestFlatGround:
-    @pytest.fixture()
+    @pytest.fixture
     def _setup(self) -> None:
         self.ground = FlatGround("ground")
         self.ground.define_objects()
 
-    def test_default(self, _setup) -> None:
+    @pytest.mark.usefixtures("_setup")
+    def test_default(self) -> None:
         assert self.ground.name == "ground"
         assert self.ground.frame == self.ground.body.frame
         assert self.ground.get_normal(self.ground.origin) == -self.ground.frame.z
@@ -28,7 +31,7 @@ class TestFlatGround:
         assert self.ground.origin.vel(self.ground.frame) == 0
         assert isinstance(self.ground.system, System)
 
-    @pytest.mark.parametrize("normal, n_idx, pl_idx1, pl_idx2", [
+    @pytest.mark.parametrize(("normal", "n_idx", "pl_idx1", "pl_idx2"), [
         ("+x", 0, 1, 2),
         ("-x", 0, 1, 2),
         ("+y", 1, 0, 2),
@@ -49,12 +52,13 @@ class TestFlatGround:
             vectors[pl_idx1], vectors[pl_idx2])
 
     @pytest.mark.parametrize("tp", ["tuple", "vector", "point"])
-    @pytest.mark.parametrize("position, expected", [
+    @pytest.mark.parametrize(("position", "expected"), [
         ((Symbol("x"), Symbol("y"), Symbol("z")),
          (Symbol("x"), Symbol("y"), Symbol("z"))),
         ((Symbol("x"), Symbol("y")), (Symbol("x"), Symbol("y"), 0))])
-    def test_parse_plane_position(self, _setup, tp, position, expected) -> None:
-        if tp == "vector" or tp == "point":
+    @pytest.mark.usefixtures("_setup")
+    def test_parse_plane_position(self, tp, position, expected) -> None:
+        if tp in ("vector", "point"):
             position = Vector(0)
             for i, v in enumerate("xyz"):
                 if i < len(expected):
@@ -66,7 +70,8 @@ class TestFlatGround:
     @pytest.mark.parametrize("position", [
         (Symbol("x"), Symbol("y"), Symbol("z"), Symbol("w")),
         (Symbol("x"), )])
-    def test_parse_plane_position_error(self, _setup, position) -> None:
+    @pytest.mark.usefixtures("_setup")
+    def test_parse_plane_position_error(self, position) -> None:
         with pytest.raises(ValueError):
             self.ground._parse_plane_position(position)
 

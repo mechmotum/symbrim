@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import contextlib
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from sympy import Symbol
 from sympy.physics.mechanics import System, Vector, WeldJoint
@@ -22,7 +22,7 @@ class FixedSacrum(SacrumBase):
     """Connection to fixate the torso to the pelvis."""
 
     @property
-    def descriptions(self) -> dict[Any, str]:
+    def descriptions(self) -> dict[object, str]:
         """Return the descriptions."""
         return {
             **super().descriptions,

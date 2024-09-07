@@ -1,6 +1,7 @@
 from unittest.mock import MagicMock, patch
 
 import pytest
+
 from brim.rider import (
     PlanarPelvis,
     Rider,
@@ -11,6 +12,7 @@ from brim.rider import (
 
 try:
     import matplotlib.pyplot as plt
+
     from brim.utilities.plotting import (
         PlotConnection,
         PlotLoadGroup,

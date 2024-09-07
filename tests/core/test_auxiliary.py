@@ -1,5 +1,4 @@
 import pytest
-from brim.core.auxiliary import AuxiliaryData, AuxiliaryDataHandler
 from sympy import simplify, solve, sqrt, symbols
 from sympy.physics.mechanics import (
     Force,
@@ -10,13 +9,15 @@ from sympy.physics.mechanics import (
     dynamicsymbols,
 )
 
+from brim.core.auxiliary import AuxiliaryData, AuxiliaryDataHandler
+
 frame = ReferenceFrame("frame")
 point = Point("point")
 uaux = dynamicsymbols("uaux")
 faux = dynamicsymbols("faux")
 
 class AuxiliarySetup:
-    @pytest.fixture()
+    @pytest.fixture
     def _setup_cart_pendulum(self) -> None:
         """Cart with a two link pendulum."""
         self.x, self.v = dynamicsymbols("x v")
@@ -48,7 +49,7 @@ class AuxiliarySetup:
         self.noncontributing_loads = [self.ld_fz, self.ld_j2]
 
 class TestAuxiliaryData(AuxiliarySetup):
-    @pytest.mark.parametrize("args, kwargs, expected", [
+    @pytest.mark.parametrize(("args", "kwargs", "expected"), [
         ((point, frame.x, uaux, faux), {}, (point, frame.x, uaux, faux)),
         ((), {"location": point, "direction": frame.z, "speed_symbol": uaux,
               "load_symbol": faux}, (point, frame.z, uaux, faux)),
@@ -60,7 +61,8 @@ class TestAuxiliaryData(AuxiliarySetup):
         assert force.speed_symbol == expected[2]
         assert force.load_symbol == expected[3]
 
-    def test_init_torque(self, _setup_cart_pendulum) -> None:
+    @pytest.mark.usefixtures("_setup_cart_pendulum")
+    def test_init_torque(self) -> None:
         with pytest.raises(NotImplementedError):
             AuxiliaryData(self.f1, self.inertial_frame.x, self.uay, self.fay)
 
@@ -72,11 +74,13 @@ class TestAuxiliaryData(AuxiliarySetup):
         with pytest.raises(TypeError):
             AuxiliaryData(*args)
 
-    def test_is_force_torque(self, _setup_cart_pendulum) -> None:
+    @pytest.mark.usefixtures("_setup_cart_pendulum")
+    def test_is_force_torque(self) -> None:
         assert self.ld_fz.is_force
         assert not self.ld_fz.is_torque
 
-    def test_get_load_force(self, _setup_cart_pendulum) -> None:
+    @pytest.mark.usefixtures("_setup_cart_pendulum")
+    def test_get_load_force(self) -> None:
         force = self.ld_fz.get_load(self.inertial_frame)
         pytest.raises(ValueError, lambda: force.point.pos_from(self.inertial_point))
         assert isinstance(force, Force)
@@ -85,18 +89,19 @@ class TestAuxiliaryData(AuxiliarySetup):
             self.uay.diff() * self.inertial_frame.y)
         assert force.force == self.fay * self.inertial_frame.y
 
-    def test_auxiliary_velocity(self, _setup_cart_pendulum) -> None:
+    @pytest.mark.usefixtures("_setup_cart_pendulum")
+    def test_auxiliary_velocity(self) -> None:
         assert self.ld_fz.auxiliary_velocity == self.uay * self.inertial_frame.y
         assert self.ld_j2.auxiliary_velocity == -self.ual * self.f2.y
 
 
 class TestAuxiliaryHandler(AuxiliarySetup):
-    @pytest.fixture()
+    @pytest.fixture
     def _setup_handler(self, _setup_cart_pendulum) -> None:
         self.handler = AuxiliaryDataHandler(self.inertial_frame, self.inertial_point)
         self.handler.auxiliary_data_list.extend(self.noncontributing_loads)
 
-    @pytest.mark.parametrize("args, kwargs, exp_frame, exp_point", [
+    @pytest.mark.parametrize(("args", "kwargs", "exp_frame", "exp_point"), [
         ((frame, point), {}, frame, point),
         ((), {"inertial_frame": frame, "inertial_point": point}, frame, point),
     ])
@@ -113,7 +118,8 @@ class TestAuxiliaryHandler(AuxiliarySetup):
         with pytest.raises(TypeError):
             AuxiliaryDataHandler(*args)
 
-    def test_from_system(self, _setup_handler) -> None:
+    @pytest.mark.usefixtures("_setup_handler")
+    def test_from_system(self) -> None:
         sys = System()
         handler = AuxiliaryDataHandler.from_system(sys)
         assert handler.inertial_frame == sys.frame
@@ -121,7 +127,8 @@ class TestAuxiliaryHandler(AuxiliarySetup):
 
     @pytest.mark.parametrize("get_childs", [
         "_pos_dict", lambda pt: pt._pos_dict.keys()])
-    def test_create_tree_points(self, _setup_handler, get_childs) -> None:
+    @pytest.mark.usefixtures("_setup_handler")
+    def test_create_tree_points(self, get_childs) -> None:
         tree = AuxiliaryDataHandler._extract_tree(self.inertial_point, get_childs)
         expected_tree = {
             self.inertial_point: [self.cart],
@@ -135,29 +142,28 @@ class TestAuxiliaryHandler(AuxiliarySetup):
             assert set(chlds) == set(expected_tree[p])
             assert len(chlds) == len(expected_tree[p])
 
-    @pytest.mark.parametrize("graph, root, tree_exp", [
+    @pytest.mark.parametrize(("graph", "root", "tree_exp"), [
         ({1: [2, 3], 2: [1, 4], 3: [1], 4: [2]}, 1, {1: [2, 3], 2: [4], 3: [], 4: []}),
         ({1: [2, 3], 2: [1, 4], 3: [1], 4: [2]}, 2, {2: [1, 4], 1: [3], 4: [], 3: []}),
     ])
     def test_extract_tree(self, graph, root, tree_exp) -> None:
-        get_childs = lambda pt: graph[pt]  # noqa: E731
-        tree = AuxiliaryDataHandler._extract_tree(root, get_childs)
+        tree = AuxiliaryDataHandler._extract_tree(root, lambda pt: graph[pt])
         assert tree == tree_exp
 
-    @pytest.mark.parametrize("graph, root", [
+    @pytest.mark.parametrize(("graph", "root"), [
         ({1: [2, 3], 2: [1, 3], 3: [1, 2]}, 1),
         ({1: [2, 3], 2: [1, 4], 3: [1, 4], 4: [2, 3]}, 1),
         ({1: [2, 3], 2: [1, 4], 3: [1, 4], 4: [2, 3]}, 2),
     ])
     def test_extract_tree_cycle(self, graph, root) -> None:
-        get_childs = lambda pt: graph[pt]  # noqa: E731
         with pytest.raises(ValueError):
-            AuxiliaryDataHandler._extract_tree(root, get_childs)
+            AuxiliaryDataHandler._extract_tree(root, lambda pt: graph[pt])
 
-    @pytest.mark.parametrize("point, parent", [
+    @pytest.mark.parametrize(("point", "parent"), [
         ("inertial_point", None), ("cart", "inertial_point"), ("p2", "p1"),
         (point, None)])
-    def test_get_parent(self, _setup_handler, point, parent) -> None:
+    @pytest.mark.usefixtures("_setup_handler")
+    def test_get_parent(self, point, parent) -> None:
         point = getattr(self, point) if isinstance(point, str) else point
         parent = getattr(self, parent) if isinstance(parent, str) else parent
         self.handler.retrieve_graphs()
@@ -170,7 +176,7 @@ class TestAuxiliaryHandler(AuxiliarySetup):
         assert handler._compute_velocity(point, frame) == 10 * frame.y
 
     @pytest.mark.parametrize("pass_parent", [True, False])
-    @pytest.mark.parametrize("point, parent, vel", [
+    @pytest.mark.parametrize(("point", "parent", "vel"), [
         ("p2", "p1", "u2 * f1.x"),  # simple retrieval
         ("p3", "p2", "p3.v2pt_theory(p2, f1, f2)"),  # v2pt_theory
         ("p3", "p2", "u2 * f1.x - u1 * 3 * f2.x"),  # v2pt_theory
@@ -196,10 +202,10 @@ class TestAuxiliaryHandler(AuxiliarySetup):
         p4.set_vel(f2, u3 * f2.x)
         p5 = p4.locatenew("p5", 2 * f2.y)  # noqa: F841
         handler = AuxiliaryDataHandler(f1, p1)
-        point = eval(point) if isinstance(point, str) else point
-        vel_exp = eval(vel) if isinstance(vel, str) else vel
+        point = eval(point) if isinstance(point, str) else point  # noqa: S307
+        vel_exp = eval(vel) if isinstance(vel, str) else vel  # noqa: S307
         if pass_parent:
-            vel = handler._compute_velocity(point, eval(parent))
+            vel = handler._compute_velocity(point, eval(parent))  # noqa: S307
         else:
             vel = handler._compute_velocity(point)
         assert (vel - vel_exp).express(f2).simplify() == 0
@@ -228,7 +234,8 @@ class TestAuxiliaryHandler(AuxiliarySetup):
         with pytest.raises(ValueError):
             handler._compute_velocity(point2)
 
-    def test_apply_speeds(self, _setup_handler) -> None:
+    @pytest.mark.usefixtures("_setup_handler")
+    def test_apply_speeds(self) -> None:
         self.handler.apply_speeds()
         cart_vel = self.v * self.inertial_frame.x + self.uay * self.inertial_frame.y
         p1_vel = cart_vel + self.l[0] * self.u1 * self.f1.x - self.ual * self.f2.y
@@ -239,16 +246,19 @@ class TestAuxiliaryHandler(AuxiliarySetup):
         assert self.p2.vel(self.inertial_frame) == p2_vel
         assert self.p3.vel(self.inertial_frame) == p3_vel
 
-    def test_apply_speeds_twice(self, _setup_handler) -> None:
+    @pytest.mark.usefixtures("_setup_handler")
+    def test_apply_speeds_twice(self) -> None:
         self.handler.apply_speeds()
         pytest.raises(ValueError, lambda: self.handler.apply_speeds())
 
-    def test_apply_speeds_disconnected(self, _setup_handler) -> None:
+    @pytest.mark.usefixtures("_setup_handler")
+    def test_apply_speeds_disconnected(self) -> None:
         self.handler.add_noncontributing_force(point, frame.y, uaux, faux)
         with pytest.raises(ValueError):
             self.handler.apply_speeds()
 
-    def test_create_loads(self, _setup_handler) -> None:
+    @pytest.mark.usefixtures("_setup_handler")
+    def test_create_loads(self) -> None:
         loads = self.handler.create_loads()
         for ld in loads:
             with pytest.raises(ValueError):
@@ -259,26 +269,29 @@ class TestAuxiliaryHandler(AuxiliarySetup):
         assert loads[1].point.vel(self.inertial_frame) == -self.ual * self.f2.y
         assert loads[1].force == -self.fal * self.f2.y
 
-    @pytest.mark.parametrize("point, vel", [
+    @pytest.mark.parametrize(("point", "vel"), [
         ("inertial_point", 0),
         ("cart", "uay * inertial_frame.y"),
         ("p1", "uay * inertial_frame.y - ual * f2.y"),
         ("p2", "uay * inertial_frame.y - ual * f2.y"),
         ("p3", "uay * inertial_frame.y - ual * f2.y"),
     ])
-    def test_get_auxiliary_velocity(self, _setup_handler, point, vel) -> None:
+    @pytest.mark.usefixtures("_setup_handler")
+    def test_get_auxiliary_velocity(self, point, vel) -> None:
         inertial_frame = self.inertial_frame  # noqa: F841
         uay, ual, f1, f2 = self.uay, self.ual, self.f1, self.f2  # noqa: F841
         point = getattr(self, point) if isinstance(point, str) else point
-        vel = eval(vel) if isinstance(vel, str) else vel
+        vel = eval(vel) if isinstance(vel, str) else vel  # noqa: S307
         self.handler.apply_speeds()
         assert self.handler.get_auxiliary_velocity(point) == vel
 
-    def test_get_auxiliary_velocity_not_applied(self, _setup_handler) -> None:
+    @pytest.mark.usefixtures("_setup_handler")
+    def test_get_auxiliary_velocity_not_applied(self) -> None:
         with pytest.raises(ValueError):
             self.handler.get_auxiliary_velocity(self.p2)
 
-    def test_get_auxiliary_velocity_disconnected(self, _setup_handler) -> None:
+    @pytest.mark.usefixtures("_setup_handler")
+    def test_get_auxiliary_velocity_disconnected(self) -> None:
         self.handler.apply_speeds()
         with pytest.raises(ValueError):
             self.handler.get_auxiliary_velocity(Point("point2"))

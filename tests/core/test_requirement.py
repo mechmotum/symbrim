@@ -3,6 +3,7 @@ from __future__ import annotations
 import re
 
 import pytest
+
 from brim.core import ConnectionRequirement, ModelBase, ModelRequirement
 
 
@@ -32,7 +33,7 @@ class TestRequirementGeneral:
         assert str(req) == "my_sub_model_attr"
         assert re.match(rf"{cls.__name__}\(.+\)$", repr(req))
 
-    @pytest.mark.parametrize("args, kwargs, attribute, expected", [
+    @pytest.mark.parametrize(("args", "kwargs", "attribute", "expected"), [
         (("my_sub", MyModel), {"description": "New desc."}, "description", "New desc."),
         (("my_sub", MyModel), {"full_name": "New name"}, "full_name", "New name"),
         (("my_sub", MyModel), {"type_name": "New type"}, "type_name", "New type"),

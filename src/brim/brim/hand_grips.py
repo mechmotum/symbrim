@@ -1,7 +1,7 @@
 """Module containing the hand grip connections."""
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from sympy import symbols
 from sympy.physics.mechanics import (
@@ -44,7 +44,7 @@ class HolonomicHandGrips(HandGripsBase):
     def _define_constraints(self) -> None:
         """Define the constraints."""
 
-        def attach_hand(hand_point: Point, hand_grip: Attachment):
+        def attach_hand(hand_point: Point, hand_grip: Attachment) -> None:
             """Attach the hand to the steer."""
             for direction in hand_grip.frame:
                 constr = hand_point.pos_from(hand_grip.point).dot(direction)
@@ -80,7 +80,7 @@ class SpringDamperHandGrips(HandGripsBase):
     """Constrain the hands to the steer using spring-dampers."""
 
     @property
-    def descriptions(self) -> dict[Any, str]:
+    def descriptions(self) -> dict[object, str]:
         """Descriptions of the objects."""
         return {
             **super().descriptions,

@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import pytest
+from sympy.physics.mechanics import Point, RigidBody
+
 from brim.rider.torso import PlanarTorso, TorsoBase
 from brim.utilities.testing import _test_descriptions
-from sympy.physics.mechanics import Point, RigidBody
 
 try:
     from brim.utilities.plotting import PlotModel

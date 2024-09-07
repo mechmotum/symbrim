@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 import pytest
+
 from brim.bicycle.wheels import KnifeEdgeWheel, ToroidalWheel
 
 try:
-    from brim.utilities.plotting import PlotModel
     from symmeplot.matplotlib import PlotBody
     from symmeplot.matplotlib.artists import Circle3D
+
+    from brim.utilities.plotting import PlotModel
 except ImportError:
     PlotModel = None
 

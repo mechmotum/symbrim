@@ -10,15 +10,19 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+import numpy as np
 from symmeplot.matplotlib import Scene3D
 from symmeplot.matplotlib.plot_base import MplPlotBase
+from typing_extensions import Self
 
 from brim.core import ConnectionBase, LoadGroupBase, ModelBase
-from brim.core.base_classes import BrimBase
 
 if TYPE_CHECKING:
     from mpl_toolkits.mplot3d.axes3d import Axes3D
+    from sympy import Expr
     from sympy.physics.mechanics import Point, ReferenceFrame
+
+    from brim.core.base_classes import BrimBase
 
 __all__ = ["Plotter", "PlotBrimMixin", "PlotModel", "PlotConnection", "PlotLoadGroup"]
 
@@ -28,7 +32,7 @@ class Plotter(Scene3D):
 
     @classmethod
     def from_model(cls, model: ModelBase, ax: Axes3D | None = None,
-                   **inertial_frame_properties):
+                   **inertial_frame_properties: dict[str, object]) -> Self:
         """Initialize the plotter.
 
         Parameters
@@ -47,7 +51,7 @@ class Plotter(Scene3D):
         plotter.add_model(model)
         return plotter
 
-    def add_model(self, model: ModelBase, **kwargs):
+    def add_model(self, model: ModelBase, **kwargs: dict[str, object]) -> PlotModel:
         """Add a model to the plotter.
 
         Parameters
@@ -61,7 +65,9 @@ class Plotter(Scene3D):
         self.add_plot_object(obj)
         return obj
 
-    def add_connection(self, connection: ConnectionBase, **kwargs):
+    def add_connection(
+        self, connection: ConnectionBase, **kwargs: dict[str, object]
+    ) -> PlotConnection:
         """Add a connection to the plotter.
 
         Parameters
@@ -76,7 +82,9 @@ class Plotter(Scene3D):
         self.add_plot_object(obj)
         return obj
 
-    def add_load_group(self, load_group: LoadGroupBase, **kwargs):
+    def add_load_group(
+        self, load_group: LoadGroupBase, **kwargs: dict[str, object]
+    ) -> PlotLoadGroup:
         """Add a load group to the plotter.
 
         Parameters
@@ -116,30 +124,22 @@ class PlotBrimMixin:
         super().__init__(inertial_frame, zero_point, brim_object, brim_object.name)
         brim_object.set_plot_objects(self)
 
-    def add_point(self, point: Point, **kwargs) -> PlotBrimMixin._PlotPoint:
-        """Add a point to the plotter.
-
-        Parameters
-        ----------
-        point : Point
-            Point to add.
-        **kwargs
-            Keyword arguments are passed to :class:`symmeplot.plot_objects.PlotPoint`.
-
-        Returns
-        -------
-        PlotPoint
-            Plot object of the point.
-        """
-        return super().add_point(point, **kwargs)
+    def get_sympy_object_exprs(self) -> tuple[Expr, Expr, Expr]:
+        """Get coordinate of the point as expressions."""
+        if self.sympy_object.system is None:
+            annot_point = self.zero_point
+        else:
+            annot_point = self.sympy_object.system.fixed_point
+        return tuple(
+            annot_point.pos_from(self.zero_point).to_matrix(self.inertial_frame)[:]
+        )
 
     @property
-    def annot_coords(self):
+    def annot_coords(self) -> np.ndarray[np.float64]:
         """Coordinate where the annotation text is displayed."""
-        if self.sympy_object.system is None:
-            return self.zero_point
-        else:
-            return self.sympy_object.system.fixed_point
+        if not self._values:
+            return np.zeros(3)
+        return np.array(self._values[0]).reshape(3)
 
 
 class PlotModel(PlotBrimMixin, MplPlotBase):
@@ -180,12 +180,11 @@ class PlotModel(PlotBrimMixin, MplPlotBase):
         return self._model
 
     @model.setter
-    def model(self, model: ModelBase):
+    def model(self, model: ModelBase) -> None:
         if not isinstance(model, ModelBase):
             raise TypeError(f"'model' should be an instance of {ModelBase}.")
-        else:
-            self._model = model
-            self._values = []
+        self._model = model
+        self._values = []
 
     @property
     def submodels(self) -> tuple[PlotModel, ...]:
@@ -243,12 +242,11 @@ class PlotConnection(PlotBrimMixin, MplPlotBase):
         return self._connection
 
     @connection.setter
-    def connection(self, connection: ConnectionBase):
+    def connection(self, connection: ConnectionBase) -> None:
         if not isinstance(connection, ConnectionBase):
             raise TypeError(f"'connection' should be an instance of {ConnectionBase}.")
-        else:
-            self._connection = connection
-            self._values = []
+        self._connection = connection
+        self._values = []
 
     @property
     def submodels(self) -> tuple[PlotModel, ...]:
@@ -287,9 +285,8 @@ class PlotLoadGroup(PlotBrimMixin, MplPlotBase):
         return self._load_group
 
     @load_group.setter
-    def load_group(self, load_group: LoadGroupBase):
+    def load_group(self, load_group: LoadGroupBase) -> None:
         if not isinstance(load_group, LoadGroupBase):
             raise TypeError(f"'load_group' should be an instance of {LoadGroupBase}.")
-        else:
-            self._load_group = load_group
-            self._values = []
+        self._load_group = load_group
+        self._values = []

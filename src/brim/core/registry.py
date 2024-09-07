@@ -123,9 +123,10 @@ class Registry(Singleton):
         options = []
         if not isinstance(obj, type):
             obj = type(obj)
-        for group in self.load_groups:
-            if issubclass(obj, group.required_parent_type):
-                options.append(group)
+        options = [
+            group for group in self.load_groups
+            if issubclass(obj, group.required_parent_type)
+        ]
         if drop_abstract:
             options = [option for option in options if option.__name__[-4:] != "Base"]
         return options

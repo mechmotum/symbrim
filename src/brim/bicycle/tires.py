@@ -1,8 +1,6 @@
 """Module containing tire models for bicycles."""
 from __future__ import annotations
 
-from typing import Any
-
 from sympy import Expr, Function, atan2
 from sympy import MutableDenseMatrix as Matrix
 from sympy.physics.mechanics import (
@@ -44,7 +42,7 @@ class TireBase(ConnectionBase):
                 self.wheel.center.set_pos(self.contact_point,
                                           self.wheel.radius * self.upward_radial_axis)
                 return
-            elif isinstance(self.wheel, ToroidalWheel):
+            if isinstance(self.wheel, ToroidalWheel):
                 self.wheel.center.set_pos(
                     self.contact_point,
                     self.wheel.radius * self.upward_radial_axis +
@@ -223,7 +221,7 @@ class InContactTire(TireBase):
         self.substitute_loads: bool = False
 
     @property
-    def descriptions(self) -> dict[Any, str]:
+    def descriptions(self) -> dict[object, str]:
         """Dictionary of descriptions of the lateral tire model's attributes."""
         descriptions = super().descriptions
         if self.compute_normal_force:
