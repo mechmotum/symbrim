@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import contextlib
 from abc import abstractmethod
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from sympy import Symbol
 from sympy.physics.mechanics import Point, ReferenceFrame
@@ -111,7 +111,7 @@ class PlanarTorso(TorsoBase):
     """
 
     @property
-    def descriptions(self) -> dict[Any, str]:
+    def descriptions(self) -> dict[object, str]:
         """Descriptions of the objects."""
         return {
             **super().descriptions,

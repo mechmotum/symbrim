@@ -1,12 +1,13 @@
 from __future__ import annotations
 
 import pytest
+from sympy import eye
+
 from brim.rider.base_connections import SacrumBase
 from brim.rider.pelvis import PlanarPelvis
 from brim.rider.sacrums import FixedSacrum
 from brim.rider.torso import PlanarTorso
 from brim.utilities.testing import _test_descriptions, create_model_of_connection
-from sympy import eye
 
 try:
     from brim.utilities.plotting import PlotConnection

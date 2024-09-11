@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import contextlib
-from typing import Any
 from warnings import warn
 
 from sympy import Matrix, Symbol, symbols
@@ -49,7 +48,7 @@ class RollingDisc(ModelBase):
         self.wheel = value
 
     @property
-    def descriptions(self) -> dict[Any, str]:
+    def descriptions(self) -> dict[object, str]:
         """Dictionary of descriptions of the rolling disc's attributes."""
         desc = {
             **super().descriptions,

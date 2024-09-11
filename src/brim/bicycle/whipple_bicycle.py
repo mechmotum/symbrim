@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import contextlib
-from typing import Any
 
 from sympy import Matrix, Symbol
 from sympy.physics.mechanics import (
@@ -64,7 +63,7 @@ class WhippleBicycleMoore(WhippleBicycle):
     convention: str = "moore"
 
     @property
-    def descriptions(self) -> dict[Any, str]:
+    def descriptions(self) -> dict[object, str]:
         """Dictionary of descriptions of the Whipple bicycle's symbols."""
         desc = {
             **super().descriptions,

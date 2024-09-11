@@ -1,7 +1,6 @@
 """Module containing the base class for bicycles."""
 from __future__ import annotations
 
-import contextlib
 from typing import TYPE_CHECKING
 
 from brim.bicycle.cranks import CranksBase
@@ -11,6 +10,8 @@ from brim.bicycle.wheels import WheelBase
 from brim.core import ModelBase, ModelRequirement
 
 if TYPE_CHECKING:
+    import contextlib
+
     from sympy import Symbol
 
     with contextlib.suppress(ImportError):

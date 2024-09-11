@@ -91,10 +91,10 @@ class RequirementBase(ABC):
         """Type hint for the submodel."""
         return Union[self.types]
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.attribute_name
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return (f"{self.__class__.__name__}(attribute_name={self.attribute_name!r}, "
                 f"types={self.types!r}, description={self.description!r}, "
                 f"full_name={self.full_name!r}, type_name={self.type_name!r})")
@@ -131,9 +131,7 @@ class ModelRequirement(RequirementBase):
         bool
             Whether the submodel satisfies the requirement.
         """
-        if not (isinstance(submodel, self.types) or issubclass(submodel, self.types)):
-            return False
-        return True
+        return isinstance(submodel, self.types) or issubclass(submodel, self.types)
 
 
 class ConnectionRequirement(RequirementBase):
@@ -152,7 +150,4 @@ class ConnectionRequirement(RequirementBase):
         bool
             Whether the connection satisfies the requirement.
         """
-        if not (isinstance(connection, self.types) or
-                issubclass(connection, self.types)):
-            return False
-        return True
+        return isinstance(connection, self.types) or issubclass(connection, self.types)

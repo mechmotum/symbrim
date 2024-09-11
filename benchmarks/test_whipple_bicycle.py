@@ -1,12 +1,3 @@
-from brim.bicycle import (
-    FlatGround,
-    KnifeEdgeWheel,
-    NonHolonomicTire,
-    RigidFrontFrame,
-    RigidRearFrame,
-    WhippleBicycleMoore,
-)
-from brim.utilities.benchmarking import benchmark
 from sympy import symbols
 from sympy.physics.mechanics import (
     KanesMethod,
@@ -18,6 +9,16 @@ from sympy.physics.mechanics import (
     dynamicsymbols,
     inertia,
 )
+
+from brim.bicycle import (
+    FlatGround,
+    KnifeEdgeWheel,
+    NonHolonomicTire,
+    RigidFrontFrame,
+    RigidRearFrame,
+    WhippleBicycleMoore,
+)
+from brim.utilities.benchmarking import benchmark
 
 ROUNDS = 3
 
@@ -42,14 +43,8 @@ def create_whipple_bicycle_moore_brim():
     return system
 
 
-def create_whipple_bicycle_moore_minimal_coords():
-    N = ReferenceFrame("N")  # noqa: N806
-    A = ReferenceFrame("A")  # noqa: N806
-    B = ReferenceFrame("B")  # noqa: N806
-    C = ReferenceFrame("C")  # noqa: N806
-    D = ReferenceFrame("D")  # noqa: N806
-    E = ReferenceFrame("E")  # noqa: N806
-    F = ReferenceFrame("F")  # noqa: N806
+def create_whipple_bicycle_moore_minimal_coords():  # noqa: PLR0915
+    N, A, B, C, D, E, F = symbols("N A:F", cls=ReferenceFrame)  # noqa: N806
     q1, q2, q3, q4 = dynamicsymbols("q1 q2 q3 q4")
     q5, q6, q7, q8 = dynamicsymbols("q5 q6 q7 q8")
 

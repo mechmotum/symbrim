@@ -1,7 +1,6 @@
 """Module containing the models of the ground."""
 from __future__ import annotations
 
-import contextlib
 from abc import abstractmethod
 from typing import TYPE_CHECKING
 
@@ -17,6 +16,8 @@ from sympy.physics.mechanics import (
 from brim.core import ModelBase
 
 if TYPE_CHECKING:
+    import contextlib
+
     from sympy import Expr
 
     T_position = Point | Vector | tuple[Expr, ...]
@@ -141,11 +142,11 @@ class FlatGround(GroundBase):
         else:
             self._planar_vectors = (self.frame.x, self.frame.y)
 
-    def get_normal(self, position: T_position) -> Vector:
+    def get_normal(self, position: T_position) -> Vector:  # noqa: ARG002
         """Get normal vector of the ground."""
-        return self._normal  # type: ignore
+        return self._normal
 
-    def get_tangent_vectors(self, position: T_position) -> tuple[Vector, Vector]:
+    def get_tangent_vectors(self, position: T_position) -> tuple[Vector, Vector]:  # noqa: ARG002
         """Get tangent vectors of the ground plane."""
         return self._planar_vectors
 

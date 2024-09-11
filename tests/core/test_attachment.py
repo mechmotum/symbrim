@@ -1,5 +1,4 @@
 import pytest
-from brim.core.attachment import Attachment, Hub, MasslessBody
 from sympy.physics.mechanics import (
     Dyadic,
     Inertia,
@@ -8,6 +7,8 @@ from sympy.physics.mechanics import (
     ReferenceFrame,
     Vector,
 )
+
+from brim.core.attachment import Attachment, Hub, MasslessBody
 
 
 class TestMasslessBody:
@@ -46,13 +47,14 @@ class TestMasslessBody:
 
 @pytest.mark.parametrize("cls, kwargs", [(Attachment, {}), (Hub, {"axis": "x"})])
 class TestAttachment:
-    @pytest.fixture()
+    @pytest.fixture
     def _setup(self, cls, kwargs) -> None:
         self.frame = ReferenceFrame("frame")
         self.point = Point("point")
         self.attachment = cls(self.frame, self.point, **kwargs)
 
-    def test_init(self, _setup) -> None:
+    @pytest.mark.usefixtures("_setup")
+    def test_init(self) -> None:
         assert self.attachment.frame == self.frame
         assert self.attachment.point == self.point
         assert self.attachment.point.vel(self.frame) == Vector(0)
@@ -65,20 +67,22 @@ class TestAttachment:
         assert attachment.point.name == "attachment_point"
 
     @pytest.mark.parametrize("set_body_name", [True, False])
-    def test_to_valid_joint_arg(self, _setup, set_body_name) -> None:
+    @pytest.mark.usefixtures("_setup")
+    def test_to_valid_joint_arg(self, set_body_name) -> None:
         kwargs = {"name": "my_body"} if set_body_name else {}
         parent = self.attachment.to_valid_joint_arg(**kwargs)
         child = MasslessBody("body", Point("point2"), ReferenceFrame("frame2"))
         PinJoint("joint", parent, child)
         assert parent.name == "my_body" if set_body_name else "massless_body"
 
-    def test_immutable(self, _setup) -> None:
+    @pytest.mark.usefixtures("_setup")
+    def test_immutable(self) -> None:
         with pytest.raises(AttributeError):
             self.attachment.frame = ReferenceFrame("frame2")
         with pytest.raises(AttributeError):
             self.attachment.point = Point("point2")
 
-    @pytest.mark.parametrize("point, frame", [
+    @pytest.mark.parametrize(("point", "frame"), [
         (Point("point1"), Point("point2")),
         (ReferenceFrame("frame1"), ReferenceFrame("frame2")),
     ])
@@ -92,7 +96,7 @@ class TestAttachment:
 
 class TestHub:
 
-    @pytest.mark.parametrize("axis, direction, times", [
+    @pytest.mark.parametrize(("axis", "direction", "times"), [
         ("+x", 0, 1),
         ("-x", 0, -1),
         ("+y", 1, 1),

@@ -3,6 +3,8 @@ from __future__ import annotations
 
 from typing import ClassVar
 
+from typing_extensions import Self
+
 __all__ = ["SingletonMeta", "Singleton"]
 
 
@@ -11,7 +13,7 @@ class SingletonMeta(type):
 
     _instances: ClassVar[dict[type, object]] = {}
 
-    def __call__(cls, *args, **kwargs):
+    def __call__(cls, *args: object, **kwargs: dict[str, object]) -> Self:
         """Create a new instance of the class."""
         if cls not in cls._instances:
             cls._instances[cls] = super().__call__(*args, **kwargs)
@@ -21,7 +23,7 @@ class SingletonMeta(type):
         """Activate the instance of the class."""
         cls._instances[cls] = instance
 
-    def deactivate(cls, instance: object):
+    def deactivate(cls, instance: object) -> None:
         """Deactivate the instance of the class."""
         if cls in cls._instances:  # pragma: no cover
             if cls._instances[cls] is instance:

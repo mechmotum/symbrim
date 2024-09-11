@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 import pytest
+from sympy import Matrix, cos, eye, simplify, sin, zeros
+from sympy.physics.mechanics import ReferenceFrame
+
 from brim.bicycle.rear_frames import RigidRearFrameMoore
 from brim.brim.base_connections import SeatBase
 from brim.brim.seats import (
@@ -12,8 +15,6 @@ from brim.brim.seats import (
 from brim.rider.pelvis import PlanarPelvis
 from brim.utilities.testing import _test_descriptions, create_model_of_connection
 from brim.utilities.utilities import check_zero
-from sympy import Matrix, cos, eye, simplify, sin, zeros
-from sympy.physics.mechanics import ReferenceFrame
 
 
 @pytest.mark.parametrize("seat_cls", [FixedSeat, SideLeanSeat])

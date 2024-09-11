@@ -1,8 +1,6 @@
 """Module containing the seat connections."""
 from __future__ import annotations
 
-from typing import Any
-
 from sympy import Matrix, Symbol, cos, sin
 from sympy.physics.mechanics import (
     PinJoint,
@@ -77,7 +75,7 @@ class FixedSeat(PelvisInterPointMixin, SeatBase):
     """
 
     @property
-    def descriptions(self) -> dict[Any, str]:
+    def descriptions(self) -> dict[object, str]:
         """Descriptions of the objects."""
         return {
             **super().descriptions,
@@ -127,7 +125,7 @@ class SideLeanSeat(PelvisInterPointMixin, SeatBase):
     """Rider lean connection between the rear frame and the pelvis."""
 
     @property
-    def descriptions(self) -> dict[Any, str]:
+    def descriptions(self) -> dict[object, str]:
         """Descriptions of the objects."""
         return {
             **super().descriptions,
@@ -196,7 +194,7 @@ class SideLeanSeatTorque(LoadGroupBase):
     required_parent_type = SideLeanSeat
 
     @property
-    def descriptions(self) -> dict[Any, str]:
+    def descriptions(self) -> dict[object, str]:
         """Descriptions of the objects."""
         return {
             **super().descriptions,
@@ -223,7 +221,7 @@ class SideLeanSeatSpringDamper(LoadGroupBase):
     required_parent_type = SideLeanSeat
 
     @property
-    def descriptions(self) -> dict[Any, str]:
+    def descriptions(self) -> dict[object, str]:
         """Descriptions of the objects."""
         return {
             **super().descriptions,

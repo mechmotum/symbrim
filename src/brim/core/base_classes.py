@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from abc import ABCMeta
 from functools import wraps
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING
 
 from sympy import Basic, MutableDenseMatrix, Symbol, symbols
 from sympy.physics.mechanics import System, dynamicsymbols, find_dynamicsymbols
@@ -14,20 +14,22 @@ from brim.core.registry import Registry
 try:  # pragma: no cover
     from bicycleparameters import Bicycle
 except ImportError:  # pragma: no cover
-    Bicycle = None
+    Bicycle = object
 try:
     from symmeplot.matplotlib.plot_base import MplPlotBase
 except ImportError:  # pragma: no cover
-    MplPlotBase = None
+    MplPlotBase = object
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from brim.core.requirement import ConnectionRequirement, ModelRequirement
 
 __all__ = ["ConnectionBase", "ConnectionMeta", "LoadGroupBase", "LoadGroupMeta",
            "ModelBase", "ModelMeta", "set_default_convention"]
 
 
-def _get_requirements(bases, namespace, req_attr_name):
+def _get_requirements(bases, namespace, req_attr_name):  # noqa: ANN001, ANN202
     requirements = {}
     for base_cls in bases:
         base_reqs = getattr(base_cls, req_attr_name, None)
@@ -41,10 +43,10 @@ def _get_requirements(bases, namespace, req_attr_name):
 
 
 def _create_submodel_property(requirement: ModelRequirement) -> property:
-    def getter(self):
+    def getter(self: BrimBase) -> ModelBase | None:
         return getattr(self, f"_{requirement.attribute_name}")
 
-    def setter(self, model):
+    def setter(self: BrimBase, model: ModelBase) -> None:
         if not (model is None or isinstance(model, requirement.types)):
             raise TypeError(
                 f"{requirement.full_name} should be an instance of an subclass of "
@@ -58,10 +60,10 @@ def _create_submodel_property(requirement: ModelRequirement) -> property:
 
 
 def _create_connection_property(requirement: ConnectionRequirement) -> property:
-    def getter(self):
+    def getter(self: BrimBase) -> ConnectionBase | None:
         return getattr(self, f"_{requirement.attribute_name}")
 
-    def setter(self, conn):
+    def setter(self: BrimBase, conn: ConnectionBase) -> None:
         if not (conn is None or isinstance(conn, requirement.types)):
             raise TypeError(
                 f"{requirement.full_name} should be an instance of an subclass "
@@ -77,7 +79,7 @@ def _create_connection_property(requirement: ConnectionRequirement) -> property:
 class ModelMeta(ABCMeta):
     """Metaclass for the :class:`brim.core.model_base.ModelBase`."""
 
-    def __new__(mcs, name, bases, namespace, **kwargs):  # noqa: N804
+    def __new__(mcs, name, bases, namespace, **kwargs):  # noqa: ANN001, ANN003, ANN204, N804
         """Create a new class."""
         # Create properties for each of the requirements
         requirements = _get_requirements(bases, namespace, "required_models")
@@ -97,7 +99,7 @@ class ModelMeta(ABCMeta):
 class ConnectionMeta(ABCMeta):
     """Metaclass for the :class:`brim.core.model_base.ConnectionBase`."""
 
-    def __new__(mcs, name, bases, namespace, **kwargs):  # noqa: N804
+    def __new__(mcs, name, bases, namespace, **kwargs):  # noqa: ANN001, ANN003, ANN204, N804
         """Create a new class."""
         # Create properties for each of the requirements
         requirements = _get_requirements(bases, namespace, "required_models")
@@ -112,7 +114,7 @@ class ConnectionMeta(ABCMeta):
 class LoadGroupMeta(ABCMeta):
     """Metaclass for the :class:`brim.core.model_base.LoadGroupBase`."""
 
-    def __new__(mcs, name, bases, namespace, **kwargs):  # noqa: N804
+    def __new__(mcs, name, bases, namespace, **kwargs):  # noqa: ANN001, ANN003, ANN204, N804
         """Create a new class."""
         instance = super().__new__(mcs, name, bases, namespace, **kwargs)
         Registry().register_load_group(instance)
@@ -135,7 +137,7 @@ class BrimBase:
         self._name = str(name)
         self._system = None
         self._auxiliary_handler = None
-        self.symbols: dict[str, Any] = {}
+        self.symbols: dict[str, object] = {}
         self.q: MutableDenseMatrix = MutableDenseMatrix()
         self.u: MutableDenseMatrix = MutableDenseMatrix()
         self.u_aux: MutableDenseMatrix = MutableDenseMatrix()
@@ -165,11 +167,11 @@ class BrimBase:
         return f"{self.__class__.__name__}({self.name!r})"
 
     @property
-    def descriptions(self) -> dict[Any, str]:
+    def descriptions(self) -> dict[object, str]:
         """Descriptions of the attributes of the object."""
         return {}
 
-    def get_description(self, obj: Any) -> str:
+    def get_description(self, obj: object) -> str | None:
         """Get description of a given object."""
         if obj in self.descriptions:
             return self.descriptions[obj]
@@ -188,6 +190,7 @@ class BrimBase:
                 desc = load_group.get_description(obj)
                 if desc is not None:
                     return desc
+        return None
 
     def get_all_symbols(self) -> set[Basic]:
         """Get all declared symbols of a model."""
@@ -231,13 +234,13 @@ class BrimBase:
         """Auxiliary data handler of the model."""
         return self._auxiliary_handler
 
-    def get_param_values(self, bicycle_parameters: Bicycle) -> dict[Symbol, float]:
+    def get_param_values(self, bicycle_parameters: Bicycle) -> dict[Symbol, float]:  # noqa: ARG002
         """Get a parameters mapping of a model based on a bicycle parameters object."""
         if Bicycle is None:
             raise ImportError("The bicycle parameters package is not installed.")
         return {}
 
-    def set_plot_objects(self, plot_object: MplPlotBase) -> None:
+    def set_plot_objects(self, plot_object: MplPlotBase) -> None:  # noqa: ARG002
         """Set the symmeplot plot objects."""
         if MplPlotBase is None:
             raise ImportError("The symmeplot package is not installed.")
@@ -297,23 +300,23 @@ class ModelBase(BrimBase, metaclass=ModelMeta):
     @property
     def submodels(self) -> tuple[ModelBase]:
         """Submodels out of which this model exists."""
-        submodels = []
-        for req in self.required_models:
-            submodels.append(getattr(self, req.attribute_name))
-        return tuple(smd for smd in submodels if smd is not None)  # type: ignore
+        submodels = [
+            getattr(self, req.attribute_name) for req in self.required_models
+        ]
+        return tuple(smd for smd in submodels if smd is not None)
 
     @property
     def connections(self) -> tuple[ConnectionBase]:
         """Submodels out of which this model exists."""
-        connections = []
-        for req in self.required_connections:
-            connections.append(getattr(self, req.attribute_name))
-        return tuple(conn for conn in connections if conn is not None)  # type: ignore
+        connections = [
+            getattr(self, req.attribute_name) for req in self.required_connections
+        ]
+        return tuple(conn for conn in connections if conn is not None)
 
     @property
     def load_groups(self) -> tuple[LoadGroupBase]:
         """Load groups of the connection."""
-        return tuple(self._load_groups)  # type: ignore
+        return tuple(self._load_groups)
 
     def add_load_groups(self, *load_groups: LoadGroupBase) -> None:
         """Add load groups to the connection."""
@@ -322,12 +325,14 @@ class ModelBase(BrimBase, metaclass=ModelMeta):
         self._load_groups.extend(load_groups)
 
     @classmethod
-    def from_convention(cls, convention: str, name: str, *args, **kwargs) -> ModelBase:
+    def from_convention(
+        cls, convention: str, name: str, *args: object, **kwargs: dict[str, object]
+    ) -> ModelBase:
         """Create a model from a convention."""
-        possible_models = []
-        for model in Registry().models:
-            if issubclass(model, cls) and model.convention == convention:
-                possible_models.append(model)
+        possible_models = [
+            model for model in Registry().models
+            if issubclass(model, cls) and model.convention == convention
+        ]
         if len(possible_models) == 0:
             raise ValueError(f"No model found for convention {convention!r} of type "
                              f"{cls}.")
@@ -419,7 +424,7 @@ class ModelBase(BrimBase, metaclass=ModelMeta):
     def to_system(self) -> System:
         """Export the model to a single system instance."""
 
-        def get_systems(model):
+        def get_systems(model: ModelBase) -> list[System]:
             """Get the systems of the submodels."""
             return ([model.system] + [conn.system for conn in model.connections] +
                     [s for submodel in model.submodels for s in get_systems(submodel)])
@@ -448,15 +453,15 @@ class ConnectionBase(BrimBase, metaclass=ConnectionMeta):
     @property
     def submodels(self) -> tuple[ModelBase]:
         """Submodels of the connection."""
-        submodels = []
-        for req in self.required_models:
-            submodels.append(getattr(self, req.attribute_name))
-        return tuple(smd for smd in submodels if smd is not None)  # type: ignore
+        submodels = tuple(
+            getattr(self, req.attribute_name) for req in self.required_models
+        )
+        return tuple(smd for smd in submodels if smd is not None)
 
     @property
     def load_groups(self) -> tuple[LoadGroupBase]:
         """Load groups of the connection."""
-        return tuple(self._load_groups)  # type: ignore
+        return tuple(self._load_groups)
 
     def add_load_groups(self, *load_groups: LoadGroupBase) -> None:
         """Add load groups to the connection."""
@@ -514,7 +519,7 @@ class LoadGroupBase(BrimBase, metaclass=LoadGroupMeta):
     def parent(self, parent: ModelBase | ConnectionBase) -> None:
         if self._parent is not None:
             raise ValueError(f"Load group is already used by {self.parent}")
-        elif not isinstance(parent, self.required_parent_type):
+        if not isinstance(parent, self.required_parent_type):
             raise TypeError(
                 f"Parent of {self} should be an instance of an subclass of "
                 f"{self.required_parent_type}, but {parent!r} is an instance of "
@@ -535,7 +540,9 @@ def set_default_convention(
         old_new = model.__new__
 
         @wraps(old_new)
-        def new_new(cls, *args, **kwargs) -> ModelBase:
+        def new_new(
+            cls: ModelBase, *args: object, **kwargs: dict[str, object]
+        ) -> ModelBase:
             if cls is model:
                 return cls.from_convention(convention, *args, **kwargs)
             return old_new(cls)

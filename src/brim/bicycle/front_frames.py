@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import contextlib
 from abc import abstractmethod
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from sympy import MutableMatrix, Symbol, symbols
 from sympy.physics.mechanics import (
@@ -84,7 +84,7 @@ class FrontFrameBase(ModelBase):
 class RigidFrontFrame(FrontFrameBase):
     """Rigid front frame."""
 
-    def _define_objects(self):
+    def _define_objects(self) -> None:
         """Define the objects of the front frame."""
         super()._define_objects()
         self._body = RigidBody(self._add_prefix("body"))
@@ -137,7 +137,7 @@ class RigidFrontFrameMoore(RigidFrontFrame):
     convention: str = "moore"
 
     @property
-    def descriptions(self) -> dict[Any, str]:
+    def descriptions(self) -> dict[object, str]:
         """Descriptions of the attributes of the front frame."""
         return {
             **super().descriptions,
@@ -159,7 +159,7 @@ class RigidFrontFrameMoore(RigidFrontFrame):
                                 "attachment if d8 is positive.",
         }
 
-    def _define_objects(self):
+    def _define_objects(self) -> None:
         """Define the objects of the front frame."""
         super()._define_objects()
         self._left_hand_grip = Attachment(
@@ -174,7 +174,7 @@ class RigidFrontFrameMoore(RigidFrontFrame):
         self._steer_hub = Hub(self.body.frame,
                               Point(self._add_prefix("steer_hub_point")), "z")
 
-    def _define_kinematics(self):
+    def _define_kinematics(self) -> None:
         """Define the kinematics of the front frame."""
         super()._define_kinematics()
         d2, d3, l3, l4, d6, d7, d8 = (self.symbols[name] for name in (
@@ -213,7 +213,7 @@ class SuspensionRigidFrontFrame(FrontFrameBase):
     """Front frame with suspension and no structural flexibility."""
 
     @property
-    def descriptions(self) -> dict[Any, str]:
+    def descriptions(self) -> dict[object, str]:
         """Descriptions of the attributes of the front frame."""
         return {
             **super().descriptions,
@@ -245,7 +245,7 @@ class SuspensionRigidFrontFrameMoore(SuspensionRigidFrontFrame):
     convention: str = "moore"
 
     @property
-    def descriptions(self) -> dict[Any, str]:
+    def descriptions(self) -> dict[object, str]:
         """Descriptions of the attributes of the front frame."""
         return {
             **super().descriptions,
@@ -270,7 +270,7 @@ class SuspensionRigidFrontFrameMoore(SuspensionRigidFrontFrame):
                                 "suspension.",
         }
 
-    def _define_objects(self):
+    def _define_objects(self) -> None:
         """Define the objects of the front frame."""
         super()._define_objects()
         self._body = RigidBody(self._add_prefix("body"))
@@ -291,7 +291,7 @@ class SuspensionRigidFrontFrameMoore(SuspensionRigidFrontFrame):
         self._suspension_stanchions = Point(self._add_prefix("suspension_stanchions"))
         self._suspension_lowers = Point(self._add_prefix("suspension_lowers"))
 
-    def _define_kinematics(self):
+    def _define_kinematics(self) -> None:
         """Define the kinematics of the front frame."""
         super()._define_kinematics()
         d2, d3, l3, l4, d6, d7, d8, d9 = (self.symbols[name] for name in (
@@ -375,7 +375,7 @@ class SuspensionRigidFrontFrameMoore(SuspensionRigidFrontFrame):
 
 
 def _get_front_frame_moore_params(bicycle_parameters: Bicycle
-                                  ) -> dict[str, Any]:  # pragma: no cover
+                                  ) -> dict[str, object]:  # pragma: no cover
     params = {}
     if "Benchmark" in bicycle_parameters.parameters:
         bp = remove_uncertainties(bicycle_parameters.parameters["Benchmark"])

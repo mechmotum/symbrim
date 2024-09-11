@@ -1,4 +1,5 @@
 import pytest
+
 from brim.bicycle import (
     KnifeEdgeWheel,
     MasslessCranks,
@@ -10,7 +11,7 @@ from brim.bicycle import (
 
 
 class TestStationaryBicycle:
-    @pytest.fixture()
+    @pytest.fixture
     def _setup_default(self) -> None:
         self.bike = StationaryBicycle("bicycle")
         self.bike.rear_frame = RigidRearFrame("rear_frame")
@@ -24,16 +25,18 @@ class TestStationaryBicycle:
         assert bicycle.rear_wheel is None
         assert bicycle.cranks is None
 
-    def test_only_rear_frame_hard(self, _setup_default):
+    @pytest.mark.usefixtures("_setup_default")
+    def test_only_rear_frame_hard(self):
         self.bike.define_all()
 
-    @pytest.mark.parametrize("name, model_cls, coord_idx", [
+    @pytest.mark.parametrize(("name", "model_cls", "coord_idx"), [
         ("front_frame", RigidFrontFrame, (1,)),
         ("rear_wheel", KnifeEdgeWheel, (0,)),
         ("cranks", MasslessCranks, (0,)),
         ("rear_wheel", ToroidalWheel, (0,)),
     ])
-    def test_optional_models(self, _setup_default, name, model_cls, coord_idx):
+    @pytest.mark.usefixtures("_setup_default")
+    def test_optional_models(self, name, model_cls, coord_idx):
         setattr(self.bike, name, model_cls(name))
         self.bike.define_all()
         for idx in coord_idx:
@@ -41,12 +44,14 @@ class TestStationaryBicycle:
             assert self.bike.u[idx] in self.bike.system.u
             assert len(self.bike.system.kdes) == len(coord_idx)
 
-    def test_front_wheel(self, _setup_default):
+    @pytest.mark.usefixtures("_setup_default")
+    def test_front_wheel(self):
         self.bike.front_frame = RigidFrontFrame("front_frame")
         self.bike.front_wheel = KnifeEdgeWheel("front_wheel")
         self.bike.define_all()
 
-    def test_all(self, _setup_default):
+    @pytest.mark.usefixtures("_setup_default")
+    def test_all(self):
         self.bike.rear_wheel = KnifeEdgeWheel("rear_wheel")
         self.bike.cranks = MasslessCranks("cranks")
         self.bike.front_frame = RigidFrontFrame("front_frame")
@@ -59,7 +64,8 @@ class TestStationaryBicycle:
             assert ui in self.bike.system.u
         assert len(self.bike.system.kdes) == 3
 
-    def test_descriptions(self, _setup_default) -> None:
+    @pytest.mark.usefixtures("_setup_default")
+    def test_descriptions(self) -> None:
         self.bike.define_connections()
         self.bike.define_objects()
         for sym in self.bike.symbols.values():

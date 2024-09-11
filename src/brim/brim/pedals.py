@@ -1,13 +1,12 @@
 """Module containing the pedal connections."""
 from __future__ import annotations
 
-from typing import Any
-
 from sympy import symbols
 from sympy.physics.mechanics import (
     LinearDamper,
     LinearPathway,
     LinearSpring,
+    Point,
     System,
     dynamicsymbols,
 )
@@ -39,7 +38,7 @@ class HolonomicPedals(PedalsBase):
     def _define_constraints(self) -> None:
         """Define the constraints."""
 
-        def attach_foot(foot_point, pedal_point):
+        def attach_foot(foot_point: Point, pedal_point: Point) -> None:
             """Attach the foot to the pedal."""
             for direction in self.cranks.frame:
                 constr = foot_point.pos_from(pedal_point).dot(direction)
@@ -74,7 +73,7 @@ class SpringDamperPedals(PedalsBase):
     """Constrain the feet to the pedals using spring-damper."""
 
     @property
-    def descriptions(self) -> dict[Any, str]:
+    def descriptions(self) -> dict[object, str]:
         """Descriptions of the objects."""
         return {
             **super().descriptions,

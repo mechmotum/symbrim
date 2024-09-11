@@ -1,7 +1,7 @@
 """Module helping with the parametrization of models."""
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
 import numpy as np
 from sympy.utilities.iterables import iterable
@@ -13,7 +13,11 @@ if TYPE_CHECKING:
 __all__ = ["get_inertia_vals", "get_inertia_vals_from_yeadon"]
 
 
-def get_inertia_vals(body: RigidBody, *args, **kwargs):
+def get_inertia_vals(
+    body: RigidBody,
+    *args: tuple[float, ...],
+    **kwargs: dict[Literal["ixx", "iyy", "izz", "ixy", "iyz", "izx"], float],
+) -> dict[Symbol, float]:
     """Get the inertia values of a rigid body."""
     params = {}
     i_mat = body.central_inertia.to_matrix(body.frame)

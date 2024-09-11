@@ -1,18 +1,20 @@
 import pytest
+from sympy.physics.mechanics import Point, System
+
 from brim.bicycle.rear_frames import RigidRearFrame, RigidRearFrameMoore
 from brim.core import Attachment, Hub
 from brim.utilities.testing import _test_descriptions
-from sympy.physics.mechanics import Point, System
 
 try:
-    from brim.utilities.plotting import PlotModel
     from symmeplot.matplotlib import PlotBody, PlotLine
+
+    from brim.utilities.plotting import PlotModel
 except ImportError:
     PlotModel = None
 
 
 class TestRigidRearFrame:
-    @pytest.mark.parametrize("base_cls, expected_cls", [
+    @pytest.mark.parametrize(("base_cls", "expected_cls"), [
         (RigidRearFrame, RigidRearFrameMoore),
     ])
     def test_default(self, base_cls, expected_cls) -> None:
@@ -20,7 +22,7 @@ class TestRigidRearFrame:
         assert rear.name == "rear"
         assert isinstance(rear, expected_cls)
 
-    @pytest.mark.parametrize("convention_name, base_cls, expected_cls", [
+    @pytest.mark.parametrize(("convention_name", "base_cls", "expected_cls"), [
         ("moore", RigidRearFrame, RigidRearFrameMoore),
     ])
     def test_init(self, convention_name, base_cls, expected_cls) -> None:
@@ -54,7 +56,7 @@ class TestRigidRearFrame:
         rear.bottom_bracket.pos_from(rear.system.fixed_point)
 
     @pytest.mark.skipif(PlotModel is None, reason="symmeplot not installed")
-    @pytest.mark.parametrize("cls, n_children", [(RigidRearFrameMoore, 2)])
+    @pytest.mark.parametrize(("cls", "n_children"), [(RigidRearFrameMoore, 2)])
     def test_plotting(self, cls, n_children):
         rear = cls("rear")
         rear.define_all()

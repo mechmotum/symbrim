@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import pytest
+
 from brim.rider.base_connections import LeftHipBase, RightHipBase
 from brim.rider.hip_joints import (
     PinLeftHip,
@@ -125,7 +126,7 @@ class TestSphericalHipTorque:
         rot_axis = w.xreplace({model.conn.u[0]: 0, model.conn.u[1]: 0}).normalize()
         return model, load_group, flex_axis, add_axis, rot_axis
 
-    @pytest.mark.parametrize("hip_cls, leg_cls", [
+    @pytest.mark.parametrize(("hip_cls", "leg_cls"), [
         (SphericalLeftHip, TwoPinStickLeftLeg),
         (SphericalRightHip, TwoPinStickRightLeg)])
     def test_torque_loads(self, hip_cls, leg_cls) -> None:
@@ -150,7 +151,7 @@ class TestSphericalHipTorque:
                 assert check_zero(
                     load.torque.xreplace({t_flex: 0, t_add: 0}).dot(rot_axis) - -t_rot)
 
-    @pytest.mark.parametrize("hip_cls, leg_cls", [
+    @pytest.mark.parametrize(("hip_cls", "leg_cls"), [
         (SphericalLeftHip, TwoPinStickLeftLeg),
         (SphericalRightHip, TwoPinStickRightLeg)])
     def test_spring_damper_loads(self, hip_cls, leg_cls) -> None:

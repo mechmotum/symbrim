@@ -2,10 +2,11 @@ from __future__ import annotations
 
 import numpy as np
 import pytest
-from brim.bicycle import FlatGround, KnifeEdgeWheel, NonHolonomicTire
-from brim.other.rolling_disc import RollingDisc, rolling_disc_manual
 from sympy import Symbol, lambdify
 from sympy.physics.mechanics import dynamicsymbols
+
+from brim.bicycle import FlatGround, KnifeEdgeWheel, NonHolonomicTire
+from brim.other.rolling_disc import RollingDisc, rolling_disc_manual
 
 
 class TestRollingDisc:
@@ -19,7 +20,7 @@ class TestRollingDisc:
         vals["iyy"] = vals["m"] * vals["r"] ** 2 / 2
         return vals
 
-    @pytest.fixture()
+    @pytest.fixture
     def _rolling_disc_brim(self) -> None:
         self.rolling_disc = RollingDisc("rolling_disc")
         self.rolling_disc.wheel = KnifeEdgeWheel("disc")
@@ -46,7 +47,7 @@ class TestRollingDisc:
         self.system.u_dep = self.rolling_disc.u[:2]
         self._set_values()
 
-    @pytest.fixture()
+    @pytest.fixture
     def _rolling_disc_manual(self) -> None:
         self.system = rolling_disc_manual()
         str_vals = self._arbitrary_values()
@@ -81,10 +82,12 @@ class TestRollingDisc:
         scene.axes.invert_yaxis()
         plt.show()
 
-    def _plot_rolling_disc_brim(self, _rolling_disc_brim) -> None:
+    @pytest.mark.usefixtures("_rolling_disc_brim")
+    def _plot_rolling_disc_brim(self) -> None:
         """Test that is not actually ran, but is useful for debugging."""
         # These are not official dependencies
         import matplotlib.pyplot as plt
+
         from brim.utilities.plotting import Plotter
         fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
         plotter = Plotter.from_model(self.rolling_disc, ax=ax)
@@ -95,7 +98,7 @@ class TestRollingDisc:
         ax.invert_yaxis()
         plt.show()
 
-    @pytest.mark.parametrize("method", ("_rolling_disc_manual", "_rolling_disc_brim"))
+    @pytest.mark.parametrize("method", ["_rolling_disc_manual", "_rolling_disc_brim"])
     def test_rolling_disc_nonholonomic(self, method, request) -> None:
         request.getfixturevalue(method)
         self.system.form_eoms()
@@ -119,7 +122,8 @@ class TestRollingDisc:
             self.q0, self.u0, self.p_vals))
         assert all(abs(val) < 1E-8 for val in (ud_brim - ud_man).flatten())
 
-    def test_rolling_disc_description(self, _rolling_disc_brim) -> None:
+    @pytest.mark.usefixtures("_rolling_disc_brim")
+    def test_rolling_disc_description(self) -> None:
         for qi in self.rolling_disc.q:
             assert self.rolling_disc.descriptions[qi]
         for ui in self.rolling_disc.u:

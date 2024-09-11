@@ -1,18 +1,19 @@
 from __future__ import annotations
 
 import pytest
+from sympy import Symbol
+from sympy.physics.mechanics import Vector, dynamicsymbols
+
 from brim.bicycle.cranks import MasslessCranks
 from brim.brim.base_connections import PedalsBase
 from brim.brim.pedals import HolonomicPedals, SpringDamperPedals
 from brim.rider.legs import TwoPinStickLeftLeg, TwoPinStickRightLeg
 from brim.utilities.testing import _test_descriptions, create_model_of_connection
-from sympy import Symbol
-from sympy.physics.mechanics import Vector, dynamicsymbols
 
 
 @pytest.mark.parametrize("pedal_cls", [HolonomicPedals, SpringDamperPedals])
 class TestPedalsBase:
-    @pytest.fixture()
+    @pytest.fixture
     def _setup(self, pedal_cls) -> None:
         self.model = create_model_of_connection(pedal_cls)("model")
         self.model.cranks = MasslessCranks("cranks")
@@ -37,13 +38,15 @@ class TestPedalsBase:
         self.model.define_loads()
         self.model.define_constraints()
 
-    def test_types(self, _setup) -> None:
+    @pytest.mark.usefixtures("_setup")
+    def test_types(self) -> None:
         assert isinstance(self.model.conn, PedalsBase)
 
-    def test_descriptions(self, _setup) -> None:
+    @pytest.mark.usefixtures("_setup")
+    def test_descriptions(self) -> None:
         _test_descriptions(self.model.conn)
 
-    @pytest.mark.parametrize("side, leg_cls", [
+    @pytest.mark.parametrize(("side", "leg_cls"), [
         ("left", TwoPinStickLeftLeg), ("right", TwoPinStickRightLeg)])
     def test_single_leg(self, pedal_cls, side, leg_cls) -> None:
         self.model = create_model_of_connection(pedal_cls)("model")

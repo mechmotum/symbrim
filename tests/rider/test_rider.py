@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import pytest
+
 from brim.rider import (
     FixedSacrum,
     PinElbowStickLeftArm,
@@ -18,7 +19,7 @@ from brim.rider import (
 
 
 class TestCompleteRider:
-    @pytest.fixture()
+    @pytest.fixture
     def _setup(self) -> None:
         self.rider = Rider("rider")
         self.rider.pelvis = PlanarPelvis("pelvis")
@@ -33,7 +34,8 @@ class TestCompleteRider:
         self.rider.left_shoulder = SphericalLeftShoulder("left_shoulder")
         self.rider.right_shoulder = SphericalRightShoulder("right_shoulder")
 
-    def test_setup(self, _setup) -> None:
+    @pytest.mark.usefixtures("_setup")
+    def test_setup(self) -> None:
         assert self.rider.pelvis is not None
         assert self.rider.torso is not None
         assert self.rider.left_arm is not None
@@ -57,7 +59,8 @@ class TestCompleteRider:
             with pytest.raises((ValueError, AttributeError)):
                 rider.define_all()
 
-    def test_form_eoms(self, _setup) -> None:
+    @pytest.mark.usefixtures("_setup")
+    def test_form_eoms(self) -> None:
         self.rider.define_all()
         system = self.rider.to_system()
         system.validate_system()

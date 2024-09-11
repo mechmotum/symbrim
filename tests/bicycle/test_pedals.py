@@ -1,13 +1,15 @@
 from __future__ import annotations
 
 import pytest
-from brim.bicycle import CranksBase, MasslessCranks
-from brim.utilities.testing import _test_descriptions
 from sympy.physics.mechanics import Point, ReferenceFrame, Vector
 
+from brim.bicycle import CranksBase, MasslessCranks
+from brim.utilities.testing import _test_descriptions
+
 try:
-    from brim.utilities.plotting import PlotModel
     from symmeplot.matplotlib import PlotLine
+
+    from brim.utilities.plotting import PlotModel
 except ImportError:
     PlotModel = None
 

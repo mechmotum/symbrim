@@ -1,18 +1,19 @@
 from __future__ import annotations
 
 import pytest
+from sympy import Symbol
+from sympy.physics.mechanics import Vector, dynamicsymbols
+
 from brim.bicycle.front_frames import RigidFrontFrameMoore
 from brim.brim.base_connections import HandGripsBase
 from brim.brim.hand_grips import HolonomicHandGrips, SpringDamperHandGrips
 from brim.rider.arms import PinElbowStickLeftArm, PinElbowStickRightArm
 from brim.utilities.testing import _test_descriptions, create_model_of_connection
-from sympy import Symbol
-from sympy.physics.mechanics import Vector, dynamicsymbols
 
 
 @pytest.mark.parametrize("hand_grip_cls", [HolonomicHandGrips, SpringDamperHandGrips])
 class TestSteerConnectionBase:
-    @pytest.fixture()
+    @pytest.fixture
     def _setup(self, hand_grip_cls) -> None:
         self.model = create_model_of_connection(hand_grip_cls)("model")
         self.model.front_frame = RigidFrontFrameMoore("front_frame")
@@ -38,13 +39,15 @@ class TestSteerConnectionBase:
         self.model.define_loads()
         self.model.define_constraints()
 
-    def test_types(self, _setup) -> None:
+    @pytest.mark.usefixtures("_setup")
+    def test_types(self) -> None:
         assert isinstance(self.model.conn, HandGripsBase)
 
-    def test_descriptions(self, _setup) -> None:
+    @pytest.mark.usefixtures("_setup")
+    def test_descriptions(self) -> None:
         _test_descriptions(self.model.conn)
 
-    @pytest.mark.parametrize("side, arm_cls", [
+    @pytest.mark.parametrize(("side", "arm_cls"), [
         ("left", PinElbowStickLeftArm), ("right", PinElbowStickRightArm)])
     def test_single_arm(self, hand_grip_cls, side, arm_cls) -> None:
         model = create_model_of_connection(hand_grip_cls)("model")

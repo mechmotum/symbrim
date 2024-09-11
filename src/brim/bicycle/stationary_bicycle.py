@@ -1,8 +1,6 @@
 """Module containing the Whipple bicycle model."""
 from __future__ import annotations
 
-from typing import Any
-
 from sympy import Matrix, Symbol
 from sympy.physics.mechanics import PinJoint, System, dynamicsymbols
 
@@ -15,7 +13,7 @@ class StationaryBicycle(BicycleBase):
     """Stationary bicycle model."""
 
     @property
-    def descriptions(self) -> dict[Any, str]:
+    def descriptions(self) -> dict[object, str]:
         """Dictionary of descriptions of the Whipple bicycle's attributes."""
         desc = {
             **super().descriptions,

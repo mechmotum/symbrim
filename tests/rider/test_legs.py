@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 import pytest
+from sympy import simplify, zeros
+from sympy.physics.mechanics import Point, ReferenceFrame, RigidBody
+
 from brim.rider.arms import PinElbowStickLeftArm
 from brim.rider.legs import (
     LeftLegBase,
@@ -12,8 +15,6 @@ from brim.rider.legs import (
 )
 from brim.utilities.testing import _test_descriptions
 from brim.utilities.utilities import check_zero
-from sympy import simplify, zeros
-from sympy.physics.mechanics import Point, ReferenceFrame, RigidBody
 
 try:
     from brim.utilities.plotting import PlotModel

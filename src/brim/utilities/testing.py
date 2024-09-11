@@ -3,10 +3,14 @@ from __future__ import annotations
 
 import warnings
 from contextlib import contextmanager
+from typing import TYPE_CHECKING
 
 from sympy.physics.mechanics import System
 
 from brim.core import ConnectionBase, ConnectionRequirement, LoadGroupBase, ModelBase
+
+if TYPE_CHECKING:
+    from collections.abc import Generator
 
 
 def _test_descriptions(instance: ModelBase | ConnectionBase | LoadGroupBase) -> None:
@@ -31,30 +35,30 @@ def create_model_of_connection(connection_cls: type[ConnectionBase]) -> type[Mod
     required_connections = (ConnectionRequirement("conn", connection_cls),)
     required_models = connection_cls.required_models
 
-    def _define_connections(self):
+    def _define_connections(self: ModelBase) -> None:
         ModelBase._define_connections(self)
         for req in self.conn.required_models:
             model = getattr(self, req.attribute_name)
             if model is not None:
                 setattr(self.conn, req.attribute_name, model)
 
-    def _define_objects(self):
+    def _define_objects(self: ModelBase) -> None:
         ModelBase._define_objects(self)
         for conn in self.connections:
             conn.define_objects()
         self._system = System(self.conn.system.frame, self.conn.system.fixed_point)
 
-    def _define_kinematics(self):
+    def _define_kinematics(self: ModelBase) -> None:
         ModelBase._define_kinematics(self)
         for conn in self.connections:
             conn.define_kinematics()
 
-    def _define_loads(self):
+    def _define_loads(self: ModelBase) -> None:
         ModelBase._define_loads(self)
         for conn in self.connections:
             conn.define_loads()
 
-    def _define_constraints(self):
+    def _define_constraints(self: ModelBase) -> None:
         ModelBase._define_constraints(self)
         for conn in self.connections:
             conn.define_constraints()
@@ -70,7 +74,7 @@ def create_model_of_connection(connection_cls: type[ConnectionBase]) -> type[Mod
     })
 
 @contextmanager
-def ignore_point_warnings():
+def ignore_point_warnings() -> Generator[None, None, None]:
     """Ignore warnings from sympy.physics.vector.point."""
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore", category=UserWarning,
