@@ -8,7 +8,7 @@ from sympy.physics.mechanics import (
     Vector,
 )
 
-from brim.core.attachment import Attachment, Hub, MasslessBody
+from symbrim.core.attachment import Attachment, Hub, MasslessBody
 
 
 class TestMasslessBody:

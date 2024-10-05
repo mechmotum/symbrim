@@ -2,12 +2,12 @@ from __future__ import annotations
 
 import pytest
 
-from brim.rider.arms import PinElbowStickLeftArm, PinElbowStickRightArm
-from brim.rider.base_connections import (
+from symbrim.rider.arms import PinElbowStickLeftArm, PinElbowStickRightArm
+from symbrim.rider.base_connections import (
     LeftShoulderBase,
     RightShoulderBase,
 )
-from brim.rider.shoulder_joints import (
+from symbrim.rider.shoulder_joints import (
     FlexAddLeftShoulder,
     FlexAddRightShoulder,
     FlexRotLeftShoulder,
@@ -17,9 +17,9 @@ from brim.rider.shoulder_joints import (
     SphericalShoulderSpringDamper,
     SphericalShoulderTorque,
 )
-from brim.rider.torso import PlanarTorso
-from brim.utilities.testing import _test_descriptions, create_model_of_connection
-from brim.utilities.utilities import check_zero
+from symbrim.rider.torso import PlanarTorso
+from symbrim.utilities.testing import _test_descriptions, create_model_of_connection
+from symbrim.utilities.utilities import check_zero
 
 
 @pytest.mark.parametrize("shoulder_cls, arm_cls, base_cls", [

@@ -2,7 +2,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from brim.rider import (
+from symbrim.rider import (
     PlanarPelvis,
     Rider,
     SphericalLeftHip,
@@ -13,7 +13,7 @@ from brim.rider import (
 try:
     import matplotlib.pyplot as plt
 
-    from brim.utilities.plotting import (
+    from symbrim.utilities.plotting import (
         PlotConnection,
         PlotLoadGroup,
         PlotModel,

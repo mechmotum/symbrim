@@ -15,7 +15,7 @@ from process_tutorials import main as process_tutorials
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = "BRiM"
+project = "SymBRiM"
 copyright = "2023, Timo Stienstra"  # noqa: A001
 author = "Timo Stienstra"
 

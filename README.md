@@ -1,20 +1,23 @@
-# BRiM
-A Modular and Extensible Open-Source Framework for Creating Bicycle-Rider Models.
+# SymBRiM
+A Modular and Extensible Open-Source Framework for Creating Symbolic Bicycle-Rider
+Models.
+
+As of October 2024, BRiM has been renamed to SymBRiM.
 
 Links with more information:
 
-- [Online documentation](https://mechmotum.github.io/brim/)
-- [BRiM paper publication](https://doi.org/10.59490/6504c5a765e8118fc7b106c3) ([source](https://github.com/TJStienstra/brim-bmd-2023-paper))
+- [Online documentation](https://mechmotum.github.io/symbrim/)
+- [SymBRiM paper publication](https://doi.org/10.59490/6504c5a765e8118fc7b106c3) ([source](https://github.com/TJStienstra/brim-bmd-2023-paper))
 - [BMD 2023 conference PowerPoint](https://docs.google.com/presentation/d/1ogz0Qs-t8bQT-2uk8gyYo40WmO387zIf/edit?usp=share_link&ouid=104124211006373398120&rtpof=true&sd=true)
 
 This package is still under development, therefore there is no guarantee on backward
 compatibility.
 
 ## Installation
-`BRiM` is currently not available on `PyPI`. Therefore, you'll need to install the
+`SymBRiM` is currently not available on `PyPI`. Therefore, you'll need to install the
 development version from GitHub using:
 ```bash
-pip install git+https://github.com/mechmotum/brim.git
+pip install git+https://github.com/mechmotum/symbrim.git
 ```
 The optional dependencies can be installed with:
 ```bash
@@ -26,7 +29,7 @@ pip install symmeplot
 Contributions are welcome! Please refer to the [contributing page] for more information.
 
 ## Citing
-If you use `BRiM` in your research, please cite the following paper:
+If you use `SymBRiM` in your research, please cite the following paper:
 ```bibtex
 @inproceedings{stienstra_2023_brim,
     title = {BRiM: A Modular Bicycle-Rider Modeling Framework},
@@ -40,4 +43,4 @@ If you use `BRiM` in your research, please cite the following paper:
 }
 ```
 
-[contributing page]: https://mechmotum.github.io/brim/contributing/index.html
+[contributing page]: https://mechmotum.github.io/symbrim/contributing/index.html

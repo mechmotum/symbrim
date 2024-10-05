@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import pytest
 
-from brim.rider.base_connections import LeftHipBase, RightHipBase
-from brim.rider.hip_joints import (
+from symbrim.rider.base_connections import LeftHipBase, RightHipBase
+from symbrim.rider.hip_joints import (
     PinLeftHip,
     PinRightHip,
     SphericalHipSpringDamper,
@@ -11,10 +11,10 @@ from brim.rider.hip_joints import (
     SphericalLeftHip,
     SphericalRightHip,
 )
-from brim.rider.legs import TwoPinStickLeftLeg, TwoPinStickRightLeg
-from brim.rider.pelvis import PlanarPelvis
-from brim.utilities.testing import _test_descriptions, create_model_of_connection
-from brim.utilities.utilities import check_zero
+from symbrim.rider.legs import TwoPinStickLeftLeg, TwoPinStickRightLeg
+from symbrim.rider.pelvis import PlanarPelvis
+from symbrim.utilities.testing import _test_descriptions, create_model_of_connection
+from symbrim.utilities.utilities import check_zero
 
 
 @pytest.mark.parametrize("hip_cls, leg_cls, base_cls", [

@@ -1,4 +1,4 @@
-name: brim-tutorials
+name: symbrim-tutorials
 channels:
   - conda-forge
 dependencies:
@@ -11,4 +11,4 @@ dependencies:
   - symmeplot
   - pip:
       - git+https://github.com/moorepants/BicycleParameters.git
-      - git+https://github.com/mechmotum/brim.git
+      - git+https://github.com/mechmotum/symbrim.git

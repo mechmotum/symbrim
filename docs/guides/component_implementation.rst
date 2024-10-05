@@ -5,12 +5,12 @@ Guidelines on Implementing Components
 =====================================
 
 This document describes the guidelines on implementing components. It assumes
-familiarity with the component structure used in BRiM :cite:`stienstra_2023_brim` and
-the usage of SymPy mechanics and BRiM, as explained in the first two tutorials
+familiarity with the component structure used in SymBRiM :cite:`stienstra_2023_brim` and
+the usage of SymPy mechanics and SymBRiM, as explained in the first two tutorials
 :ref:`tutorials`.
 
-BRiM Components
----------------
+SymBRiM Components
+------------------
 
 .. raw:: html
 
@@ -18,24 +18,24 @@ BRiM Components
         <use xlink:href="../_static/core_uml.svg#coreUML"></use>
     </svg>
 
-The above figure shows the UML diagram of the core components of BRiM. The three core
-components all inherit from :class:`brim.core.base_classes.BrimBase`, as they share a
+The above figure shows the UML diagram of the core components of SymBRiM. The three core
+components all inherit from :class:`symbrim.core.base_classes.BrimBase`, as they share a
 similar define structure. The three core components are:
 
-- :class:`Models<brim.core.base_classes.ModelBase>` - a system with its own respective
-  system boundaries, which can be made up of other models.
-- :class:`Connections<brim.core.base_classes.ConnectionBase>` - a utility of models in
-  describing the interaction between submodels.
-- :class:`Load groups<brim.core.base_classes.LoadGroupBase>` - a collection of forces
+- :class:`Models<symbrim.core.base_classes.ModelBase>` - a system with its own
+  respective system boundaries, which can be made up of other models.
+- :class:`Connections<symbrim.core.base_classes.ConnectionBase>` - a utility of models
+  in describing the interaction between submodels.
+- :class:`Load groups<symbrim.core.base_classes.LoadGroupBase>` - a collection of forces
   and torques associated with a model or connection.
 
 A large part of what is being shared between these components are the definition steps.
 The definition steps are decoupled steps that are used to define the component. The
 definition steps are:
 
-0. **Define connections** (only in :class:`models<brim.core.base_classes.ModelBase>`):
-   Associate the submodels with the connections, such that the connections know the
-   submodels they will operate on.
+0. **Define connections** (only in
+   :class:`models<symbrim.core.base_classes.ModelBase>`): Associate the submodels with
+   the connections, such that the connections know the submodels they will operate on.
 1. **Define objects**: Create the objects, such as symbols reference frames, without
    defining any relationships between them.
 2. **Define kinematics**: Establish relationships between the objects'
@@ -55,27 +55,27 @@ The image below shows a schematic visualization of these steps for a rolling dis
 Usage of Base Classes
 ---------------------
 
-BRiM uses base classes for components to specify a common structure of a component.
-:class:`brim.bicycle.grounds.GroundBase` is an example of a base class. The advantage of
-using base classes is that it allows for a common interface between components, which
+SymBRiM uses base classes for components to specify a common structure of a component.
+:class:`symbrim.bicycle.grounds.GroundBase` is an example of a base class. The advantage
+of using base classes is that it allows for a common interface between components, which
 makes it possible to swap out components without having to change the code. For example,
 one can swap out the ground model for a different ground model without having to change
 the code of the bicycle model.
 
-In case of :class:`brim.bicycle.grounds.GroundBase` some of the commonly shared
+In case of :class:`symbrim.bicycle.grounds.GroundBase` some of the commonly shared
 properties are defined in the base class, such as a rigid body to represent the ground.
 Apart from those it also prescribes several properties using :class:`abc.ABCMeta` and
 :class:`abc.abstractmethod`. An example is the
-:meth:`brim.bicycle.grounds.GroundBase.get_normal` method. These kind of abstract
+:meth:`symbrim.bicycle.grounds.GroundBase.get_normal` method. These kind of abstract
 methods have to be implemented by subclasses, such as
-:class:`brim.bicycle.grounds.FlatGround`.
+:class:`symbrim.bicycle.grounds.FlatGround`.
 
 Setting Submodels and Connections
 ---------------------------------
 
 To specify the submodels a model or connection requires, one should specify the class
 property ``required_models``. This property should be a tuple of
-:class:`brim.core.requirement.ModelRequirement`. Based on these requirements, the
+:class:`symbrim.core.requirement.ModelRequirement`. Based on these requirements, the
 metaclass automatically creates properties for each of the required submodels on
 runtime. The following simple class shows how to specify the required submodels. ::
 
@@ -108,7 +108,8 @@ The property created for ``"ground"`` will be like the following: ::
         self._ground = model
 
 Connections should be specified similarly with the class property
-``required_connections``, using :class:`brim.core.requirement.ConnectionRequirement`. ::
+``required_connections``, using
+:class:`symbrim.core.requirement.ConnectionRequirement`. ::
 
     class MyModel(ModelBase):
         """My model."""
@@ -151,7 +152,7 @@ To implement the "define" steps in a model, connection, or load group, a leading
 underscore is added to the method name. For example, ``_define_<step>``. These methods
 solely implement the "define" step for the component itself without traversing the
 submodels and load groups. The base classes, like
-:class:`brim.core.base_classes.BrimBase`, contain the implementation of the "define"
+:class:`symbrim.core.base_classes.BrimBase`, contain the implementation of the "define"
 methods, including traversal, which should be called by the user. These methods follow
 the format ``define_<step>``.
 
@@ -182,10 +183,11 @@ Define Objects
 - Generalized speeds must be set/added to the mutable ``self.u`` matrix.
 - Auxiliary speeds must be set/added to the mutable ``self.uaux`` matrix.
 - The name of each symbol, generalized coordinate, and generalized speed must be created
-  using :meth:`brim.core.base_classes.BrimBase._add_prefix`. This method puts the name
-  of the component in front of the symbol name, such that the symbol name is unique.
+  using :meth:`symbrim.core.base_classes.BrimBase._add_prefix`. This method puts the
+  name of the component in front of the symbol name, such that the symbol name is
+  unique.
 - Each symbol, generalized coordinate, and generalized speed must have a description in
-  the :meth:`brim.core.base_classes.BrimBase.descriptions` property.
+  the :meth:`symbrim.core.base_classes.BrimBase.descriptions` property.
 - The define objects step for each connection should be called manually because there
   could be dependencies between the define step of a connection and its parent model,
   it is utility after all.
@@ -286,13 +288,13 @@ Define Constraints
 - For holonomic constraints a loop is being closed most of the time using a dot product.
   Just make sure to have some method to prevent the creation of constraint which are
   already satisfied. Optionally, you can use
-  :class:`brim.utilities.utilities.check_zero`.
+  :class:`symbrim.utilities.utilities.check_zero`.
 - For nonholonomic constraints the major difficulty is in the fact that one cannot
   assume anything about the already defined velocities. Especially points are
   susceptible to have multiple possible velocity definitions. Therefore, it is advised
   to compute the velocity based on the position graph of the points and the orientation
   and angular velocity graph of the reference frames. A good example of this is in the
-  :class:`brim.bicycle.tires.NonHolonomicTire` class.
+  :class:`symbrim.bicycle.tires.NonHolonomicTire` class.
 - To support usage of the object in a system with noncontributing forces it is also
   necessary to account for the auxiliary speeds. This can be done by specifically
   requesting the auxiliary velocity of a point and adding that to the constraint. Do
@@ -316,23 +318,23 @@ Define Constraints
 Auxiliary Data Handler
 ----------------------
 
-The :class:`brim.core.auxiliary.AuxiliaryDataHandler` is a utility class that is used to
-compute noncontributing forces and optimize the computation of the velocity of points.
-An instance of the auxiliary data handler is automatically created at the end of the
-``define_objects`` step. This instance is shared by the root model, i.e. the uppermost
-parent model, with all submodels, connections, and load groups. This makes the auxiliary
-data handler accessible from all components through the ``self.auxiliary_handler``
-attribute.
+The :class:`symbrim.core.auxiliary.AuxiliaryDataHandler` is a utility class that is used
+to compute noncontributing forces and optimize the computation of the velocity of
+points. An instance of the auxiliary data handler is automatically created at the end of
+the ``define_objects`` step. This instance is shared by the root model, i.e. the
+uppermost parent model, with all submodels, connections, and load groups. This makes the
+auxiliary data handler accessible from all components through the
+``self.auxiliary_handler`` attribute.
 
 In the ``define_kinematics`` step modelers can register noncontributing forces that
 should be computed using the
-:meth:`brim.core.auxiliary.AuxiliaryDataHandler.add_noncontributing_force` method. This
-method requires the point, the axis of the force, the auxiliary speed, and the force
-symbol as arguments. From this information the auxiliary data handler can do the rest.
-When defining the other kinematics it is best practise to define the velocity of a point
-based on the point w.r.t. which it has been positioned. This is because the auxiliary
-data handler propagates the auxiliary velocities of points to other points based on how
-points are defined w.r.t. to each other.
+:meth:`symbrim.core.auxiliary.AuxiliaryDataHandler.add_noncontributing_force` method.
+This method requires the point, the axis of the force, the auxiliary speed, and the
+force symbol as arguments. From this information the auxiliary data handler can do the
+rest. When defining the other kinematics it is best practise to define the velocity of a
+point based on the point w.r.t. which it has been positioned. This is because the
+auxiliary data handler propagates the auxiliary velocities of points to other points
+based on how points are defined w.r.t. to each other.
 
 At the end of the ``define_kinematics`` step the auxiliary data handler automatically
 computes the velocity of each point in the inertial frame, while adding the auxiliary
@@ -345,5 +347,5 @@ When computing the constraints in the ``define_constraints`` step it is importan
 take the auxiliary speeds into account, even if you didn't define any in you component.
 In many cases it is possible that other components may have defined auxiliary speeds
 that do affect your constraints. To get the auxiliary velocity of a point of intereset
-you can use the :meth:`brim.core.auxiliary.AuxiliaryDataHandler.get_auxiliary_velocity`
-method.
+you can use the
+:meth:`symbrim.core.auxiliary.AuxiliaryDataHandler.get_auxiliary_velocity` method.

@@ -12,9 +12,9 @@ from sympy.physics.mechanics import (
     inertia,
 )
 
-from brim.bicycle import FlatGround, KnifeEdgeWheel, NonHolonomicTire
-from brim.other.rolling_disc import RollingDisc
-from brim.utilities.benchmarking import benchmark
+from symbrim.bicycle import FlatGround, KnifeEdgeWheel, NonHolonomicTire
+from symbrim.other.rolling_disc import RollingDisc
+from symbrim.utilities.benchmarking import benchmark
 
 ROUNDS = 10
 
@@ -173,7 +173,7 @@ def rolling_disc_comparison():
           f"{count_ops(eoms)}\t\t{count_ops(cse(eoms))}")
     kane = create_rolling_disc_brim()
     eoms = kane._form_eoms()
-    print(f"BRiM\t\t\t\t\t\t\t\t\t\t\t"  # noqa: T201
+    print(f"SymBRiM\t\t\t\t\t\t\t\t\t\t\t"  # noqa: T201
           f"{count_ops(eoms)}\t\t{count_ops(cse(eoms))}")
 
 

@@ -1,11 +1,11 @@
 [tool.poetry]
-name = "brim"
+name = "symbrim"
 version = "0.0.1"
-description = "A Modular and Extensible Open-Source Framework for Creating Bicycle-Rider Models"
+description = "A Modular and Extensible Open-Source Framework for Symbolic Creating Bicycle-Rider Models"
 authors = ["tjstienstra <T.J.Stienstra@tudelft.nl>"]
 license = "CC0-1.0"
 readme = "README.md"
-repository = "https://github.com/mechmotum/brim"
+repository = "https://github.com/mechmotum/symbrim"
 
 [tool.poetry.dependencies]
 python = "^3.9"
@@ -107,7 +107,7 @@ source = ["src"]
 
 [tool.coverage.run]
 branch = true
-source = ["brim"]
+source = ["symbrim"]
 
 [tool.coverage.report]
 show_missing = true
@@ -120,8 +120,8 @@ exclude_also = [
     "def set_plot_objects"
 ]
 omit = [
-    "src/brim/utilities/benchmarking.py",
-    "src/brim/utilities/parametrize.py",
-    "src/brim/utilities/plotting.py",
-    "src/brim/utilities/testing.py"
+    "src/symbrim/utilities/benchmarking.py",
+    "src/symbrim/utilities/parametrize.py",
+    "src/symbrim/utilities/plotting.py",
+    "src/symbrim/utilities/testing.py"
 ]

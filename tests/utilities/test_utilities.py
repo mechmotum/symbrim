@@ -5,7 +5,7 @@ from sympy import S, acos, cos, sqrt, symbols
 from sympy.abc import a, b, c
 from sympy.physics.mechanics import dynamicsymbols
 
-from brim.utilities.utilities import check_zero, random_eval
+from symbrim.utilities.utilities import check_zero, random_eval
 
 
 class TestRandomEval:

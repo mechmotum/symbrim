@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from brim.bicycle import (
+from symbrim.bicycle import (
     FlatGround,
     KnifeEdgeWheel,
     MasslessCranks,
@@ -12,13 +12,13 @@ from brim.bicycle import (
     StationaryBicycle,
     WhippleBicycle,
 )
-from brim.brim import (
+from symbrim.brim import (
     BicycleRider,
     HolonomicHandGrips,
     HolonomicPedals,
     SideLeanSeat,
 )
-from brim.rider import (
+from symbrim.rider import (
     FixedSacrum,
     PinElbowStickLeftArm,
     PinElbowStickRightArm,
@@ -32,7 +32,7 @@ from brim.rider import (
     TwoPinStickLeftLeg,
     TwoPinStickRightLeg,
 )
-from brim.utilities.testing import ignore_point_warnings
+from symbrim.utilities.testing import ignore_point_warnings
 
 
 class TestCompleteBicycleRider:

@@ -4,8 +4,8 @@
 Tutorials
 =========
 
-BRiM has several available tutorials. Each tutorial is a Jupyter notebook, which can be
-downloaded as exercise locally and run on your own computer. The web version of the
+SymBRiM has several available tutorials. Each tutorial is a Jupyter notebook, which can
+be downloaded as exercise locally and run on your own computer. The web version of the
 tutorials each show the full solution, so you can also just read through them.
 
 The tutorials are ordered with increasing depth and complexity.
@@ -20,7 +20,7 @@ The tutorials are ordered with increasing depth and complexity.
 
 Installation
 ------------
-To run the tutorials locally, you need to install BRiM and various dependencies. The
+To run the tutorials locally, you need to install SymBRiM and various dependencies. The
 easiest way to do this is to use the provided
 :download:`yml file <./tutorials_environment.yml>`. The environment can be created using
 conda or mamba:
@@ -28,7 +28,7 @@ conda or mamba:
 .. code-block:: bash
 
     conda env create -f tutorials_environment.yml
-    conda activate brim-tutorials
+    conda activate symbrim-tutorials
 
 
 .. _general SymPy tutorials: https://docs.sympy.org/dev/tutorial/index.html

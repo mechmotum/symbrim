@@ -3,11 +3,11 @@ from __future__ import annotations
 import pytest
 from sympy.physics.mechanics import Point, RigidBody
 
-from brim.rider.torso import PlanarTorso, TorsoBase
-from brim.utilities.testing import _test_descriptions
+from symbrim.rider.torso import PlanarTorso, TorsoBase
+from symbrim.utilities.testing import _test_descriptions
 
 try:
-    from brim.utilities.plotting import PlotModel
+    from symbrim.utilities.plotting import PlotModel
 except ImportError:
     PlotModel = None
 

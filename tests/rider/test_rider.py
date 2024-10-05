@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from brim.rider import (
+from symbrim.rider import (
     FixedSacrum,
     PinElbowStickLeftArm,
     PinElbowStickRightArm,

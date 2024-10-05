@@ -4,13 +4,14 @@
 Contributing
 ============
 
-BRiM has been designed to be extended by the community. If you have a bug or a feature
-request, please open an issue on GitHub. If you would like to contribute, feel free to
-fork the repository and submit a pull request. To establish an effective development
-environment, we've taken inspiration from `Hypermodern Python`_ by Claudio Jolowicz and
-`Setting up Python Projects`_ by Johannes Schmidt. This page provides a brief overview
-of the various tools used in the development process. For the installation of the
-development environment, please refer to the :doc:`/guides/installation` page.
+SymBRiM has been designed to be extended by the community. If you have a bug or a
+feature request, please open an issue on GitHub. If you would like to contribute, feel
+free to fork the repository and submit a pull request. To establish an effective
+development environment, we've taken inspiration from `Hypermodern Python`_ by Claudio
+Jolowicz and `Setting up Python Projects`_ by Johannes Schmidt. This page provides a
+brief overview of the various tools used in the development process. For the
+installation of the development environment, please refer to the
+:doc:`/guides/installation` page.
 
 Linting
 =======
@@ -40,11 +41,11 @@ When generating a coverage report locally, we recommend using: ::
 
 Documentation
 =============
-The documentation is build using `sphinx`_. As BRiM is expected to expand quite a lot we
-have chosen to use `sphinx.ext.autodoc`_ in combination with `sphinx.ext.autosummary`_
-to generate the entire API reference including its structure from the source code.
-Therefore, it is important to document classes properly. To build the documentation you
-can use: ::
+The documentation is build using `sphinx`_. As SymBRiM is expected to expand quite a lot
+we have chosen to use `sphinx.ext.autodoc`_ in combination with
+`sphinx.ext.autosummary`_ to generate the entire API reference including its structure
+from the source code. Therefore, it is important to document classes properly. To build
+the documentation you can use: ::
 
     docs/make.bat html
 

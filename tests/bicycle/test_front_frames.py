@@ -1,19 +1,19 @@
 import pytest
 from sympy.physics.mechanics import Point, System, Vector
 
-from brim.bicycle.front_frames import (
+from symbrim.bicycle.front_frames import (
     RigidFrontFrame,
     RigidFrontFrameMoore,
     SuspensionRigidFrontFrame,
     SuspensionRigidFrontFrameMoore,
 )
-from brim.core import Attachment, Hub
-from brim.utilities.testing import _test_descriptions
+from symbrim.core import Attachment, Hub
+from symbrim.utilities.testing import _test_descriptions
 
 try:
     from symmeplot.matplotlib import PlotBody, PlotLine
 
-    from brim.utilities.plotting import PlotModel
+    from symbrim.utilities.plotting import PlotModel
 except ImportError:
     PlotModel = None
 

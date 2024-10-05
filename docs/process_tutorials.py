@@ -61,8 +61,9 @@ class ClearSolutionsPreProcessor(Preprocessor):
             raise ValueError("Solution region not closed")
         cell.source = "\n".join(new_lines)
 
-    def preprocess_cell(self, cell: nbformat.NotebookNode, resources: ResourcesDict,
-                        index: int) -> tuple[nbformat.NotebookNode, ResourcesDict]:  # noqa: ARG002
+    def preprocess_cell(
+        self, cell: nbformat.NotebookNode, resources: ResourcesDict, index: int  # noqa: ARG002
+    ) -> tuple[nbformat.NotebookNode, ResourcesDict]:
         """Preprocess a cell."""
         self._replace_solution_regions(cell)
         return cell, resources
@@ -77,8 +78,9 @@ class UpdateImagePathsPreprocessor(Preprocessor):
         resources["required_files"] = {}
         return super().preprocess(nb, resources)
 
-    def preprocess_cell(self, cell: nbformat.NotebookNode, resources: ResourcesDict,
-                        index: int) -> tuple[nbformat.NotebookNode, ResourcesDict]:  # noqa: ARG002
+    def preprocess_cell(
+        self, cell: nbformat.NotebookNode, resources: ResourcesDict, index: int  # noqa: ARG002
+    ) -> tuple[nbformat.NotebookNode, ResourcesDict]:
         """Preprocess a cell."""
 
         def replace(match: re.Match) -> str:
@@ -229,9 +231,9 @@ def get_command_environment() -> str:
 
 
 def install_local_brim_version(command: str) -> None:
-    """Install a local version of BRiM."""
+    """Install a local version of SymBRiM."""
     env = get_tutorials_environment_name()
-    subprocess.run([command, "uninstall", "-n", env, "brim", "-y"], check=False)
+    subprocess.run([command, "uninstall", "-n", env, "symbrim", "-y"], check=False)
     subprocess.run(
         [command, "run", "-n", env, "pip", "install", "-e", MAIN_DIR], check=True
     )

@@ -5,35 +5,35 @@ import pytest
 from sympy import diag
 from sympy.physics.mechanics import RigidBody, msubs
 
-from brim.bicycle.cranks import MasslessCranks
-from brim.bicycle.front_frames import RigidFrontFrameMoore
-from brim.bicycle.grounds import FlatGround
-from brim.bicycle.rear_frames import RigidRearFrameMoore
-from brim.bicycle.tires import NonHolonomicTire
-from brim.bicycle.wheels import KnifeEdgeWheel
-from brim.bicycle.whipple_bicycle import WhippleBicycleMoore
-from brim.brim.bicycle_rider import BicycleRider
-from brim.brim.hand_grips import HolonomicHandGrips
-from brim.brim.pedals import HolonomicPedals
-from brim.brim.seats import SideLeanSeat
-from brim.rider.arms import PinElbowStickLeftArm, PinElbowStickRightArm
-from brim.rider.hip_joints import SphericalLeftHip, SphericalRightHip
-from brim.rider.legs import TwoPinStickLeftLeg, TwoPinStickRightLeg
-from brim.rider.pelvis import PlanarPelvis
-from brim.rider.rider import Rider
-from brim.rider.sacrums import FixedSacrum
-from brim.rider.shoulder_joints import SphericalLeftShoulder, SphericalRightShoulder
-from brim.rider.torso import PlanarTorso
+from symbrim.bicycle.cranks import MasslessCranks
+from symbrim.bicycle.front_frames import RigidFrontFrameMoore
+from symbrim.bicycle.grounds import FlatGround
+from symbrim.bicycle.rear_frames import RigidRearFrameMoore
+from symbrim.bicycle.tires import NonHolonomicTire
+from symbrim.bicycle.wheels import KnifeEdgeWheel
+from symbrim.bicycle.whipple_bicycle import WhippleBicycleMoore
+from symbrim.brim.bicycle_rider import BicycleRider
+from symbrim.brim.hand_grips import HolonomicHandGrips
+from symbrim.brim.pedals import HolonomicPedals
+from symbrim.brim.seats import SideLeanSeat
+from symbrim.rider.arms import PinElbowStickLeftArm, PinElbowStickRightArm
+from symbrim.rider.hip_joints import SphericalLeftHip, SphericalRightHip
+from symbrim.rider.legs import TwoPinStickLeftLeg, TwoPinStickRightLeg
+from symbrim.rider.pelvis import PlanarPelvis
+from symbrim.rider.rider import Rider
+from symbrim.rider.sacrums import FixedSacrum
+from symbrim.rider.shoulder_joints import SphericalLeftShoulder, SphericalRightShoulder
+from symbrim.rider.torso import PlanarTorso
 
 try:
     from bicycleparameters import Bicycle
     from bicycleparameters.io import remove_uncertainties
 
-    from brim.utilities.parametrize import get_inertia_vals
+    from symbrim.utilities.parametrize import get_inertia_vals
 except ImportError:
     pytest.skip("bicycleparameters not installed", allow_module_level=True)
 
-data_dir = Path(__file__[:__file__.index("brim") + 4]) / "data"
+data_dir = Path(__file__[:__file__.index("tests")]) / "data"
 
 
 def _check_dir(bicycle: str, rider: str) -> bool:
