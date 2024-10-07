@@ -4,12 +4,12 @@ import pytest
 from sympy import Symbol
 from sympy.physics.mechanics import System, Vector
 
-from brim.bicycle.grounds import FlatGround
+from symbrim.bicycle.grounds import FlatGround
 
 try:
     from symmeplot.matplotlib import PlotFrame
 
-    from brim.utilities.plotting import PlotModel
+    from symbrim.utilities.plotting import PlotModel
 except ImportError:
     PlotModel = None
 

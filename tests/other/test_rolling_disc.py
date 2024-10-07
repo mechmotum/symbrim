@@ -5,8 +5,8 @@ import pytest
 from sympy import Symbol, lambdify
 from sympy.physics.mechanics import dynamicsymbols
 
-from brim.bicycle import FlatGround, KnifeEdgeWheel, NonHolonomicTire
-from brim.other.rolling_disc import RollingDisc, rolling_disc_manual
+from symbrim.bicycle import FlatGround, KnifeEdgeWheel, NonHolonomicTire
+from symbrim.other.rolling_disc import RollingDisc, rolling_disc_manual
 
 
 class TestRollingDisc:
@@ -88,7 +88,7 @@ class TestRollingDisc:
         # These are not official dependencies
         import matplotlib.pyplot as plt
 
-        from brim.utilities.plotting import Plotter
+        from symbrim.utilities.plotting import Plotter
         fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
         plotter = Plotter.from_model(self.rolling_disc, ax=ax)
         plotter.lambdify_system((self.system.q, self.system.u, self.p))

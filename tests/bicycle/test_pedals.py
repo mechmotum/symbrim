@@ -3,13 +3,13 @@ from __future__ import annotations
 import pytest
 from sympy.physics.mechanics import Point, ReferenceFrame, Vector
 
-from brim.bicycle import CranksBase, MasslessCranks
-from brim.utilities.testing import _test_descriptions
+from symbrim.bicycle import CranksBase, MasslessCranks
+from symbrim.utilities.testing import _test_descriptions
 
 try:
     from symmeplot.matplotlib import PlotLine
 
-    from brim.utilities.plotting import PlotModel
+    from symbrim.utilities.plotting import PlotModel
 except ImportError:
     PlotModel = None
 

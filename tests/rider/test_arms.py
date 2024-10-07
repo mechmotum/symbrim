@@ -4,7 +4,7 @@ import pytest
 from sympy import simplify, zeros
 from sympy.physics.mechanics import Point, ReferenceFrame, RigidBody
 
-from brim.rider.arms import (
+from symbrim.rider.arms import (
     LeftArmBase,
     PinElbowSpringDamper,
     PinElbowStickLeftArm,
@@ -12,12 +12,12 @@ from brim.rider.arms import (
     PinElbowTorque,
     RightArmBase,
 )
-from brim.rider.legs import TwoPinStickLeftLeg
-from brim.utilities.testing import _test_descriptions
-from brim.utilities.utilities import check_zero
+from symbrim.rider.legs import TwoPinStickLeftLeg
+from symbrim.utilities.testing import _test_descriptions
+from symbrim.utilities.utilities import check_zero
 
 try:
-    from brim.utilities.plotting import PlotModel
+    from symbrim.utilities.plotting import PlotModel
 except ImportError:
     PlotModel = None
 

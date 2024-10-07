@@ -10,7 +10,7 @@ from sympy.physics.mechanics import (
     inertia,
 )
 
-from brim.bicycle import (
+from symbrim.bicycle import (
     FlatGround,
     KnifeEdgeWheel,
     NonHolonomicTire,
@@ -18,7 +18,7 @@ from brim.bicycle import (
     RigidRearFrame,
     WhippleBicycleMoore,
 )
-from brim.utilities.benchmarking import benchmark
+from symbrim.utilities.benchmarking import benchmark
 
 ROUNDS = 3
 

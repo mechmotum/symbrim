@@ -4,11 +4,11 @@ import pytest
 from sympy import Symbol
 from sympy.physics.mechanics import Vector, dynamicsymbols
 
-from brim.bicycle.front_frames import RigidFrontFrameMoore
-from brim.brim.base_connections import HandGripsBase
-from brim.brim.hand_grips import HolonomicHandGrips, SpringDamperHandGrips
-from brim.rider.arms import PinElbowStickLeftArm, PinElbowStickRightArm
-from brim.utilities.testing import _test_descriptions, create_model_of_connection
+from symbrim.bicycle.front_frames import RigidFrontFrameMoore
+from symbrim.brim.base_connections import HandGripsBase
+from symbrim.brim.hand_grips import HolonomicHandGrips, SpringDamperHandGrips
+from symbrim.rider.arms import PinElbowStickLeftArm, PinElbowStickRightArm
+from symbrim.utilities.testing import _test_descriptions, create_model_of_connection
 
 
 @pytest.mark.parametrize("hand_grip_cls", [HolonomicHandGrips, SpringDamperHandGrips])

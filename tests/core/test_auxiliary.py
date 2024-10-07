@@ -9,7 +9,7 @@ from sympy.physics.mechanics import (
     dynamicsymbols,
 )
 
-from brim.core.auxiliary import AuxiliaryData, AuxiliaryDataHandler
+from symbrim.core.auxiliary import AuxiliaryData, AuxiliaryDataHandler
 
 frame = ReferenceFrame("frame")
 point = Point("point")

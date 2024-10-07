@@ -7,10 +7,10 @@ Installation
 Installation Users
 ==================
 
-BRiM is currently not available on PyPI. Therefore, you'll need to install the
+SymBRiM is currently not available on PyPI. Therefore, you'll need to install the
 development version from GitHub using: ::
 
-    pip install git+https://github.com/mechmotum/brim.git
+    pip install git+https://github.com/mechmotum/symbrim.git
 
 The optional dependencies can be installed with: ::
 
@@ -20,12 +20,12 @@ The optional dependencies can be installed with: ::
 Installation Developers
 =======================
 
-BRiM uses `poetry`_ as package manager. To install BRiM after installing `poetry`_ and
-cloning the repository, run: ::
+SymBRiM uses `poetry`_ as package manager. To install SymBRiM after installing `poetry`_
+and cloning the repository, run: ::
 
     poetry install
 
-BRiM offers dependency groups to assist developers:
+SymBRiM offers dependency groups to assist developers:
 
 - ``lint``: packages required for linting.
 - ``test``: packages required for testing.

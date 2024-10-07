@@ -1,25 +1,25 @@
 .. _introduction_to_brim:
 
-====================
-Introduction to BRiM
-====================
+=======================
+Introduction to SymBRiM
+=======================
 ..
-    Paragraph: Quick introduction on what BRiM is and does.
+    Paragraph: Quick introduction on what SymBRiM is and does.
 
-BRiM :cite:`stienstra_2023_brim` is a Python package to model bicycle-riders
+SymBRiM :cite:`stienstra_2023_brim` is a Python package to model bicycle-riders
 symbolically. It offers a modular and extendable framework that empowers users to easily
 compose a custom bicycle-rider model. These models are build from a library of
 components, such as knife-edge wheels or toroidal-shaped wheels. The components serve as
 the building blocks of the system. Leveraging the open-source Python package
-:mod:`sympy` :cite:`Meurer2017`, a computer algebra system, BRiM allows the usage of
+:mod:`sympy` :cite:`Meurer2017`, a computer algebra system, SymBRiM allows the usage of
 :mod:`sympy`'s bodies and joints interface to modify the model and other tools to
 manipulate the equations. The equations of motion (EOMs) for the system are derived
 using Kane's method :cite:`kane_dynamics_1985`, which can be further analysed and used
 in simulation and optimization tasks.
 
-For a more in-depth academic introduction to BRiM and its application in trajectory
+For a more in-depth academic introduction to SymBRiM and its application in trajectory
 tracking problems, refer to :cite:`stienstra_2023_brim`. The rest of this page will
-focus on the practical usage of BRiM.
+focus on the practical usage of SymBRiM.
 
 Defining a Model Using SymPy
 ----------------------------
@@ -32,7 +32,7 @@ an interface for defining systems and deriving their EOMs. It has an interface t
 reference frames, points, bodies and joints to describe a system. For a comprehensive
 guide on the low-level interface to describe dynamical systems, refer to
 :cite:`moore_learn_2022`. An example of defining a simple system, which follows a
-similar workflow as BRiM, can be found in the docstring of
+similar workflow as SymBRiM, can be found in the docstring of
 :class:`sympy.physics.mechanics.system.System`.
 
 Composing a Model
@@ -40,7 +40,7 @@ Composing a Model
 ..
     Paragraph: Show image and explain the tree structure.
 
-BRiM divides the bicycle-rider system into smaller subsystems called submodels. Each
+SymBRiM divides the bicycle-rider system into smaller subsystems called submodels. Each
 submodel is modeled separately and aggregated to create the complete bicycle-rider. This
 results in a tree structure, where the root is the entire bicycle-rider system, and the
 bicycle and rider are its children. The bicycle model can be further divided as
@@ -60,17 +60,17 @@ Core Components
 ..
     Paragraph: List of core components and their purpose.
 
-BRiM makes use of three core components: models, connections and loads groups. The
+SymBRiM makes use of three core components: models, connections and loads groups. The
 models are the main components, where each model describes a (sub)system following a
 tree structure. The connections can be seen as an utility of parent models to describe a
 modular and reusable interaction between submodels. The load groups are predefined sets
 of actuators and loads, which are commonly associated with a specific model or
 connection.
 
-Defining a Model Using BRiM
----------------------------
+Defining a Model Using SymBRiM
+------------------------------
 ..
-    Paragraph: Create the default Whipple bicycle model using BRiM.
+    Paragraph: Create the default Whipple bicycle model using SymBRiM.
 
 The default Whipple bicycle model :cite:`whipple1899stability`, also visualized as a
 tree in the image above, can be constructed as follows. The first step is to configure
@@ -79,7 +79,7 @@ the model by choosing the components. ::
     from sympy import symbols
     from sympy.physics.mechanics._actuator import TorqueActuator
     from sympy.physics.mechanics import dynamicsymbols
-    from brim import *
+    from symbrim import *
 
     bicycle = WhippleBicycle("bicycle")
     bicycle.rear_frame = RigidRearFrame("rear_frame")
@@ -89,7 +89,7 @@ the model by choosing the components. ::
     bicycle.rear_tire = NonHolonomicTire("rear_tire")
     bicycle.front_tire = NonHolonomicTire("front_tire")
 
-With the model configured, the next step is to let BRiM construct all the relationships
+With the model configured, the next step is to let SymBRiM construct all the relationships
 in the model by calling :meth:`~.ModelBase.define_all`. After this, the model can be
 exported to a single :class:`sympy.physics.mechanics.system.System` object. ::
 
@@ -132,7 +132,8 @@ See Also
 
 Here are some useful reference to get started:
 
-- The :ref:`tutorials` page contains a collection of tutorials to get started with BRiM.
+- The :ref:`tutorials` page contains a collection of tutorials to get started with
+  SymBRiM.
 - The `brim-bmd-2023-paper <https://github.com/TJStienstra/brim-bmd-2023-paper>`_
   repository contains a ``src`` directory with various trajectory tracking examples
   discussed in :cite:`stienstra_2023_brim`.

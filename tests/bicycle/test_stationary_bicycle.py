@@ -1,6 +1,6 @@
 import pytest
 
-from brim.bicycle import (
+from symbrim.bicycle import (
     KnifeEdgeWheel,
     MasslessCranks,
     RigidFrontFrame,

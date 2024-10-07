@@ -4,7 +4,7 @@ import re
 
 import pytest
 
-from brim.core import ConnectionRequirement, ModelBase, ModelRequirement
+from symbrim.core import ConnectionRequirement, ModelBase, ModelRequirement
 
 
 class MyModel(ModelBase):

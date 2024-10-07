@@ -10,8 +10,8 @@ import sympy as sm
 import sympy.physics.mechanics as me
 from sympy.core.function import AppliedUndef
 
-from brim.bicycle import WheelBase
-from brim.utilities.utilities import check_zero
+from symbrim.bicycle import WheelBase
+from symbrim.utilities.utilities import check_zero
 
 BICYCLE_PARAMETERS_ZIP_URL = (
     "https://github.com/moorepants/BicycleParameters/archive/refs/heads/master.zip"

@@ -7,15 +7,15 @@ import pytest
 from sympy import Matrix, Symbol, count_ops, lambdify, linear_eq_to_matrix
 from sympy.physics.mechanics import dynamicsymbols, msubs
 
-from brim import (
+from symbrim import (
     FlatGround,
     KnifeEdgeWheel,
     NonHolonomicTire,
     RigidFrontFrame,
     RigidRearFrame,
 )
-from brim.bicycle import MasslessCranks, WhippleBicycle, WhippleBicycleMoore
-from brim.utilities.testing import ignore_point_warnings
+from symbrim.bicycle import MasslessCranks, WhippleBicycle, WhippleBicycleMoore
+from symbrim.utilities.testing import ignore_point_warnings
 
 if TYPE_CHECKING:
     from sympy import Basic

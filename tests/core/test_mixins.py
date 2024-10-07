@@ -3,13 +3,13 @@ from __future__ import annotations
 import pytest
 from sympy.physics.mechanics import RigidBody
 
-from brim.core.base_classes import ModelBase
-from brim.core.mixins import NewtonianBodyMixin
+from symbrim.core.base_classes import ModelBase
+from symbrim.core.mixins import NewtonianBodyMixin
 
 try:
     from symmeplot.matplotlib import PlotBody
 
-    from brim.utilities.plotting import PlotModel
+    from symbrim.utilities.plotting import PlotModel
 except ImportError:
     PlotModel = None
 

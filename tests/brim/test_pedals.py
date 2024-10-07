@@ -4,11 +4,11 @@ import pytest
 from sympy import Symbol
 from sympy.physics.mechanics import Vector, dynamicsymbols
 
-from brim.bicycle.cranks import MasslessCranks
-from brim.brim.base_connections import PedalsBase
-from brim.brim.pedals import HolonomicPedals, SpringDamperPedals
-from brim.rider.legs import TwoPinStickLeftLeg, TwoPinStickRightLeg
-from brim.utilities.testing import _test_descriptions, create_model_of_connection
+from symbrim.bicycle.cranks import MasslessCranks
+from symbrim.brim.base_connections import PedalsBase
+from symbrim.brim.pedals import HolonomicPedals, SpringDamperPedals
+from symbrim.rider.legs import TwoPinStickLeftLeg, TwoPinStickRightLeg
+from symbrim.utilities.testing import _test_descriptions, create_model_of_connection
 
 
 @pytest.mark.parametrize("pedal_cls", [HolonomicPedals, SpringDamperPedals])

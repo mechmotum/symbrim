@@ -1,16 +1,16 @@
 import pytest
 
-from brim.bicycle import (
+from symbrim.bicycle import (
     KnifeEdgeWheel,
     NonHolonomicTire,
     TireBase,
     ToroidalWheel,
     WheelBase,
 )
-from brim.core import LoadGroupBase, Registry
-from brim.core.requirement import ConnectionRequirement, ModelRequirement
-from brim.other.rolling_disc import RollingDisc
-from brim.rider import PinElbowSpringDamper, PinElbowStickLeftArm, PinElbowTorque
+from symbrim.core import LoadGroupBase, Registry
+from symbrim.core.requirement import ConnectionRequirement, ModelRequirement
+from symbrim.other.rolling_disc import RollingDisc
+from symbrim.rider import PinElbowSpringDamper, PinElbowStickLeftArm, PinElbowTorque
 
 
 class TestRegistry:

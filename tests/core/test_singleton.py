@@ -1,6 +1,6 @@
 import pytest
 
-from brim.core import Singleton
+from symbrim.core import Singleton
 
 
 class TestSingleton:

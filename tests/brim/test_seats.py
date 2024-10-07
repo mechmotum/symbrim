@@ -4,17 +4,17 @@ import pytest
 from sympy import Matrix, cos, eye, simplify, sin, zeros
 from sympy.physics.mechanics import ReferenceFrame
 
-from brim.bicycle.rear_frames import RigidRearFrameMoore
-from brim.brim.base_connections import SeatBase
-from brim.brim.seats import (
+from symbrim.bicycle.rear_frames import RigidRearFrameMoore
+from symbrim.brim.base_connections import SeatBase
+from symbrim.brim.seats import (
     FixedSeat,
     SideLeanSeat,
     SideLeanSeatSpringDamper,
     SideLeanSeatTorque,
 )
-from brim.rider.pelvis import PlanarPelvis
-from brim.utilities.testing import _test_descriptions, create_model_of_connection
-from brim.utilities.utilities import check_zero
+from symbrim.rider.pelvis import PlanarPelvis
+from symbrim.utilities.testing import _test_descriptions, create_model_of_connection
+from symbrim.utilities.utilities import check_zero
 
 
 @pytest.mark.parametrize("seat_cls", [FixedSeat, SideLeanSeat])

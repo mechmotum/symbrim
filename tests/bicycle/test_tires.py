@@ -4,12 +4,12 @@ import pytest
 from sympy import Matrix, S, cos, linear_eq_to_matrix, pi, simplify, sin, symbols
 from sympy.physics.mechanics import ReferenceFrame, System, cross, dynamicsymbols
 
-from brim.bicycle.grounds import FlatGround, GroundBase
-from brim.bicycle.tires import InContactTire, NonHolonomicTire, TireBase
-from brim.bicycle.wheels import KnifeEdgeWheel, ToroidalWheel, WheelBase
-from brim.other.rolling_disc import RollingDisc
-from brim.utilities.testing import _test_descriptions, create_model_of_connection
-from brim.utilities.utilities import check_zero
+from symbrim.bicycle.grounds import FlatGround, GroundBase
+from symbrim.bicycle.tires import InContactTire, NonHolonomicTire, TireBase
+from symbrim.bicycle.wheels import KnifeEdgeWheel, ToroidalWheel, WheelBase
+from symbrim.other.rolling_disc import RollingDisc
+from symbrim.utilities.testing import _test_descriptions, create_model_of_connection
+from symbrim.utilities.utilities import check_zero
 
 
 class MyTire(TireBase):

@@ -1,8 +1,8 @@
-==================
-BRiM Documentation
-==================
-BRiM: a Modular and Extensible Open-Source Framework for Creating Bicycle-Rider
-Models.
+=====================
+SymBRiM Documentation
+=====================
+SymBRiM: a Modular and Extensible Open-Source Framework for Creating Symbolic
+Bicycle-Rider Models.
 
 .. image:: ./_static/lane_change.gif
    :align: center

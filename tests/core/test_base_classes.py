@@ -4,15 +4,15 @@ import pytest
 from sympy import S, Symbol
 from sympy.physics.mechanics import System, Torque, dynamicsymbols
 
-from brim.bicycle import FlatGround, KnifeEdgeWheel, NonHolonomicTire
-from brim.core import (
+from symbrim.bicycle import FlatGround, KnifeEdgeWheel, NonHolonomicTire
+from symbrim.core import (
     LoadGroupBase,
     ModelBase,
     ModelRequirement,
     Registry,
     set_default_convention,
 )
-from brim.other.rolling_disc import RollingDisc
+from symbrim.other.rolling_disc import RollingDisc
 
 
 class MyLoad(LoadGroupBase):
