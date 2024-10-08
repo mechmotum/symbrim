@@ -15,25 +15,25 @@ symmeplot = {version = "^0.2.0", optional = true}
 bicycleparameters = {git = "https://github.com/moorepants/BicycleParameters.git", optional = true}
 
 [tool.poetry.group.lint.dependencies]
-ruff = "^0.6.4"
-pre-commit = "^3.6.0"
+ruff = "^0.6.9"
+pre-commit = "^4.0.1"
 
 [tool.poetry.group.test.dependencies]
-pytest = "^7.2.2"
-coverage = {extras = ["toml"], version = "^7.2.1"}
-pytest-cov = "^4.0.0"
-numpy = "^1.24.2"
+pytest = "^8.3.3"
+coverage = {extras = ["toml"], version = "7.6.1"}
+pytest-cov = "^5.0.0"
+numpy = "^2.1.2"
 pytest-benchmark = "^4.0.0"
-pytest-mock = "^3.12.0"
+pytest-mock = "^3.14.0"
 
 [tool.poetry.group.docs.dependencies]
-sphinx = "^6.2.1"
-furo = "^2023.3.27"
-sphinxcontrib-bibtex = "^2.5.0"
-nbsphinx = "^0.9.3"
-rpds-py = "^0.10.3"
-ipykernel = "^6.25.2"
-nbstripout = "^0.6.1"
+sphinx = "^8.0.2"
+furo = "^2024.8.6"
+sphinxcontrib-bibtex = "^2.6.3"
+nbsphinx = "^0.9.5"
+rpds-py = "^0.20.0"
+ipykernel = "^6.29.5"
+nbstripout = "^0.7.1"
 
 [tool.poetry.extras]
 plotting = ["symmeplot"]
