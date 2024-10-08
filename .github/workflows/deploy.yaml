@@ -21,7 +21,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install pandoc
       - name: Create the tutorials' environment
-        uses: mamba-org/setup-micromamba@v1
+        uses: mamba-org/setup-micromamba@v2
         with:
           environment-file: docs/tutorials/tutorials_environment.yml
           init-shell: >-
@@ -34,9 +34,9 @@ jobs:
           source /usr/share/miniconda/etc/profile.d/conda.sh
           conda deactivate
       - name: Install poetry
-        run: pipx install poetry==1.7.1
+        run: pipx install poetry==1.8.3
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: 3.12
       - name: Install dependencies
@@ -46,7 +46,7 @@ jobs:
           poetry run make -C docs clean
           poetry run make -C docs html
       - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         with:
           publish_branch: gh-pages

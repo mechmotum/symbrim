@@ -24,6 +24,7 @@ from symbrim.rider.rider import Rider
 from symbrim.rider.sacrums import FixedSacrum
 from symbrim.rider.shoulder_joints import SphericalLeftShoulder, SphericalRightShoulder
 from symbrim.rider.torso import PlanarTorso
+from symbrim.utilities.testing import ON_CI
 
 try:
     from bicycleparameters import Bicycle
@@ -51,7 +52,9 @@ def _check_dir(bicycle: str, rider: str) -> bool:
     return True
 
 
-@pytest.mark.skipif(not data_dir.is_dir(), reason="data directory not found")
+@pytest.mark.skipif(
+    not data_dir.is_dir() and not ON_CI, reason="data directory not found"
+)
 class TestParametrize:
     @pytest.mark.parametrize(("bicycle", "rider"), [
         ("Benchmark", None),

@@ -8,18 +8,35 @@ on:
 
 jobs:
 
+  #---------------------------------- download-data -----------------------------------#
+
+  download-data:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download parametrization data
+        run: |
+          git clone --depth 1 https://github.com/moorepants/BicycleParameters.git
+          mv BicycleParameters/data data
+          rm -rf BicycleParameters
+      - name: Upload data directory
+        uses: actions/upload-artifact@v4
+        with:
+          name: data
+          path: data
+
   #----------------------------------- code-quality -----------------------------------#
 
   code-quality:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Install poetry
-        run: pipx install poetry==1.7.1
+        run: pipx install poetry==1.8.3
       - name: Set up Python 3
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: 3.11
+          python-version: 3.12
       - name: Install dependencies
         run: poetry install --with lint
       - name: Run lint
@@ -37,13 +54,18 @@ jobs:
       matrix:
         python-version: ['3.9', '3.10', '3.11', '3.12']
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Install poetry
-        run: pipx install poetry==1.7.1
+        run: pipx install poetry==1.8.3
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Download data directory
+        uses: actions/download-artifact@v4
+        with:
+          name: data
+          path: data
       - name: Install dependencies
         run: poetry install --with test --all-extras
       - name: Run tests
@@ -67,7 +89,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install pandoc
       - name: Create the tutorials' environment
-        uses: mamba-org/setup-micromamba@v1
+        uses: mamba-org/setup-micromamba@v2
         with:
           environment-file: docs/tutorials/tutorials_environment.yml
           init-shell: >-
@@ -80,9 +102,9 @@ jobs:
           source /usr/share/miniconda/etc/profile.d/conda.sh
           conda deactivate
       - name: Install poetry
-        run: pipx install poetry==1.7.1
+        run: pipx install poetry==1.8.3
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
@@ -99,33 +121,38 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Install poetry
-        run: pipx install poetry==1.7.1
+        run: pipx install poetry==1.8.3
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: 3.11
+          python-version: 3.12
       - name: Install dependencies
         run: poetry install --with test
       - name: Run benchmarks
         run: |
           poetry run pytest ./benchmarks/
 
-    #---------------------------------- code-coverage ---------------------------------#
+    #--------------------------------- code-coverage ----------------------------------#
 
   code-coverage:
     needs: tests
 
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Install poetry
-        run: pipx install poetry==1.7.1
+        run: pipx install poetry==1.8.3
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: 3.11
+          python-version: 3.12
+      - name: Download data directory
+        uses: actions/download-artifact@v4
+        with:
+          name: data
+          path: data
       - name: Install dependencies
         run: poetry install --with test --all-extras
       - name: Run tests with code coverage

@@ -31,8 +31,7 @@ def get_inertia_vals(
             kwargs["iyz"] = mat[1, 2]
             kwargs["izx"] = mat[0, 2]
         else:
-            for arg, term in zip(args, ("ixx", "iyy", "izz", "ixy", "iyz", "izx")):
-                kwargs[term] = arg
+            kwargs.update(dict(zip(("ixx", "iyy", "izz", "ixy", "iyz", "izx"), args)))
     if "ixx" in kwargs:
         params[i_mat[0, 0]] = kwargs["ixx"]
     if "iyy" in kwargs:
