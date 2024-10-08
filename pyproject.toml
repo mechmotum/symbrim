@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "symbrim"
-version = "0.0.1"
+version = "0.1.0"
 description = "A Modular and Extensible Open-Source Framework for Symbolic Creating Bicycle-Rider Models"
 authors = ["tjstienstra <T.J.Stienstra@tudelft.nl>"]
 license = "CC0-1.0"
