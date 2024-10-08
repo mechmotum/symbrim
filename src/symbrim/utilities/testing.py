@@ -1,6 +1,8 @@
 """Module containing utilities for testing."""
+
 from __future__ import annotations
 
+import os
 import warnings
 from contextlib import contextmanager
 from typing import TYPE_CHECKING
@@ -11,6 +13,8 @@ from symbrim.core import ConnectionBase, ConnectionRequirement, LoadGroupBase, M
 
 if TYPE_CHECKING:
     from collections.abc import Generator
+
+ON_CI = os.getenv("CI", None) == "true"
 
 
 def _test_descriptions(instance: ModelBase | ConnectionBase | LoadGroupBase) -> None:
