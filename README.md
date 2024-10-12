@@ -14,14 +14,13 @@ This package is still under development, therefore there is no guarantee on back
 compatibility.
 
 ## Installation
-`SymBRiM` is currently not available on `PyPI`. Therefore, you'll need to install the
-development version from GitHub using:
+`SymBRiM` is currently available on `PyPI`.
 ```bash
-pip install git+https://github.com/mechmotum/symbrim.git
+pip install symbrim
 ```
 The optional dependencies can be installed with:
 ```bash
-pip install git+https://github.com/moorepants/BicycleParameters.git
+pip install bicycleparameters
 pip install symmeplot
 ```
 
