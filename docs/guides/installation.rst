@@ -7,14 +7,13 @@ Installation
 Installation Users
 ==================
 
-SymBRiM is currently not available on PyPI. Therefore, you'll need to install the
-development version from GitHub using: ::
+SymBRiM is currently available on PyPI. ::
 
-    pip install git+https://github.com/mechmotum/symbrim.git
+    pip install symbrim
 
 The optional dependencies can be installed with: ::
 
-    pip install git+https://github.com/moorepants/BicycleParameters.git
+    pip install bicycleparameters
     pip install symmeplot
 
 Installation Developers
