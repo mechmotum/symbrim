@@ -11,6 +11,7 @@ repository = "https://github.com/mechmotum/symbrim"
 python = "^3.9"
 typing-extensions = "^4.12.2"
 sympy = "^1.13"
+numpy = ">=1.24"
 symmeplot = {version = "^0.2.0", optional = true}
 bicycleparameters = {version = "^1.2.0", optional = true}
 importlib-metadata = {version = "^8.5.0", python = "<3.8"}
