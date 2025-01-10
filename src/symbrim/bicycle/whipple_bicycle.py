@@ -74,9 +74,9 @@ class WhippleBicycleMoore(WhippleBicycle):
             self.q[2]: f"Yaw angle of the rear frame of {self.name}.",
             self.q[3]: f"Roll angle of the rear frame of {self.name}.",
             self.q[4]: f"Pitch angle of the rear frame of {self.name}.",
-            self.q[5]: f"Front wheel rotation angle of {self.name}.",
+            self.q[5]: f"Rear wheel rotation angle of {self.name}.",
             self.q[6]: f"Steering rotation angle of {self.name}.",
-            self.q[7]: f"Rear wheel rotation angle of {self.name}.",
+            self.q[7]: f"Front wheel rotation angle of {self.name}.",
         }
         desc.update({ui: f"Generalized speed of the {desc[qi].lower()}"
                      for qi, ui in zip(self.q, self.u)})
