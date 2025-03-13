@@ -210,12 +210,22 @@ class RigidRearFrameMoore(RigidRearFrame):
     def wheel_hub(self) -> Hub:
         """Wheel hub for the rear wheel expressed in the rear frame."""
         return self._wheel_hub
+    
+    _combineRiderInertia = False # if True, include the inertia of the rider to the rear frame as it would be fixed to it if the rider parameters are added.
+    
+    @property
+    def combineRiderInertia(self) -> bool: 
+        return self._combineRiderInertia
+        
+    @combineRiderInertia.setter
+    def combineRiderInertia(self, option: bool) -> None:
+        self._combineRiderInertia = option
 
     def get_param_values(self, bicycle_parameters: Bicycle) -> dict[Symbol, float]:
         """Get the parameter values of the rear frame."""
         params = super().get_param_values(bicycle_parameters)
         if "Benchmark" in bicycle_parameters.parameters:
-            if bicycle_parameters.hasRider:
+            if not self._combineRiderInertia:
                 bp = remove_uncertainties(calculate_benchmark_from_measured(
                     bicycle_parameters.parameters["Measured"])[0])
             else:
