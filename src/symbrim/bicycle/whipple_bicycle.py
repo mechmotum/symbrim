@@ -163,10 +163,10 @@ class WhippleBicycleMoore(WhippleBicycle):
             self.cranks.center_point.set_pos(self.rear_frame.bottom_bracket, 0)
             self.cranks.frame.orient_axis(
                 self.rear_frame.wheel_hub.frame, self.rear_frame.wheel_hub.axis,
-                self.q[7] / self.symbols["gear_ratio"])
+                self.q[5] / self.symbols["gear_ratio"])
             self.cranks.frame.set_ang_vel(
                 self.rear_frame.wheel_hub.frame,
-                self.u[7] / self.symbols["gear_ratio"] * self.rear_frame.wheel_hub.axis)
+                self.u[5] / self.symbols["gear_ratio"] * self.rear_frame.wheel_hub.axis)
 
     def _define_loads(self) -> None:
         """Define the loads of the Whipple bicycle."""
