@@ -211,25 +211,21 @@ class RigidRearFrameMoore(RigidRearFrame):
         """Wheel hub for the rear wheel expressed in the rear frame."""
         return self._wheel_hub
     
-    _combineRiderInertia = False # if True, include the inertia of the rider to the rear frame as it would be fixed to it if the rider parameters are added.
-    
-    @property
-    def combineRiderInertia(self) -> bool: 
-        return self._combineRiderInertia
-        
-    @combineRiderInertia.setter
-    def combineRiderInertia(self, option: bool) -> None:
-        self._combineRiderInertia = option
 
-    def get_param_values(self, bicycle_parameters: Bicycle) -> dict[Symbol, float]:
-        """Get the parameter values of the rear frame."""
+    def get_param_values(self, bicycle_parameters: Bicycle, include_rider_inertia=False) -> dict[Symbol, float]:
+        """Get the parameter values of the rear frame.
+        include_rider_inertia option means include the rider inertia parameters fixed
+        to the rear frame of the bicycle. To call it do: 
+        constants = bicycle_def.get_param_values(parameters) | bicycle_def.rear_frame.get_param_values(parameters, True or False or None)"""
+        
         params = super().get_param_values(bicycle_parameters)
         if "Benchmark" in bicycle_parameters.parameters:
-            if not self._combineRiderInertia:
+            if not include_rider_inertia:
                 bp = remove_uncertainties(calculate_benchmark_from_measured(
                     bicycle_parameters.parameters["Measured"])[0])
             else:
                 bp = remove_uncertainties(bicycle_parameters.parameters["Benchmark"])
+            
             mop = benchmark_to_moore(bp)
             params[self.body.mass] = mop["mc"]
             params.update(get_inertia_vals(
