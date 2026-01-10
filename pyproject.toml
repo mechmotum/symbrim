@@ -104,7 +104,7 @@ testpaths = [
     "tests",
 ]
 markers = [
-    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "slow: marks tests as slow (skipped by default, run with '-m slow' or '--run-slow')",
 ]
 
 [tool.coverage.paths]

@@ -69,12 +69,31 @@ jobs:
       - name: Install dependencies
         run: poetry install --with test --all-extras
       - name: Run tests
-        run: |
-          if [ "${{ matrix.python-version }}" = "3.12" ]; then
-            poetry run pytest
-          else
-            poetry run pytest -m "not slow"
-          fi
+        run: poetry run pytest
+
+  #------------------------------------ doc-tests -------------------------------------#
+
+  slow-tests:
+    needs: tests
+
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install poetry
+        run: pipx install poetry==1.8.3
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.12
+      - name: Download data directory
+        uses: actions/download-artifact@v4
+        with:
+          name: data
+          path: data
+      - name: Install dependencies
+        run: poetry install --with test --all-extras
+      - name: Run slow tests
+        run: poetry run pytest --run-slow -m "slow"
 
   #------------------------------------ doc-tests -------------------------------------#
 
@@ -162,4 +181,4 @@ jobs:
         run: poetry install --with test --all-extras
       - name: Run tests with code coverage
         run: |
-          poetry run pytest --cov -m "not slow"
+          poetry run pytest --cov
