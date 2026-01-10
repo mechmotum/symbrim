@@ -119,7 +119,9 @@ exclude_also = [
     "if TYPE_CHECKING:",
     "with contextlib.suppress.ImportError.:",
     "def get_param_values",
-    "def set_plot_objects"
+    "def set_plot_objects",
+    "@overload",
+    ":\\s*\\.\\.\\.\\s*$"
 ]
 omit = [
     "src/symbrim/utilities/benchmarking.py",
