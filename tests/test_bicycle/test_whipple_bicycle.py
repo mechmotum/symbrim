@@ -93,6 +93,7 @@ class TestWhippleBicycleMoore:
         self.bike.rear_tire = NonHolonomicTire("rear_tire")
         self.bike.front_tire = NonHolonomicTire("front_tire")
 
+    @pytest.mark.slow
     @pytest.mark.usefixtures("_setup_default")
     def test_basu_mandal(self) -> None:
         t = dynamicsymbols._t

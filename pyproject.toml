@@ -103,6 +103,9 @@ python_version = "3.9"
 testpaths = [
     "tests",
 ]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+]
 
 [tool.coverage.paths]
 source = ["src"]

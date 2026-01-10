@@ -69,7 +69,12 @@ jobs:
       - name: Install dependencies
         run: poetry install --with test --all-extras
       - name: Run tests
-        run: poetry run pytest
+        run: |
+          if [ "${{ matrix.python-version }}" = "3.12" ]; then
+            poetry run pytest
+          else
+            poetry run pytest -m "not slow"
+          fi
 
   #------------------------------------ doc-tests -------------------------------------#
 
@@ -157,4 +162,4 @@ jobs:
         run: poetry install --with test --all-extras
       - name: Run tests with code coverage
         run: |
-          poetry run pytest --cov
+          poetry run pytest --cov -m "not slow"
