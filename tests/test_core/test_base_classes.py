@@ -4,7 +4,7 @@ import pytest
 from sympy import S, Symbol
 from sympy.physics.mechanics import System, Torque, dynamicsymbols
 
-from symbrim.bicycle import FlatGround, KnifeEdgeWheel, NonHolonomicTire
+from symbrim.bicycle import FlatGround, KnifeEdgeWheel, NonHolonomicTire, WhippleBicycle
 from symbrim.core import (
     LoadGroupBase,
     ModelBase,
@@ -260,6 +260,41 @@ class TestModelBase:
         root.define_kinematics()
         root.define_loads()
         root.define_constraints()
+
+    def test_get_unspecified_components_all_unspecified(self) -> None:
+        disc = RollingDisc("disc")
+        unspecified = disc.get_unspecified_components()
+        assert unspecified == ("ground", "wheel", "tire")
+
+    def test_get_unspecified_components_partially_specified(self) -> None:
+        disc = RollingDisc("disc")
+        disc.ground = FlatGround("ground")
+        unspecified = disc.get_unspecified_components()
+        assert unspecified == ("wheel", "tire")
+
+    def test_get_unspecified_components_all_specified(self) -> None:
+        disc = RollingDisc("disc")
+        disc.ground = FlatGround("ground")
+        disc.wheel = KnifeEdgeWheel("wheel")
+        disc.tire = NonHolonomicTire("tire")
+        unspecified = disc.get_unspecified_components()
+        assert unspecified == ()
+
+    def test_get_unspecified_components_with_optional(self) -> None:
+        bike = WhippleBicycle("bike")
+        unspecified_hard = bike.get_unspecified_components()
+        assert "cranks" not in unspecified_hard
+        unspecified_all = bike.get_unspecified_components(optional=True)
+        assert "cranks" in unspecified_all
+
+    def test_get_unspecified_components_detailed(self) -> None:
+        disc = RollingDisc("disc")
+        disc.ground = FlatGround("ground")
+        unspecified = disc.get_unspecified_components(detailed=True)
+        assert len(unspecified) == 2
+        assert all(hasattr(req, "attribute_name") for req in unspecified)
+        assert unspecified[0].attribute_name == "wheel"
+        assert unspecified[1].attribute_name == "tire"
 
 
 class TestFromConvention:
