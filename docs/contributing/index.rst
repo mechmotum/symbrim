@@ -38,7 +38,7 @@ or functions can be ignored using ``# pragma: no cover``. To run the tests use: 
 Some tests are marked as slow (e.g., tests that form equations of motion). These tests
 are **skipped by default** for faster test runs. To run all tests including slow tests: ::
 
-    pytest --run-slow
+    pytest --run-all
 
 To run only the slow tests: ::
 
