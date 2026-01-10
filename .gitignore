@@ -7,4 +7,7 @@ docs/tutorials/tutorials.zip
 data
 dist
 *\.ipynb_checkpoints
+.pytest_cache
+*.pyc
+*.pyo
 src/symbrim/_version.py
