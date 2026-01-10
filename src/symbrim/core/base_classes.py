@@ -83,7 +83,7 @@ def _create_connection_property(requirement: ConnectionRequirement) -> property:
 class ModelMeta(ABCMeta):
     """Metaclass for the :class:`symbrim.core.model_base.ModelBase`."""
 
-    def __new__(mcs, name, bases, namespace, **kwargs):  # noqa: ANN001, ANN003, ANN204
+    def __new__(mcs, name, bases, namespace, **kwargs):  # noqa: ANN001, ANN003, ANN204, N804
         """Create a new class."""
         # Create properties for each of the requirements
         requirements = _get_requirements(bases, namespace, "required_models")
@@ -103,7 +103,7 @@ class ModelMeta(ABCMeta):
 class ConnectionMeta(ABCMeta):
     """Metaclass for the :class:`symbrim.core.model_base.ConnectionBase`."""
 
-    def __new__(mcs, name, bases, namespace, **kwargs):  # noqa: ANN001, ANN003, ANN204
+    def __new__(mcs, name, bases, namespace, **kwargs):  # noqa: ANN001, ANN003, ANN204, N804
         """Create a new class."""
         # Create properties for each of the requirements
         requirements = _get_requirements(bases, namespace, "required_models")
@@ -118,7 +118,7 @@ class ConnectionMeta(ABCMeta):
 class LoadGroupMeta(ABCMeta):
     """Metaclass for the :class:`symbrim.core.model_base.LoadGroupBase`."""
 
-    def __new__(mcs, name, bases, namespace, **kwargs):  # noqa: ANN001, ANN003, ANN204
+    def __new__(mcs, name, bases, namespace, **kwargs):  # noqa: ANN001, ANN003, ANN204, N804
         """Create a new class."""
         instance = super().__new__(mcs, name, bases, namespace, **kwargs)
         Registry().register_load_group(instance)
