@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from abc import ABCMeta
 from functools import wraps
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, overload
 
 from sympy import Basic, MutableDenseMatrix, Symbol, symbols
 from sympy.physics.mechanics import System, dynamicsymbols, find_dynamicsymbols
@@ -23,7 +23,11 @@ except ImportError:  # pragma: no cover
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-    from symbrim.core.requirement import ConnectionRequirement, ModelRequirement
+    from symbrim.core.requirement import (
+        ConnectionRequirement,
+        ModelRequirement,
+        RequirementBase,
+    )
 
 __all__ = ["ConnectionBase", "ConnectionMeta", "LoadGroupBase", "LoadGroupMeta",
            "ModelBase", "ModelMeta", "set_default_convention"]
@@ -340,6 +344,44 @@ class ModelBase(BrimBase, metaclass=ModelMeta):
             raise ValueError(f"Multiple models found for convention {convention!r} "
                              f"of type {cls}: {set(possible_models)}.")
         return possible_models[0](name, *args, **kwargs)
+
+    @overload
+    def get_unspecified_components(
+        self, *, optional: bool = False, detailed: bool = False
+    ) -> tuple[str, ...]: ...
+
+    @overload
+    def get_unspecified_components(
+        self, *, optional: bool = False, detailed: bool = True
+    ) -> tuple[RequirementBase, ...]: ...
+
+    def get_unspecified_components(
+        self, *, optional: bool = False, detailed: bool = False
+    ) -> tuple[str, ...] | tuple[RequirementBase, ...]:
+        """Get the unspecified components of the model.
+
+        Parameters
+        ----------
+        optional : bool, optional
+            Whether to include the optional components, by default False.
+        detailed : bool, optional
+            Whether to return detailed requirement objects instead of just attribute
+            names, by default False.
+
+        Returns
+        -------
+        tuple[str, ...] | tuple[RequirementBase, ...]
+            Tuple of attribute names if detailed is False, otherwise tuple of
+            requirement objects for unspecified components.
+        """
+        unspecified = tuple(
+            req
+            for req in (self.required_models + self.required_connections)
+            if getattr(self, req.attribute_name) is None and (optional or req.hard)
+        )
+        if detailed:
+            return unspecified
+        return tuple(req.attribute_name for req in unspecified)
 
     def _set_auxiliary_handler(self, auxiliary_handler: AuxiliaryDataHandler) -> None:
         """Set the auxiliary data handler of the model."""

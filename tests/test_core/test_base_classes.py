@@ -4,7 +4,7 @@ import pytest
 from sympy import S, Symbol
 from sympy.physics.mechanics import System, Torque, dynamicsymbols
 
-from symbrim.bicycle import FlatGround, KnifeEdgeWheel, NonHolonomicTire
+from symbrim.bicycle import FlatGround, KnifeEdgeWheel, NonHolonomicTire, WhippleBicycle
 from symbrim.core import (
     LoadGroupBase,
     ModelBase,
@@ -261,6 +261,46 @@ class TestModelBase:
         root.define_loads()
         root.define_constraints()
 
+    @pytest.mark.parametrize(
+        ("ground", "wheel", "tire", "expected"),
+        [
+            (None, None, None, ("ground", "wheel", "tire")),
+            (FlatGround("ground"), None, None, ("wheel", "tire")),
+            (
+                FlatGround("ground"),
+                KnifeEdgeWheel("wheel"),
+                NonHolonomicTire("tire"),
+                (),
+            ),
+        ],
+        ids=["all_unspecified", "partially_specified", "all_specified"],
+    )
+    def test_get_unspecified_components(self, ground, wheel, tire, expected) -> None:
+        disc = RollingDisc("disc")
+        if ground is not None:
+            disc.ground = ground
+        if wheel is not None:
+            disc.wheel = wheel
+        if tire is not None:
+            disc.tire = tire
+        unspecified = disc.get_unspecified_components()
+        assert unspecified == expected
+
+    def test_get_unspecified_components_with_optional(self) -> None:
+        bike = WhippleBicycle("bike")
+        unspecified_hard = bike.get_unspecified_components()
+        assert "cranks" not in unspecified_hard
+        unspecified_all = bike.get_unspecified_components(optional=True)
+        assert "cranks" in unspecified_all
+
+    def test_get_unspecified_components_detailed(self) -> None:
+        disc = RollingDisc("disc")
+        disc.ground = FlatGround("ground")
+        unspecified = disc.get_unspecified_components(detailed=True)
+        assert len(unspecified) == 2
+        assert all(hasattr(req, "attribute_name") for req in unspecified)
+        assert unspecified[0].attribute_name == "wheel"
+        assert unspecified[1].attribute_name == "tire"
 
 class TestFromConvention:
     @pytest.fixture(autouse=True)
