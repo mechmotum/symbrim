@@ -35,9 +35,20 @@ or functions can be ignored using ``# pragma: no cover``. To run the tests use: 
 
     pytest .
 
+Some tests are marked as slow (e.g., tests that form equations of motion). These tests
+are **skipped by default** for faster test runs. To run all tests including slow tests: ::
+
+    pytest --run-all
+
+To run only the slow tests: ::
+
+    pytest -m "slow"
+
 When generating a coverage report locally, we recommend using: ::
 
     pytest --cov --cov-report html
+
+Note that 100% code coverage is maintained even without running the slow tests.
 
 Documentation
 =============

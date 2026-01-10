@@ -69,7 +69,31 @@ jobs:
       - name: Install dependencies
         run: poetry install --with test --all-extras
       - name: Run tests
-        run: poetry run pytest
+        run: poetry run pytest -n auto
+
+  #------------------------------------ doc-tests -------------------------------------#
+
+  slow-tests:
+    needs: tests
+
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install poetry
+        run: pipx install poetry==1.8.3
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.12
+      - name: Download data directory
+        uses: actions/download-artifact@v4
+        with:
+          name: data
+          path: data
+      - name: Install dependencies
+        run: poetry install --with test --all-extras
+      - name: Run slow tests
+        run: poetry run pytest -n auto -m "slow"
 
   #------------------------------------ doc-tests -------------------------------------#
 
@@ -157,4 +181,4 @@ jobs:
         run: poetry install --with test --all-extras
       - name: Run tests with code coverage
         run: |
-          poetry run pytest --cov
+          poetry run pytest --cov -n auto

@@ -115,6 +115,7 @@ class TestCompleteBicycleRider:
         br.rider = self.rider
         br.define_all()
 
+    @pytest.mark.slow
     @pytest.mark.usefixtures("_whipple_rider_setup")
     def test_form_eoms(self) -> None:
         self.br.define_all()
