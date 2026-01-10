@@ -261,24 +261,30 @@ class TestModelBase:
         root.define_loads()
         root.define_constraints()
 
-    def test_get_unspecified_components_all_unspecified(self) -> None:
+    @pytest.mark.parametrize(
+        ("ground", "wheel", "tire", "expected"),
+        [
+            (None, None, None, ("ground", "wheel", "tire")),
+            (FlatGround("ground"), None, None, ("wheel", "tire")),
+            (
+                FlatGround("ground"),
+                KnifeEdgeWheel("wheel"),
+                NonHolonomicTire("tire"),
+                (),
+            ),
+        ],
+        ids=["all_unspecified", "partially_specified", "all_specified"],
+    )
+    def test_get_unspecified_components(self, ground, wheel, tire, expected) -> None:
         disc = RollingDisc("disc")
+        if ground is not None:
+            disc.ground = ground
+        if wheel is not None:
+            disc.wheel = wheel
+        if tire is not None:
+            disc.tire = tire
         unspecified = disc.get_unspecified_components()
-        assert unspecified == ("ground", "wheel", "tire")
-
-    def test_get_unspecified_components_partially_specified(self) -> None:
-        disc = RollingDisc("disc")
-        disc.ground = FlatGround("ground")
-        unspecified = disc.get_unspecified_components()
-        assert unspecified == ("wheel", "tire")
-
-    def test_get_unspecified_components_all_specified(self) -> None:
-        disc = RollingDisc("disc")
-        disc.ground = FlatGround("ground")
-        disc.wheel = KnifeEdgeWheel("wheel")
-        disc.tire = NonHolonomicTire("tire")
-        unspecified = disc.get_unspecified_components()
-        assert unspecified == ()
+        assert unspecified == expected
 
     def test_get_unspecified_components_with_optional(self) -> None:
         bike = WhippleBicycle("bike")
@@ -295,7 +301,6 @@ class TestModelBase:
         assert all(hasattr(req, "attribute_name") for req in unspecified)
         assert unspecified[0].attribute_name == "wheel"
         assert unspecified[1].attribute_name == "tire"
-
 
 class TestFromConvention:
     @pytest.fixture(autouse=True)

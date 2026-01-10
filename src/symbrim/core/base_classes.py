@@ -374,13 +374,13 @@ class ModelBase(BrimBase, metaclass=ModelMeta):
             Tuple of attribute names if detailed is False, otherwise tuple of
             requirement objects for unspecified components.
         """
-        unspecified = [
+        unspecified = tuple(
             req
             for req in (self.required_models + self.required_connections)
             if getattr(self, req.attribute_name) is None and (optional or req.hard)
-        ]
+        )
         if detailed:
-            return tuple(unspecified)
+            return unspecified
         return tuple(req.attribute_name for req in unspecified)
 
     def _set_auxiliary_handler(self, auxiliary_handler: AuxiliaryDataHandler) -> None:
