@@ -218,3 +218,20 @@ class TestParametrize:
             assert msubs(hand_grip.point.pos_from(
                 self.bike.front_wheel.center).magnitude(), params
                          ) == pytest.approx(mp["LhbF"], abs=1e-10)
+
+    @pytest.mark.usefixtures("_setup_moore_bicycle")
+    def test_rear_frame_include_rider(self) -> None:
+        if not _check_dir("Browser", "Jason"):
+            pytest.skip("data not found")
+        rf = self.bike.rear_frame
+        m = rf.body.mass
+        bike_params = Bicycle("Browser", pathToData=data_dir)
+        assert (
+            rf.get_param_values(bike_params)[m]
+            == rf.get_param_values(bike_params, include_rider=True)[m]
+        )
+        bike_params.add_rider("Jason", reCalc=True)
+        assert (
+            rf.get_param_values(bike_params)[m]
+            < rf.get_param_values(bike_params, include_rider=True)[m]
+        )
