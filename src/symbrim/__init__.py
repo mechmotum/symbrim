@@ -4,48 +4,45 @@ A Modular and Extensible Open-Source Framework for Creating Symbolic Bicycle-Rid
 Models.
 """
 
+from __future__ import annotations
+
 __all__ = [
-    "WhippleBicycle", "StationaryBicycle",
-
-    "FlatGround",
-
-    "RigidRearFrame",
-
-    "RigidFrontFrame", "SuspensionRigidFrontFrame",
-
-    "KnifeEdgeWheel", "ToroidalWheel",
-
-    "InContactTire", "NonHolonomicTire",
-
-    "MasslessCranks",
-
-    "Rider",
-
-    "PlanarPelvis",
-
-    "PlanarTorso",
-
-    "PinElbowStickLeftArm", "PinElbowStickRightArm",
-
-    "TwoPinStickLeftLeg", "TwoPinStickRightLeg",
-
-    "PinLeftHip", "PinRightHip", "SphericalLeftHip", "SphericalRightHip",
-
-    "FlexAddLeftShoulder", "FlexAddRightShoulder",
-    "FlexRotLeftShoulder", "FlexRotRightShoulder",
-    "SphericalLeftShoulder", "SphericalRightShoulder",
-
-    "FixedSacrum",
-
     "BicycleRider",
-
-    "FixedSeat", "SideLeanSeat",
-
+    "FixedSacrum",
+    "FixedSeat",
+    "FlatGround",
+    "FlexAddLeftShoulder",
+    "FlexAddRightShoulder",
+    "FlexRotLeftShoulder",
+    "FlexRotRightShoulder",
     "HolonomicHandGrips",
-
     "HolonomicPedals",
+    "InContactTire",
+    "KnifeEdgeWheel",
+    "MasslessCranks",
+    "NonHolonomicTire",
+    "PinElbowStickLeftArm",
+    "PinElbowStickRightArm",
+    "PinLeftHip",
+    "PinRightHip",
+    "PlanarPelvis",
+    "PlanarTorso",
+    "Rider",
+    "RigidFrontFrame",
+    "RigidRearFrame",
+    "SideLeanSeat",
+    "SphericalLeftHip",
+    "SphericalLeftShoulder",
+    "SphericalRightHip",
+    "SphericalRightShoulder",
+    "StationaryBicycle",
+    "SuspensionRigidFrontFrame",
+    "ToroidalWheel",
+    "TwoPinStickLeftLeg",
+    "TwoPinStickRightLeg",
+    "WhippleBicycle",
+    "__version__",
 ]
-
 from symbrim.bicycle import (
     FlatGround,
     InContactTire,
@@ -87,12 +84,4 @@ from symbrim.rider import (
     TwoPinStickRightLeg,
 )
 
-try:
-    from importlib.metadata import PackageNotFoundError, version
-except ImportError:  # pragma: no cover
-    from importlib_metadata import PackageNotFoundError, version
-
-try:
-    __version__ = version(__name__)
-except PackageNotFoundError:  # pragma: no cover
-    __version__ = "unknown"
+from ._version import version as __version__
