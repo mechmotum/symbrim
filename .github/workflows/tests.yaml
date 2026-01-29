@@ -13,14 +13,14 @@ jobs:
   download-data:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Download parametrization data
         run: |
           git clone --depth 1 https://github.com/moorepants/BicycleParameters.git
           mv BicycleParameters/data data
           rm -rf BicycleParameters
       - name: Upload data directory
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: data
           path: data
@@ -30,18 +30,17 @@ jobs:
   code-quality:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Install poetry
-        run: pipx install poetry==1.8.3
-      - name: Set up Python 3
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@v6
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+      - name: Set up Python
+        uses: actions/setup-python@v6
         with:
-          python-version: 3.12
+          python-version: "3.13"
       - name: Install dependencies
-        run: poetry install --with lint
-      - name: Run lint
-        run: |
-          poetry run ruff check .
+        run: uv sync --all-extras
+      - name: Lint check with ruff
+        run: uv run ruff check .
 
   #-------------------------------------- tests ---------------------------------------#
 
@@ -52,24 +51,22 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.9', '3.10', '3.11', '3.12']
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
     steps:
-      - uses: actions/checkout@v4
-      - name: Install poetry
-        run: pipx install poetry==1.8.3
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@v6
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
         with:
           python-version: ${{ matrix.python-version }}
       - name: Download data directory
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: data
           path: data
       - name: Install dependencies
-        run: poetry install --with test --all-extras
+        run: uv sync --all-extras
       - name: Run tests
-        run: poetry run pytest -n auto
+        run: uv run pytest -n auto
 
   #------------------------------------ doc-tests -------------------------------------#
 
@@ -78,22 +75,22 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Install poetry
-        run: pipx install poetry==1.8.3
+      - uses: actions/checkout@v6
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
-          python-version: 3.12
+          python-version: 3.13
       - name: Download data directory
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: data
           path: data
       - name: Install dependencies
-        run: poetry install --with test --all-extras
+        run: uv sync --all-extras
       - name: Run slow tests
-        run: poetry run pytest -n auto -m "slow"
+        run: uv run pytest -n auto -m "slow"
 
   #------------------------------------ doc-tests -------------------------------------#
 
@@ -104,10 +101,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.9', '3.10', '3.11', '3.12']
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Install pandoc
         run: |
           sudo apt-get update
@@ -125,18 +122,18 @@ jobs:
         run: |
           source /usr/share/miniconda/etc/profile.d/conda.sh
           conda deactivate
-      - name: Install poetry
-        run: pipx install poetry==1.8.3
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
-        run: poetry install --with docs --all-extras
+        run: uv sync --all-extras
       - name: make the sphinx docs
         run: |
-          poetry run make -C docs clean
-          poetry run make -C docs html
+          uv run make -C docs clean
+          uv run make -C docs html
 
   #--------------------------------- test benchmarks ----------------------------------#
 
@@ -145,18 +142,17 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Install poetry
-        run: pipx install poetry==1.8.3
+      - uses: actions/checkout@v6
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
-          python-version: 3.12
+          python-version: 3.13
       - name: Install dependencies
-        run: poetry install --with test
+        run: uv sync --all-extras
       - name: Run benchmarks
-        run: |
-          poetry run pytest ./benchmarks/
+        run: uv run pytest ./benchmarks/
 
     #--------------------------------- code-coverage ----------------------------------#
 
@@ -165,20 +161,19 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Install poetry
-        run: pipx install poetry==1.8.3
+      - uses: actions/checkout@v6
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
-          python-version: 3.12
+          python-version: 3.13
       - name: Download data directory
         uses: actions/download-artifact@v4
         with:
           name: data
           path: data
       - name: Install dependencies
-        run: poetry install --with test --all-extras
+        run: uv sync --all-extras
       - name: Run tests with code coverage
-        run: |
-          poetry run pytest --cov -n auto
+        run: uv run pytest --cov -n auto
