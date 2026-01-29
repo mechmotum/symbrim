@@ -231,7 +231,10 @@ class RigidRearFrameMoore(RigidRearFrame):
         """
         params = super().get_param_values(bicycle_parameters)
         if "Benchmark" in bicycle_parameters.parameters:
-            if not include_rider_inertia:
+            if (
+                not include_rider_inertia
+                and "Measured" in bicycle_parameters.parameters
+            ):
                 bp = remove_uncertainties(calculate_benchmark_from_measured(
                     bicycle_parameters.parameters["Measured"])[0])
             else:

@@ -144,7 +144,7 @@ class TestWhippleBicycleMoore:
         assert self.bike.cranks.center_point.pos_from(self.bike.rear_wheel.center).diff(
             dynamicsymbols._t, rf) == 0
         assert (self.bike.cranks.frame.ang_vel_in(rf).dot(rf.y) ==
-                self.bike.u[7] / self.bike.symbols["gear_ratio"])
+                self.bike.u[5] / self.bike.symbols["gear_ratio"])
 
     @pytest.mark.parametrize(("normal", "upward", "longitudinal", "lateral"), [
         ("+z", Matrix([0, 0, 1]), Matrix([-1, 0, 0]), Matrix([0, 1, 0])),
