@@ -215,7 +215,7 @@ class RigidRearFrameMoore(RigidRearFrame):
         self,
         bicycle_parameters: Bicycle,
         *,
-        include_rider_inertia: bool = False,
+        include_rider: bool = False,
     ) -> dict[Symbol, float]:
         """Get the parameter values of the rear frame.
 
@@ -223,16 +223,16 @@ class RigidRearFrameMoore(RigidRearFrame):
         ----------
         bicycle_parameters : Bicycle
             Bicycle parameters object containing the parameters.
-        include_rider_inertia : bool, optional
+        include_rider : bool, optional
             Whether to include the rider inertia parameters as part of the rear frame
             inertia, by default False. Hint: you can retrieve all paramters and specify
             this option using something like: ``bike.get_param_values(params) |
-            bike.rear_frame.get_param_values(params, include_rider_inertia=True)``
+            bike.rear_frame.get_param_values(params, include_rider=True)``
         """
         params = super().get_param_values(bicycle_parameters)
         if "Benchmark" in bicycle_parameters.parameters:
             if (
-                not include_rider_inertia
+                not include_rider
                 and "Measured" in bicycle_parameters.parameters
             ):
                 bp = remove_uncertainties(calculate_benchmark_from_measured(

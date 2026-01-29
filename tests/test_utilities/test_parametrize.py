@@ -228,10 +228,10 @@ class TestParametrize:
         bike_params = Bicycle("Browser", pathToData=data_dir)
         assert (
             rf.get_param_values(bike_params)[m]
-            == rf.get_param_values(bike_params, include_rider_inertia=True)[m]
+            == rf.get_param_values(bike_params, include_rider=True)[m]
         )
         bike_params.add_rider("Jason", reCalc=True)
         assert (
             rf.get_param_values(bike_params)[m]
-            < rf.get_param_values(bike_params, include_rider_inertia=True)[m]
+            < rf.get_param_values(bike_params, include_rider=True)[m]
         )
