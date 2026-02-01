@@ -6,13 +6,13 @@ This directory contains performance benchmarks for SymBRiM models.
 
 ```bash
 # Run all benchmarks
-poetry run pytest ./benchmarks/
+uv run pytest ./benchmarks/
 
 # Run specific benchmark
-poetry run pytest ./benchmarks/test_rolling_disc.py --benchmark-only
+uv run pytest ./benchmarks/test_rolling_disc.py --benchmark-only
 
 # Save benchmark results
-poetry run pytest ./benchmarks/ --benchmark-autosave
+uv run pytest ./benchmarks/ --benchmark-autosave
 ```
 
 ## Operation Counts

@@ -28,7 +28,7 @@
     "operation_eoms_csed": 2389
   },
   "benchmarks/test_whipple_bicycle.py::test_whipple_bicycle_moore_brim": {
-    "operation_eoms": 266594,
-    "operation_eoms_csed": 1908
+    "operation_eoms": 266664,
+    "operation_eoms_csed": 1909
   }
 }

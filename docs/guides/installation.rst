@@ -19,34 +19,19 @@ The optional dependencies can be installed with: ::
 Installation Developers
 =======================
 
-SymBRiM uses `poetry`_ as package manager. To install SymBRiM after installing `poetry`_
+SymBRiM uses `uv`_ as package manager. To install SymBRiM after installing `uv`_
 and cloning the repository, run: ::
 
-    poetry install
+    uv sync
 
-SymBRiM offers dependency groups to assist developers:
+SymBRiM offers dependency groups to assist developers, easiest is to just install
+all of them: ::
 
-- ``lint``: packages required for linting.
-- ``test``: packages required for testing.
-- ``docs``: packages required for building the documentation.
-
-To install optional dependencies from a specific group, run: ::
-
-    poetry install --with <group>
-
-Some of the additional utilities also require extra packages. These can be installed
-using: ::
-
-    poetry install --extras parametrize
-    poetry install --extras plotting
-
-To install everything at once, run: ::
-
-    poetry install --with lint,test,docs --all-extras
+    uv sync --all-extras
 
 To quickly check code for linting errors, it is recommended to set up ``pre-commit``
 hooks by executing: ::
 
-    pre-commit install
+    uvx pre-commit install
 
-.. _poetry: https://python-poetry.org
+.. _uv: https://docs.astral.sh/uv/

@@ -2,7 +2,7 @@
 * text=auto
 
 # Files which are not modified by humans should be treated as binary.
-poetry.lock binary
+uv.lock binary
 *.gif binary
 *.png binary
 *.svg binary
