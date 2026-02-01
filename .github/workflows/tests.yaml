@@ -180,6 +180,14 @@ jobs:
               return;
             }
             
+            // Read baseline if it exists
+            let baselineData = {};
+            try {
+              baselineData = JSON.parse(fs.readFileSync('.benchmarks/baseline.json', 'utf8'));
+            } catch (error) {
+              console.log('No baseline found, skipping comparison');
+            }
+            
             // Format benchmark results as markdown table
             let comment = '## 📊 Benchmark Results\n\n';
             
@@ -196,15 +204,35 @@ jobs:
             // Create tables for each group
             for (const [groupName, benchmarks] of Object.entries(groups)) {
               comment += `### ${groupName}\n\n`;
-              comment += '| Name | Mean (ms) | #Ops | #Ops (CSE) |\n';
-              comment += '|------|-----------|------|------------|\n';
+              comment += '| Name | Mean (ms) | #Ops | #Ops (CSE) | Baseline #Ops (CSE) | Change |\n';
+              comment += '|------|-----------|------|------------|---------------------|--------|\n';
               
               for (const bench of benchmarks) {
                 const name = bench.name;
                 const mean = (bench.stats.mean * 1000).toFixed(2);
                 const ops = bench.extra_info?.operation_eoms || 'N/A';
                 const opsCse = bench.extra_info?.operation_eoms_csed || 'N/A';
-                comment += `| ${name} | ${mean} | ${ops} | ${opsCse} |\n`;
+                
+                // Get baseline values
+                const fullname = bench.fullname || `${bench.group}/${name}`;
+                const baseline = baselineData[fullname];
+                let baselineOpsCse = 'N/A';
+                let change = '-';
+                
+                if (baseline && baseline.operation_eoms_csed && opsCse !== 'N/A') {
+                  baselineOpsCse = baseline.operation_eoms_csed;
+                  const diff = opsCse - baselineOpsCse;
+                  const pct = ((diff / baselineOpsCse) * 100).toFixed(1);
+                  if (diff > 0) {
+                    change = `⚠️ +${diff} (+${pct}%)`;
+                  } else if (diff < 0) {
+                    change = `✅ ${diff} (${pct}%)`;
+                  } else {
+                    change = '✅ No change';
+                  }
+                }
+                
+                comment += `| ${name} | ${mean} | ${ops} | ${opsCse} | ${baselineOpsCse} | ${change} |\n`;
               }
               comment += '\n';
             }
