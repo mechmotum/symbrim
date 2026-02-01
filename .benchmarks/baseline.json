@@ -1,0 +1,34 @@
+{
+  "benchmarks/test_rolling_disc.py::test_rolling_disc_efficient": {
+    "operation_eoms": 695,
+    "operation_eoms_csed": 102
+  },
+  "benchmarks/test_rolling_disc.py::test_rolling_disc_only_efficient_pos": {
+    "operation_eoms": 680,
+    "operation_eoms_csed": 180
+  },
+  "benchmarks/test_rolling_disc.py::test_rolling_disc_inefficient": {
+    "operation_eoms": 19643,
+    "operation_eoms_csed": 445
+  },
+  "benchmarks/test_rolling_disc.py::test_rolling_disc_3_coords": {
+    "operation_eoms": 85,
+    "operation_eoms_csed": 52
+  },
+  "benchmarks/test_rolling_disc.py::test_rolling_disc_brim": {
+    "operation_eoms": 672,
+    "operation_eoms_csed": 168
+  },
+  "benchmarks/test_whipple_bicycle.py::test_whipple_bicycle_minimal_coordinates": {
+    "operation_eoms": 230789,
+    "operation_eoms_csed": 2198
+  },
+  "benchmarks/test_whipple_bicycle.py::test_whipple_bicycle_moore_full_coordinates": {
+    "operation_eoms": 390554,
+    "operation_eoms_csed": 2389
+  },
+  "benchmarks/test_whipple_bicycle.py::test_whipple_bicycle_moore_brim": {
+    "operation_eoms": 266664,
+    "operation_eoms_csed": 1909
+  }
+}
